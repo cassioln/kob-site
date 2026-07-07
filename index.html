@@ -1,0 +1,3977 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Kriativos On Board 2026 — O cruzeiro de jogos de tabuleiro do Brasil</title>
+  <meta name="description"
+    content="Embarque no Kriativos On Board 2026, o primeiro cruzeiro de jogos de tabuleiro do Brasil. De 20 a 23 de novembro de 2026 a bordo do MSC Música, saindo de Santos rumo a Búzios. Garanta sua vaga!">
+  <link rel="canonical" href="https://kriativosonboard.com.br/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="pt_BR">
+  <meta property="og:title" content="Kriativos On Board 2026">
+  <meta property="og:description"
+    content="O primeiro cruzeiro de jogos de tabuleiro do Brasil. 20 a 23 de novembro de 2026, a bordo do MSC Música.">
+  <meta property="og:url" content="https://kriativosonboard.com.br/">
+  <meta property="og:image" content="images/2024/05/KRIATIVOS-2024_0573.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#ffffff">
+  <link rel="icon" href="images/2023/05/cropped-KRIATIVOS_ON_BOARD_2024_LOGOLOGO-SIMPLES-2-1-32x32.png" sizes="32x32">
+  <link rel="apple-touch-icon" href="images/2023/05/cropped-KRIATIVOS_ON_BOARD_2024_LOGOLOGO-SIMPLES-2-1-180x180.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <style>
+    /* ============================================================
+   Kriativos On Board 2026 — Design System "O Convés ao Entardecer"
+   Redesign por Impeccable (modo manual). Navy dominante + roxo da marca como
+   cor de ação; dourado apenas como brilho atmosférico de pôr do sol no hero.
+   ============================================================ */
+
+    /* ---------- Tokens ---------- */
+    :root {
+      /* Cor — paleta do logo Kriativos On Board (ciano + roxo + magenta + laranja/dourado).
+         Base atmosférica derivada do CIANO do logo (#00AEEF): oceano profundo azul-ciano. */
+      --ocean-abyss: #041d3a;
+      /* mar/noite mais profundo, puxado ao ciano */
+      --ocean-navy: #082f57;
+      /* base das seções escuras */
+      --ocean-blue: #00aeef;
+      /* CIANO do logo — links, água, realces, foco */
+      --ocean-cyan: #29c3f5;
+      /* ciano mais claro para brilho sobre escuro */
+      --kriativa-purple: #7b1fa2;
+      /* ROXO do logo (Kriativos) — cor de ação/identidade */
+      --kriativa-purple-deep: #57127a;
+      /* roxo mais profundo para degradês/estados */
+      --kriativa-magenta: #e5007e;
+      /* MAGENTA do dado — acento de urgência/energia */
+      --magenta-glow: #ff5aa8;
+      /* magenta claro p/ voz de urgência legível sobre escuro */
+      --sunset-gold: #ffc20e;
+      /* DOURADO do logo — brilho lúdico/atmosférico */
+      --sunset-deep: #f7941e;
+      /* LARANJA do logo — profundidade do brilho */
+
+      /* Cor de AÇÃO — roxo do logo. Sobre tema claro o roxo profundo
+         (--action-strong) vira a voz de números/eyebrows para garantir contraste. */
+      --action: #7b1fa2;
+      --action-hover: #57127a;
+      --action-ink: #7b1fa2;
+      --action-strong: #57127a;
+      --purple-glow: #e7a9f0;
+      /* roxo-claro do logo p/ números/eyebrows sobre escuro */
+      --foam-white: #ffffff;
+      --mist-100: #eef4fb;
+
+      /* Superfícies claras (respiro entre blocos imersivos) */
+      --surface-0: #ffffff;
+      --surface-1: #f2f6fc;
+      --surface-2: #e7eef8;
+      --surface-card: #ffffff;
+
+      /* Superfícies ESCURAS — "o convés ao entardecer" (base ciano-oceano do logo).
+         São as cenas onde as cores do logo brilham. */
+      --dark-abyss: #041d3a;
+      /* mais profundo */
+      --dark-navy: #082f57;
+      /* base escura */
+      --dark-navy-2: #0a3a68;
+      /* topo de degradês escuros */
+      --ink-invert: #ffffff;
+      --ink-invert-soft: rgba(233, 242, 251, 0.80);
+      --ink-invert-faint: rgba(233, 242, 251, 0.62);
+      --line-invert: rgba(133, 201, 245, 0.20);
+      /* hairline ciano translúcido sobre escuro */
+      --fill-invert: rgba(133, 201, 245, 0.06);
+
+      /* Linhas / bordas hairline sobre claro (tom oceânico, nunca cinza puro) */
+      --line-soft: rgba(13, 41, 78, 0.10);
+      --line-mid: rgba(13, 41, 78, 0.16);
+      --fill-soft: rgba(13, 41, 78, 0.04);
+      --fill-mid: rgba(13, 41, 78, 0.07);
+
+      /* Texto sobre claro */
+      --ink-strong: #0d2242;
+      --ink-soft: rgba(13, 34, 66, 0.78);
+      --ink-faint: rgba(13, 34, 66, 0.60);
+      --ink-on-light: #14213d;
+
+      /* Tipografia */
+      --font-display: 'Bricolage Grotesque', 'Garage Gothic FB', system-ui, sans-serif;
+      --font-body: 'Hanken Grotesk', 'Overpass', system-ui, sans-serif;
+
+      /* Raio */
+      --r-sm: 6px;
+      --r-md: 12px;
+      --r-lg: 16px;
+      --r-pill: 6px;
+      /* sem botões pill: cantos firmes ~6px em todo o site */
+
+      /* Espaçamento (base 4) */
+      --sp-xs: 8px;
+      --sp-sm: 16px;
+      --sp-md: 24px;
+      --sp-lg: 48px;
+      --sp-xl: clamp(64px, 9vw, 120px);
+
+      /* Container */
+      --container: 1200px;
+      --gutter: clamp(20px, 5vw, 64px);
+
+      /* Motion */
+      --ease-quart: cubic-bezier(0.25, 1, 0.5, 1);
+      --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+      --dur-fast: 120ms;
+      --dur-state: 260ms;
+      --dur-hero: 700ms;
+
+      /* Sombra (só resposta a estado / calor do roxo) */
+      --glow-action: 0 12px 40px rgba(123, 31, 162, 0.45);
+      --lift-card: 0 20px 60px rgba(8, 47, 87, 0.16);
+
+      /* z-index semântico */
+      --z-nav: 100;
+      --z-drawer: 200;
+      --z-top: 300;
+    }
+
+    /* ---------- Reset enxuto ---------- */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    * {
+      margin: 0;
+    }
+
+    html {
+      -webkit-text-size-adjust: 100%;
+      scroll-behavior: smooth;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+    }
+
+    body {
+      font-family: var(--font-body);
+      font-size: clamp(1rem, 0.96rem + 0.2vw, 1.125rem);
+      line-height: 1.6;
+      color: var(--ink-strong);
+      background: var(--surface-0);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      overflow-x: hidden;
+    }
+
+    img,
+    picture,
+    video {
+      max-width: 100%;
+      display: block;
+      height: auto;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    button {
+      font: inherit;
+      color: inherit;
+      cursor: pointer;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+      font-family: var(--font-display);
+      font-weight: 800;
+      line-height: 1.02;
+      letter-spacing: -0.02em;
+      text-wrap: balance;
+    }
+
+    /* ---------- Utilidades ---------- */
+    .container {
+      width: 100%;
+      max-width: var(--container);
+      margin-inline: auto;
+      padding-inline: var(--gutter);
+    }
+
+    .section {
+      padding-block: var(--sp-xl);
+      position: relative;
+    }
+
+    .eyebrow {
+      font-weight: 700;
+      font-size: 0.8125rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--action-ink);
+    }
+
+    /* Voz de URGÊNCIA/escassez = magenta do logo (distinta da voz de
+       informação em ciano). Aparece nos eyebrows de lote/vagas limitadas. */
+    .eyebrow--urgent,
+    .section--dark .eyebrow--urgent,
+    .section--gradient .eyebrow--urgent {
+      color: var(--magenta-glow);
+    }
+
+    .lead {
+      color: var(--ink-soft);
+      max-width: 62ch;
+      font-size: 1.075rem;
+    }
+
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .skip-link {
+      position: absolute;
+      left: var(--sp-sm);
+      top: -60px;
+      z-index: var(--z-top);
+      background: var(--action);
+      color: var(--foam-white);
+      padding: 12px 20px;
+      border-radius: var(--r-pill);
+      font-weight: 700;
+      text-decoration: none;
+      transition: top var(--dur-state) var(--ease-quart);
+    }
+
+    .skip-link:focus {
+      top: var(--sp-sm);
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--ocean-blue);
+      outline-offset: 3px;
+      border-radius: var(--r-sm);
+    }
+
+    /* ---------- Botões ---------- */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.55em;
+      font-family: var(--font-body);
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      text-decoration: none;
+      border: none;
+      border-radius: var(--r-pill);
+      padding: 16px 32px;
+      transition: transform var(--dur-state) var(--ease-quart),
+        background var(--dur-state) var(--ease-quart), box-shadow var(--dur-state) var(--ease-quart),
+        border-color var(--dur-state) var(--ease-quart), color var(--dur-state) var(--ease-quart);
+    }
+
+    .btn--primary {
+      background: var(--action);
+      color: var(--foam-white);
+    }
+
+    .btn--primary:hover {
+      background: var(--action-hover);
+      color: var(--foam-white);
+      transform: translateY(-2px);
+      box-shadow: var(--glow-action);
+    }
+
+    .btn--primary:active {
+      transform: translateY(0);
+    }
+
+    .btn--ghost {
+      background: transparent;
+      color: var(--action);
+      border: 1px solid var(--line-mid);
+    }
+
+    .btn--ghost:hover {
+      background: var(--fill-soft);
+      border-color: var(--action);
+    }
+
+    /* Ghost sobre o hero escuro mantém tinta clara */
+    .hero .btn--ghost {
+      color: var(--foam-white);
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    .hero .btn--ghost:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.85);
+    }
+
+    .btn--lg {
+      padding: 19px 44px;
+      font-size: 1.0625rem;
+    }
+
+    .btn__wa {
+      width: 1.15em;
+      height: 1.15em;
+      fill: currentColor;
+      flex: none;
+    }
+
+    /* ---------- Nav ---------- */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: var(--z-nav);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--sp-md);
+      padding: 14px var(--gutter);
+      background: transparent;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      border-bottom: 1px solid transparent;
+      transition: background var(--dur-state) var(--ease-quart), backdrop-filter var(--dur-state) var(--ease-quart), border-color var(--dur-state) var(--ease-quart);
+    }
+
+    /* Sem véu na 1ª dobra: nav totalmente transparente sobre a animação do hero */
+    .nav::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background: transparent;
+      opacity: 0;
+      transition: opacity var(--dur-state) var(--ease-quart);
+    }
+
+    /* A partir da 2ª dobra: header ganha fundo roxo da marca */
+    .nav[data-scrolled="true"] {
+      background: rgba(87, 18, 122, 0.94);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .nav__brand {
+      display: inline-flex;
+      align-items: center;
+      text-decoration: none;
+    }
+
+    .nav__brand img {
+      height: 78px;
+      width: auto;
+    }
+
+    /* Logo do header some no hero (o logo grande do hero assume a marca);
+       reaparece quando a nav ganha fundo (2ª dobra). */
+    .nav__brand {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--dur-state) var(--ease-quart);
+    }
+
+    .nav[data-scrolled="true"] .nav__brand {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .nav__links {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .nav__links a {
+      color: rgba(255, 255, 255, 0.82);
+      text-decoration: none;
+      font-weight: 500;
+      padding: 9px 14px;
+      border-radius: var(--r-pill);
+      transition: color var(--dur-state) var(--ease-quart), background var(--dur-state) var(--ease-quart);
+    }
+
+    .nav__links a:hover {
+      color: var(--foam-white);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    /* A nav scrolled tem fundo roxo escuro: links seguem claros */
+    .nav[data-scrolled="true"] .nav__links a {
+      color: rgba(255, 255, 255, 0.86);
+    }
+
+    .nav[data-scrolled="true"] .nav__links a:hover {
+      color: var(--foam-white);
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    /* CTA da nav sobre a barra roxa: inverte para branco/roxo p/ destacar a ação */
+    .nav[data-scrolled="true"] .btn--primary {
+      background: var(--foam-white);
+      color: var(--action);
+    }
+
+    .nav[data-scrolled="true"] .btn--primary:hover {
+      background: var(--mist-100);
+      color: var(--action-hover);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.28);
+    }
+
+    .nav__right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nav__toggle {
+      display: none;
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: var(--r-sm);
+      width: 44px;
+      height: 44px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav__toggle svg {
+      width: 22px;
+      height: 22px;
+      stroke: var(--foam-white);
+    }
+
+    /* Drawer mobile */
+    .drawer {
+      position: fixed;
+      inset: 0;
+      z-index: var(--z-drawer);
+      background: var(--surface-0);
+      display: flex;
+      flex-direction: column;
+      padding: var(--gutter);
+      transform: translateX(100%);
+      transition: transform var(--dur-state) var(--ease-quart);
+    }
+
+    .drawer[data-open="true"] {
+      transform: translateX(0);
+    }
+
+    .drawer__head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--sp-lg);
+    }
+
+    .drawer__close {
+      background: transparent;
+      border: 1px solid var(--line-mid);
+      border-radius: var(--r-sm);
+      width: 44px;
+      height: 44px;
+    }
+
+    .drawer__close svg {
+      width: 22px;
+      height: 22px;
+      stroke: var(--ink-strong);
+    }
+
+    .drawer nav {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .drawer nav a {
+      color: var(--ink-strong);
+      text-decoration: none;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1.6rem;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--line-soft);
+    }
+
+    .drawer .btn {
+      margin-top: auto;
+    }
+
+    /* ---------- Hero ---------- */
+    /* O hero permanece cinematográfico (vídeo + overlay escuro): força tinta clara
+       dentro dele, independente do tema claro global. */
+    .hero,
+    .hero h1,
+    .hero__meta {
+      color: var(--foam-white);
+    }
+
+    .hero__sub {
+      color: rgba(255, 255, 255, 0.82) !important;
+    }
+
+    .hero__scroll {
+      color: rgba(255, 255, 255, 0.7) !important;
+    }
+
+    .hero .eyebrow,
+    .hero h1 .accent,
+    .hero__meta svg {
+      color: var(--purple-glow) !important;
+    }
+
+    .hero {
+      position: relative;
+      min-height: 100svh;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .hero__bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      /* Cor de base sólida = topo da 2ª dobra, garante a costura na borda inferior. */
+      background: #063259;
+    }
+
+    .hero__bg img,
+    .hero__bg video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Polimento perceptual da mídia do hero: um leve ganho de contraste e
+       saturação faz a cena 1080p "pop" e disfarça a suavidade do upscaling,
+       sem borrar. Aplica-se a vídeo, canvas e fallback por igual. */
+    .hero__video,
+    .hero__canvas,
+    .hero__fallback {
+      filter: contrast(1.06) saturate(1.1) brightness(1.01);
+    }
+
+    .hero__video,
+    .hero__fallback,
+    .hero__canvas {
+      position: absolute;
+      inset: 0;
+    }
+
+    .hero__video,
+    .hero__canvas {
+      opacity: 0;
+    }
+
+    /* Empilhamento para crossfade limpo dive→loop: o DIVE fica por cima e faz
+       fade-out revelando o loop (já tocando) por baixo — cruza suave, sem gap. */
+    .hero__video#heroDive {
+      z-index: 1;
+    }
+
+    .hero__video#heroLoop {
+      z-index: 0;
+    }
+
+    .hero__canvas {
+      z-index: 2;
+    }
+
+    .hero__video[data-show="true"],
+    .hero__canvas[data-show="true"] {
+      opacity: 1;
+    }
+
+    .hero__canvas {
+      width: 100%;
+      height: 100%;
+    }
+
+    .hero__fallback {
+      opacity: 1;
+      z-index: -1;
+      transition: opacity 600ms var(--ease-quart);
+    }
+
+    /* Some com crossfade só quando o vídeo realmente começa a exibir frames
+       (evita o flash de a foto sumir antes do vídeo pintar). */
+    .hero__bg[data-media-live="true"] .hero__fallback {
+      opacity: 0;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .hero__fallback {
+        transition: none;
+      }
+    }
+
+    /* Grain sutil sobre a mídia do hero: quebra a "chapa" do upscaling e
+       adiciona textura fina que o olho lê como detalhe. Bem discreto. */
+    .hero__bg::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      opacity: 0.06;
+      mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 140px 140px;
+    }
+
+    .hero__bg::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      background:
+        /* Scrim vertical mais claro, em azul-ciano do logo: topo levemente velado
+           (nav) e base que fecha SÓLIDA em #063259 para casar com a 2ª dobra. */
+        linear-gradient(180deg, rgba(0, 92, 140, 0.28) 0%, rgba(0, 120, 175, 0.05) 34%, rgba(6, 47, 87, 0.42) 70%, rgba(6, 50, 89, 0.94) 88%, #063259 96%, #063259 100%),
+        /* Proteção de leitura atrás do texto (canto inferior-esquerdo): forte o
+           bastante para o branco do H1/sub passar AA, mas contida à zona do texto. */
+        radial-gradient(95% 78% at 8% 82%, rgba(4, 22, 44, 0.88) 0%, rgba(4, 22, 44, 0.62) 34%, rgba(4, 22, 44, 0.20) 60%, rgba(4, 22, 44, 0) 78%),
+        linear-gradient(90deg, rgba(4, 22, 44, 0.55) 0%, rgba(4, 22, 44, 0.28) 30%, rgba(4, 22, 44, 0) 55%),
+        /* Brilho de água / céu diurno em ciano do logo (topo-direita) */
+        radial-gradient(120% 95% at 82% 4%, rgba(0, 174, 239, 0.30) 0%, rgba(0, 174, 239, 0) 55%),
+        /* Brilho atmosférico da marca (roxo do logo), mais sutil */
+        radial-gradient(120% 95% at 86% 12%, rgba(123, 31, 162, 0.26) 0%, rgba(123, 31, 162, 0) 60%),
+        radial-gradient(90% 70% at 95% 6%, rgba(247, 148, 30, 0.14) 0%, rgba(247, 148, 30, 0) 45%);
+      /* Durante a intro (dive) mantém um overlay parcial, para a passagem ao
+         loop não ter um salto visual; ao iniciar o loop, intensifica para 100%. */
+      opacity: 0.6;
+      transition: opacity 900ms var(--ease-quart);
+    }
+
+    .hero[data-intro="done"] .hero__bg::after {
+      opacity: 1;
+    }
+
+    .hero__inner {
+      position: relative;
+      z-index: 1;
+      padding-block: clamp(96px, 16vh, 180px);
+      /* Logo acima; conteúdo abaixo explorando a largura do hero */
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      /* Conteúdo revelado junto com o overlay, quando o loop inicia */
+      opacity: 0;
+      transform: translateY(14px);
+      transition: opacity 700ms var(--ease-quart), transform 700ms var(--ease-expo);
+    }
+
+    .hero[data-intro="done"] .hero__inner {
+      opacity: 1;
+      transform: none;
+    }
+
+    .hero__content {
+      width: 100%;
+    }
+
+    /* Logo grande do hero, acima do conteúdo */
+    .hero__logo {
+      width: clamp(300px, 33vw, 480px);
+      height: auto;
+      filter: drop-shadow(0 12px 40px rgba(7, 28, 53, 0.55));
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+      .hero__bg::after,
+      .hero__inner {
+        transition: none;
+      }
+    }
+
+    @media (max-width: 860px) {
+      .hero__logo {
+        width: clamp(240px, 63vw, 360px);
+      }
+    }
+
+    .hero h1 {
+      font-size: clamp(2.9rem, 8.5vw, 6rem);
+      margin-top: var(--sp-md);
+      max-width: 20ch;
+      /* Fundo do hero é claro/azul: sombra escura em camadas cria um halo denso
+         que garante legibilidade do texto claro sem escurecer a cena. */
+      text-shadow: 0 1px 2px rgba(4, 22, 44, 0.72), 0 2px 10px rgba(4, 22, 44, 0.55), 0 4px 30px rgba(4, 22, 44, 0.45);
+    }
+
+    .hero h1 .accent {
+      color: var(--action-ink);
+      text-shadow: 0 1px 2px rgba(4, 22, 44, 0.80), 0 2px 12px rgba(4, 22, 44, 0.62), 0 4px 30px rgba(4, 22, 44, 0.5);
+    }
+
+    .hero__sub {
+      margin-top: var(--sp-md);
+      font-size: clamp(1.1rem, 1.4vw, 1.35rem);
+      color: var(--ink-soft);
+      max-width: 62ch;
+    }
+
+    .hero__meta {
+      margin-top: var(--sp-md);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 20px;
+      color: var(--foam-white);
+      font-weight: 500;
+    }
+
+    .hero__meta span {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .hero__meta svg {
+      width: 1.15em;
+      height: 1.15em;
+      color: var(--action-ink);
+      flex: none;
+    }
+
+    .hero__cta {
+      margin-top: var(--sp-lg);
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--sp-sm);
+    }
+
+    .hero__scroll {
+      position: absolute;
+      bottom: 22px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1;
+      color: var(--ink-faint);
+      font-size: 0.75rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .hero__scroll span {
+      width: 1px;
+      height: 34px;
+      background: linear-gradient(var(--action-ink), transparent);
+    }
+
+    /* ---------- Countdown ---------- */
+    .countdown {
+      display: flex;
+      gap: 10px;
+      margin-top: var(--sp-lg);
+      flex-wrap: wrap;
+    }
+
+    .count {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      min-width: 78px;
+      padding: 14px 10px;
+      border-radius: var(--r-md);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .count__num {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+      line-height: 1;
+      color: var(--purple-glow);
+      text-shadow: 0 0 26px rgba(123, 31, 162, 0.5);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .count__label {
+      font-size: 0.7rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.72);
+    }
+
+    /* ---------- Seções — art direction "convés ao entardecer":
+       cenas ESCURAS (navy/abyss, onde as cores do logo brilham) alternadas
+       com respiros CLAROS. O ritmo evita bloco escuro monótono. ---------- */
+
+    /* Base de tinta para qualquer seção escura */
+    .section--dark {
+      /* Sobre escuro, a "voz de link/realce" (que usa --action-ink) vira o
+         CIANO do logo — garante contraste e traz a cor da marca à tona.
+         Cobre inclusive links com style inline var(--action-ink). */
+      --action-ink: var(--ocean-cyan);
+    }
+
+    .section--dark,
+    .section--dark h2,
+    .section--dark h3,
+    .section--dark .tl__body strong {
+      color: var(--ink-invert);
+    }
+
+    .section--dark .eyebrow,
+    .section--dark .tl__year {
+      color: var(--ocean-cyan);
+    }
+
+    /* ciano do logo = voz de realce sobre escuro */
+    .section--dark .lead,
+    .section--dark .tl__body span,
+    .section--dark p {
+      color: var(--ink-invert-soft);
+    }
+
+    .section--dark .tl {
+      border-top-color: var(--line-invert);
+    }
+
+    .section--dark .tl:last-child {
+      border-bottom-color: var(--line-invert);
+    }
+
+    /* Superfícies escuras (as cenas imersivas) */
+    .section--abyss {
+      background: var(--dark-abyss);
+    }
+
+    .section--navy {
+      background:
+        radial-gradient(120% 90% at 85% 0%, rgba(0, 174, 239, 0.10) 0%, rgba(0, 174, 239, 0) 55%),
+        var(--dark-navy);
+    }
+
+    .section--deepest {
+      background:
+        radial-gradient(110% 80% at 15% 0%, rgba(123, 31, 162, 0.16) 0%, rgba(123, 31, 162, 0) 60%),
+        var(--dark-navy);
+    }
+
+    .section--deep {
+      background: linear-gradient(180deg, var(--dark-navy-2) 0%, var(--dark-abyss) 100%);
+    }
+
+    .section--from-hero {
+      /* Sobe 1px sobre o hero para cobrir a fresta de sub-pixel do vídeo na
+         borda; como o topo é #063259 (igual à base do hero), a costura ssão. */
+      margin-top: -1px;
+      background: linear-gradient(180deg,
+          #063259 0%,
+          #052c4f 40%,
+          #062a4e 70%,
+          var(--dark-navy) 100%);
+    }
+
+    .section--from-hero,
+    .section--from-hero h2,
+    .section--from-hero .tl__body strong {
+      color: var(--foam-white);
+    }
+
+    .section--from-hero .eyebrow,
+    .section--from-hero .tl__year {
+      color: var(--ocean-cyan);
+    }
+
+    .section--from-hero .lead,
+    .section--from-hero .tl__body span {
+      color: var(--ink-invert-soft);
+    }
+
+    .section--from-hero .tl {
+      border-top-color: var(--line-invert);
+    }
+
+    .section--from-hero .tl:last-child {
+      border-bottom-color: var(--line-invert);
+    }
+
+    /* RESPIROS CLAROS — art direction override por seção:
+       navio (fotos), informações (itinerário/tabs), hospedagem e faq (leitura longa). */
+    #navio.section--deepest,
+    #hospedagem.section--abyss,
+    #faq.section--abyss {
+      background: var(--surface-1);
+    }
+
+    #informacoes.section--navy {
+      background: var(--surface-0);
+    }
+
+    /* Reverte a tinta para escura nesses respiros claros */
+    #navio,
+    #informacoes,
+    #hospedagem,
+    #faq {
+      color: var(--ink-strong);
+    }
+
+    #navio h2,
+    #navio h3,
+    #informacoes h2,
+    #informacoes h3,
+    #hospedagem h2,
+    #hospedagem h3,
+    #faq h2,
+    #faq h3 {
+      color: var(--ink-strong);
+    }
+
+    #navio .eyebrow,
+    #informacoes .eyebrow,
+    #hospedagem .eyebrow,
+    #faq .eyebrow {
+      color: var(--action-strong);
+    }
+
+    #navio .lead,
+    #navio p,
+    #informacoes .lead,
+    #informacoes p,
+    #hospedagem .lead,
+    #hospedagem p,
+    #faq .lead,
+    #faq p {
+      color: var(--ink-soft);
+    }
+
+    .section--gradient {
+      background:
+        radial-gradient(120% 100% at 78% 8%, rgba(0, 174, 239, 0.22) 0%, rgba(0, 174, 239, 0) 55%),
+        linear-gradient(165deg, var(--kriativa-purple) 0%, var(--kriativa-purple-deep) 100%);
+    }
+
+    /* A seção roxa é a única superfície escura de conteúdo: inverte a tinta */
+    .section--gradient,
+    .section--gradient h2,
+    .section--gradient .final-cta p {
+      color: var(--foam-white);
+    }
+
+    .section--gradient .eyebrow {
+      color: var(--sunset-gold);
+    }
+
+    .section--gradient .lead,
+    .section--gradient .final-cta p {
+      color: rgba(255, 255, 255, 0.86);
+    }
+
+    .section--gradient .btn--ghost {
+      color: var(--foam-white);
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    .section--gradient .btn--ghost:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.85);
+    }
+
+    /* CTA final: sobre superfície roxa o botão roxo se camuflaria — inverte
+       para superfície clara/tinta roxa, dando affordance máxima no clímax de conversão. */
+    .section--gradient .btn--primary {
+      background: var(--foam-white);
+      color: var(--action-strong);
+    }
+
+    .section--gradient .btn--primary:hover {
+      background: var(--mist-100);
+      color: var(--action-hover);
+      box-shadow: 0 14px 44px rgba(0, 0, 0, 0.28);
+    }
+
+    /* ---------- Componentes internos sobre seções ESCURAS (--dark) ----------
+       Trazem a tinta clara e injetam as cores do logo como acentos. */
+
+    /* "O que já está incluso": check em ciano do logo, X esmaecido claro */
+    .section--dark .incl li {
+      color: var(--ink-invert-soft);
+    }
+
+    .section--dark .incl__yes svg {
+      stroke: var(--ocean-cyan);
+    }
+
+    .section--dark .incl__no li {
+      color: var(--ink-invert-faint);
+    }
+
+    .section--dark .incl__no svg {
+      stroke: var(--ink-invert-faint);
+    }
+
+    .section--dark .incl h3 {
+      color: var(--ink-invert);
+    }
+
+    /* stat-row, data-list e demais textos genéricos sobre escuro */
+    .section--dark .stat {
+      border-right-color: var(--line-invert);
+    }
+
+    .section--dark .stat b {
+      color: var(--ocean-cyan);
+    }
+
+    .section--dark .stat span {
+      color: var(--ink-invert-soft);
+    }
+
+    /* Depoimentos sobre escuro: card em vidro claro, autor em ciano */
+    .section--dark .quote {
+      background: var(--fill-invert);
+      border-color: var(--line-invert);
+    }
+
+    .section--dark .quote p {
+      color: var(--ink-invert);
+    }
+
+    .section--dark .quote footer {
+      color: var(--ocean-cyan);
+    }
+
+    .section--dark .quote footer span {
+      color: var(--ink-invert-faint);
+    }
+
+    /* Rótulos de grupos de patrocínio sobre escuro */
+    .section--dark .sponsors__group h3 {
+      color: var(--ink-invert-soft);
+    }
+
+    /* Motif de board game: constelação de pontos de dado sobre as seções-chave */
+    .board-motif {
+      position: relative;
+    }
+
+    .board-motif>* {
+      position: relative;
+      z-index: 1;
+    }
+
+    .board-motif::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background-image: radial-gradient(rgba(13, 41, 78, 0.10) 1.6px, transparent 1.7px);
+      background-size: 26px 26px;
+      -webkit-mask-image: radial-gradient(130% 100% at 50% 0%, #000 0%, transparent 72%);
+      mask-image: radial-gradient(130% 100% at 50% 0%, #000 0%, transparent 72%);
+    }
+
+    /* Sobre seções escuras (CTA final e cenas --dark) os pontos são claros/ciano */
+    .section--gradient.board-motif::before,
+    .section--dark.board-motif::before {
+      background-image: radial-gradient(rgba(133, 201, 245, 0.16) 1.6px, transparent 1.7px);
+    }
+
+    .section__head {
+      max-width: 760px;
+      margin-bottom: var(--sp-lg);
+    }
+
+    .section__head h2 {
+      font-size: clamp(2rem, 4.5vw, 3.25rem);
+    }
+
+    .section__head p {
+      margin-top: var(--sp-sm);
+    }
+
+    .section--center .section__head {
+      margin-inline: auto;
+      text-align: center;
+    }
+
+    /* ---------- História / Timeline ---------- */
+    .story {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: var(--sp-xl);
+      align-items: center;
+    }
+
+    .story__media {
+      position: relative;
+      border-radius: var(--r-lg);
+      overflow: hidden;
+      aspect-ratio: 4/5;
+    }
+
+    .story__media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .story__media::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 55%, rgba(8, 26, 51, 0.7));
+    }
+
+    .story p+p {
+      margin-top: var(--sp-sm);
+    }
+
+    .timeline {
+      margin-top: var(--sp-lg);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .tl {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: var(--sp-md);
+      padding: 16px 0;
+      border-top: 1px solid var(--line-soft);
+    }
+
+    .tl:last-child {
+      border-bottom: 1px solid var(--line-soft);
+    }
+
+    .tl__year {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 1.4rem;
+      color: var(--action-ink);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .tl__body strong {
+      display: block;
+    }
+
+    .tl__body span {
+      color: var(--ink-soft);
+      font-size: 0.95rem;
+    }
+
+    /* ---------- Ship / atrações ---------- */
+    /* Slideshow de banners (fotos do navio) */
+    .ship-show {
+      position: relative;
+      margin-top: var(--sp-lg);
+      border-radius: var(--r-lg);
+      overflow: hidden;
+      aspect-ratio: 21/9;
+      background: var(--ocean-abyss);
+    }
+
+    .ship-slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 700ms var(--ease-expo), visibility 700ms;
+    }
+
+    .ship-slide[data-active="true"] {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .ship-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: scale(1.04);
+      transition: transform 6s ease-out;
+    }
+
+    .ship-slide[data-active="true"] img {
+      transform: scale(1);
+    }
+
+    .ship-slide::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(8, 26, 51, 0.1) 0%, transparent 30%, rgba(8, 26, 51, 0.85) 100%);
+    }
+
+    .ship-slide figcaption {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      z-index: 2;
+      padding: clamp(24px, 4vw, 48px);
+    }
+
+    .ship-slide figcaption b {
+      display: block;
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: clamp(1.6rem, 3.5vw, 2.6rem);
+      color: var(--foam-white);
+      line-height: 1.05;
+    }
+
+    .ship-slide figcaption span {
+      color: var(--ink-soft);
+      font-size: 1rem;
+    }
+
+    .ship-show__btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 3;
+      width: 52px;
+      height: 52px;
+      border-radius: var(--r-pill);
+      background: rgba(8, 26, 51, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      color: var(--foam-white);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(6px);
+      transition: background var(--dur-state) var(--ease-quart);
+    }
+
+    .ship-show__btn:hover {
+      background: var(--action);
+      border-color: transparent;
+    }
+
+    .ship-show__btn svg {
+      width: 26px;
+      height: 26px;
+    }
+
+    .ship-show__prev {
+      left: clamp(12px, 2vw, 24px);
+    }
+
+    .ship-show__next {
+      right: clamp(12px, 2vw, 24px);
+    }
+
+    .ship-show__dots {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 18px;
+      z-index: 3;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .ship-show__dots button {
+      width: 28px;
+      height: 10px;
+      border-radius: var(--r-pill);
+      background: rgba(255, 255, 255, 0.4);
+      border: none;
+      padding: 0;
+      transform: scaleX(0.36);
+      transform-origin: center;
+      transition: background var(--dur-state) var(--ease-quart), transform var(--dur-state) var(--ease-quart);
+    }
+
+    .ship-show__dots button[aria-current="true"] {
+      background: var(--action-ink);
+      transform: scaleX(1);
+    }
+
+    @media (max-width: 640px) {
+      .ship-show {
+        aspect-ratio: 4/5;
+      }
+
+      .ship-show__btn {
+        width: 44px;
+        height: 44px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+      .ship-slide,
+      .ship-slide img {
+        transition: none;
+      }
+    }
+
+    .stat-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: var(--sp-lg);
+      border-top: 1px solid var(--line-mid);
+      border-bottom: 1px solid var(--line-mid);
+    }
+
+    .stat {
+      padding: var(--sp-md) var(--sp-lg) var(--sp-md) 0;
+      margin-right: var(--sp-lg);
+      border-right: 1px solid var(--line-mid);
+    }
+
+    .stat:last-child {
+      border-right: none;
+      margin-right: 0;
+    }
+
+    .stat b {
+      font-family: var(--font-display);
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      color: var(--action-ink);
+      display: block;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stat span {
+      color: var(--ink-soft);
+      font-size: 0.9rem;
+    }
+
+    /* ---------- Included ---------- */
+    .incl {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--sp-lg);
+    }
+
+    .incl ul {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .incl li {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 12px;
+      align-items: start;
+      color: var(--ink-soft);
+    }
+
+    .incl li svg {
+      width: 22px;
+      height: 22px;
+      flex: none;
+      margin-top: 2px;
+    }
+
+    .incl__yes svg {
+      stroke: var(--action-ink);
+    }
+
+    .incl__no li {
+      color: var(--ink-faint);
+    }
+
+    .incl__no svg {
+      stroke: var(--ink-faint);
+    }
+
+    .incl h3 {
+      font-size: 1.35rem;
+      margin-bottom: var(--sp-sm);
+    }
+
+    /* ---------- Tabs (Informações) ---------- */
+    .tabs__list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: var(--sp-lg);
+    }
+
+    .tabs__tab {
+      background: var(--fill-soft);
+      border: 1px solid var(--line-soft);
+      color: var(--ink-soft);
+      padding: 11px 20px;
+      border-radius: var(--r-pill);
+      font-weight: 600;
+      transition: all var(--dur-state) var(--ease-quart);
+    }
+
+    .tabs__tab:hover {
+      color: var(--ink-strong);
+    }
+
+    .tabs__tab[aria-selected="true"] {
+      background: var(--action);
+      color: var(--foam-white);
+      border-color: transparent;
+    }
+
+    .tabs__panel {
+      display: none;
+      animation: fadeIn var(--dur-state) var(--ease-quart);
+    }
+
+    .tabs__panel[data-active="true"] {
+      display: block;
+    }
+
+    .tabs__panel h3 {
+      font-size: 1.5rem;
+      margin-bottom: var(--sp-md);
+    }
+
+    .tabs__panel ul {
+      color: var(--ink-soft);
+      padding-left: 1.2em;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .data-list {
+      list-style: none;
+      padding: 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px;
+    }
+
+    .data-list li {
+      padding: 16px 20px;
+      border-radius: var(--r-md);
+      background: var(--fill-soft);
+      border: 1px solid var(--line-soft);
+    }
+
+    .data-list b {
+      color: var(--action-strong);
+      display: block;
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      letter-spacing: 0;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .tabs__panel {
+        animation: none;
+      }
+    }
+
+    /* ---------- Valores / preços (cards claros) ---------- */
+    .price-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: var(--sp-md);
+      align-items: stretch;
+    }
+
+    .price-card {
+      position: relative;
+      background: var(--foam-white);
+      border: 1px solid var(--line-soft);
+      border-radius: var(--r-lg);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 50px rgba(13, 41, 78, 0.12);
+      transition: transform var(--dur-state) var(--ease-quart), box-shadow var(--dur-state) var(--ease-quart);
+    }
+
+    .price-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 28px 64px rgba(13, 41, 78, 0.18);
+    }
+
+    /* Header roxo com recorte diagonal (referência) */
+    .price-card__head {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 30px 28px 42px;
+      background: linear-gradient(135deg, var(--kriativa-purple) 0%, var(--kriativa-purple-deep) 100%);
+      color: var(--foam-white);
+      clip-path: polygon(0 0, 100% 0, 100% 78%, 0 100%);
+    }
+
+    .price-card__cabin {
+      font-size: 0.75rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.82);
+    }
+
+    .price-card__type {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 1.7rem;
+      line-height: 1.05;
+      margin-top: 2px;
+      /* Reserva sempre a altura de 2 linhas para os headers ficarem idênticos
+         entre os cards, independente do título ocupar 1 ou 2 linhas. */
+      min-height: calc(1.7rem * 1.05 * 2);
+      display: flex;
+      align-items: flex-start;
+    }
+
+    /* Corpo branco */
+    .price-card__body {
+      padding: 8px 28px 28px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      color: var(--ink-on-light);
+    }
+
+    .price-card__from {
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #5a6478;
+      font-weight: 700;
+    }
+
+    .price-card__value {
+      font-family: var(--font-display);
+      font-weight: 800;
+      line-height: 1;
+      color: var(--ink-on-light);
+      font-variant-numeric: tabular-nums;
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .price-card__value .amount {
+      font-size: clamp(2.6rem, 4vw, 3.2rem);
+    }
+
+    .price-card__value .cur {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #5a6478;
+      margin-bottom: 8px;
+    }
+
+    .price-card__value .per {
+      font-family: var(--font-body);
+      font-weight: 500;
+      font-size: 0.85rem;
+      color: #5a6478;
+      margin-bottom: 6px;
+    }
+
+    .price-card__entry {
+      font-size: 0.88rem;
+      color: #5a6478;
+      margin-top: 6px;
+    }
+
+    .price-card__rule {
+      height: 1px;
+      background: #e3e8f0;
+      margin: 20px 0;
+    }
+
+    .price-card__list {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .price-card__list li {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 0.95rem;
+      color: #38415a;
+    }
+
+    .price-card__list li span:last-child {
+      font-weight: 700;
+      color: var(--ink-on-light);
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .price-card__list li.is-sold {
+      color: #6b7488;
+    }
+
+    .price-card__list li.is-sold span:last-child {
+      color: var(--kriativa-magenta);
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+    }
+
+    .price-card .btn {
+      margin-top: auto;
+      width: 100%;
+    }
+
+    .price-card__list {
+      margin-bottom: 24px;
+    }
+
+    /* Card em destaque */
+    .price-card--featured {
+      outline: 2px solid var(--action-ink);
+      outline-offset: 0;
+    }
+
+    .price-card__flag {
+      position: absolute;
+      top: 0;
+      right: 0;
+      z-index: 3;
+      padding: 7px 16px;
+      font-size: 0.66rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      background: var(--sunset-gold);
+      color: var(--ocean-abyss);
+      border-bottom-left-radius: var(--r-sm);
+    }
+
+    .price-card--featured .price-card__type {
+      max-width: 76%;
+    }
+
+    /* Link "Ver detalhes" do card de preço */
+    .price-card__details {
+      margin-top: auto;
+      margin-bottom: 10px;
+      background: none;
+      border: 0;
+      padding: 4px 0;
+      align-self: center;
+      font-family: var(--font-body);
+      font-size: 0.8125rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--action-ink);
+      cursor: pointer;
+      border-bottom: 1px solid transparent;
+      transition: color var(--dur-fast) var(--ease-quart), border-color var(--dur-fast) var(--ease-quart);
+    }
+
+    .price-card__details:hover {
+      color: var(--action-hover);
+      border-bottom-color: currentColor;
+    }
+
+    .price-card__details:focus-visible {
+      outline: 2px solid var(--ocean-blue);
+      outline-offset: 3px;
+      border-radius: 2px;
+    }
+
+    /* Quando há "Ver detalhes", o botão não precisa mais empurrar sozinho */
+    .price-card__details + .btn {
+      margin-top: 0;
+    }
+
+    /* ---------- Modal de detalhes da cabine ---------- */
+    .cabin-modal {
+      border: 0;
+      padding: 0;
+      max-width: min(560px, 92vw);
+      width: 100%;
+      border-radius: var(--r-lg);
+      background: var(--surface-0);
+      color: var(--ink-strong);
+      box-shadow: 0 40px 120px rgba(4, 22, 44, 0.5);
+      overflow: hidden;
+    }
+
+    .cabin-modal::backdrop {
+      background: rgba(4, 22, 44, 0.62);
+      backdrop-filter: blur(3px);
+      -webkit-backdrop-filter: blur(3px);
+    }
+
+    .cabin-modal__inner {
+      position: relative;
+      padding: clamp(28px, 5vw, 44px);
+      max-height: 86vh;
+      overflow-y: auto;
+    }
+
+    .cabin-modal__close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 40px;
+      height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--line-mid);
+      border-radius: 50%;
+      background: var(--surface-0);
+      color: var(--ink-strong);
+      cursor: pointer;
+      transition: background var(--dur-fast) var(--ease-quart), border-color var(--dur-fast) var(--ease-quart);
+    }
+
+    .cabin-modal__close svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .cabin-modal__close:hover {
+      background: var(--fill-mid);
+      border-color: var(--action-ink);
+    }
+
+    .cabin-modal__close:focus-visible {
+      outline: 2px solid var(--ocean-blue);
+      outline-offset: 2px;
+    }
+
+    .cabin-modal__eyebrow {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--action-strong);
+      margin-bottom: 6px;
+    }
+
+    .cabin-modal__title {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: clamp(1.6rem, 3.5vw, 2.1rem);
+      line-height: 1.05;
+      max-width: 88%;
+    }
+
+    .cabin-modal__lead {
+      margin-top: 10px;
+      color: var(--ink-soft);
+      font-size: 1.02rem;
+    }
+
+    .cabin-modal__body {
+      margin-top: 20px;
+    }
+
+    .cabin-modal__body h4 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--ink-strong);
+      margin: 18px 0 8px;
+    }
+
+    .cabin-modal__body ul {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .cabin-modal__body li {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 10px;
+      align-items: start;
+      color: var(--ink-soft);
+      font-size: 0.95rem;
+      line-height: 1.45;
+    }
+
+    .cabin-modal__body li::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      margin-top: 8px;
+      border-radius: 2px;
+      background: var(--ocean-blue);
+      flex: none;
+    }
+
+    .cabin-modal__note {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line-soft);
+      color: var(--ink-faint);
+      font-size: 0.8rem;
+      line-height: 1.5;
+    }
+
+    .cabin-modal__cta {
+      margin-top: 22px;
+      width: 100%;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .cabin-modal[open] {
+        animation: cabinModalIn 260ms var(--ease-expo);
+      }
+
+      @keyframes cabinModalIn {
+        from {
+          opacity: 0;
+          transform: translateY(12px) scale(0.98);
+        }
+
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+    }
+
+    .price-note {
+      margin-top: var(--sp-lg);
+      color: var(--ink-faint);
+      font-size: 0.85rem;
+      text-align: center;
+    }
+
+    /* ---------- Prova social ---------- */
+    .quotes {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: var(--sp-md);
+      margin-top: var(--sp-lg);
+    }
+
+    .quote {
+      padding: 28px;
+      border-radius: var(--r-lg);
+      background: var(--fill-soft);
+      border: 1px solid var(--line-soft);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .quote p {
+      color: var(--ink-strong);
+    }
+
+    .quote footer {
+      color: var(--action-ink);
+      font-weight: 700;
+      font-family: var(--font-display);
+    }
+
+    .quote footer span {
+      display: block;
+      color: var(--ink-faint);
+      font-weight: 400;
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+    }
+
+    /* Slider de fotos (trilho com scroll-snap) */
+    .slider {
+      position: relative;
+      margin-top: var(--sp-lg);
+    }
+
+    .gallery {
+      display: flex;
+      gap: 14px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      padding-bottom: 12px;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .gallery::-webkit-scrollbar {
+      display: none;
+    }
+
+    .gallery a {
+      flex: 0 0 clamp(240px, 32%, 360px);
+      scroll-snap-align: start;
+      border-radius: var(--r-lg);
+      overflow: hidden;
+      aspect-ratio: 4/3;
+      cursor: zoom-in;
+    }
+
+    .gallery img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform var(--dur-state) var(--ease-quart);
+    }
+
+    .gallery a:hover img {
+      transform: scale(1.06);
+    }
+
+    .slider__btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 2;
+      width: 52px;
+      height: 52px;
+      border-radius: var(--r-pill);
+      background: rgba(8, 26, 51, 0.82);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: var(--foam-white);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(6px);
+      transition: background var(--dur-state) var(--ease-quart), opacity var(--dur-state) var(--ease-quart);
+    }
+
+    .slider__btn:hover {
+      background: var(--action);
+      border-color: transparent;
+    }
+
+    .slider__btn svg {
+      width: 26px;
+      height: 26px;
+    }
+
+    .slider__btn[disabled] {
+      opacity: 0.3;
+      cursor: default;
+      pointer-events: none;
+    }
+
+    .slider__prev {
+      left: -10px;
+    }
+
+    .slider__next {
+      right: -10px;
+    }
+
+    @media (max-width: 640px) {
+      .gallery a {
+        flex-basis: 82%;
+        aspect-ratio: 4/3;
+      }
+
+      .slider__prev {
+        left: 4px;
+      }
+
+      .slider__next {
+        right: 4px;
+      }
+    }
+
+    /* Lightbox (modal navegável) */
+    .lightbox {
+      border: none;
+      padding: 0;
+      background: transparent;
+      max-width: 100vw;
+      max-height: 100vh;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .lightbox::backdrop {
+      background: rgba(8, 26, 51, 0.92);
+      backdrop-filter: blur(6px);
+    }
+
+    .lightbox__inner {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(16px, 4vw, 48px);
+      gap: 16px;
+    }
+
+    .lightbox__figure {
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      max-width: 100%;
+      max-height: 100%;
+    }
+
+    .lightbox__img {
+      max-width: min(92vw, 1200px);
+      max-height: 80vh;
+      width: auto;
+      height: auto;
+      border-radius: var(--r-md);
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+    }
+
+    .lightbox__cap {
+      color: var(--foam-white);
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      text-align: center;
+    }
+
+    .lightbox__cap b {
+      color: var(--action-ink);
+      font-weight: 600;
+      margin-left: 8px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .lightbox__btn {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 56px;
+      height: 56px;
+      border-radius: var(--r-pill);
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--foam-white);
+      transition: background var(--dur-state) var(--ease-quart), transform var(--dur-state) var(--ease-quart);
+    }
+
+    .lightbox__btn:hover {
+      background: var(--action);
+      border-color: transparent;
+    }
+
+    .lightbox__btn svg {
+      width: 26px;
+      height: 26px;
+    }
+
+    .lightbox__prev {
+      left: clamp(12px, 3vw, 40px);
+    }
+
+    .lightbox__next {
+      right: clamp(12px, 3vw, 40px);
+    }
+
+    .lightbox__close {
+      position: fixed;
+      top: clamp(16px, 3vw, 32px);
+      right: clamp(16px, 3vw, 32px);
+      width: 48px;
+      height: 48px;
+      border-radius: var(--r-pill);
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--foam-white);
+      transition: background var(--dur-state) var(--ease-quart);
+    }
+
+    .lightbox__close:hover {
+      background: var(--action);
+      border-color: transparent;
+    }
+
+    .lightbox__close svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    @media (max-width: 600px) {
+      .lightbox__btn {
+        width: 46px;
+        height: 46px;
+        top: auto;
+        bottom: 24px;
+        transform: none;
+      }
+
+      .lightbox__prev {
+        left: 24px;
+      }
+
+      .lightbox__next {
+        right: 24px;
+      }
+
+      .lightbox__img {
+        max-height: 68vh;
+      }
+    }
+
+    /* ---------- FAQ ---------- */
+    .faq {
+      max-width: 820px;
+      margin-inline: auto;
+      margin-top: var(--sp-lg);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .faq details {
+      background: var(--fill-soft);
+      border: 1px solid var(--line-soft);
+      border-radius: var(--r-md);
+      overflow: hidden;
+    }
+
+    .faq summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 20px 24px;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1.05rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .faq summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .faq summary::after {
+      content: "+";
+      font-size: 1.5rem;
+      color: var(--action-ink);
+      flex: none;
+      transition: transform var(--dur-state) var(--ease-quart);
+    }
+
+    .faq details[open] summary::after {
+      transform: rotate(45deg);
+    }
+
+    .faq details>div {
+      padding: 0 24px 22px;
+      color: var(--ink-soft);
+    }
+
+    .faq__group {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1.15rem;
+      color: var(--action-ink);
+      margin: var(--sp-lg) 0 4px;
+    }
+
+    .faq__group:first-of-type {
+      margin-top: 0;
+    }
+
+    /* ---------- CTA final ---------- */
+    .final-cta {
+      text-align: center;
+    }
+
+    .final-cta h2 {
+      font-size: clamp(2.2rem, 6vw, 4rem);
+      max-width: 18ch;
+      margin-inline: auto;
+    }
+
+    .final-cta p {
+      margin: var(--sp-md) auto var(--sp-lg);
+    }
+
+    /* ---------- Participações especiais (creators) ---------- */
+    .creators {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: var(--sp-md);
+      margin-top: var(--sp-lg);
+    }
+
+    .creator {
+      text-align: center;
+    }
+
+    .creator img {
+      width: 96px;
+      height: 96px;
+      border-radius: var(--r-pill);
+      object-fit: cover;
+      margin: 0 auto 12px;
+      border: 2px solid rgba(196, 124, 182, 0.4);
+    }
+
+    .creator b {
+      display: block;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1.05rem;
+    }
+
+    .creator a {
+      color: var(--action-ink);
+      text-decoration: none;
+      font-size: 0.85rem;
+    }
+
+    .creator a:hover {
+      text-decoration: underline;
+    }
+
+    /* ---------- Parceiros / patrocínio (logos) ---------- */
+    .sponsors {
+      margin-top: var(--sp-lg);
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-lg);
+    }
+
+    .sponsors__group h3 {
+      font-size: 0.8125rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      font-family: var(--font-body);
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: var(--sp-md);
+    }
+
+    .logo-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: var(--sp-md);
+    }
+
+    .logo-row img {
+      height: 48px;
+      width: auto;
+      max-width: 140px;
+      object-fit: contain;
+      background: var(--surface-0);
+      border: 1px solid var(--line-soft);
+      border-radius: var(--r-md);
+      padding: 14px 20px;
+      box-sizing: content-box;
+      transition: transform var(--dur-state) var(--ease-quart);
+    }
+
+    .logo-row img:hover {
+      transform: scale(1.04);
+    }
+
+    .logo-row--lg img {
+      height: 58px;
+    }
+
+    /* ---------- Hospedagem / estacionamento ---------- */
+    .stay-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: var(--sp-md);
+      margin-top: var(--sp-lg);
+    }
+
+    .stay-card {
+      padding: 28px;
+      border-radius: var(--r-lg);
+      background: var(--fill-soft);
+      border: 1px solid var(--line-soft);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .stay-card h3 {
+      font-size: 1.2rem;
+    }
+
+    .stay-card p {
+      color: var(--ink-soft);
+      font-size: 0.95rem;
+      flex: 1;
+    }
+
+    .stay-card a {
+      align-self: flex-start;
+      margin-top: 8px;
+    }
+
+    /* ---------- Footer ---------- */
+    .footer {
+      background: var(--surface-2);
+      border-top: 1px solid var(--line-soft);
+      padding-block: var(--sp-lg);
+    }
+
+    .footer__grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--sp-lg);
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .footer__brand img {
+      height: 56px;
+      margin-bottom: var(--sp-sm);
+    }
+
+    .footer__soc {
+      display: flex;
+      gap: 12px;
+      margin-top: var(--sp-sm);
+    }
+
+    .footer__soc a {
+      width: 42px;
+      height: 42px;
+      border-radius: var(--r-pill);
+      background: var(--fill-mid);
+      border: 1px solid var(--line-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all var(--dur-state) var(--ease-quart);
+    }
+
+    .footer__soc a:hover {
+      background: var(--action);
+      border-color: transparent;
+    }
+
+    .footer__soc svg {
+      width: 20px;
+      height: 20px;
+      fill: var(--ink-strong);
+    }
+
+    .footer__soc a:hover svg {
+      fill: var(--foam-white);
+    }
+
+    .footer__col h4 {
+      font-size: 0.8125rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: 12px;
+      font-family: var(--font-body);
+      font-weight: 700;
+    }
+
+    .footer__col a {
+      display: block;
+      color: var(--ink-soft);
+      text-decoration: none;
+      padding: 5px 0;
+    }
+
+    .footer__col a:hover {
+      color: var(--action);
+    }
+
+    .footer__legal {
+      margin-top: var(--sp-lg);
+      padding-top: var(--sp-md);
+      border-top: 1px solid var(--line-soft);
+      color: var(--ink-faint);
+      font-size: 0.85rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 24px;
+      justify-content: space-between;
+    }
+
+    /* WhatsApp float */
+    .wa-float {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: var(--z-nav);
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: #25d366;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      transition: transform var(--dur-state) var(--ease-quart);
+    }
+
+    .wa-float:hover {
+      transform: scale(1.08);
+    }
+
+    .wa-float svg {
+      width: 32px;
+      height: 32px;
+      fill: #fff;
+    }
+
+    /* ---------- Reveal (enhance already-visible) ---------- */
+    .reveal {
+      opacity: 1;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .js-reveal .reveal {
+        opacity: 0;
+        transform: translateY(24px);
+        transition: opacity var(--dur-hero) var(--ease-expo), transform var(--dur-hero) var(--ease-expo);
+      }
+
+      .js-reveal .reveal.is-in {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    /* ---------- Responsivo ---------- */
+    @media (max-width: 900px) {
+      .story {
+        grid-template-columns: 1fr;
+        gap: var(--sp-lg);
+      }
+
+      .story__media {
+        aspect-ratio: 16/10;
+      }
+
+      .incl {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .nav__links {
+        display: none;
+      }
+
+      .nav__right .btn--primary {
+        display: none;
+      }
+
+      .nav__toggle {
+        display: inline-flex;
+      }
+
+      .hero {
+        min-height: 92svh;
+      }
+    }
+
+    @media (min-width: 721px) {
+      .drawer {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Pular para o conteúdo</a>
+
+  <!-- NAV -->
+  <header class="nav" id="nav" data-scrolled="false">
+    <a class="nav__brand" href="#top" aria-label="Kriativos On Board — início">
+      <img src="kriativos-on-board-logo-hero.png" alt="Kriativos On Board" width="2930" height="1796">
+    </a>
+    <nav class="nav__links" aria-label="Navegação principal">
+      <a href="#evento">O evento</a>
+      <a href="#navio">O navio</a>
+      <a href="#incluso">O que inclui</a>
+      <a href="#informacoes">Informações</a>
+      <a href="#valores">Valores</a>
+      <a href="#depoimentos">Depoimentos</a>
+      <a href="#faq">Dúvidas</a>
+    </nav>
+    <div class="nav__right">
+      <a class="btn btn--primary" href="#reserve">Garantir vaga</a>
+      <button class="nav__toggle" id="navToggle" aria-label="Abrir menu" aria-expanded="false" aria-controls="drawer">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round">
+          <path d="M3 6h18M3 12h18M3 18h18" />
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- DRAWER MOBILE -->
+  <div class="drawer" id="drawer" data-open="false" aria-hidden="true">
+    <div class="drawer__head">
+      <span class="nav__brand"><img
+          src="images/2023/05/KRIATIVOS_ON_BOARD_2024_LOGOLOGO-SIMPLES-2-e1684891796710-300x192.png"
+          alt="Kriativos On Board" width="300" height="192"></span>
+      <button class="drawer__close" id="drawerClose" aria-label="Fechar menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round">
+          <path d="M6 6l12 12M18 6L6 18" />
+        </svg>
+      </button>
+    </div>
+    <nav aria-label="Navegação mobile">
+      <a href="#evento">O evento</a>
+      <a href="#navio">O navio</a>
+      <a href="#incluso">O que inclui</a>
+      <a href="#informacoes">Informações</a>
+      <a href="#valores">Valores</a>
+      <a href="#depoimentos">Depoimentos</a>
+      <a href="#faq">Dúvidas</a>
+    </nav>
+    <a class="btn btn--primary btn--lg" href="#reserve">Garantir minha vaga</a>
+  </div>
+
+  <span id="top"></span>
+  <main id="main">
+
+    <!-- HERO -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero__bg" id="heroBg">
+        <video class="hero__video" id="heroDive" muted playsinline preload="auto"
+          poster="images/2024/05/KRIATIVOS-2024_0573.jpg" aria-hidden="true">
+          <source src="dive.mp4" type="video/mp4">
+        </video>
+        <video class="hero__video" id="heroLoop" muted playsinline loop preload="auto" aria-hidden="true">
+          <source src="loop.mp4" type="video/mp4">
+        </video>
+        <canvas class="hero__canvas" id="heroCanvas" width="1280" height="720" aria-hidden="true"></canvas>
+        <img class="hero__fallback" src="hero-frames/f001.webp"
+          alt="Jogadores reunidos em mesas de board games a bordo do cruzeiro Kriativos On Board" width="1280"
+          height="720">
+      </div>
+      <div class="container hero__inner">
+        <img class="hero__logo" src="kriativos-on-board-logo-hero_4edicao.png" alt="Kriativos On Board — 4ª edição"
+          width="842" height="596">
+        <div class="hero__content">
+          <h1 id="hero-title">O maior cruzeiro de <span class="accent">jogos de tabuleiro</span> do Brasil</h1>
+          <p class="hero__sub">Quatro dias de jogatina sem fim em alto-mar, a bordo do MSC Música. Torneios, RPG, festas
+            temáticas e a comunidade de board games reunida onde ninguém precisa ir embora.</p>
+          <div class="hero__meta">
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                stroke-linejoin="round" aria-hidden="true">
+                <rect x="3" y="4" width="18" height="17" rx="2" />
+                <path d="M3 9h18M8 2v4M16 2v4" />
+              </svg>20 a 23 de novembro de 2026</span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                stroke-linejoin="round" aria-hidden="true">
+                <path d="M3 17s1.5-1 4-1 3.5 2 6 2 4.5-2 6-2 2 1 2 1" />
+                <path d="M5 14V6l6-2 8 3v7" />
+                <path d="M11 4v10" />
+              </svg>MSC Música</span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="9" />
+                <path d="M15.5 8.5l-2 5-5 2 2-5z" />
+              </svg>Santos &#8594; Búzios</span>
+          </div>
+          <div class="countdown" id="countdown" aria-label="Contagem regressiva para o embarque">
+            <div class="count"><span class="count__num" data-count="days">--</span><span
+                class="count__label">Dias</span>
+            </div>
+            <div class="count"><span class="count__num" data-count="hours">--</span><span
+                class="count__label">Horas</span></div>
+            <div class="count"><span class="count__num" data-count="minutes">--</span><span
+                class="count__label">Min</span></div>
+          </div>
+          <div class="hero__cta">
+            <a class="btn btn--primary btn--lg" href="#reserve">Garantir minha vaga</a>
+            <a class="btn btn--ghost btn--lg" href="#navio">Conhecer o navio</a>
+          </div>
+        </div>
+      </div>
+      <div class="hero__scroll" aria-hidden="true">Role<span></span></div>
+    </section>
+
+    <!-- EVENTO / HISTÓRIA -->
+    <section class="section section--from-hero" id="evento" aria-labelledby="evento-title">
+      <div class="container story">
+        <div class="reveal">
+          <span class="eyebrow">Bem-vindo a bordo</span>
+          <h2 id="evento-title">Quatro dias, um navio inteiro, a sua turma de jogo</h2>
+          <p class="lead" style="margin-top:var(--sp-md)">O Kriativos On Board é o primeiro cruzeiro de jogos de
+            tabuleiro do Brasil, criado pela Nerd Kriativa, e já se consolidou como um dos eventos mais únicos do
+            cenário nacional de board games, unindo diversão, amizade e jogatina em alto-mar.</p>
+          <div class="timeline">
+            <div class="tl"><span class="tl__year">2023</span><span class="tl__body"><strong>Costa
+                  Firenze</strong><span>A primeira aventura, com centenas de jogadores e a presença do designer
+                  internacional Vital Lacerda.</span></span></div>
+            <div class="tl"><span class="tl__year">2024</span><span class="tl__body"><strong>Costa
+                  Favolosa</strong><span>Cresceu com RPG, pintura de miniaturas, festas temáticas e os designers David
+                  Turczi e Fel Barros.</span></span></div>
+            <div class="tl"><span class="tl__year">2025</span><span class="tl__body"><strong>Costa
+                  Diadema</strong><span>Cinco dias de imersão total: mais atividades, mais integração, experiências
+                  ainda mais marcantes.</span></span></div>
+            <div class="tl"><span class="tl__year">2026</span><span class="tl__body"><strong>MSC
+                  Música</strong><span>Agora, mais um capítulo dessa história. Seja Kriativo. Embarque nessa
+                  aventura.</span></span></div>
+          </div>
+        </div>
+        <figure class="story__media reveal">
+          <img src="images/2024/05/KRIATIVOS-2024_0341.jpg"
+            alt="Mesa de jogo cheia durante a edição 2024 do Kriativos On Board" loading="lazy" width="900"
+            height="1125">
+        </figure>
+      </div>
+    </section>
+
+    <!-- NAVIO -->
+    <section class="section section--deepest" id="navio" aria-labelledby="navio-title">
+      <div class="container">
+        <div class="section__head reveal">
+          <h2 id="navio-title">Um navio de 13 andares como seu salão de jogos</h2>
+          <p class="lead">Durante o dia e a noite, o MSC Música tem música ao vivo, espetáculos, bares e lounges,
+            cassino, spa e uma área inteira dedicada às crianças. E no meio de tudo isso, a sua sala de jogos aberta 24
+            horas.</p>
+        </div>
+        <div class="ship-grid reveal">
+          <div class="ship-show" id="shipShow" aria-roledescription="carrossel" aria-label="Fotos do MSC Música">
+            <figure class="ship-slide" data-active="true"><img src="images/2026/01/mu_suite_01.jpg-2.webp"
+                alt="Cabine confortável do MSC Música" fetchpriority="low">
+              <figcaption><b>Cabines aconchegantes</b><span>Seu refúgio entre uma partida e outra</span></figcaption>
+            </figure>
+            <figure class="ship-slide"><img src="images/2026/01/mu_public_area_crystal_lounge_02.jpg-scaled.webp"
+                alt="Crystal Lounge do MSC Música" loading="lazy">
+              <figcaption><b>Bares &amp; lounges</b><span>O setup ideal para o aperitivo antes da jogatina</span>
+              </figcaption>
+            </figure>
+            <figure class="ship-slide"><img src="images/2026/01/mupublicareafamilychildren03.jpg-scaled.webp"
+                alt="Área para crianças no MSC Música" loading="lazy">
+              <figcaption><b>Espaço kids</b><span>Uma área inteira dedicada aos pequenos Kriativos</span></figcaption>
+            </figure>
+            <figure class="ship-slide"><img src="images/2026/01/mu_public_area_life_on_board_01.jpg-scaled.webp"
+                alt="Área de convivência a bordo do MSC Música" loading="lazy">
+              <figcaption><b>Vida a bordo</b><span>Música ao vivo, espetáculos, cassino e muito mais</span></figcaption>
+            </figure>
+            <figure class="ship-slide"><img src="images/2026/01/mu_oceanview_03.jpg.webp"
+                alt="Vista para o oceano a partir do MSC Música" loading="lazy">
+              <figcaption><b>Vista para o mar</b><span>O melhor cenário para a sua próxima jogada</span></figcaption>
+            </figure>
+            <button class="ship-show__btn ship-show__prev" id="shipPrev" aria-label="Foto anterior">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M15 18l-6-6 6-6" />
+              </svg>
+            </button>
+            <button class="ship-show__btn ship-show__next" id="shipNext" aria-label="Próxima foto">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M9 18l6-6-6-6" />
+              </svg>
+            </button>
+            <div class="ship-show__dots" id="shipDots" role="tablist" aria-label="Selecionar foto"></div>
+          </div>
+        </div>
+        <div class="stat-row reveal">
+          <div class="stat"><b>350+</b><span>jogos a bordo na última edição</span></div>
+          <div class="stat"><b>24h</b><span>de sala de jogos exclusiva</span></div>
+          <div class="stat"><b>13</b><span>andares de navio pra explorar</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- INCLUSO -->
+    <section class="section section--deep section--dark board-motif" id="incluso" aria-labelledby="incluso-title">
+      <div class="container">
+        <div class="section__head reveal">
+          <h2 id="incluso-title">O que já está incluso</h2>
+          <p class="lead">Sua cabine, todas as refeições e a estrutura completa do navio. A jogatina é por nossa conta:
+            literalmente 24 horas por dia.</p>
+        </div>
+        <div class="incl reveal">
+          <div class="incl__yes">
+            <h3>Incluso no pacote</h3>
+            <ul>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 6L9 17l-5-5" />
+                </svg><span>Cabine padrão conforme a categoria escolhida</span></li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 6L9 17l-5-5" />
+                </svg><span>Pensão completa: café, almoço e jantar diários</span></li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 6L9 17l-5-5" />
+                </svg><span>Sala de jogos exclusiva aberta 24h + 350+ jogos</span></li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 6L9 17l-5-5" />
+                </svg><span>Torneios, sorteios, RPG e festas temáticas</span></li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 6L9 17l-5-5" />
+                </svg><span>Espetáculos, piscinas, academia e entretenimento a bordo</span></li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 6L9 17l-5-5" />
+                </svg><span>Recreação para crianças e adolescentes</span></li>
+            </ul>
+          </div>
+          <div class="incl__no">
+            <h3>Não incluso</h3>
+            <ul>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 6L6 18M6 6l12 12" />
+                </svg><span>Passagens aéreas e traslados até o porto</span></li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 6L6 18M6 6l12 12" />
+                </svg><span>Bebidas (pacotes opcionais à parte), excursões em terra</span></li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 6L6 18M6 6l12 12" />
+                </svg><span>Seguro-viagem, serviços pessoais e despesas de bordo</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- INFORMAÇÕES (TABS) -->
+    <section class="section section--navy" id="informacoes" aria-labelledby="info-title">
+      <div class="container">
+        <div class="section__head reveal">
+          <h2 id="info-title">Informações do cruzeiro</h2>
+        </div>
+        <div class="reveal">
+          <div class="tabs__list" role="tablist" aria-label="Informações do cruzeiro">
+            <button class="tabs__tab" role="tab" id="tab-itinerario" aria-controls="panel-itinerario"
+              aria-selected="true">Itinerário</button>
+            <button class="tabs__tab" role="tab" id="tab-navio" aria-controls="panel-navio" aria-selected="false"
+              tabindex="-1">Dados do navio</button>
+            <button class="tabs__tab" role="tab" id="tab-bebidas" aria-controls="panel-bebidas" aria-selected="false"
+              tabindex="-1">Pacotes de bebidas</button>
+            <button class="tabs__tab" role="tab" id="tab-seguro" aria-controls="panel-seguro" aria-selected="false"
+              tabindex="-1">Seguro viagem</button>
+          </div>
+
+          <div class="tabs__panel" role="tabpanel" id="panel-itinerario" aria-labelledby="tab-itinerario"
+            data-active="true">
+            <h3>Roteiro: Santos → Búzios → Santos</h3>
+            <ul>
+              <li><strong>20/11 (sexta):</strong> Embarque em Santos-SP, das 9h às 15h</li>
+              <li><strong>21/11 (sábado):</strong> Navegação: jogatina o dia inteiro</li>
+              <li><strong>22/11 (domingo):</strong> Búzios-RJ</li>
+              <li><strong>23/11 (segunda):</strong> Retorno e desembarque em Santos, a partir das 7h</li>
+            </ul>
+            <p class="price-note">*Itinerário sujeito a alterações.</p>
+          </div>
+
+          <div class="tabs__panel" role="tabpanel" id="panel-navio" aria-labelledby="tab-navio" data-active="false"
+            hidden>
+            <h3>MSC Música</h3>
+            <ul class="data-list">
+              <li><b>Cabines</b>1.275 (17 acessíveis / PNE)</li>
+              <li><b>Piscinas & hidro</b>3 piscinas · 4 hidromassagens</li>
+              <li><b>Restaurantes</b>Il Giardino, Oleandro, Belle Époque, Kaito Sushi Bar</li>
+              <li><b>Bares</b>10 (Crystal Lounge, Havana Club e mais)</li>
+              <li><b>Teatro</b>La Scala</li>
+            </ul>
+          </div>
+
+          <div class="tabs__panel" role="tabpanel" id="panel-bebidas" aria-labelledby="tab-bebidas" data-active="false"
+            hidden>
+            <h3>Pacotes de bebidas (opcionais)</h3>
+            <p class="lead" style="margin-bottom:var(--sp-md)">Com 40% de desconto já aplicado. Todos da mesma cabine
+              precisam ter o mesmo pacote.</p>
+            <ul class="data-list">
+              <li><b>Não Alcoólico</b>12x de R$ 34,65</li>
+              <li><b>Easy</b>12x de R$ 47,10</li>
+              <li><b>Premium</b>12x de R$ 79,65</li>
+            </ul>
+            <p class="price-note">*Valores sujeitos a alterações. Consulte a agência parceira Royal Trip.</p>
+          </div>
+
+          <div class="tabs__panel" role="tabpanel" id="panel-seguro" aria-labelledby="tab-seguro" data-active="false"
+            hidden>
+            <h3>Seguro viagem</h3>
+            <p class="lead">Opcional, mas recomendado para evitar imprevistos com atendimento médico. Cobertura de até
+              USD 5.000.</p>
+            <ul class="data-list" style="margin-top:var(--sp-md)">
+              <li><b>A partir de</b>12x de R$ 9,33 por pessoa</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VALORES -->
+    <section class="section section--abyss section--dark" id="valores" aria-labelledby="valores-title">
+      <div class="container">
+        <div class="section__head reveal">
+          <span class="eyebrow eyebrow--urgent">2º lote · valores por pessoa</span>
+          <h2 id="valores-title">Escolha sua cabine e embarque</h2>
+          <p class="lead">Entrada + 12x no cartão. As vagas do 2º lote estão abertas por tempo limitado.</p>
+        </div>
+
+        <div class="price-grid reveal">
+          <article class="price-card price-card--featured">
+            <span class="price-card__flag">Melhor preço</span>
+            <div class="price-card__head">
+              <span class="price-card__cabin">Cabine interna</span>
+              <span class="price-card__type">A opção mais econômica</span>
+            </div>
+            <div class="price-card__body">
+              <span class="price-card__from">a partir de</span>
+              <span class="price-card__value"><span class="cur">12x R$</span><span class="amount">215</span><span
+                  class="per">/pessoa</span></span>
+              <span class="price-card__entry">Entrada de R$ 200,00</span>
+              <div class="price-card__rule"></div>
+              <ul class="price-card__list">
+                <li><span>Cabine dupla</span><span>12x R$ 215</span></li>
+                <li class="is-sold"><span>Cabine tripla</span><span>Esgotado</span></li>
+                <li class="is-sold"><span>Cabine quádrupla</span><span>Esgotado</span></li>
+              </ul>
+              <button type="button" class="price-card__details" data-cabin="interna" aria-haspopup="dialog">Ver detalhes</button>
+              <a class="btn btn--primary"
+                href="https://api.whatsapp.com/send?phone=5513981580498&amp;text=Ol%C3%A1%2C%20Royal%20Trip!%20Quero%20reservar%20uma%20Cabine%20Interna%20(2%C2%BA%20lote)%20no%20Kriativos%20On%20Board%202026."
+                target="_blank" rel="noopener">Reservar agora</a>
+            </div>
+          </article>
+
+          <article class="price-card">
+            <div class="price-card__head">
+              <span class="price-card__cabin">Cabine janela</span>
+              <span class="price-card__type">Luz natural a bordo</span>
+            </div>
+            <div class="price-card__body">
+              <span class="price-card__from">a partir de</span>
+              <span class="price-card__value"><span class="cur">12x R$</span><span class="amount">226</span><span
+                  class="per">/pessoa</span></span>
+              <span class="price-card__entry">Entrada de R$ 200,00</span>
+              <div class="price-card__rule"></div>
+              <ul class="price-card__list">
+                <li><span>Cabine dupla</span><span>12x R$ 226</span></li>
+                <li class="is-sold"><span>Cabine tripla</span><span>Esgotado</span></li>
+                <li class="is-sold"><span>Cabine quádrupla</span><span>Esgotado</span></li>
+              </ul>
+              <button type="button" class="price-card__details" data-cabin="janela" aria-haspopup="dialog">Ver detalhes</button>
+              <a class="btn btn--primary"
+                href="https://api.whatsapp.com/send?phone=5513981580498&amp;text=Ol%C3%A1%2C%20Royal%20Trip!%20Quero%20reservar%20uma%20Cabine%20Janela%20(2%C2%BA%20lote)%20no%20Kriativos%20On%20Board%202026."
+                target="_blank" rel="noopener">Reservar agora</a>
+            </div>
+          </article>
+
+          <article class="price-card">
+            <div class="price-card__head">
+              <span class="price-card__cabin">Cabine varanda</span>
+              <span class="price-card__type">Sua sacada para o mar</span>
+            </div>
+            <div class="price-card__body">
+              <span class="price-card__from">a partir de</span>
+              <span class="price-card__value"><span class="cur">12x R$</span><span class="amount">247</span><span
+                  class="per">/pessoa</span></span>
+              <span class="price-card__entry">Entrada de R$ 200,00</span>
+              <div class="price-card__rule"></div>
+              <ul class="price-card__list">
+                <li><span>Cabine dupla</span><span>12x R$ 247</span></li>
+                <li><span>Cabine tripla</span><span>12x R$ 271</span></li>
+                <li class="is-sold"><span>Cabine quádrupla</span><span>Esgotado</span></li>
+              </ul>
+              <button type="button" class="price-card__details" data-cabin="varanda" aria-haspopup="dialog">Ver detalhes</button>
+              <a class="btn btn--primary"
+                href="https://api.whatsapp.com/send?phone=5513981580498&amp;text=Ol%C3%A1%2C%20Royal%20Trip!%20Quero%20reservar%20uma%20Cabine%20Varanda%20(2%C2%BA%20lote)%20no%20Kriativos%20On%20Board%202026."
+                target="_blank" rel="noopener">Reservar agora</a>
+            </div>
+          </article>
+        </div>
+        <p class="price-note">*Valores por pessoa, sujeitos a alteração. Para crianças, consulte a organização.</p>
+      </div>
+    </section>
+
+    <!-- MODAL: detalhes da cabine -->
+    <dialog class="cabin-modal" id="cabinModal" aria-labelledby="cabinModalTitle">
+      <div class="cabin-modal__inner">
+        <button class="cabin-modal__close" id="cabinModalClose" type="button" aria-label="Fechar detalhes">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M6 6l12 12M18 6L6 18" />
+          </svg>
+        </button>
+        <span class="cabin-modal__eyebrow" id="cabinModalCabin"></span>
+        <h3 class="cabin-modal__title" id="cabinModalTitle"></h3>
+        <p class="cabin-modal__lead" id="cabinModalLead"></p>
+        <div class="cabin-modal__body" id="cabinModalBody"></div>
+        <p class="cabin-modal__note" id="cabinModalNote"></p>
+        <a class="btn btn--primary cabin-modal__cta" id="cabinModalCta" href="#" target="_blank" rel="noopener">Reservar agora</a>
+      </div>
+    </dialog>
+
+    <!-- DEPOIMENTOS -->
+    <section class="section section--navy section--dark section--center" id="depoimentos" aria-labelledby="dep-title">
+      <div class="container">
+        <div class="section__head reveal">
+          <h2 id="dep-title">Quem embarca uma vez, volta no ano seguinte</h2>
+          <p class="lead" style="margin-inline:auto">Designers internacionais, creators e centenas de jogadores já
+            viveram o Kriativos On Board.</p>
+        </div>
+        <div class="quotes reveal">
+          <blockquote class="quote">
+            <p>"Foi uma experiência única. O calor dos Kriativos on board, os amigos que fiz, a alegria de fazer um
+              cruzeiro onde podemos jogar e conviver é inesquecível."</p>
+            <footer>Vital Lacerda <span>Designer internacional · @vitallacerda</span></footer>
+          </blockquote>
+          <blockquote class="quote">
+            <p>"Epitome of friendliness and fun, wrapped in an awesome boat! 🙂 Game on!!!"</p>
+            <footer>David Turczi <span>Designer internacional · @david_turczi</span></footer>
+          </blockquote>
+          <blockquote class="quote">
+            <p>"A equipe fez um trabalho excepcional. Uma das melhores coisas do nosso hobby são as amizades que fazemos
+              ao jogar, e aqui isso acontece o tempo todo."</p>
+            <footer>Renato Braga <span>Boardgames Zona Oeste · @bgzosp</span></footer>
+          </blockquote>
+          <blockquote class="quote">
+            <p>"Nunca tinha feito um cruzeiro. Aproveitei o navio, a estrutura e ainda compartilhei tudo com pessoas que
+              amam o mesmo hobby. Jogar 24h por dia foi surreal de bom!"</p>
+            <footer>Day e Fran <span>@qeojogo</span></footer>
+          </blockquote>
+        </div>
+
+        <div class="section__head reveal" style="margin-top:var(--sp-xl)">
+          <h2 style="font-size:clamp(1.6rem,3.5vw,2.4rem)">Melhores momentos do KOB 2024</h2>
+        </div>
+        <div class="slider reveal">
+          <button class="slider__btn slider__prev" id="galPrev" aria-label="Fotos anteriores">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+          </button>
+          <div class="gallery" id="gallery">
+            <a href="images/2024/05/KRIATIVOS-2024_0004.jpg"
+              aria-label="Abrir na galeria: Jogadores na edição 2024"><img src="images/2024/05/KRIATIVOS-2024_0004.jpg"
+                alt="Jogadores na edição 2024" loading="lazy"></a>
+            <a href="images/2024/05/KRIATIVOS-2024_0190-1.jpg"
+              aria-label="Abrir na galeria: Mesa de jogo na edição 2024"><img
+                src="images/2024/05/KRIATIVOS-2024_0190-1.jpg" alt="Mesa de jogo na edição 2024" loading="lazy"></a>
+            <a href="images/2024/05/KRIATIVOS-2024_0386.jpg"
+              aria-label="Abrir na galeria: Premiação na edição 2024"><img src="images/2024/05/KRIATIVOS-2024_0386.jpg"
+                alt="Premiação na edição 2024" loading="lazy"></a>
+            <a href="images/2024/05/KRIATIVOS-2024_0595.jpg"
+              aria-label="Abrir na galeria: Confraternização na edição 2024"><img
+                src="images/2024/05/KRIATIVOS-2024_0595.jpg" alt="Confraternização na edição 2024" loading="lazy"></a>
+            <a href="images/2024/05/KRIATIVOS-2024_0733.jpg"
+              aria-label="Abrir na galeria: Jogatina em grupo na edição 2024"><img
+                src="images/2024/05/KRIATIVOS-2024_0733.jpg" alt="Jogatina em grupo na edição 2024" loading="lazy"></a>
+            <a href="images/2024/05/KRIATIVOS-2024_0977.jpg" aria-label="Abrir na galeria: Sorteios na edição 2024"><img
+                src="images/2024/05/KRIATIVOS-2024_0977.jpg" alt="Sorteios na edição 2024" loading="lazy"></a>
+            <a href="images/2024/05/KRIATIVOS-2024_0341.jpg"
+              aria-label="Abrir na galeria: Mesa cheia na edição 2024"><img src="images/2024/05/KRIATIVOS-2024_0341.jpg"
+                alt="Mesa cheia na edição 2024" loading="lazy"></a>
+            <a href="images/2024/05/KRIATIVOS-2024_0679.jpg"
+              aria-label="Abrir na galeria: Jogadores reunidos na edição 2024"><img
+                src="images/2024/05/KRIATIVOS-2024_0679.jpg" alt="Jogadores reunidos na edição 2024" loading="lazy"></a>
+            <a href="images/2024/05/KRIATIVOS-2024_0781.jpg"
+              aria-label="Abrir na galeria: Momento de jogo na edição 2024"><img
+                src="images/2024/05/KRIATIVOS-2024_0781.jpg" alt="Momento de jogo na edição 2024" loading="lazy"></a>
+            <a href="images/2024/05/KRIATIVOS-2024_1010.jpg" aria-label="Abrir na galeria: Grupo na edição 2024"><img
+                src="images/2024/05/KRIATIVOS-2024_1010.jpg" alt="Grupo na edição 2024" loading="lazy"></a>
+          </div>
+          <button class="slider__btn slider__next" id="galNext" aria-label="Próximas fotos">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M9 18l6-6-6-6" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- LIGHTBOX (galeria navegável) -->
+    <dialog class="lightbox" id="lightbox" aria-label="Galeria de fotos">
+      <div class="lightbox__inner">
+        <button class="lightbox__close" id="lbClose" aria-label="Fechar galeria" autofocus>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M6 6l12 12M18 6L6 18" />
+          </svg>
+        </button>
+        <button class="lightbox__btn lightbox__prev" id="lbPrev" aria-label="Foto anterior">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+        </button>
+        <figure class="lightbox__figure">
+          <img class="lightbox__img" id="lbImg" src="images/2024/05/KRIATIVOS-2024_0004.jpg" alt="">
+          <figcaption class="lightbox__cap"><span id="lbCap"></span><b id="lbCounter"></b></figcaption>
+        </figure>
+        <button class="lightbox__btn lightbox__next" id="lbNext" aria-label="Próxima foto">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M9 18l6-6-6-6" />
+          </svg>
+        </button>
+      </div>
+    </dialog>
+
+    <!-- PARTICIPAÇÕES ESPECIAIS -->
+    <section class="section section--navy section--dark section--center" id="participacoes"
+      aria-labelledby="part-title">
+      <div class="container">
+        <div class="section__head reveal" style="margin-inline:auto;text-align:center">
+          <h2 id="part-title" style="font-size:clamp(1.8rem,4vw,2.8rem)">Participações especiais confirmadas</h2>
+          <p class="lead" style="margin-inline:auto">Creators e comunidades de board games que já embarcam nessa com a
+            gente.</p>
+        </div>
+        <div class="creators reveal">
+          <figure class="creator"><img src="images/2023/07/pena-e1688949473888-370x315.jpg"
+              alt="Pena, do canal Jogando Offline" loading="lazy"><b>Pena</b><a
+              href="https://www.instagram.com/penadoxo" target="_blank" rel="noopener">@penadoxo</a></figure>
+          <figure class="creator"><img src="images/2025/03/seumovimento-370x315.jpeg"
+              alt="Bárbara Côrtes, do Seu Movimento" loading="lazy"><b>Bárbara Côrtes</b><a
+              href="https://www.instagram.com/seumovimento" target="_blank" rel="noopener">@seumovimento</a></figure>
+          <figure class="creator"><img src="images/2025/03/botanamesabg-370x315.jpeg"
+              alt="Paulo Rezende, do Bota na Mesa" loading="lazy"><b>Paulo Rezende</b><a
+              href="https://www.instagram.com/botanamesabg" target="_blank" rel="noopener">@botanamesabg</a></figure>
+          <figure class="creator"><img src="images/2025/03/turistaboardgame-370x315.jpeg"
+              alt="Gui e Naty, do Turista Board Game" loading="lazy"><b>Gui e Naty</b><a
+              href="https://www.instagram.com/turistaboardgame" target="_blank" rel="noopener">@turistaboardgame</a>
+          </figure>
+          <figure class="creator"><img src="images/2025/03/jamilton-370x315.jpeg" alt="Jamilton, do BG Barueri"
+              loading="lazy"><b>Jamilton</b><a href="https://www.instagram.com/bgbarueri" target="_blank"
+              rel="noopener">@bgbarueri</a></figure>
+          <figure class="creator"><img src="images/2025/03/ludosportsaopaulo-370x315.jpeg"
+              alt="Luis, do LudoSport São Paulo" loading="lazy"><b>Luis</b><a
+              href="https://www.instagram.com/ludosport.saopaulo" target="_blank" rel="noopener">@ludosport.saopaulo</a>
+          </figure>
+        </div>
+        <p class="lead" style="margin:var(--sp-md) auto 0;text-align:center">E também <a
+            href="https://www.instagram.com/geekinformado" target="_blank" rel="noopener"
+            style="color:var(--action-ink)">@geekinformado</a>, <a href="https://www.instagram.com/nickbgg"
+            target="_blank" rel="noopener" style="color:var(--action-ink)">@nickbgg</a>, <a
+            href="https://www.instagram.com/universoludicobg" target="_blank" rel="noopener"
+            style="color:var(--action-ink)">@universoludicobg</a> e <a href="https://www.instagram.com/bgzosp"
+            target="_blank" rel="noopener" style="color:var(--action-ink)">@bgzosp</a>.</p>
+      </div>
+    </section>
+
+    <!-- HOSPEDAGEM E ESTACIONAMENTO -->
+    <section class="section section--abyss" id="hospedagem" aria-labelledby="stay-title">
+      <div class="container">
+        <div class="section__head reveal">
+          <h2 id="stay-title" style="font-size:clamp(1.8rem,4vw,2.8rem)">Chegou antes? Onde ficar e estacionar</h2>
+          <p class="lead">O embarque é no Porto de Santos (Av. Conselheiro Rodrigues Alves, s/n). Se você vem de longe,
+            seguem opções para a véspera.</p>
+        </div>
+        <div class="stay-grid reveal">
+          <article class="stay-card">
+            <h3>Estacionamento Concais</h3>
+            <p>O terminal do Porto de Santos oferece estacionamento para passageiros. Reserve a vaga com antecedência
+              para evitar lotação.</p>
+            <a class="btn btn--ghost" href="https://www.concais.com.br/" target="_blank" rel="noopener">Saiba mais</a>
+          </article>
+          <article class="stay-card">
+            <h3>ibis Santos Gonzaga</h3>
+            <p>Hospedagem acolhedora virada para o mar, a cerca de 15 minutos de carro do porto.</p>
+            <a class="btn btn--ghost" href="https://all.accor.com/" target="_blank" rel="noopener">Reservar</a>
+          </article>
+          <article class="stay-card">
+            <h3>Novotel Santos</h3>
+            <p>Na Av. Dona Ana Costa, ao lado do Shopping Pátio Iporanga, a cerca de 17 minutos do porto.</p>
+            <a class="btn btn--ghost" href="https://all.accor.com/" target="_blank" rel="noopener">Reservar</a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section section--abyss" id="faq" aria-labelledby="faq-title">
+      <div class="container">
+        <div class="section__head section--center reveal" style="margin-inline:auto;text-align:center">
+          <h2 id="faq-title">Ainda com dúvidas?</h2>
+        </div>
+        <div class="faq reveal">
+          <p class="faq__group">Embarque, check-in e documentos</p>
+          <details>
+            <summary>Qual dia e horário do embarque?<span aria-hidden="true"></span></summary>
+            <div>O embarque será em 20 de novembro (sexta), liberado das 9h às 15h, no Porto de Santos. O desembarque é
+              em 23 de novembro (segunda), a partir das 7h da manhã.</div>
+          </details>
+          <details>
+            <summary>O que preciso ter no momento do embarque?</summary>
+            <div>10 dias antes do embarque, será liberado o link no aplicativo da MSC para orientar o check-in. Ao
+              finalizar, você recebe um QR Code para apresentar no embarque, junto com seu documento de identidade ou
+              CNH (físico).</div>
+          </details>
+          <details>
+            <summary>Quando posso realizar o check-in?</summary>
+            <div>10 dias antes do embarque faremos uma live para orientar todos sobre o check-in (avisaremos perto da
+              data). O responsável pela compra pode fazer o próprio check-in e o da família.</div>
+          </details>
+          <details>
+            <summary>Preciso estar vacinado para embarcar?</summary>
+            <div>Sim, é exigida a vacinação contra a Covid (duas doses). Quem não tiver deve apresentar teste de
+              antígeno com laudo, feito com 1 dia de antecedência.</div>
+          </details>
+          <details>
+            <summary>Como embarcar as malas e em que horário?</summary>
+            <div>O despacho de malas é a primeira coisa a fazer ao chegar no porto. Para quem vai de carro, o despacho
+              fica bem próximo ao estacionamento.</div>
+          </details>
+          <details>
+            <summary>Existe traslado até o porto?</summary>
+            <div>Ainda estamos verificando a disponibilidade de ônibus para os Kriativos desta edição. Em breve
+              informaremos.</div>
+          </details>
+          <details>
+            <summary>Como faço com o estacionamento?</summary>
+            <div>É necessário reservar a vaga com antecedência para evitar problemas de lotação. Os dados do
+              estacionamento da Concais e indicações de hotéis estão aqui no site, na seção Hospedagem.</div>
+          </details>
+          <details>
+            <summary>Quem é a agência Royal Trip?</summary>
+            <div>A Royal Trip é a agência de viagens parceira, com mais de 10 anos no mercado de viagens aéreas e
+              marítimas, além de eventos corporativos e casamentos em navios. CNPJ 16.957.402/0001-19.</div>
+          </details>
+          <details>
+            <summary>Qual será a rota do MSC Música?</summary>
+            <div>Saída de Santos-SP em 20/11 com destino a Búzios-RJ, retornando a Santos em 23/11.</div>
+          </details>
+
+          <p class="faq__group">A bordo e os jogos</p>
+          <details>
+            <summary>Teremos sala para jogar?</summary>
+            <div>Sim! Uma sala exclusiva 24 horas para o grupo. Não há reserva de mesa; a disponibilidade depende da
+              utilização dos Kriativos. No último evento tivemos 350+ jogos a bordo.</div>
+          </details>
+          <details>
+            <summary>Quais jogos estarão disponíveis?</summary>
+            <div>Os jogos ainda serão escolhidos e informados ao grupo pelo aplicativo. Você também pode adicionar os
+              seus próprios jogos a bordo. No último evento foram 350+ títulos.</div>
+          </details>
+          <details>
+            <summary>Posso levar meus jogos e protótipos?</summary>
+            <div>Sim! Você pode levar quantos jogos quiser, e protótipos também.</div>
+          </details>
+          <details>
+            <summary>Posso levar jogos para outras áreas do navio?</summary>
+            <div>Sim, para qualquer área exceto os restaurantes (as mesas são para refeições). O jogo fica sob sua
+              responsabilidade: ao retirá-lo da sala, deixe nome e número da cabine para conferência na devolução.</div>
+          </details>
+          <details>
+            <summary>Até que horas a sala de jogos fica disponível?</summary>
+            <div>Precisamos recolher as mesas e jogos na noite anterior ao desembarque. Vale levar um jogo na mala de
+              mão para jogar nas mesas do navio nesse último dia. O horário será informado a bordo.</div>
+          </details>
+          <details>
+            <summary>Existe treinamento no navio?</summary>
+            <div>Sim, é obrigatório o treinamento de segurança do navio, que também pode ser feito pelo aplicativo da
+              MSC.</div>
+          </details>
+
+          <p class="faq__group">Comida, bebida e cabine</p>
+          <details>
+            <summary>O que está incluso na minha reserva?</summary>
+            <div>Acomodação conforme a categoria escolhida e pensão completa (café, almoço e jantar), além de água, chá
+              e café nos restaurantes buffet, conforme disponibilidade.</div>
+          </details>
+          <details>
+            <summary>Tenho comida à vontade no navio?</summary>
+            <div>Sim. Os restaurantes principais (buffet) servem refeições diárias: café, almoço e jantar. Quem não
+              puder ir no horário do jantar servido pode comer nesses buffets.</div>
+          </details>
+          <details>
+            <summary>Como funciona o jantar no navio?</summary>
+            <div>O jantar é servido no horário agendado pela agência (informado perto do embarque). Todos têm direito a
+              entrada, prato principal e sobremesa. Bebidas podem ser solicitadas ao garçom se você tiver pacote ou
+              saldo no cartão da cabine.</div>
+          </details>
+          <details>
+            <summary>Sou obrigado a comprar pacote de bebidas?</summary>
+            <div>Não. Mas se alguém da cabine adquirir um pacote, os acompanhantes precisam ter o mesmo. Crianças de 4 a
+              17 anos: verificar o My Drinks Young com a agência. Pacotes podem ser contratados até 30 dias antes do
+              embarque.</div>
+          </details>
+          <details>
+            <summary>Quais são os tipos de pacote de bebidas para adultos?</summary>
+            <div>Não Alcoólico, Easy e Premium, com 40% de desconto já aplicado e opção de parcelamento. Podem sofrer
+              alterações até o momento da compra; confirme os disponíveis com a agência.</div>
+          </details>
+          <details>
+            <summary>Tenho frigobar na cabine com o pacote Premium?</summary>
+            <div>Sim, o MSC Música dispõe de frigobar nas cabines. A configuração e os equipamentos podem ser alterados
+              pelo navio sem aviso prévio.</div>
+          </details>
+          <details>
+            <summary>Preciso ir de roupa de gala para o jantar?</summary>
+            <div>Não. O ideal é uma roupa agradável. Indicamos esporte fino; bermudas e tênis são permitidos.</div>
+          </details>
+          <details>
+            <summary>Como abasteço dinheiro em dólar a bordo?</summary>
+            <div>Você pode carregar dólares no cartão da cabine com cartão de crédito (lembre de liberar a função
+              internacional) ou em notas nos totens do navio.</div>
+          </details>
+
+          <p class="faq__group">Seguro, saúde e regras</p>
+          <details>
+            <summary>É obrigatório fechar seguro viagem?</summary>
+            <div>Não é obrigatório, mas recomendamos para evitar problemas com atendimento médico. Consulte a agência
+              para valores e contratação individual. A seguradora cobre até USD 5.000.</div>
+          </details>
+          <details>
+            <summary>Uso remédio que precisa de refrigeração, como faço?</summary>
+            <div>É necessário solicitar à agência para providenciar a refrigeração junto ao navio, na sua cabine.</div>
+          </details>
+          <details>
+            <summary>O que não posso embarcar?</summary>
+            <div>Não é permitido drone, comida, bebida, ferro de passar, chapinha e secador de cabelo (as cabines já têm
+              secador). Comida para bebês é permitida, desde que lacrada.</div>
+          </details>
+          <details>
+            <summary>Qual festa teremos no navio?</summary>
+            <div>O principal evento é a Festa do Branco: leve uma peça branca (não é obrigatório). Também estamos
+              organizando uma festa à fantasia Kriativa; em breve mais detalhes.</div>
+          </details>
+        </div>
+        <p class="lead" style="text-align:center;margin-top:var(--sp-lg)">Continua com dúvidas? <a
+            href="https://api.whatsapp.com/send?phone=5513981580498&text=Ol%C3%A1%2C%20Royal%20Trip!%20Tenho%20uma%20d%C3%BAvida%20sobre%20o%20Kriativos%20On%20Board%202026."
+            target="_blank" rel="noopener" style="color:var(--action-ink);font-weight:600">Fale com um agente da Royal
+            Trip no WhatsApp.</a></p>
+      </div>
+    </section>
+
+    <!-- PARCEIROS E PATROCÍNIO -->
+    <section class="section section--navy section--dark section--center" id="parceiros" aria-labelledby="parc-title">
+      <div class="container">
+        <div class="section__head reveal" style="margin-inline:auto;text-align:center">
+          <h2 id="parc-title" style="font-size:clamp(1.6rem,3.5vw,2.4rem)">Quem faz o Kriativos On Board acontecer</h2>
+        </div>
+        <div class="sponsors reveal">
+          <div class="sponsors__group">
+            <h3>Patrocínio</h3>
+            <div class="logo-row logo-row--lg">
+              <img src="images/2023/09/logo-copag-loja1.png" alt="Copag" loading="lazy">
+              <img src="images/2024/08/logo_Ludens_Spirit2023_pos3.png" alt="Ludens Spirit" loading="lazy">
+              <img src="images/2023/12/NEVERLAND_FINAL3.png" alt="Neverland" loading="lazy">
+              <img src="images/2023/08/mosaico_logo.webp" alt="Mosaico" loading="lazy">
+              <img src="images/2023/12/logo_doff2.png" alt="Diversão Offline" loading="lazy">
+            </div>
+          </div>
+          <div class="sponsors__group">
+            <h3>Parceiros</h3>
+            <div class="logo-row">
+              <img src="images/2025/03/logo_meeplebr_003.png" alt="Meeple BR" loading="lazy">
+              <img src="images/2023/06/LUDOPEDIA_01.png" alt="Ludopedia" loading="lazy">
+              <img src="images/2023/07/LOGO_BGSPpng.png" alt="Board Games São Paulo" loading="lazy">
+              <img src="images/2024/09/logo_duplo-coleciona.png" alt="Duplo Coleciona" loading="lazy">
+              <img src="images/2024/10/nomad_logo.png" alt="Nomad" loading="lazy">
+              <img src="images/2024/02/GRANDPABECKS.webp" alt="Grandpa Beck's" loading="lazy">
+              <img src="images/2024/02/Logo_BUCANEIROS.png" alt="Bucaneiros" loading="lazy">
+              <img src="images/2024/01/Acessorios-BG-Logo-1.png" alt="Acessórios BG" loading="lazy">
+              <img src="images/2025/03/moedaseco.png" alt="Moeda Seco" loading="lazy">
+            </div>
+          </div>
+          <div class="sponsors__group">
+            <h3>Apoio & lojas parceiras</h3>
+            <div class="logo-row">
+              <img src="images/2024/02/LogoEncounter_preto_fundo_transparente.png" alt="Encounter" loading="lazy"> <img
+                src="images/2023/06/logo-ludus-01-e1717040022885.png" alt="Ludus" loading="lazy">
+              <img src="images/2024/02/Logo_expresso.png" alt="Expresso Board Games" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA FINAL -->
+    <section class="section section--gradient final-cta board-motif" id="reserve" aria-labelledby="reserve-title">
+      <div class="container reveal">
+        <span class="eyebrow eyebrow--urgent">2º lote · vagas limitadas</span>
+        <h2 id="reserve-title">Garanta seu lugar antes do 2º lote fechar</h2>
+        <p class="lead" style="margin-inline:auto">Fale agora com um agente da Royal Trip pelo WhatsApp e garanta sua
+          cabine antes que o 2º lote esgote.</p>
+        <a class="btn btn--primary btn--lg"
+          href="https://api.whatsapp.com/send?phone=5513981580498&text=Ol%C3%A1%2C%20Royal%20Trip!%20Estou%20navegando%20pelo%20site%20e%20gostaria%20de%20embarcar%20no%20Kriativos%20On%20Board%202026.%20Pode%20me%20dar%20mais%20detalhes%3F"
+          target="_blank" rel="noopener">
+          <svg class="btn__wa" viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.71.306 1.263.489 1.694.625.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413" />
+          </svg>
+          Falar no WhatsApp
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__grid">
+        <div class="footer__brand">
+          <img src="images/2023/05/KRIATIVOS_ON_BOARD_2024_LOGOLOGO-SIMPLES-2-e1684891796710-300x192.png"
+            alt="Kriativos On Board" width="300" height="192">
+          <p class="lead" style="max-width:34ch">O primeiro cruzeiro de jogos de tabuleiro do Brasil, criado pela Nerd
+            Kriativa.</p>
+          <div class="footer__soc">
+            <a href="https://www.instagram.com/nerdkriativa/" target="_blank" rel="noopener"
+              aria-label="Instagram da Nerd Kriativa"><svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M12 2.2c3.2 0 3.6 0 4.9.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s0 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58 0-4.85-.07c-1.17-.05-1.8-.25-2.23-.41a3.7 3.7 0 01-1.38-.9 3.7 3.7 0 01-.9-1.38c-.16-.42-.36-1.06-.41-2.23C2.2 15.58 2.2 15.2 2.2 12s0-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.42 2.2 8.8 2.2 12 2.2zm0 3.65A6.15 6.15 0 1018.15 12 6.15 6.15 0 0012 5.85zm0 10.15A4 4 0 1116 12a4 4 0 01-4 4zm6.4-10.4a1.44 1.44 0 11-1.44-1.44 1.44 1.44 0 011.44 1.44z" />
+              </svg></a>
+            <a href="https://www.facebook.com/nerdkriativa" target="_blank" rel="noopener"
+              aria-label="Facebook da Nerd Kriativa"><svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M22 12a10 10 0 10-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.89 3.78-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.78l-.44 2.89h-2.34v6.99A10 10 0 0022 12z" />
+              </svg></a>
+            <a href="https://www.youtube.com/c/NerdKriativa" target="_blank" rel="noopener"
+              aria-label="YouTube da Nerd Kriativa"><svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M23.5 6.2a3 3 0 00-2.11-2.12C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.39.53A3 3 0 00.5 6.2 31.3 31.3 0 000 12a31.3 31.3 0 00.5 5.8 3 3 0 002.11 2.12c1.89.53 9.39.53 9.39.53s7.5 0 9.39-.53a3 3 0 002.11-2.12A31.3 31.3 0 0024 12a31.3 31.3 0 00-.5-5.8zM9.6 15.6V8.4l6.2 3.6z" />
+              </svg></a>
+          </div>
+        </div>
+        <div class="footer__col">
+          <h4>Navegue</h4>
+          <a href="#evento">O evento</a>
+          <a href="#navio">O navio</a>
+          <a href="#incluso">O que inclui</a>
+          <a href="#valores">Valores</a>
+          <a href="#participacoes">Participações</a>
+          <a href="#hospedagem">Hospedagem</a>
+          <a href="#faq">Dúvidas</a>
+        </div>
+        <div class="footer__col">
+          <h4>Reservas</h4>
+          <a href="https://api.whatsapp.com/send?phone=5513981580498&text=Ol%C3%A1%2C%20Royal%20Trip!%20Gostaria%20de%20saber%20mais%20sobre%20o%20Kriativos%20On%20Board%202026."
+            target="_blank" rel="noopener">WhatsApp Royal Trip</a>
+          <a href="#valores">Ver valores</a>
+          <a href="#informacoes">Itinerário</a>
+        </div>
+      </div>
+      <div class="footer__legal">
+        <span>© 2026 Kriativos On Board. Todos os direitos reservados.</span>
+        <span>Agência parceira: Royal Trip · CNPJ 16.957.402/0001-19</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- WHATSAPP FLUTUANTE -->
+  <a class="wa-float"
+    href="https://api.whatsapp.com/send?phone=5513981580498&text=Ol%C3%A1%2C%20Royal%20Trip!%20Gostaria%20de%20saber%20mais%20sobre%20o%20Kriativos%20On%20Board%202026."
+    target="_blank" rel="noopener" aria-label="Falar no WhatsApp com a Royal Trip">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path
+        d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.71.306 1.263.489 1.694.625.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413" />
+    </svg>
+  </a>
+
+  <script>
+    document.documentElement.classList.add('js');
+    (function () {
+      'use strict';
+
+      // Nav: sombra ao rolar
+      var nav = document.getElementById('nav');
+      var onScroll = function () { nav.dataset.scrolled = window.scrollY > 20 ? 'true' : 'false'; };
+      onScroll();
+      window.addEventListener('scroll', onScroll, { passive: true });
+
+      // Drawer mobile
+      var drawer = document.getElementById('drawer');
+      var toggle = document.getElementById('navToggle');
+      var closeBtn = document.getElementById('drawerClose');
+      function openDrawer() { drawer.dataset.open = 'true'; drawer.setAttribute('aria-hidden', 'false'); toggle.setAttribute('aria-expanded', 'true'); document.body.style.overflow = 'hidden'; setInert(true); closeBtn.focus(); }
+      function closeDrawer() { drawer.dataset.open = 'false'; drawer.setAttribute('aria-hidden', 'true'); toggle.setAttribute('aria-expanded', 'false'); document.body.style.overflow = ''; setInert(false); toggle.focus(); }
+      function setInert(on) {
+        ['main', 'header.nav', 'footer'].forEach(function (sel) {
+          var el = document.querySelector(sel);
+          if (!el) return;
+          if (on) el.setAttribute('inert', ''); else el.removeAttribute('inert');
+        });
+      }
+      toggle.addEventListener('click', openDrawer);
+      closeBtn.addEventListener('click', closeDrawer);
+      drawer.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', closeDrawer); });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && drawer.dataset.open === 'true') closeDrawer(); });
+
+      // Tabs genéricas com roving tabindex (Informações + Lotes)
+      function initTabs(listSelector, opts) {
+        var list = document.querySelector(listSelector);
+        if (!list) return;
+        var tabs = Array.prototype.slice.call(list.querySelectorAll('[role="tab"]'));
+        function activate(tab) {
+          tabs.forEach(function (t) {
+            var selected = t === tab;
+            t.setAttribute('aria-selected', selected ? 'true' : 'false');
+            t.tabIndex = selected ? 0 : -1;
+            var panel = document.getElementById(t.getAttribute('aria-controls'));
+            if (panel) {
+              panel.dataset.active = selected ? 'true' : 'false';
+              if (opts && opts.hideAttr) { if (selected) panel.removeAttribute('hidden'); else panel.setAttribute('hidden', ''); }
+            }
+          });
+        }
+        tabs.forEach(function (tab, i) {
+          tab.addEventListener('click', function () { activate(tab); });
+          tab.addEventListener('keydown', function (e) {
+            var idx = null;
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown') idx = (i + 1) % tabs.length;
+            else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') idx = (i - 1 + tabs.length) % tabs.length;
+            else if (e.key === 'Home') idx = 0;
+            else if (e.key === 'End') idx = tabs.length - 1;
+            if (idx !== null) { e.preventDefault(); tabs[idx].focus(); activate(tabs[idx]); }
+          });
+        });
+      }
+      initTabs('.tabs__list', { hideAttr: true });
+
+      // Countdown → 20/11/2026 09:00 (horário de Brasília, -03:00)
+      var target = new Date('2026-11-20T09:00:00-03:00').getTime();
+      var elDays = document.querySelector('[data-count="days"]');
+      var elHours = document.querySelector('[data-count="hours"]');
+      var elMin = document.querySelector('[data-count="minutes"]');
+      function pad(n) { return (n < 10 ? '0' : '') + n; }
+      function tick() {
+        var diff = target - Date.now();
+        if (diff <= 0) {
+          elDays.textContent = '0'; elHours.textContent = '00'; elMin.textContent = '00';
+          return;
+        }
+        var s = Math.floor(diff / 1000);
+        elDays.textContent = Math.floor(s / 86400);
+        elHours.textContent = pad(Math.floor((s % 86400) / 3600));
+        elMin.textContent = pad(Math.floor((s % 3600) / 60));
+      }
+      if (elDays) { tick(); setInterval(tick, 30000); }
+
+      // Reveal ao rolar (realça um default já visível; respeita reduced-motion)
+      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var reveals = document.querySelectorAll('.reveal');
+      function revealAll() { reveals.forEach(function (el) { el.classList.add('is-in'); }); }
+      if (reduce || !('IntersectionObserver' in window)) {
+        // Sem animação: conteúdo permanece visível (nunca ativamos o gate js-reveal)
+        revealAll();
+      } else {
+        // Ativa o gate só quando temos como reverter; conteúdo continua visível se algo falhar
+        document.documentElement.classList.add('js-reveal');
+        var io = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) { entry.target.classList.add('is-in'); io.unobserve(entry.target); }
+          });
+        }, { threshold: 0.08, rootMargin: '0px 0px -6% 0px' });
+        reveals.forEach(function (el) { io.observe(el); });
+        // Salvaguarda: se por qualquer motivo o observer não disparar, revela tudo
+        setTimeout(revealAll, 2500);
+        // Se a aba abrir já rolada (deep-link), garante o que está na viewport
+        window.addEventListener('load', function () {
+          reveals.forEach(function (el) {
+            var r = el.getBoundingClientRect();
+            if (r.top < window.innerHeight && r.bottom > 0) el.classList.add('is-in');
+          });
+        });
+      }
+
+      // Lightbox navegável da galeria (usa <dialog> nativo: Escape + focus trap de graça)
+      var dialog = document.getElementById('lightbox');
+      var links = Array.prototype.slice.call(document.querySelectorAll('.gallery a'));
+      if (dialog && links.length && typeof dialog.showModal === 'function') {
+        var lbImg = document.getElementById('lbImg');
+        var lbCap = document.getElementById('lbCap');
+        var lbCounter = document.getElementById('lbCounter');
+        var items = links.map(function (a) {
+          var img = a.querySelector('img');
+          return { src: a.getAttribute('href'), alt: img ? img.getAttribute('alt') : '' };
+        });
+        var current = 0;
+        function render() {
+          var it = items[current];
+          lbImg.src = it.src;
+          lbImg.alt = it.alt;
+          lbCap.textContent = it.alt;
+          lbCounter.textContent = (current + 1) + ' / ' + items.length;
+        }
+        function open(i) { current = i; render(); if (!dialog.open) dialog.showModal(); }
+        function go(step) { current = (current + step + items.length) % items.length; render(); }
+        links.forEach(function (a, i) {
+          a.addEventListener('click', function (e) { e.preventDefault(); open(i); });
+        });
+        document.getElementById('lbNext').addEventListener('click', function () { go(1); });
+        document.getElementById('lbPrev').addEventListener('click', function () { go(-1); });
+        document.getElementById('lbClose').addEventListener('click', function () { dialog.close(); });
+        dialog.addEventListener('keydown', function (e) {
+          if (e.key === 'ArrowRight') { e.preventDefault(); go(1); }
+          else if (e.key === 'ArrowLeft') { e.preventDefault(); go(-1); }
+        });
+        // Clicar no fundo (backdrop) fecha
+        dialog.addEventListener('click', function (e) {
+          if (e.target === dialog) dialog.close();
+        });
+      }
+
+      // Slider da galeria (setas navegam o trilho; estado das setas nas pontas)
+      var track = document.getElementById('gallery');
+      var galPrev = document.getElementById('galPrev');
+      var galNext = document.getElementById('galNext');
+      if (track && galPrev && galNext) {
+        function step() {
+          var first = track.querySelector('a');
+          var w = first ? first.getBoundingClientRect().width : track.clientWidth * 0.6;
+          var gap = parseFloat(getComputedStyle(track).columnGap || getComputedStyle(track).gap || '14') || 14;
+          return (w + gap) * Math.max(1, Math.floor(track.clientWidth / (w + gap)));
+        }
+        function updateButtons() {
+          var max = track.scrollWidth - track.clientWidth - 2;
+          galPrev.disabled = track.scrollLeft <= 2;
+          galNext.disabled = track.scrollLeft >= max;
+        }
+        galPrev.addEventListener('click', function () { track.scrollBy({ left: -step(), behavior: 'smooth' }); });
+        galNext.addEventListener('click', function () { track.scrollBy({ left: step(), behavior: 'smooth' }); });
+        track.addEventListener('scroll', updateButtons, { passive: true });
+        window.addEventListener('resize', updateButtons);
+        updateButtons();
+      }
+
+      // Slideshow de banners do navio (autoplay + setas + dots, pausa no hover)
+      var show = document.getElementById('shipShow');
+      if (show) {
+        var slides = Array.prototype.slice.call(show.querySelectorAll('.ship-slide'));
+        var dotsWrap = document.getElementById('shipDots');
+        var idx = 0, timer = null;
+        var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        // cria dots
+        var dots = slides.map(function (s, i) {
+          var b = document.createElement('button');
+          b.setAttribute('role', 'tab');
+          b.setAttribute('aria-label', 'Foto ' + (i + 1) + ' de ' + slides.length);
+          b.addEventListener('click', function () { goTo(i, true); });
+          dotsWrap.appendChild(b);
+          return b;
+        });
+        function goTo(i, manual) {
+          idx = (i + slides.length) % slides.length;
+          slides.forEach(function (s, k) { s.dataset.active = (k === idx) ? 'true' : 'false'; });
+          dots.forEach(function (d, k) { d.setAttribute('aria-current', (k === idx) ? 'true' : 'false'); });
+          if (manual) restart();
+        }
+        function next() { goTo(idx + 1); }
+        function start() { if (!reduceMotion) timer = setInterval(next, 5000); }
+        function stop() { if (timer) { clearInterval(timer); timer = null; } }
+        function restart() { stop(); start(); }
+        document.getElementById('shipNext').addEventListener('click', function () { goTo(idx + 1, true); });
+        document.getElementById('shipPrev').addEventListener('click', function () { goTo(idx - 1, true); });
+        show.addEventListener('mouseenter', stop);
+        show.addEventListener('mouseleave', start);
+        show.addEventListener('focusin', stop);
+        show.addEventListener('focusout', start);
+        // pausa quando fora da tela
+        if ('IntersectionObserver' in window) {
+          new IntersectionObserver(function (entries) {
+            entries.forEach(function (e) { if (e.isIntersecting) start(); else stop(); });
+          }, { threshold: 0.25 }).observe(show);
+        } else { start(); }
+        goTo(0);
+      }
+
+      // Hero com vídeo de fundo em 3 fases:
+      //  1) dive.mp4 autoplay 0→4s (vídeo)
+      //  2) aos 4s, cross-fade para loop.mp4 em loop (vídeo)
+      //  3) scroll na 1ª dobra faz scrubbing por SEQUÊNCIA DE FRAMES em <canvas>
+      //     (evita o stutter de seek em <video>; frames = trecho 5s→fim do dive)
+      var heroBg = document.getElementById('heroBg');
+      var dive = document.getElementById('heroDive');
+      var loop = document.getElementById('heroLoop');
+      var canvas = document.getElementById('heroCanvas');
+      if (heroBg && dive && loop && canvas) {
+        var INTRO_END = 4;   // fim da fase 1 / dive: frame que melhor casa com o loop@0
+        var LOOP_PREROLL = 3;  // inicia o loop (escondido) antes, p/ já estar pintando na troca
+        var REVEAL_AT = 2.8;      // revela conteúdo+logo do hero (independente do dive)
+        var FRAME_COUNT = 60;   // frames do scrub, extraídos do trecho 4s→fim do dive.mp4 (WebP 1080p)
+        var phase = 'intro';    // intro | loop | scrub
+        var ctx = canvas.getContext('2d');
+        if (ctx) { ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high'; }
+        var frames = [];
+        var framesLoaded = 0;
+        var raf = null, targetFrame = 0, currentFrame = -1;
+
+        function show(el) { el.dataset.show = 'true'; }
+        function hide(el) { el.dataset.show = 'false'; }
+
+        // Revela overlay + conteúdo do hero quando o loop começa (fim da intro).
+        // Idempotente: pode ser chamada mais de uma vez sem efeito colateral.
+        var heroSection = document.querySelector('.hero');
+        function revealHero() {
+          if (heroSection && heroSection.dataset.intro !== 'done') {
+            heroSection.dataset.intro = 'done';
+          }
+        }
+
+        // Mantém o buffer do canvas igual ao tamanho REAL exibido na tela
+        // (com devicePixelRatio), para o "cover" acompanhar a tela como o
+        // object-fit:cover dos vídeos — sem deformar em telas estreitas/mobile.
+        function resizeCanvas() {
+          var dpr = Math.min(window.devicePixelRatio || 1, 2);
+          var w = canvas.clientWidth || heroBg.clientWidth || window.innerWidth;
+          var h = canvas.clientHeight || heroBg.clientHeight || window.innerHeight;
+          var bw = Math.max(1, Math.round(w * dpr));
+          var bh = Math.max(1, Math.round(h * dpr));
+          if (canvas.width !== bw || canvas.height !== bh) {
+            canvas.width = bw;
+            canvas.height = bh;
+            // Alterar as dimensões do canvas reseta o contexto: reaplica o
+            // smoothing de alta qualidade para o cover ficar nítido.
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            var prev = currentFrame;   // redesenha o frame atual no novo tamanho
+            currentFrame = -1;
+            if (prev >= 0) drawFrame(prev);
+          }
+        }
+
+        dive.addEventListener('loadedmetadata', function () { heroBg.dataset.videoReady = 'true'; });
+
+        // Esconde o fallback só quando um vídeo realmente começa a exibir frames
+        // (evento 'playing'), fazendo crossfade suave em vez de corte seco.
+        function markMediaLive() { heroBg.dataset.mediaLive = 'true'; }
+        dive.addEventListener('playing', markMediaLive);
+        loop.addEventListener('playing', markMediaLive);
+
+        // Pré-carrega os frames do scrubbing (nomes f001.jpg ... f040.jpg)
+        for (var i = 1; i <= FRAME_COUNT; i++) {
+          var img = new Image();
+          img.decoding = 'async';
+          img.onload = function () { framesLoaded++; };
+          img.src = 'hero-frames/f' + String(i).padStart(3, '0') + '.webp';
+          frames.push(img);
+        }
+
+        // Desenha um frame no canvas com lógica "cover"
+        function drawFrame(n) {
+          n = Math.max(0, Math.min(FRAME_COUNT - 1, n));
+          var img = frames[n];
+          if (!img || !img.complete || !img.naturalWidth) return;
+          if (n === currentFrame) return;
+          currentFrame = n;
+          var cw = canvas.width, ch = canvas.height;
+          var ir = img.naturalWidth / img.naturalHeight, cr = cw / ch;
+          var dw, dh, dx, dy;
+          if (ir > cr) { dh = ch; dw = ch * ir; dx = (cw - dw) / 2; dy = 0; }
+          else { dw = cw; dh = cw / ir; dx = 0; dy = (ch - dh) / 2; }
+          ctx.drawImage(img, dx, dy, dw, dh);
+        }
+
+        // Handshake da troca dive→loop, à prova de piscada:
+        // 1) faz pré-roll do loop (tocando, porém invisível) antes do corte;
+        // 2) no corte, revela o loop (que já está pintando frames, por cima do
+        //    dive) e só ENTÃO esconde o dive — crossfade sem gap/fundo à mostra.
+        var loopPrerolled = false, switching = false;
+        function startLoopPreroll() {
+          if (loopPrerolled) return;
+          loopPrerolled = true;
+          try { loop.currentTime = 0; } catch (e) { }
+          var p = loop.play(); if (p && p.catch) p.catch(function () { });
+        }
+        function switchToLoop() {
+          if (switching || phase !== 'intro') return;
+          switching = true;
+          phase = 'loop';
+          startLoopPreroll();
+          // Alinha o loop ao frame casado (loop@0 ≈ dive@INTRO_END) no instante da
+          // troca; o pré-roll serviu para o decoder já estar "quente".
+          try { loop.currentTime = 0; } catch (e) { }
+          // O loop já está tocando por baixo (pré-roll). Revela-o e faz o DIVE
+          // (que está por cima) desaparecer em crossfade de 700ms — cruza suave,
+          // sem gap nem piscada, disfarçando a diferença de posição dos objetos.
+          show(loop);
+          revealHero();
+          function crossfadeOutDive() {
+            hide(dive); hide(canvas);         // dispara o fade-out (opacity→0, 700ms)
+            // Só pausa/reseta o dive DEPOIS do fade, senão o último frame congela e pisca.
+            setTimeout(function () {
+              dive.pause();
+              try { dive.currentTime = 0; } catch (e) { }
+            }, 750);
+          }
+          // Espera o loop estar realmente pintando antes de cruzar (evita ver o
+          // loop preto/vazio por baixo do dive sumindo).
+          if (loop.readyState >= 2 && !loop.paused) {
+            requestAnimationFrame(crossfadeOutDive);
+          } else {
+            loop.addEventListener('playing', crossfadeOutDive, { once: true });
+            setTimeout(crossfadeOutDive, 250); // rede de segurança
+          }
+        }
+
+        // FASE 1 → 2: monitora o tempo do dive durante a intro
+        dive.addEventListener('timeupdate', function () {
+          if (phase !== 'intro') return;
+          if (dive.currentTime >= REVEAL_AT) revealHero();
+          if (dive.currentTime >= LOOP_PREROLL) startLoopPreroll();
+          if (dive.currentTime >= INTRO_END) switchToLoop();
+        });
+        // Se o dive terminar sozinho (chega ao fim antes do corte), troca também.
+        dive.addEventListener('ended', switchToLoop);
+
+        // Inicia a fase 1 (autoplay). Se o navegador bloquear, cai direto no loop.
+        (function startIntro() {
+          show(dive); hide(loop); hide(canvas);
+          var p = dive.play();
+          if (p && p.catch) p.catch(function () {
+            phase = 'loop';
+            show(loop); hide(dive); hide(canvas);
+            var lp = loop.play(); if (lp && lp.catch) lp.catch(function () { });
+            revealHero();
+          });
+        })();
+
+        // Rede de segurança: se o dive falhar/travar ou nunca terminar, revela
+        // o hero mesmo assim para não deixar o conteúdo escondido.
+        dive.addEventListener('error', revealHero);
+        dive.addEventListener('stalled', revealHero);
+        setTimeout(revealHero, REVEAL_AT * 1000);
+        setTimeout(revealHero, (INTRO_END + 2.5) * 1000);
+
+        // FASE 3: scrubbing por frames sincronizado ao scroll
+        function tick() {
+          if (currentFrame !== targetFrame) {
+            // aproxima suavemente o frame exibido do frame alvo (easing)
+            var diff = targetFrame - currentFrame;
+            var stepv = Math.abs(diff) <= 1 ? diff : diff * 0.35;
+            drawFrame(Math.round(currentFrame + stepv));
+            raf = requestAnimationFrame(tick);
+          } else { raf = null; }
+        }
+        function onScroll() {
+          // Se o usuário rolar antes do fim da intro (~2.8s), revela já o
+          // conteúdo do hero em vez de esperar o timer — evita ver a 2ª dobra
+          // com o hero ainda "vazio". Idempotente.
+          revealHero();
+          var hero = document.querySelector('.hero');
+          var rect = hero.getBoundingClientRect();
+          var total = rect.height || window.innerHeight;
+          var scrolled = Math.min(Math.max(-rect.top / total, 0), 1);
+          if (scrolled <= 0.02) {
+            if (phase === 'scrub') {
+              phase = 'loop';
+              show(loop); hide(dive); hide(canvas);
+              var lp = loop.play(); if (lp && lp.catch) lp.catch(function () { });
+            }
+            return;
+          }
+          if (phase !== 'scrub') {
+            phase = 'scrub';
+            loop.pause(); dive.pause();
+            if (currentFrame < 0) { drawFrame(0); }
+            show(canvas); hide(loop); hide(dive);
+          }
+          targetFrame = Math.round(scrolled * (FRAME_COUNT - 1));
+          if (!raf) raf = requestAnimationFrame(tick);
+        }
+        window.addEventListener('scroll', onScroll, { passive: true });
+
+        // Ajusta o buffer ao tamanho real e re-crop ao mudar a viewport
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas, { passive: true });
+        window.addEventListener('orientationchange', resizeCanvas);
+      }
+
+      // Fallback global: se o bloco de vídeo acima não rodar (elemento ausente),
+      // garante que o hero apareça mesmo assim.
+      (function heroSafety() {
+        var h = document.querySelector('.hero');
+        if (h) setTimeout(function () { if (h.dataset.intro !== 'done') h.dataset.intro = 'done'; }, 7000);
+      })();
+
+      // ---------- Modal "Ver detalhes" das cabines ----------
+      (function cabinDetails() {
+        var modal = document.getElementById('cabinModal');
+        if (!modal || typeof modal.showModal !== 'function') return;
+        var elCabin = document.getElementById('cabinModalCabin');
+        var elTitle = document.getElementById('cabinModalTitle');
+        var elLead = document.getElementById('cabinModalLead');
+        var elBody = document.getElementById('cabinModalBody');
+        var elNote = document.getElementById('cabinModalNote');
+        var elCta = document.getElementById('cabinModalCta');
+        var closeBtn = document.getElementById('cabinModalClose');
+        var lastFocus = null;
+
+        var WA = 'https://api.whatsapp.com/send?phone=5513981580498&text=';
+        var DATA = {
+          interna: {
+            cabin: 'Cabine interna',
+            title: 'O conforto e a elegância de que você precisa',
+            lead: 'A opção mais econômica para desfrutar do seu cruzeiro, com todo o conforto a bordo.',
+            groups: [{
+              items: [
+                'Cabines (aprox. 14 m²), 5º-15º andares',
+                'Poltrona relaxante',
+                'Banheiro com chuveiro, penteadeira e secador de cabelo',
+                'Duas camas de solteiro confortáveis que podem ser convertidas em cama de casal (mediante solicitação)*',
+                'TV interativa, telefone, conexão Wi-Fi disponível (mediante taxa), cofre e minibar'
+              ]
+            }],
+            note: '* Cabines para hóspedes com necessidades especiais ou mobilidade reduzida possuem apenas camas de solteiro. A imagem é apenas ilustrativa; o tamanho, layout e mobília podem variar (dentro da mesma categoria de cabine).',
+            wa: WA + encodeURIComponent('Olá, Royal Trip! Quero reservar uma Cabine Interna (2º lote) no Kriativos On Board 2026.')
+          },
+          janela: {
+            cabin: 'Cabine janela',
+            title: 'Aprecie a vista do oceano de sua cabine',
+            lead: 'Confortável e elegante, com janela para o mar.',
+            groups: [{
+              items: [
+                'Cabines (aprox. 16-17 m²)',
+                'Janela com vista para o mar',
+                'Poltrona relaxante',
+                'Banheiro com chuveiro, penteadeira com secador de cabelo',
+                'Duas camas de solteiro confortáveis que podem ser convertidas em cama de casal (mediante solicitação)*',
+                'TV interativa, telefone, conexão Wi-Fi disponível (mediante taxa), cofre e minibar'
+              ]
+            }, {
+              heading: 'Escolha o tipo de cabine que melhor se adapta a você:',
+              items: [
+                'Externa Deluxe com vista para o mar (aprox. 16-17 m²), 5º-8º andar',
+                'Externa Deluxe com vista obstruída (aprox. 16 m²), 8º andar'
+              ]
+            }],
+            note: '* Cabines para hóspedes com necessidades especiais ou mobilidade reduzida possuem apenas camas de solteiro. A imagem é apenas ilustrativa; o tamanho, layout e mobília podem variar (dentro da mesma categoria de cabine).',
+            wa: WA + encodeURIComponent('Olá, Royal Trip! Quero reservar uma Cabine Janela (2º lote) no Kriativos On Board 2026.')
+          },
+          varanda: {
+            cabin: 'Cabine varanda',
+            title: 'Relaxe com o sol e a brisa do mar',
+            lead: 'Aproveite o conforto da sua varanda privativa.',
+            groups: [{
+              items: [
+                'Cabines (aprox. 15-18 m²) com varanda (aprox. 4-5 m²)',
+                'Área de estar com sofá',
+                'Banheiro com chuveiro, penteadeira com secador de cabelo',
+                'Duas camas de solteiro confortáveis que podem ser convertidas em cama de casal (mediante solicitação)*',
+                'TV interativa, telefone, conexão Wi-Fi disponível (mediante taxa), cofre e minibar'
+              ]
+            }, {
+              heading: 'Escolha o tipo de cabine que melhor se adapta a você:',
+              items: [
+                'Varanda Aurea (melhor posição do navio, aprox. 18 m²), 9º-11º andares',
+                'Varanda Premium (aprox. 18 m²), 8º-15º andares',
+                'Varanda Deluxe (aprox. 15 m²), 8º-14º andares',
+                'Varanda Deluxe com vista obstruída (aprox. 18 m²), 12º andar'
+              ]
+            }],
+            note: '* As cabines para hóspedes com necessidades especiais ou mobilidade reduzida possuem apenas cama de solteiro (exceto cabines 15025). A imagem é apenas ilustrativa; o tamanho, layout e mobília podem variar (dentro da mesma categoria de cabine).',
+            wa: WA + encodeURIComponent('Olá, Royal Trip! Quero reservar uma Cabine Varanda (2º lote) no Kriativos On Board 2026.')
+          }
+        };
+
+        function buildBody(groups) {
+          elBody.textContent = '';
+          groups.forEach(function (g) {
+            if (g.heading) {
+              var h = document.createElement('h4');
+              h.textContent = g.heading;
+              elBody.appendChild(h);
+            }
+            var ul = document.createElement('ul');
+            g.items.forEach(function (txt) {
+              var li = document.createElement('li');
+              li.innerHTML = '<span></span><span></span>';
+              li.lastChild.textContent = txt;
+              ul.appendChild(li);
+            });
+            elBody.appendChild(ul);
+          });
+        }
+
+        function open(key) {
+          var d = DATA[key];
+          if (!d) return;
+          lastFocus = document.activeElement;
+          elCabin.textContent = d.cabin;
+          elTitle.textContent = d.title;
+          elLead.textContent = d.lead;
+          buildBody(d.groups);
+          elNote.textContent = d.note;
+          elCta.href = d.wa;
+          modal.showModal();
+          modal.scrollTop = 0;
+          var inner = modal.querySelector('.cabin-modal__inner');
+          if (inner) inner.scrollTop = 0;
+        }
+
+        function close() {
+          modal.close();
+        }
+
+        document.querySelectorAll('.price-card__details').forEach(function (btn) {
+          btn.addEventListener('click', function () { open(btn.dataset.cabin); });
+        });
+        closeBtn.addEventListener('click', close);
+        // Clique no backdrop (fora do conteúdo) fecha
+        modal.addEventListener('click', function (e) {
+          if (e.target === modal) close();
+        });
+        // Restaura o foco ao fechar
+        modal.addEventListener('close', function () {
+          if (lastFocus && typeof lastFocus.focus === 'function') lastFocus.focus();
+        });
+      })();
+    })();
+  </script>
+</body>
+
+</html>

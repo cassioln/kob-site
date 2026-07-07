@@ -1,0 +1,20 @@
+# macOS
+.DS_Store
+
+# Backups
+*.bak
+index.html.pre-*.bak
+
+# Ferramenta de design (local)
+.impeccable/
+
+# Assets originais / masters (não usados diretamente no site)
+_hero-frames-originais-720p/
+_video-originais-720p/
+
+# Legado do template WordPress (WPBakery / js_composer) — não usado pelo site novo
+assets/
+
+# Dependências / build (caso surjam)
+node_modules/
+dist/
