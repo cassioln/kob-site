@@ -2418,31 +2418,7 @@
       gap: 8px;
     }
 
-    .tour360__expand {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 14px;
-      border-radius: var(--r-pill);
-      border: 1px solid rgba(255, 255, 255, 0.28);
-      color: var(--foam-white);
-      font-size: 0.8rem;
-      font-weight: 600;
-      text-decoration: none;
-      transition: background var(--dur-fast) var(--ease-quart), border-color var(--dur-fast) var(--ease-quart);
-    }
-
-    .tour360__expand svg {
-      width: 16px;
-      height: 16px;
-    }
-
-    .tour360__expand:hover {
-      background: rgba(255, 255, 255, 0.12);
-      border-color: rgba(255, 255, 255, 0.5);
-    }
-
-    .tour360__close {
+    .tour360__icon-btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -2457,9 +2433,27 @@
       transition: background var(--dur-fast) var(--ease-quart), border-color var(--dur-fast) var(--ease-quart);
     }
 
-    .tour360__close svg {
+    .tour360__icon-btn svg {
       width: 20px;
       height: 20px;
+    }
+
+    .tour360__maximize:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+
+    /* Alterna os ícones maximizar/restaurar conforme o estado do overlay */
+    .tour360__icon-min {
+      display: none;
+    }
+
+    .tour360.is-maximized .tour360__maximize .tour360__icon-max {
+      display: none;
+    }
+
+    .tour360.is-maximized .tour360__maximize .tour360__icon-min {
+      display: block;
     }
 
     .tour360__close:hover {
@@ -2467,10 +2461,20 @@
       border-color: var(--kriativa-magenta);
     }
 
-    .tour360__expand:focus-visible,
-    .tour360__close:focus-visible {
+    .tour360__icon-btn:focus-visible {
       outline: 2px solid var(--ocean-cyan);
       outline-offset: 2px;
+    }
+
+    /* Estado maximizado: ocupa a viewport inteira (inset zera as margens do <dialog>) */
+    .tour360.is-maximized {
+      inset: 0;
+      width: 100vw;
+      max-width: 100vw;
+      height: 100dvh;
+      max-height: 100dvh;
+      margin: 0;
+      border-radius: 0;
     }
 
     .tour360__stage {
@@ -2563,12 +2567,9 @@
         border-radius: 0;
       }
 
-      .tour360__expand span {
+      /* No mobile o overlay já ocupa a tela inteira; o toggle não faz sentido */
+      .tour360__maximize {
         display: none;
-      }
-
-      .tour360__expand {
-        padding: 8px 12px;
       }
     }
 

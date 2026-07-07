@@ -569,8 +569,8 @@
           var frame = document.getElementById('tour360Frame');
           var spinner = document.getElementById('tour360Spinner');
           var label = document.getElementById('tour360Label');
-          var openTab = document.getElementById('tour360Open');
           var tourClose = document.getElementById('tour360Close');
+          var tourMax = document.getElementById('tour360Maximize');
           var tourFocus = null;
 
           function showSpinner() {
@@ -580,12 +580,26 @@
             if (frame.src && spinner) spinner.style.display = 'none';
           });
 
+          // Alterna entre o tamanho padrão e a tela cheia do overlay.
+          function setMaximized(on) {
+            tour.classList.toggle('is-maximized', on);
+            if (tourMax) {
+              tourMax.setAttribute('aria-pressed', on ? 'true' : 'false');
+              tourMax.setAttribute('aria-label', on ? 'Restaurar tamanho do tour virtual' : 'Maximizar tour virtual');
+            }
+          }
+          if (tourMax) {
+            tourMax.addEventListener('click', function () {
+              setMaximized(!tour.classList.contains('is-maximized'));
+            });
+          }
+
           function openTour() {
             var d = DATA[currentKey];
             if (!d || !d.tour) return;
             tourFocus = document.activeElement;
+            setMaximized(false);
             if (label) label.textContent = 'Tour virtual 360° · ' + d.cabin;
-            if (openTab) openTab.href = d.tour;
             showSpinner();
             frame.src = d.tour;
             tour.showModal();
@@ -600,9 +614,10 @@
           tour.addEventListener('click', function (e) {
             if (e.target === tour) closeTour();
           });
-          // Ao fechar: descarrega o iframe (para o áudio/render) e devolve o foco ao modal
+          // Ao fechar: descarrega o iframe (para o áudio/render), restaura o tamanho padrão e devolve o foco ao modal
           tour.addEventListener('close', function () {
             frame.src = 'about:blank';
+            setMaximized(false);
             if (tourFocus && typeof tourFocus.focus === 'function') tourFocus.focus();
           });
         })();

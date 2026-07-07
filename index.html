@@ -169,21 +169,21 @@
         </div>
         <div class="ship-grid reveal">
           <div class="ship-show" id="shipShow" aria-roledescription="carrossel" aria-label="Fotos do MSC Música">
-            <figure class="ship-slide" data-active="true"><img src="assets/images/ship/msc-musica-suite.webp" alt="Cabine confortável do MSC Música" fetchpriority="low">
-              <figcaption><b>Cabines aconchegantes</b><span>Seu refúgio entre uma partida e outra</span></figcaption>
+            <figure class="ship-slide" data-active="true"><img src="assets/images/ship/msc-musica-la-spiaggia-pool.jpg" alt="Piscina La Spiaggia do MSC Música" fetchpriority="low">
+              <figcaption><b>Piscina La Spiaggia</b><span>Sol e mergulho entre uma partida e outra</span></figcaption>
             </figure>
-            <figure class="ship-slide"><img src="assets/images/ship/msc-musica-crystal-lounge.webp" alt="Crystal Lounge do MSC Música" loading="lazy">
-              <figcaption><b>Bares &amp; lounges</b><span>O setup ideal para o aperitivo antes da jogatina</span>
+            <figure class="ship-slide"><img src="assets/images/ship/msc-musica-sanremo-casino.jpg" alt="Cassino Sanremo do MSC Música" loading="lazy">
+              <figcaption><b>Cassino Sanremo</b><span>Aposte a sorte quando não estiver rolando os dados</span>
               </figcaption>
             </figure>
-            <figure class="ship-slide"><img src="assets/images/ship/msc-musica-kids-area.webp" alt="Área para crianças no MSC Música" loading="lazy">
+            <figure class="ship-slide"><img src="assets/images/ship/msc-musica-children-playroom.jpg" alt="Sala de brinquedos infantil do MSC Música" loading="lazy">
               <figcaption><b>Espaço kids</b><span>Uma área inteira dedicada aos pequenos Kriativos</span></figcaption>
             </figure>
-            <figure class="ship-slide"><img src="assets/images/ship/msc-musica-life-on-board.webp" alt="Área de convivência a bordo do MSC Música" loading="lazy">
-              <figcaption><b>Vida a bordo</b><span>Música ao vivo, espetáculos, cassino e muito mais</span></figcaption>
+            <figure class="ship-slide"><img src="assets/images/ship/msc-musica-teatro-la-scala.jpg" alt="Teatro La Scala do MSC Música" loading="lazy">
+              <figcaption><b>Teatro La Scala</b><span>Espetáculos ao vivo todas as noites a bordo</span></figcaption>
             </figure>
-            <figure class="ship-slide"><img src="assets/images/ship/msc-musica-ocean-view.webp" alt="Vista para o oceano a partir do MSC Música" loading="lazy">
-              <figcaption><b>Vista para o mar</b><span>O melhor cenário para a sua próxima jogada</span></figcaption>
+            <figure class="ship-slide"><img src="assets/images/ship/msc-musica-copacabana-pool.jpg" alt="Piscina Copacabana do MSC Música" loading="lazy">
+              <figcaption><b>Piscina Copacabana</b><span>O melhor cenário para a sua próxima jogada</span></figcaption>
             </figure>
             <button class="ship-show__btn ship-show__prev" id="shipPrev" aria-label="Foto anterior">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -438,13 +438,15 @@
       <div class="tour360__bar">
         <span class="tour360__label" id="tour360Label">Tour virtual 360°</span>
         <div class="tour360__actions">
-          <a class="tour360__expand" id="tour360Open" href="#" target="_blank" rel="noopener" title="Abrir em nova aba">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M14 4h6v6M20 4l-8 8M10 20H4v-6"></path>
+          <button class="tour360__icon-btn tour360__maximize" id="tour360Maximize" type="button" aria-label="Maximizar tour virtual" aria-pressed="false">
+            <svg class="tour360__icon-max" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"></path>
             </svg>
-            <span>Abrir em nova aba</span>
-          </a>
-          <button class="tour360__close" id="tour360Close" type="button" aria-label="Fechar tour virtual">
+            <svg class="tour360__icon-min" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"></path>
+            </svg>
+          </button>
+          <button class="tour360__icon-btn tour360__close" id="tour360Close" type="button" aria-label="Fechar tour virtual">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
               <path d="M6 6l12 12M18 6L6 18"></path>
             </svg>
