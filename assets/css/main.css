@@ -982,7 +982,7 @@
       /* Sobe 1px sobre o hero para cobrir a fresta de sub-pixel do vídeo na
          borda; como o topo é #063259 (igual à base do hero), a costura ssão. */
       margin-top: -1px;
-      padding-block: var(--sp-xs);
+      padding-top: var(--sp-sm);
       background: linear-gradient(180deg,
           #063259 0%,
           #0a3a63 45%,
