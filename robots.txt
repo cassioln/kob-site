@@ -1,19 +1,2 @@
 User-agent: *
-Disallow: /shopdetail/
-Disallow: /product/
-Disallow: /pcmypage/
-Disallow: /popup-builder/
-Disallow: /safe_search/
-Disallow: /index.php?shopdetail
-Disallow: /index.php/pcmypage
-Disallow: /tribe_events/
-Disallow: /services/
-Disallow: /team/
-Disallow: /cpt_layouts/
-Disallow: /cpt_team/
-Disallow: /cpt_testimonials/
-Disallow: /cpt_team_group/
-
 Allow: /
-
-Sitemap: https://kriativosonboard.com.br/page-sitemap.xml

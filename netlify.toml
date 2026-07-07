@@ -1,31 +1,31 @@
-# Kriativos On Board | Configuracao Netlify
+# Kriativos On Board | Configuração Netlify
 [build]
   publish = "."
 
 [[headers]]
-  for = "/assets/*"
+  for = "/assets/css/*"
+  [headers.values]
+    Cache-Control = "public, max-age=3600, must-revalidate"
+
+[[headers]]
+  for = "/assets/js/*"
+  [headers.values]
+    Cache-Control = "public, max-age=3600, must-revalidate"
+
+[[headers]]
+  for = "/assets/images/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000"
+
+[[headers]]
+  for = "/assets/hero-frames/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000"
+
+[[headers]]
+  for = "/assets/videos/*"
   [headers.values]
     Cache-Control = "public, max-age=2592000"
-
-[[headers]]
-  for = "/images/*"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000"
-
-[[headers]]
-  for = "/fonts/*"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000"
-
-[[headers]]
-  for = "/*.mp4"
-  [headers.values]
-    Cache-Control = "public, max-age=2592000"
-
-[[headers]]
-  for = "/hero-frames/*"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000"
 
 [[redirects]]
   from = "/*"

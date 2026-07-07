@@ -1,72 +1,54 @@
-# Kriativos On Board - Landing page (backup estatico)
+# Kriativos On Board 2026 — landing estática
 
-Backup da landing page **https://kriativosonboard.com.br** convertido em
-site estatico **autossuficiente** (HTML + CSS + JS + imagens + fontes locais).
-Nao depende mais de WordPress, PHP, banco de dados nem de recursos externos.
-Roda em qualquer hospedagem estatica.
+Landing page estática do **Kriativos On Board 2026**. O projeto agora vive diretamente na raiz do repositório — não há mais subpasta `site/`.
 
-## Estrutura (reorganizada e limpa)
+Todos os arquivos públicos de mídia ficam em `assets/images/`, `assets/videos/` ou `assets/hero-frames/`; não há mais imagens, vídeos ou pastas herdadas do WordPress na raiz.
 
-```
-site/
-├── index.html          a landing page
-├── assets/             CSS, JS e libs do site
-│   ├── plugins/        scripts/estilos dos plugins (WPBakery, sliders, etc.)
-│   ├── themes/         CSS/JS do tema
-│   └── vendor/         bibliotecas (jQuery, etc.)
-├── images/             todas as imagens do site (organizadas por ano)
-├── fonts/              fontes locais (Google Fonts + fontes do tema)
+## Estrutura
+
+```text
+.
+├── index.html              página principal
+├── assets/
+│   ├── css/main.css        estilos da landing
+│   ├── js/main.js          comportamento da landing
+│   ├── hero-frames/        sequência WebP usada no scrub do hero
+│   ├── images/             imagens organizadas por uso editorial
+│   │   ├── brand/          logos, favicon e touch icon
+│   │   ├── cabins/         fotos do modal de cabines
+│   │   ├── creators/       participações especiais
+│   │   ├── gallery/2024/   melhores momentos do KOB 2024
+│   │   ├── hero/           poster e imagem social do hero
+│   │   ├── partners/       logos de parceiros
+│   │   ├── ship/           fotos do MSC Música
+│   │   └── story/          fotos narrativas do evento
+│   └── videos/             vídeos usados pela landing
+├── PRODUCT.md              contexto do produto
+├── DESIGN.md               direção/design system
 ├── robots.txt
-├── .htaccess           config Apache (cPanel/Locaweb/Hostgator)
-├── netlify.toml        config Netlify
-├── vercel.json         config Vercel
-└── preview.sh          servidor local para testar
+├── .htaccess               configuração Apache
+├── netlify.toml            configuração Netlify
+├── vercel.json             configuração Vercel
+└── preview.sh              servidor local simples
 ```
 
-## Numeros
-
-- 1 pagina (landing) totalmente funcional
-- ~115 imagens locais em `images/`
-- CSS/JS de plugins e tema em `assets/`
-- Fontes locais em `fonts/` (Google Fonts baixado + fontes do tema)
-- 0 dependencias externas de asset (so links sociais/embeds apontam pra fora)
-- 0 arquivos PHP, 0 WordPress, 0 banco de dados
-
-## Testar localmente (recomendado antes de subir)
+## Testar localmente
 
 ```bash
-cd site
 ./preview.sh
 # abra http://localhost:8080
 ```
 
-IMPORTANTE: teste sempre via este servidor (http://), NAO abrindo o
-`index.html` por duplo-clique (`file://`). No modo `file://` o navegador
-bloqueia scripts por seguranca e as abas/animacoes podem nao funcionar,
-mesmo estando tudo correto. Em um host real (http/https) funciona normal.
+Teste sempre via HTTP. Abrir `index.html` direto via `file://` pode bloquear comportamentos do navegador.
 
-## Como migrar
+## Publicação
 
-### Hospedagem tradicional (cPanel, Locaweb, Hostgator, FTP)
-1. Suba todo o conteudo desta pasta para o document root (`public_html/`).
-2. Garanta que o `.htaccess` foi enviado (arquivo oculto).
-3. Aponte o dominio para o novo host (DNS).
+- **Hospedagem tradicional:** suba o conteúdo da raiz do repo para o document root (`public_html/`, por exemplo).
+- **Netlify:** publish directory `.`.
+- **Vercel:** importe o repo ou rode `vercel` na raiz.
 
-### Netlify (gratis)
-1. Arraste esta pasta em https://app.netlify.com/drop
-2. Configure o dominio em Domain settings (HTTPS automatico).
+## Limpeza realizada
 
-### Vercel
-1. `vercel` na raiz desta pasta ou importe o repo.
+Foram removidos da árvore principal os artefatos de trabalho, screenshots, masters de vídeo/frames, backup pré-Impeccable, fontes locais não utilizadas, assets legados de WordPress/WPBakery e imagens não referenciadas pela landing atual. Os assets vivos foram movidos para `assets/` e renomeados por função, eliminando a estrutura `images/YYYY/MM` herdada do WordPress.
 
-## Observacoes
-
-- Landing estatica: o formulario/botoes de contato usam WhatsApp e links
-  externos (funcionam normal). Nao ha backend a configurar.
-- A contagem regressiva e as abas (Informacoes / Valores) funcionam via
-  JavaScript ja incluido.
-- Os botoes das abas foram corrigidos: os links `#ancora` (que o processo
-  de captura havia quebrado para `index.html#ancora`) foram restaurados,
-  entao as 5 abas de "Informacoes" alternam corretamente.
-- Erros de console dos plugins (popup-builder / vc_accordion) tambem
-  ocorrem no site original e nao afetam a landing.
+Backups externos das limpezas foram criados ao lado deste diretório, com nomes `kob-site-pre-cleanup-backup-*` e `kob-site-pre-asset-reorg-*`.

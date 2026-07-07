@@ -1,6 +1,6 @@
 # ==========================================================================
-# Kriativos On Board - Landing page (backup estatico) | Configuracao Apache
-# Basta subir todo o conteudo desta pasta para o document root do host.
+# Kriativos On Board - Landing page estatica | Configuracao Apache
+# Basta subir todo o conteudo da raiz do repositorio para o document root do host.
 # ==========================================================================
 
 RewriteEngine On
@@ -22,9 +22,8 @@ ErrorDocument 404 /index.html
   ExpiresByType image/webp "access plus 1 year"
   ExpiresByType image/gif "access plus 1 year"
   ExpiresByType image/svg+xml "access plus 1 year"
-  ExpiresByType font/woff2 "access plus 1 year"
-  ExpiresByType font/woff "access plus 1 year"
-  ExpiresByType font/ttf "access plus 1 year"
+  ExpiresByType image/avif "access plus 1 year"
+  ExpiresByType video/mp4 "access plus 1 month"
 </IfModule>
 
 # ---- Compressao ----

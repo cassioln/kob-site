@@ -1,20 +1,23 @@
 # macOS
 .DS_Store
 
-# Backups
+# Backups e artefatos locais
 *.bak
+*.artifact.json
 index.html.pre-*.bak
 
-# Ferramenta de design (local)
+# Ferramentas locais / agentes
 .impeccable/
-
-# Assets originais / masters (não usados diretamente no site)
-_hero-frames-originais-720p/
-_video-originais-720p/
-
-# Legado do template WordPress (WPBakery / js_composer) — não usado pelo site novo
-assets/
+.od-skills/
+.opencode/
+.playwright-mcp/
+shots/
 
 # Dependências / build (caso surjam)
 node_modules/
 dist/
+build/
+.next/
+.cache/
+.turbo/
+coverage/
