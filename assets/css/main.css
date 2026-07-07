@@ -209,6 +209,23 @@
       font-size: 1.075rem;
     }
 
+    /* ---------- Utilitários de layout (substituem estilos inline residuais) ---------- */
+    .u-mt-md { margin-top: var(--sp-md); }
+    .u-mt-lg { margin-top: var(--sp-lg); }
+    .u-mt-xl { margin-top: var(--sp-xl); }
+    .u-mb-md { margin-bottom: var(--sp-md); }
+    .u-center { margin-inline: auto; text-align: center; }
+    .u-lead-center { margin-inline: auto; }
+    .u-lead-footnote { margin: var(--sp-md) auto 0; text-align: center; }
+    .u-lead-tip { text-align: center; margin-top: var(--sp-lg); }
+    .u-narrow { max-width: 34ch; }
+    /* Títulos de seção secundários (menores que o display padrão) */
+    .h2--sm { font-size: clamp(1.6rem, 3.5vw, 2.4rem); }
+    .h2--md { font-size: clamp(1.8rem, 4vw, 2.8rem); }
+    /* Link inline com a voz de ação da marca */
+    .link-action { color: var(--action-ink); }
+    .link-action--bold { color: var(--action-ink); font-weight: 600; }
+
     .visually-hidden {
       position: absolute;
       width: 1px;
