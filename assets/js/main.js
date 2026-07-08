@@ -2,17 +2,24 @@
     (function () {
       'use strict';
 
-      // Nav: some ao rolar, reaparece (com fundo) somente após passar a 3ª dobra
+      // Nav: some ao rolar dentro do hero; reaparece (com fundo) a partir da
+      // seção #navio em diante — o header fica visível dela pra frente.
       var nav = document.getElementById('nav');
       var heroEl = document.querySelector('.hero');
+      var navioEl = document.getElementById('navio');
       var onScroll = function () {
         var y = window.scrollY;
-        var unit = heroEl ? heroEl.offsetHeight : window.innerHeight;
-        var fold = unit * 3;
-        var passedFold = y >= fold - 1;
-        // Após a 3ª dobra: header visível com fundo azul
+        // Gatilho: a seção #navio começa a entrar sob o header fixo.
+        // Descontamos a altura do header para ele reaparecer logo antes,
+        // sem cobrir o título da seção. Fallback: 1x altura do hero.
+        var navH = nav ? nav.offsetHeight : 0;
+        var trigger = navioEl
+          ? navioEl.offsetTop - navH
+          : (heroEl ? heroEl.offsetHeight : window.innerHeight);
+        var passedFold = y >= trigger - 1;
+        // A partir de #navio: header visível com fundo azul
         nav.dataset.scrolled = passedFold ? 'true' : 'false';
-        // Antes da 3ª dobra e já rolando: oculta; no topo (<=20) fica visível
+        // Antes de #navio e já rolando: oculta; no topo (<=20) fica visível
         nav.dataset.hidden = (!passedFold && y > 20) ? 'true' : 'false';
       };
       onScroll();
@@ -37,36 +44,7 @@
       drawer.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', closeDrawer); });
       document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && drawer.dataset.open === 'true') closeDrawer(); });
 
-      // Tabs genéricas com roving tabindex (Informações + Lotes)
-      function initTabs(listSelector, opts) {
-        var list = document.querySelector(listSelector);
-        if (!list) return;
-        var tabs = Array.prototype.slice.call(list.querySelectorAll('[role="tab"]'));
-        function activate(tab) {
-          tabs.forEach(function (t) {
-            var selected = t === tab;
-            t.setAttribute('aria-selected', selected ? 'true' : 'false');
-            t.tabIndex = selected ? 0 : -1;
-            var panel = document.getElementById(t.getAttribute('aria-controls'));
-            if (panel) {
-              panel.dataset.active = selected ? 'true' : 'false';
-              if (opts && opts.hideAttr) { if (selected) panel.removeAttribute('hidden'); else panel.setAttribute('hidden', ''); }
-            }
-          });
-        }
-        tabs.forEach(function (tab, i) {
-          tab.addEventListener('click', function () { activate(tab); });
-          tab.addEventListener('keydown', function (e) {
-            var idx = null;
-            if (e.key === 'ArrowRight' || e.key === 'ArrowDown') idx = (i + 1) % tabs.length;
-            else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') idx = (i - 1 + tabs.length) % tabs.length;
-            else if (e.key === 'Home') idx = 0;
-            else if (e.key === 'End') idx = tabs.length - 1;
-            if (idx !== null) { e.preventDefault(); tabs[idx].focus(); activate(tabs[idx]); }
-          });
-        });
-      }
-      initTabs('.tabs__list', { hideAttr: true });
+      // (Tabs removidas: a antiga seção "Informações" virou "Itinerário", sem abas.)
 
       // Countdown → 20/11/2026 09:00 (horário de Brasília, -03:00)
       var target = new Date('2026-11-20T09:00:00-03:00').getTime();
@@ -181,6 +159,9 @@
         var dotsWrap = document.getElementById('shipDots');
         var idx = 0, timer = null;
         var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        // O backup salvo do browser pode trazer dots já renderizados.
+        // Limpa antes de reconstruir para evitar tabs duplicadas.
+        if (dotsWrap) dotsWrap.textContent = '';
         // cria dots
         var dots = slides.map(function (s, i) {
           var b = document.createElement('button');
@@ -567,17 +548,17 @@
             return;
           }
           var frame = document.getElementById('tour360Frame');
-          var spinner = document.getElementById('tour360Spinner');
+          var stage = tour.querySelector('.tour360__stage');
           var label = document.getElementById('tour360Label');
           var tourClose = document.getElementById('tour360Close');
           var tourMax = document.getElementById('tour360Maximize');
           var tourFocus = null;
 
           function showSpinner() {
-            if (spinner) spinner.style.display = 'flex';
+            if (stage) stage.classList.add('is-loading');
           }
           frame.addEventListener('load', function () {
-            if (frame.src && spinner) spinner.style.display = 'none';
+            if (frame.src && frame.src !== 'about:blank' && stage) stage.classList.remove('is-loading');
           });
 
           // Alterna entre o tamanho padrão e a tela cheia do overlay.
@@ -617,10 +598,257 @@
           // Ao fechar: descarrega o iframe (para o áudio/render), restaura o tamanho padrão e devolve o foco ao modal
           tour.addEventListener('close', function () {
             frame.src = 'about:blank';
+            if (stage) stage.classList.remove('is-loading');
             setMaximized(false);
             if (tourFocus && typeof tourFocus.focus === 'function') tourFocus.focus();
           });
         })();
+      })();
+
+      /* ---------- Tour completo do navio (sidebar de ambientes + iframe) ---------- */
+      (function shipTour() {
+        var dialog = document.getElementById('shipTour');
+        var openBtn = document.getElementById('shipTourOpen');
+        if (!dialog || !openBtn || typeof dialog.showModal !== 'function') {
+          if (openBtn) openBtn.hidden = true;
+          return;
+        }
+
+        var TOUR = 'https://virtual-tours.msccruises.com/MSC-Musica/en-gl/index.html?sc=';
+        var THUMBS = 'assets/images/tour-thumbs/';
+        // grupo -> [ [scene, nome] ]. A miniatura vem de THUMBS + scene + '.jpg'.
+        var GROUPS = [
+          ['Áreas comuns', [
+            ['scene_reception_la_cascata', 'Recepção La Cascata'],
+            ['scene_crystal_lounge', 'Crystal Lounge'],
+            ['scene_teatro_la_scala', 'Teatro La Scala'],
+            ['scene_sanremo_casino', 'Cassino Sanremo'],
+            ['scene_copacabana', 'Piscina Copacabana'],
+            ['scene_l_oleandro', 'Restaurante L\u2019Oleandro'],
+            ['scene_restaurant', 'Restaurante Il Giardino'],
+            ['scene_kaito_sushi_bar', 'Kaito Sushi Bar'],
+            ['scene_blue_velvet_bar', 'Blue Velvet Bar'],
+            ['scene_havana_club', 'Havana Club'],
+            ['scene_il_tucano_lounge', 'Il Tucano Lounge'],
+            ['scene_gli_archi_cafeteria', 'Gli Archi Cafeteria'],
+            ['scene_q32_disco', 'Discoteca Q32'],
+            ['scene_top_16', 'Top 16'],
+            ['scene_space_trip', 'Space Trip'],
+            ['scene_card_room', 'Sala de jogos'],
+            ['scene_library', 'Biblioteca'],
+            ['scene_the_mini_mall', 'Mini Mall'],
+            ['scene_l_angolo_dell_oggetto', 'L\u2019Angolo dell\u2019Oggetto'],
+            ['scene_gym', 'Academia']
+          ]],
+          ['Cabines', [
+            ['scene_inside', 'Cabine interna'],
+            ['scene_ocean_view', 'Cabine janela'],
+            ['scene_balcony', 'Cabine varanda']
+          ]],
+          ['SPA & Bem-estar', [
+            ['scene_spa_reception', 'Recepção do SPA'],
+            ['scene_beauty_parlour', 'Salão de beleza'],
+            ['scene_spa_massage_room', 'Sala de massagem'],
+            ['scene_steam_bath', 'Banho a vapor'],
+            ['scene_yoga_room', 'Sala de yoga']
+          ]]
+        ];
+
+        var nav = document.getElementById('shipTourNav');
+        var stage = dialog.querySelector('.shiptour__stage');
+        var frame = document.getElementById('shipTourFrame');
+        var label = document.getElementById('shipTourLabel');
+        var closeBtn = document.getElementById('shipTourClose');
+        var maxBtn = document.getElementById('shipTourMaximize');
+        var navToggle = document.getElementById('shipTourNavToggle');
+        var lastFocus = null;
+        var items = [];
+        var groupEls = [];
+        var current = null;
+
+        // O backup veio de um browser vivo e pode trazer a sidebar já renderizada.
+        // Sempre zera antes de montar para evitar duplicação de ambientes.
+        nav.textContent = '';
+
+        // Monta a sidebar como accordion (um grupo aberto por vez).
+        GROUPS.forEach(function (group, gi) {
+          var section = document.createElement('div');
+          section.className = 'shiptour__group';
+
+          var head = document.createElement('button');
+          head.type = 'button';
+          head.className = 'shiptour__group-head';
+          head.setAttribute('aria-expanded', 'false');
+          var headLabel = document.createElement('span');
+          headLabel.textContent = group[0];
+          var chevron = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+          chevron.setAttribute('class', 'shiptour__chevron');
+          chevron.setAttribute('viewBox', '0 0 24 24');
+          chevron.setAttribute('aria-hidden', 'true');
+          chevron.innerHTML = '<path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>';
+          head.appendChild(headLabel);
+          head.appendChild(chevron);
+          head.addEventListener('click', function () {
+            openGroup(gi, !section.classList.contains('is-open'));
+          });
+
+          var panel = document.createElement('div');
+          panel.className = 'shiptour__group-panel';
+          var panelInner = document.createElement('div');
+          panelInner.className = 'shiptour__group-list';
+          panel.appendChild(panelInner);
+
+          group[1].forEach(function (entry) {
+            var scene = entry[0], name = entry[1];
+            var btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'shiptour__item';
+            btn.setAttribute('aria-current', 'false');
+            var img = document.createElement('img');
+            img.src = THUMBS + scene + '.jpg';
+            img.alt = '';
+            img.loading = 'lazy';
+            img.width = 72;
+            img.height = 44;
+            var span = document.createElement('span');
+            span.textContent = name;
+            btn.appendChild(img);
+            btn.appendChild(span);
+            btn.addEventListener('click', function () { select(scene, name); });
+            panelInner.appendChild(btn);
+            items.push({ scene: scene, name: name, btn: btn, group: gi });
+          });
+
+          section.appendChild(head);
+          section.appendChild(panel);
+          nav.appendChild(section);
+          groupEls.push({ section: section, head: head });
+        });
+
+        // Abre um grupo (fecha os demais). Passar open=false recolhe todos.
+        function openGroup(index, open) {
+          groupEls.forEach(function (g, i) {
+            var on = open !== false && i === index;
+            g.section.classList.toggle('is-open', on);
+            g.head.setAttribute('aria-expanded', on ? 'true' : 'false');
+          });
+        }
+
+        // Overlay de carregamento: some quando o iframe termina de carregar.
+        function showSpinner() {
+          if (stage) stage.classList.add('is-loading');
+        }
+        frame.addEventListener('load', function () {
+          if (frame.src && frame.src !== 'about:blank' && stage) stage.classList.remove('is-loading');
+        });
+
+        function select(scene, name) {
+          var target = null;
+          items.forEach(function (it) {
+            var on = it.scene === scene;
+            it.btn.setAttribute('aria-current', on ? 'true' : 'false');
+            if (on) target = it;
+          });
+          if (scene !== current) {
+            current = scene;
+            if (label) label.textContent = 'Tour virtual 360° · ' + name;
+            showSpinner();
+            frame.src = TOUR + scene;
+          }
+          // Mantém aberto o grupo do ambiente selecionado.
+          if (target) openGroup(target.group, true);
+          // No mobile, escolher um ambiente recolhe a sidebar.
+          if (nav.classList.contains('is-open')) toggleNav(false);
+        }
+
+        function setMaximized(on) {
+          dialog.classList.toggle('is-maximized', on);
+          if (maxBtn) {
+            maxBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+            maxBtn.setAttribute('aria-label', on ? 'Restaurar tamanho do tour virtual' : 'Maximizar tour virtual');
+          }
+        }
+
+        function toggleNav(on) {
+          var open = typeof on === 'boolean' ? on : !nav.classList.contains('is-open');
+          nav.classList.toggle('is-open', open);
+          navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        }
+
+        function open() {
+          lastFocus = document.activeElement;
+          setMaximized(false);
+          toggleNav(false);
+          if (!current) select(items[0].scene, items[0].name);
+          dialog.showModal();
+        }
+
+        function close() {
+          dialog.close();
+        }
+
+        openBtn.addEventListener('click', open);
+        closeBtn.addEventListener('click', close);
+        if (maxBtn) {
+          maxBtn.addEventListener('click', function () {
+            setMaximized(!dialog.classList.contains('is-maximized'));
+          });
+        }
+        navToggle.addEventListener('click', function () { toggleNav(); });
+        // Clique no backdrop fecha (só quando o alvo é o próprio dialog).
+        dialog.addEventListener('click', function (e) {
+          if (e.target === dialog) close();
+        });
+        dialog.addEventListener('close', function () {
+          frame.src = 'about:blank';
+          current = null;
+          if (stage) stage.classList.remove('is-loading');
+          setMaximized(false);
+          toggleNav(false);
+          if (lastFocus && typeof lastFocus.focus === 'function') lastFocus.focus();
+        });
+      })();
+
+      /* Modal de vídeo do tour a bordo (YouTube embed) */
+      (function shipVideo() {
+        var dialog = document.getElementById('shipVideoModal');
+        var openBtn = document.getElementById('shipVideoPlay');
+        var closeBtn = document.getElementById('shipVideoClose');
+        var frame = document.getElementById('shipVideoFrame');
+        if (!dialog || !openBtn || !frame || typeof dialog.showModal !== 'function') {
+          if (openBtn) openBtn.hidden = true;
+          return;
+        }
+
+        var EMBED = 'https://www.youtube.com/embed/LrnNnp0PbXQ?rel=0&modestbranding=1&playsinline=1&autoplay=1';
+        var bgVideo = document.querySelector('.ship-video__media');
+        var lastFocus = null;
+
+        function open() {
+          lastFocus = document.activeElement;
+          if (bgVideo && typeof bgVideo.pause === 'function') bgVideo.pause();
+          frame.src = EMBED;
+          dialog.showModal();
+        }
+
+        function close() {
+          dialog.close();
+        }
+
+        openBtn.addEventListener('click', open);
+        if (closeBtn) closeBtn.addEventListener('click', close);
+        // Clique no backdrop fecha (só quando o alvo é o próprio dialog).
+        dialog.addEventListener('click', function (e) {
+          if (e.target === dialog) close();
+        });
+        dialog.addEventListener('close', function () {
+          frame.src = 'about:blank';
+          if (bgVideo && typeof bgVideo.play === 'function') {
+            var p = bgVideo.play();
+            if (p && typeof p.catch === 'function') p.catch(function () {});
+          }
+          if (lastFocus && typeof lastFocus.focus === 'function') lastFocus.focus();
+        });
       })();
 
       /* FAQ premium: scroll-spy + smooth scroll na nav de categorias */

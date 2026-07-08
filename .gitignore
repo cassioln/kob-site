@@ -1,23 +1,8 @@
-# macOS
+# Backups e rascunhos locais (snapshots do browser, drafts de recuperação)
+bkp/
+
+# Arquivos da ferramenta Hermes (attachments, cache)
+.hermes/
+
+# Sistema
 .DS_Store
-
-# Backups e artefatos locais
-*.bak
-*.artifact.json
-index.html.pre-*.bak
-
-# Ferramentas locais / agentes
-.impeccable/
-.od-skills/
-.opencode/
-.playwright-mcp/
-shots/
-
-# Dependências / build (caso surjam)
-node_modules/
-dist/
-build/
-.next/
-.cache/
-.turbo/
-coverage/
