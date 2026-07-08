@@ -322,6 +322,7 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 800; line-height
 .route__wake { fill: none; stroke: var(--kriativa-purple); stroke-width: 12; stroke-linecap: round; opacity: 0.14; filter: blur(4px); stroke-dasharray: 1; stroke-dashoffset: 1; }
 .route__line { fill: none; stroke: url("#routeGrad"); stroke-width: 3.5; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
 .route__ship { offset-path: path("M 180 281 C 250 430 230 540 340 520 C 430 505 470 430 470 322"); offset-distance: 0%; offset-rotate: auto; }
+.route__ship path { stroke: var(--ocean-abyss); }
 .route__port-ring { fill: none; stroke: var(--ocean-blue); stroke-width: 2; }
 .route__port-ring--gold { stroke: var(--sunset-deep); }
 .route__port-dot { fill: var(--ocean-blue); }
