@@ -354,7 +354,7 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 800; line-height
   100% { offset-distance: 100%; opacity: 0; }
 }
 .itin__days .iday { opacity: 0; transform: translateY(14px); }
-.reveal.is-in .itin__days .iday { animation-duration: ; animation-timing-function: ; animation-iteration-count: ; animation-direction: ; animation-fill-mode: ; animation-play-state: ; animation-name: ; animation-timeline: ; animation-range-start: ; animation-range-end: ; animation-delay: calc(280ms + var(--i) * 130ms); }
+.reveal.is-in .itin__days .iday { animation: idayIn 560ms var(--ease-quart) both; animation-delay: calc(280ms + var(--i) * 130ms); }
 @keyframes idayIn { 
   100% { opacity: 1; transform: none; }
 }
