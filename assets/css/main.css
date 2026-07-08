@@ -343,7 +343,7 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 800; line-height
 .iday__title { margin: 4px 0px 6px; font-size: 1.22rem; line-height: 1.2; color: var(--ink-strong); }
 .iday__text { margin: 0px; color: var(--ink-soft); font-size: 0.98rem; line-height: 1.55; max-width: 46ch; }
 .iday__text b { color: var(--action-strong); font-weight: 700; }
-.itin .route__wake, .itin .route__line { transition: stroke-dashoffset 2000ms var(--ease-quart); }
+.itin .route__wake, .itin .route__line { transition: stroke-dashoffset 3900ms var(--ease-quart); }
 .reveal.is-in .itin__map .route__line, .reveal.is-in .route__line { stroke-dashoffset: 0; }
 .reveal.is-in .route__wake { stroke-dashoffset: 0; }
 .route__ship { opacity: 0; }
@@ -351,7 +351,8 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 800; line-height
 @keyframes shipSail { 
   0% { offset-distance: 0%; opacity: 0; }
   8% { opacity: 1; }
-  92% { opacity: 1; }
+  54% { opacity: 1; }
+  66% { opacity: 0; }
   100% { offset-distance: 100%; opacity: 0; }
 }
 .itin__days .iday { opacity: 0; transform: translateY(14px); }
