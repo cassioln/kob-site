@@ -69,6 +69,13 @@
       var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       var reveals = document.querySelectorAll('.reveal');
       function revealAll() { reveals.forEach(function (el) { el.classList.add('is-in'); }); }
+      // Revela só o que está na viewport agora (preserva o gate de scroll pro resto)
+      function revealInView() {
+        reveals.forEach(function (el) {
+          var r = el.getBoundingClientRect();
+          if (r.top < window.innerHeight && r.bottom > 0) el.classList.add('is-in');
+        });
+      }
       if (reduce || !('IntersectionObserver' in window)) {
         // Sem animação: conteúdo permanece visível (nunca ativamos o gate js-reveal)
         revealAll();
@@ -81,15 +88,10 @@
           });
         }, { threshold: 0.08, rootMargin: '0px 0px -6% 0px' });
         reveals.forEach(function (el) { io.observe(el); });
-        // Salvaguarda: se por qualquer motivo o observer não disparar, revela tudo
-        setTimeout(revealAll, 2500);
+        // Salvaguarda: revela apenas o que já está visível — o resto continua no gate de scroll
+        setTimeout(revealInView, 2500);
         // Se a aba abrir já rolada (deep-link), garante o que está na viewport
-        window.addEventListener('load', function () {
-          reveals.forEach(function (el) {
-            var r = el.getBoundingClientRect();
-            if (r.top < window.innerHeight && r.bottom > 0) el.classList.add('is-in');
-          });
-        });
+        window.addEventListener('load', revealInView);
       }
 
       // Lightbox navegável da galeria (usa <dialog> nativo: Escape + focus trap de graça)
