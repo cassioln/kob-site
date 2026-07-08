@@ -516,7 +516,6 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 800; line-height
 .shiptour__nav::-webkit-scrollbar-track { background: transparent; }
 .shiptour__nav::-webkit-scrollbar-thumb { border-radius: 999px; background: padding-box rgba(255, 255, 255, 0.35); border: 2px solid transparent; transition: background var(--dur-fast) var(--ease-quart); }
 .shiptour__nav:hover::-webkit-scrollbar-thumb { background: padding-box rgba(255, 255, 255, 0.55); }
-.shiptour__nav::-webkit-scrollbar-thumb:hover { background-image: ; background-position-x: ; background-position-y: ; background-size: ; background-repeat: ; background-attachment: ; background-origin: ; background-color: ; background-clip: padding-box; }
 .shiptour__group + .shiptour__group { margin-top: 6px; }
 .shiptour__group-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; padding: 10px 8px; border: 0px; border-radius: var(--r-md); background: transparent; color: rgba(255, 255, 255, 0.7); font-family: var(--font-body); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; text-align: left; cursor: pointer; transition: background var(--dur-fast) var(--ease-quart); }
 .shiptour__group-head:hover { background: rgba(255, 255, 255, 0.08); }
