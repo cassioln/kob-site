@@ -351,8 +351,7 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 800; line-height
 @keyframes shipSail { 
   0% { offset-distance: 0%; opacity: 0; }
   8% { opacity: 1; }
-  92% { opacity: 1; }
-  100% { offset-distance: 100%; opacity: 0; }
+  100% { offset-distance: 100%; opacity: 1; }
 }
 .itin__days .iday { opacity: 0; transform: translateY(14px); }
 .reveal.is-in .itin__days .iday { animation: idayIn 560ms var(--ease-quart) both; animation-delay: calc(280ms + var(--i) * 130ms); }
