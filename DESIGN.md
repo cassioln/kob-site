@@ -193,12 +193,12 @@ Bloco de contagem para nov/2026 em cards escuros com números em display (Bricol
 Componente de apresentação da experiência: 5 cartas reais dispostas em **leque sobreposto** que se abre ao entrar no viewport. Cada carta é um pilar do evento (Comunidade, Sorteio, Jogos 24h, Jogos, Monitoria).
 
 **Estrutura:**
-- Fundo neutro claro (bege/creme com gradientes sutis de ciano e roxo)
+- Fundo em transição: nasce no navy/abyss da seção anterior e abre para uma mesa clara bege/creme onde as cartas repousam
 - Cartas em leque: posicionamento absoluto com `--i`, `--x`, `--y`, `--r`, `--z` como variáveis inline para controle individual de offset/rotação/profundidade
 - Carta central (hero) ligeiramente maior e com glint/shimmer animado na entrada
 - Hover "trazer a carta para perto": scale 1.2, translateY -92px, rotação para 0deg, sombra oceânica + glint branco diagonal
 - Mobile (<861px): leque vira **slider horizontal touch** com scroll-snap (`x mandatory`), cartas 72% da largura da tela, cursor grab, pips visíveis abaixo
-- CTA "Confira" com seta animada para `#navio` + copy de destaque (piscinas/shows/gastronomia)
+- CTA inferior vira uma ponte de cartas: copy como "Carta bônus" e link `Confira` como mini-carta inclinada para `#navio`
 - Microcopy "Sua próxima jogada começa aqui" com linhas ciano/roxo como separador visual
 
 **Motion:**
