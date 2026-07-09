@@ -900,18 +900,56 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 800; line-height
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
   flex-wrap: wrap;
-  gap: 18px 24px;
-  max-width: 780px;
+  gap: 18px;
+  max-width: 820px;
   margin: clamp(24px, 3vw, 34px) auto 0;
+  padding: clamp(22px, 3vw, 34px);
   text-align: center;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(13, 41, 78, 0.10);
+  border-radius: var(--r-lg);
+  box-shadow: 0 22px 58px rgba(8, 47, 87, 0.12);
+  backdrop-filter: blur(12px);
 }
 .deck__cta p {
-  flex: 1 1 360px;
+  flex: 0 1 auto;
   margin: 0;
-  color: var(--ink-soft);
-  font-weight: 500;
+  color: var(--ink-strong);
+  font-size: clamp(1.08rem, 1.7vw, 1.36rem);
+  font-weight: 700;
   line-height: 1.55;
+}
+.deck__bonus { max-width: 58ch; }
+.deck__bonus strong { color: var(--action-strong); font-weight: 800; }
+.deck__navio-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--action-strong);
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+.deck__navio-link svg {
+  width: 34px;
+  height: 34px;
+  padding: 7px;
+  color: var(--foam-white);
+  background: var(--action);
+  border-radius: 999px;
+  box-shadow: 0 10px 26px rgba(123, 31, 162, 0.28);
+  animation: deck-arrow-bob 1.45s var(--ease-quart) infinite;
+}
+.deck__navio-link:hover { color: var(--action-hover); }
+.deck__navio-link:hover svg { background: var(--action-hover); }
+@keyframes deck-arrow-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
 }
 
 @media (max-width: 860px) {
@@ -967,6 +1005,7 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 800; line-height
 }
 @media (prefers-reduced-motion: reduce) {
   .deck__card { transition: none !important; }
+  .deck__navio-link svg { animation: none !important; }
   .js-reveal .deck--cards .deck__card { opacity: 1 !important; transform: translate(calc(-50% + var(--x)), var(--y)) rotate(var(--r)) scale(var(--card-scale)) !important; }
 }
 @media (prefers-reduced-motion: reduce) and (max-width: 560px) {
