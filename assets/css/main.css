@@ -916,7 +916,7 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 800; line-height
   mix-blend-mode: screen;
   transition: opacity 220ms var(--ease-quart), transform 620ms var(--ease-expo);
 }
-.deck--cards.is-in .deck__card--hero::after { animation: deck-card-glint 1400ms var(--ease-expo) 780ms 1 both; }
+.deck--cards.is-in .deck__card--hero::after { animation: deck-card-glint 1400ms var(--ease-expo) 780ms 1 none; }
 .deck__card img {
   width: 100%;
   height: auto;
