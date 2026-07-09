@@ -94,6 +94,23 @@
         window.addEventListener('load', revealInView);
       }
 
+      // EMBARQUE / CARTAS: abre o leque real quando a dobra entra no viewport.
+      var cardsDeck = document.querySelector('.deck--cards');
+      if (cardsDeck) {
+        if (reduce || !('IntersectionObserver' in window)) {
+          cardsDeck.classList.add('is-in');
+        } else {
+          new IntersectionObserver(function (entries, obs) {
+            entries.forEach(function (entry) {
+              if (entry.isIntersecting) {
+                cardsDeck.classList.add('is-in');
+                obs.unobserve(entry.target);
+              }
+            });
+          }, { threshold: 0.18, rootMargin: '0px 0px -8% 0px' }).observe(cardsDeck);
+        }
+      }
+
       // Lightbox navegável da galeria (usa <dialog> nativo: Escape + focus trap de graça)
       var dialog = document.getElementById('lightbox');
       var links = Array.prototype.slice.call(document.querySelectorAll('.gallery a'));
