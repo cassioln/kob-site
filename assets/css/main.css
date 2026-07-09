@@ -230,7 +230,7 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 800; line-height
 .event-track::before { content: ""; position: absolute; top: calc(var(--event-node) / 2 - 2px); left: calc(var(--event-node) / 2); right: calc(var(--event-node) / 2); height: 5px; border-radius: 999px; background: linear-gradient(90deg, var(--ocean-cyan), var(--kriativa-purple), var(--sunset-gold)); opacity: 0.9; }
 .event-step { counter-increment: event-step 1; position: relative; min-width: 0px; color: var(--foam-white); }
 .event-step::before { content: counter(event-step); position: absolute; top: calc((var(--event-node) + 18px) * -1); left: 0px; width: var(--event-node); height: var(--event-node); display: grid; place-items: center; border-radius: 14px; font-family: var(--font-display); font-weight: 800; color: var(--action-strong); background: rgb(255, 250, 240); box-shadow: rgba(0, 0, 0, 0.22) 0px 5px 0px; }
-.event-step--now::before { content: "▶"; color: var(--foam-white); background: var(--kriativa-purple); }
+.event-step--now::before { content: "⧗"; color: var(--foam-white); background: var(--kriativa-purple); }
 .event-step__year { display: block; margin-bottom: 7px; font-family: var(--font-display); font-size: clamp(1.35rem, 2.5vw, 2rem); font-weight: 800; font-variant-numeric: tabular-nums; line-height: 1; color: var(--sunset-gold); }
 .event-step__body strong { display: block; margin-bottom: 5px; color: var(--foam-white); }
 .event-step__body span { display: block; max-width: 27ch; color: rgba(255, 255, 255, 0.76); font-size: 0.92rem; line-height: 1.45; text-wrap: pretty; }
