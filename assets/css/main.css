@@ -833,6 +833,16 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 800; line-height
   line-height: 1.62;
   text-wrap: pretty;
 }
+.deck__swipe {
+  display: none;
+  margin: 22px auto 0;
+  color: var(--ink-faint);
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-align: center;
+  text-transform: uppercase;
+}
 .deck__fan {
   position: relative;
   height: clamp(470px, 52vw, 680px);
@@ -842,8 +852,10 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 800; line-height
   list-style: none;
   perspective: 1500px;
 }
+.deck__fan:focus-visible { outline: 2px solid var(--ocean-blue); outline-offset: 8px; }
 .deck__card {
   --card-scale: 1;
+  --card-hover-scale: 1.2;
   position: absolute;
   left: 50%;
   bottom: clamp(22px, 4vw, 42px);
@@ -856,7 +868,7 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 800; line-height
   transition-delay: calc(var(--i) * 80ms);
   will-change: transform, opacity;
 }
-.deck__card--hero { --card-scale: 1.075; }
+.deck__card--hero { --card-scale: 1.075; --card-hover-scale: 1.26; }
 .deck__card img {
   width: 100%;
   height: auto;
@@ -873,9 +885,16 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 800; line-height
   opacity: 1;
   transform: translate(calc(-50% + var(--x)), var(--y)) rotate(var(--r)) scale(var(--card-scale));
 }
-.deck--cards.is-in .deck__card:hover {
-  z-index: 8;
-  transform: translate(calc(-50% + var(--x)), calc(var(--y) - 18px)) rotate(calc(var(--r) * 0.58)) scale(calc(var(--card-scale) + 0.045));
+@media (hover: hover) and (pointer: fine) {
+  .deck--cards.is-in .deck__card:hover {
+    z-index: 20;
+    transition-delay: 0ms;
+    transform: translate(calc(-50% + var(--x)), calc(var(--y) - 86px)) rotate(0deg) scale(var(--card-hover-scale));
+  }
+  .deck--cards.is-in .deck__card:hover img {
+    box-shadow: 0 42px 92px rgba(8, 47, 87, 0.34), 0 14px 34px rgba(123, 31, 162, 0.20);
+    filter: saturate(1.1) contrast(1.04);
+  }
 }
 .deck__cta {
   display: flex;
@@ -905,16 +924,54 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 800; line-height
 }
 @media (max-width: 560px) {
   .deck--cards { padding-block: clamp(70px, 18vw, 96px); }
-  .deck__fan { height: clamp(300px, 92vw, 380px); margin-top: 34px; }
-  .deck__card { width: clamp(108px, 34vw, 128px); bottom: 34px; }
-  .deck__card--comunidade { --x: -54% !important; --y: 24px !important; --r: -14deg !important; }
-  .deck__card--sorteio { --x: -27% !important; --y: 0px !important; --r: -7deg !important; }
-  .deck__card--hero { --card-scale: 1.045; --y: -22px !important; }
-  .deck__card--jogos { --x: 27% !important; --y: 0px !important; --r: 7deg !important; }
-  .deck__card--monitoria { --x: 54% !important; --y: 24px !important; --r: 14deg !important; }
+  .deck__swipe { display: block; }
+  .deck__fan {
+    display: flex;
+    gap: 18px;
+    height: auto;
+    margin: 24px calc(var(--gutter) * -1) 0;
+    padding: 12px var(--gutter) 24px;
+    overflow-x: auto;
+    overflow-y: visible;
+    scroll-padding-inline: var(--gutter);
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x;
+  }
+  .deck__fan::-webkit-scrollbar { display: none; }
+  .deck__card,
+  .deck__card--hero {
+    --card-scale: 1;
+    --card-hover-scale: 1;
+    position: relative;
+    left: auto;
+    bottom: auto;
+    z-index: auto;
+    flex: 0 0 min(76vw, 282px);
+    width: min(76vw, 282px);
+    transform: none;
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+  }
+  .js-reveal .deck--cards .deck__card {
+    opacity: 0;
+    transform: translateY(26px) scale(0.96);
+  }
+  .js-reveal .deck--cards.is-in .deck__card {
+    opacity: 1;
+    transform: none;
+  }
+  .deck--cards.is-in .deck__card:active { transform: translateY(-12px) scale(1.035); }
   .deck__cta .btn { width: 100%; }
 }
 @media (prefers-reduced-motion: reduce) {
   .deck__card { transition: none !important; }
   .js-reveal .deck--cards .deck__card { opacity: 1 !important; transform: translate(calc(-50% + var(--x)), var(--y)) rotate(var(--r)) scale(var(--card-scale)) !important; }
+}
+@media (prefers-reduced-motion: reduce) and (max-width: 560px) {
+  .js-reveal .deck--cards .deck__card { transform: none !important; }
+}
+@media (prefers-reduced-motion: reduce) and (hover: hover) and (pointer: fine) {
+  .deck--cards.is-in .deck__card:hover { transform: translate(calc(-50% + var(--x)), calc(var(--y) - 86px)) rotate(0deg) scale(var(--card-hover-scale)) !important; }
 }
