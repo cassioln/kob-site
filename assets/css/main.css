@@ -900,6 +900,8 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 800; line-height
   transition-delay: calc(var(--i) * 80ms);
   will-change: transform, opacity;
   cursor: zoom-in;
+  border-radius: clamp(16px, 1.9vw, 24px);
+  overflow: hidden;
 }
 .deck__card--hero { --card-scale: 1.075; --card-hover-scale: 1.26; }
 .deck__card::after {
