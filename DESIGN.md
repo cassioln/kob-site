@@ -189,6 +189,62 @@ Sistema majoritariamente plano e imersivo: a profundidade vem de **camadas de im
 ### Contador Regressivo (signature)
 Bloco de contagem para nov/2026 em cards escuros com números em display (Bricolage 800) e glow roxo sutil. Anima a virada dos dígitos. É o pulso de urgência da página.
 
+### Deck de Cartas (seção #embarque)
+Componente de apresentação da experiência: 5 cartas reais dispostas em **leque sobreposto** que se abre ao entrar no viewport. Cada carta é um pilar do evento (Comunidade, Sorteio, Jogos 24h, Jogos, Monitoria).
+
+**Estrutura:**
+- Fundo neutro claro (bege/creme com gradientes sutis de ciano e roxo)
+- Cartas em leque: posicionamento absoluto com `--i`, `--x`, `--y`, `--r`, `--z` como variáveis inline para controle individual de offset/rotação/profundidade
+- Carta central (hero) ligeiramente maior e com glint/shimmer animado na entrada
+- Hover "trazer a carta para perto": scale 1.2, translateY -92px, rotação para 0deg, sombra oceânica + glint branco diagonal
+- Mobile (<861px): leque vira **slider horizontal touch** com scroll-snap (`x mandatory`), cartas 72% da largura da tela, cursor grab, pips visíveis abaixo
+- CTA "Confira" com seta animada para `#navio` + copy de destaque (piscinas/shows/gastronomia)
+- Microcopy "Sua próxima jogada começa aqui" com linhas ciano/roxo como separador visual
+
+**Motion:**
+- Observer adiciona `.is-in` quando a seção entra no viewport (trigger do leque)
+- Transição: 520ms opacity + 760ms transform com `ease-out-expo`, stagger via `transition-delay: calc(var(--i) * 80ms)`
+- Glint na carta hero: 1400ms com delay de 780ms, `ease-out-expo`, `mix-blend-mode: screen`
+- Fallback `prefers-reduced-motion`: cartas aparecem imediatamente, sem animação
+
+**Regra de composição do leque (desktop):**
+```css
+.deck__card {
+  position: absolute;
+  left: 50%;
+  transform: translate(calc(-50% + var(--x)), var(--y)) rotate(var(--r)) scale(var(--card-scale));
+}
+```
+As variáveis `--i` (índice), `--x` (offset horizontal %), `--y` (offset vertical px), `--r` (rotação deg) e `--z` (z-index) são definidas inline em cada `<li>` para posição individual do leque.
+
+## 7. Layout Patterns
+
+### Seção do Deck (#embarque)
+
+**Desktop (≥861px):**
+- Leque de 5 cartas em arco, largura individual `clamp(180px, 18vw, 220px)`
+- Carta hero no centro com `--card-scale: 1.075` e `--card-hover-scale: 1.26`
+- Rotações variam de -18° a +18° para criar o arco
+- Sombra sutil sob o leque (`.deck__fan::before`) para dar sensação de "mesa"
+- Hover em qualquer carta desativa transições das outras (via `.js-reveal .deck:hover .deck__card` não tem, mas cada carta tem sua própria transição)
+
+**Tablet (561–860px):**
+- Cartas menores `clamp(160px, 20vw, 190px)`
+- Rotações suavizadas (-12° a +12°)
+- Mesmo comportamento de hover
+
+**Mobile (≤560px):**
+- Slider horizontal touch (`overflow-x: auto`, `scroll-snap-type: x mandatory`)
+- Cartas com largura `min(72vw, 260px)`, sem rotação (`--r: 0deg`)
+- Cursor `grab`, pips visíveis com 3º destacado (carta central inicial)
+- Label "Arraste para navegar pelas cartas" em pill arredondado
+- Sombra sob cartas removida (`.deck__fan::before { display: none; }`)
+
+**Regras de responsividade:**
+- O leque **nunca** usa `grid` ou `flex-wrap` — é sempre posicionamento absoluto (desktop) ou slider (mobile)
+- `perspective: 1500px` no `.deck__fan` para dar profundidade 3D ao leque
+- `transform-origin: 50% 120%` para que a rotação pareça "abrir de baixo"
+
 ## 6. Do's and Don'ts
 
 ### Do:
