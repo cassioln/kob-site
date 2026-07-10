@@ -1168,7 +1168,6 @@ h4 {
   grid-column: 1 / -1;
   display: flex;
   justify-content: center;
-  margin-bottom: clamp(30px, 5vw, 58px);
 }
 
 .event-stage__copy {
@@ -1176,7 +1175,6 @@ h4 {
 }
 
 .event-kicker {
-  display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 14px;
@@ -1330,6 +1328,10 @@ h4 {
   margin-bottom: 7%;
   object-fit: cover;
   object-position: 50% 8%;
+  /* base cropada na mesma angulação do card degradê (rotate(-4deg) skewY(-2deg)
+     ≈ 6° combinados, canto direito mais alto). desnível vertical calibrado à
+     largura/altura reais da caixa para casar os 6° da base do card */
+  clip-path: polygon(0% 0%, 100% 0%, 100% 93.4%, 0% 100%);
   filter: drop-shadow(rgba(0, 0, 0, 0.45) 0px 28px 48px);
 }
 
