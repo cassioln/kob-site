@@ -4271,6 +4271,110 @@ h4 {
   font-size: 0.85rem;
 }
 
+/* #depoimentos overdrive: convés de vozes em profundidade */
+#depoimentos.section--navy {
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  background:
+    radial-gradient(circle at 82% 16%, rgba(123, 31, 162, 0.28), transparent 34%),
+    radial-gradient(circle at 8% 82%, rgba(0, 174, 239, 0.18), transparent 36%),
+    linear-gradient(180deg, var(--ocean-abyss), var(--dark-navy) 52%, var(--ocean-abyss));
+}
+
+#depoimentos::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -12% -20% auto;
+  height: 62%;
+  background: radial-gradient(ellipse at 50% 0%, rgba(41, 195, 245, 0.12), transparent 70%);
+  pointer-events: none;
+}
+
+#depoimentos .voices {
+  perspective: 1400px;
+}
+
+#depoimentos .quote {
+  background: linear-gradient(160deg, rgba(133, 201, 245, 0.09), rgba(8, 26, 51, 0.42));
+  border: 1px solid rgba(133, 201, 245, 0.16);
+  box-shadow: 0 18px 48px -28px rgba(4, 29, 58, 0.9);
+  transform-style: preserve-3d;
+}
+
+#depoimentos .quote::before {
+  color: var(--ocean-cyan);
+  opacity: 0.22;
+}
+
+#depoimentos .quote p {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+#depoimentos .quote footer {
+  color: var(--foam-white);
+}
+
+#depoimentos .quote footer span {
+  color: rgba(133, 201, 245, 0.82);
+}
+
+#depoimentos .quote--featured {
+  background: linear-gradient(155deg, rgba(123, 31, 162, 0.34), rgba(8, 26, 51, 0.5));
+  border-color: rgba(231, 169, 240, 0.4);
+  box-shadow: 0 26px 60px -30px rgba(123, 31, 162, 0.8);
+}
+
+#depoimentos .quote--featured p {
+  color: #fff;
+  font-size: 1.06rem;
+}
+
+.quote__seal {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  align-self: flex-start;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(255, 194, 14, 0.16);
+  border: 1px solid rgba(255, 194, 14, 0.44);
+  color: var(--sunset-gold);
+  font-family: var(--font-display);
+  font-size: 0.66rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.quote__seal::before {
+  content: "★";
+  font-size: 0.72rem;
+}
+
+/* Parallax por scroll: aprimora um default já visível; nunca esconde conteúdo. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    #depoimentos .quote {
+      animation: voice-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 38%;
+    }
+
+    @keyframes voice-rise {
+      from {
+        opacity: 0.55;
+        transform: translateY(calc(22px + var(--depth, 1) * 10px)) rotateX(6deg);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) rotateX(0deg);
+      }
+    }
+  }
+}
+
 .slider {
   position: relative;
   margin-top: var(--sp-lg);
