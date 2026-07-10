@@ -421,6 +421,13 @@ h4 {
   gap: 4px;
 }
 
+/* Primeira dobra: menu ocupa toda a largura, distribuído e centralizado */
+.nav[data-scrolled="false"] .nav__links {
+  flex: 1 1 auto;
+  justify-content: space-between;
+  gap: 0;
+}
+
 .nav__links a {
   color: rgba(255, 255, 255, 0.82);
   text-decoration: none;
