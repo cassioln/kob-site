@@ -1452,13 +1452,20 @@ h4 {
   display: grid;
   place-items: center;
   border-radius: 14px;
-  background: rgb(255, 250, 240);
-  box-shadow: rgba(0, 0, 0, 0.22) 0px 5px 0px;
+  background: var(--ocean-abyss);
+  box-shadow:
+    inset 0 0 0 2px var(--ocean-cyan),
+    inset 0 0 0 5px rgba(41, 195, 245, 0.18),
+    rgba(0, 0, 0, 0.3) 0px 5px 0px;
 }
 
 .event-step--now::before {
   content: "";
   background: var(--kriativa-purple);
+  box-shadow:
+    inset 0 0 0 2px var(--purple-glow),
+    inset 0 0 0 5px rgba(231, 169, 240, 0.22),
+    rgba(0, 0, 0, 0.3) 0px 5px 0px;
   z-index: 1;
 }
 
