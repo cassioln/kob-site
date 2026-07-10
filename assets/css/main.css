@@ -1486,7 +1486,7 @@ h4 {
   width: calc(var(--event-node-w) + 8px);
   height: calc(var(--event-node) + 8px);
   border-radius: 18px;
-  background: conic-gradient(from 0deg, rgba(41, 195, 245, 0) 0deg, rgba(41, 195, 245, 0) 250deg, var(--ocean-cyan) 340deg, rgba(41, 195, 245, 0) 360deg);
+  background: conic-gradient(from var(--ring-angle, 0deg), rgba(41, 195, 245, 0) 0deg, rgba(41, 195, 245, 0) 250deg, var(--ocean-cyan) 340deg, rgba(41, 195, 245, 0) 360deg);
   -webkit-mask:
     linear-gradient(#000 0 0) content-box,
     linear-gradient(#000 0 0);
@@ -1560,7 +1560,7 @@ h4 {
   display: inline-flex;
   margin-top: 12px;
   padding: 7px 12px;
-  border-radius: 999px;
+  border-radius: 10px;
   font-family: var(--font-body);
   font-size: 0.68rem;
   font-weight: 800;
@@ -1692,9 +1692,15 @@ h4 {
   }
 }
 
+@property --ring-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
 @keyframes event-ring-spin {
   to {
-    transform: rotate(360deg);
+    --ring-angle: 360deg;
   }
 }
 
