@@ -28,7 +28,7 @@
   <!-- Fontes da marca (banner KOB): Gobold Extra2 = display, Chantal = acento manuscrito -->
   <link rel="preload" href="assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
 
-  <link rel="stylesheet" href="assets/css/main.css?v=20260710-deck-color">
+  <link rel="stylesheet" href="assets/css/main.css?v=20260710-ship-bridge">
 </head>
 
 <body>
@@ -344,9 +344,10 @@
 
     <!-- NAVIO -->
     <section class="section section--deepest" id="navio" aria-labelledby="navio-title">
-      <div class="container">
-        <div class="section__head reveal">
-          <h2 id="navio-title">Um navio de 13 andares como seu salão de jogos</h2>
+      <div class="container ship-command">
+        <div class="section__head ship-command__head reveal">
+          <p class="ship-command__status"><span>MSC Música</span><span>o mundo a bordo de um navio</span></p>
+          <h2 id="navio-title">Um navio de <span>13 andares</span> como seu salão de jogos</h2>
           <p class="lead">Durante o dia e a noite, o MSC Música tem música ao vivo, espetáculos, bares e
             lounges,
             cassino, spa e uma área inteira dedicada às crianças. E no meio de tudo isso, a sua sala de
@@ -354,50 +355,45 @@
             horas.</p>
         </div>
         <div class="ship-grid reveal">
-          <div class="ship-show" id="shipShow" aria-roledescription="carrossel" aria-label="Fotos do MSC Música">
-            <figure class="ship-slide" data-active="false"><img src="assets/images/ship/msc-musica-la-spiaggia-pool.jpg"
-                alt="Piscina La Spiaggia do MSC Música" fetchpriority="low">
-              <figcaption><b>Piscina La Spiaggia</b><span>Sol e mergulho entre uma partida e outra</span>
-              </figcaption>
-            </figure>
-            <figure class="ship-slide" data-active="false"><img src="assets/images/ship/msc-musica-sanremo-casino.jpg"
-                alt="Cassino Sanremo do MSC Música" loading="lazy">
-              <figcaption><b>Cassino Sanremo</b><span>Aposte a sorte quando não estiver rolando os
-                  dados</span>
-              </figcaption>
-            </figure>
-            <figure class="ship-slide" data-active="true"><img src="assets/images/ship/msc-musica-children-playroom.jpg"
-                alt="Sala de brinquedos infantil do MSC Música" loading="lazy">
-              <figcaption><b>Espaço kids</b><span>Uma área inteira dedicada aos pequenos Kriativos</span>
-              </figcaption>
-            </figure>
-            <figure class="ship-slide" data-active="false"><img src="assets/images/ship/msc-musica-teatro-la-scala.jpg"
-                alt="Teatro La Scala do MSC Música" loading="lazy">
-              <figcaption><b>Teatro La Scala</b><span>Espetáculos ao vivo todas as noites a bordo</span>
-              </figcaption>
-            </figure>
-            <figure class="ship-slide" data-active="false"><img src="assets/images/ship/msc-musica-copacabana-pool.jpg"
-                alt="Piscina Copacabana do MSC Música" loading="lazy">
-              <figcaption><b>Piscina Copacabana</b><span>O melhor cenário para a sua próxima jogada</span>
-              </figcaption>
-            </figure>
-            <button class="ship-show__btn ship-show__prev" id="shipPrev" aria-label="Foto anterior">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                stroke-linejoin="round">
+          <div class="ship-show" id="shipShow" aria-roledescription="carrossel" aria-label="Fotos do MSC Música" data-current="01" data-total="05" data-paused="false">
+            <div class="ship-show__viewport">
+              <figure class="ship-slide" data-active="false"><img src="assets/images/ship/msc-musica-la-spiaggia-pool.jpg" alt="Piscina La Spiaggia do MSC Música" fetchpriority="low">
+                <figcaption><b>Piscina La Spiaggia</b><span>Sol e mergulho entre uma partida e outra</span>
+                </figcaption>
+              </figure>
+              <figure class="ship-slide" data-active="false"><img src="assets/images/ship/msc-musica-sanremo-casino.jpg" alt="Cassino Sanremo do MSC Música" loading="lazy">
+                <figcaption><b>Cassino Sanremo</b><span>Aposte a sorte quando não estiver rolando os
+                    dados</span>
+                </figcaption>
+              </figure>
+              <figure class="ship-slide" data-active="true"><img src="assets/images/ship/msc-musica-children-playroom.jpg" alt="Sala de brinquedos infantil do MSC Música" loading="lazy">
+                <figcaption><b>Espaço kids</b><span>Uma área inteira dedicada aos pequenos Kriativos</span>
+                </figcaption>
+              </figure>
+              <figure class="ship-slide" data-active="false"><img src="assets/images/ship/msc-musica-teatro-la-scala.jpg" alt="Teatro La Scala do MSC Música" loading="lazy">
+                <figcaption><b>Teatro La Scala</b><span>Espetáculos ao vivo todas as noites a bordo</span>
+                </figcaption>
+              </figure>
+              <figure class="ship-slide" data-active="false"><img src="assets/images/ship/msc-musica-copacabana-pool.jpg" alt="Piscina Copacabana do MSC Música" loading="lazy">
+                <figcaption><b>Piscina Copacabana</b><span>O melhor cenário para a sua próxima jogada</span>
+                </figcaption>
+              </figure>
+            </div>
+            <div class="ship-show__hud" aria-hidden="true">
+              <span class="ship-show__hud-label">Ponte de comando</span>
+              <span class="ship-show__counter"><b data-ship-current="">01</b><i>/</i><span data-ship-total="">05</span></span>
+            </div>
+            <button class="ship-show__btn ship-show__prev" id="shipPrev" type="button" aria-label="Foto anterior">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M15 18l-6-6 6-6"></path>
               </svg>
             </button>
-            <button class="ship-show__btn ship-show__next" id="shipNext" aria-label="Próxima foto">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                stroke-linejoin="round">
+            <button class="ship-show__btn ship-show__next" id="shipNext" type="button" aria-label="Próxima foto">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M9 18l6-6-6-6"></path>
               </svg>
             </button>
-            <div class="ship-show__dots" id="shipDots" role="tablist" aria-label="Selecionar foto"><button role="tab"
-                aria-label="Foto 1 de 5" aria-current="false"></button><button role="tab" aria-label="Foto 2 de 5"
-                aria-current="false"></button><button role="tab" aria-label="Foto 3 de 5"
-                aria-current="true"></button><button role="tab" aria-label="Foto 4 de 5"
-                aria-current="false"></button><button role="tab" aria-label="Foto 5 de 5" aria-current="false"></button>
+            <div class="ship-show__dots" id="shipDots" role="tablist" aria-label="Selecionar foto"><button role="tab" aria-label="Foto 1 de 5" aria-current="false"></button><button role="tab" aria-label="Foto 2 de 5" aria-current="false"></button><button role="tab" aria-label="Foto 3 de 5" aria-current="true"></button><button role="tab" aria-label="Foto 4 de 5" aria-current="false"></button><button role="tab" aria-label="Foto 5 de 5" aria-current="false"></button>
             </div>
           </div>
         </div>
@@ -1563,7 +1559,7 @@
     </svg>
   </a>
 
-  <script src="assets/js/main.js?v=20260709-cards-hover"></script>
+  <script src="assets/js/main.js?v=20260710-ship-bridge"></script>
 
 
 

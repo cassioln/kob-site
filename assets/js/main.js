@@ -176,43 +176,124 @@
       if (show) {
         var slides = Array.prototype.slice.call(show.querySelectorAll('.ship-slide'));
         var dotsWrap = document.getElementById('shipDots');
+        var currentDisplay = show.querySelector('[data-ship-current]');
+        var totalDisplay = show.querySelector('[data-ship-total]');
         var idx = 0, timer = null;
         var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        var finePointer = window.matchMedia('(pointer: fine)').matches && !reduceMotion;
+        var inView = true;
+        var pointerFrame = null;
+        var padIndex = function (i) { return String(i + 1).padStart(2, '0'); };
         // O backup salvo do browser pode trazer dots já renderizados.
         // Limpa antes de reconstruir para evitar tabs duplicadas.
         if (dotsWrap) dotsWrap.textContent = '';
-        // cria dots
+        // Cria o trilho de miniaturas a partir das próprias imagens do carrossel.
         var dots = slides.map(function (s, i) {
           var b = document.createElement('button');
+          var image = s.querySelector('img');
+          var title = s.querySelector('figcaption b');
+          var marker = document.createElement('span');
+          var tabId = 'ship-tab-' + (i + 1);
+          var panelId = 'ship-slide-' + (i + 1);
+          b.id = tabId;
           b.setAttribute('role', 'tab');
-          b.setAttribute('aria-label', 'Foto ' + (i + 1) + ' de ' + slides.length);
+          b.setAttribute('aria-controls', panelId);
+          b.setAttribute('aria-label', 'Mostrar ' + (title ? title.textContent : 'foto ' + (i + 1)) + ', foto ' + (i + 1) + ' de ' + slides.length);
+          s.id = panelId;
+          s.setAttribute('role', 'tabpanel');
+          s.setAttribute('aria-labelledby', tabId);
+          b.style.setProperty('--ship-thumb', 'url("' + image.src + '")');
+          marker.setAttribute('aria-hidden', 'true');
+          marker.textContent = padIndex(i);
+          b.appendChild(marker);
           b.addEventListener('click', function () { goTo(i, true); });
           dotsWrap.appendChild(b);
           return b;
         });
         function goTo(i, manual) {
           idx = (i + slides.length) % slides.length;
-          slides.forEach(function (s, k) { s.dataset.active = (k === idx) ? 'true' : 'false'; });
-          dots.forEach(function (d, k) { d.setAttribute('aria-current', (k === idx) ? 'true' : 'false'); });
+          var current = padIndex(idx);
+          slides.forEach(function (s, k) {
+            var active = k === idx;
+            s.dataset.active = active ? 'true' : 'false';
+            s.setAttribute('aria-hidden', active ? 'false' : 'true');
+          });
+          dots.forEach(function (d, k) {
+            var active = k === idx;
+            d.setAttribute('aria-current', active ? 'true' : 'false');
+            d.setAttribute('aria-selected', active ? 'true' : 'false');
+            d.tabIndex = active ? 0 : -1;
+          });
+          show.dataset.current = current;
+          show.dataset.total = padIndex(slides.length - 1);
+          if (currentDisplay) currentDisplay.textContent = current;
+          if (totalDisplay) totalDisplay.textContent = padIndex(slides.length - 1);
           if (manual) restart();
         }
         function next() { goTo(idx + 1); }
-        function start() { if (!reduceMotion) timer = setInterval(next, 5000); }
-        function stop() { if (timer) { clearInterval(timer); timer = null; } }
+        function start() {
+          if (!reduceMotion && inView && !document.hidden && !timer &&
+            (!finePointer || !show.matches(':hover')) && !show.contains(document.activeElement)) {
+            timer = setInterval(next, 5000);
+            show.dataset.paused = 'false';
+          }
+        }
+        function stop() {
+          if (timer) clearInterval(timer);
+          timer = null;
+          show.dataset.paused = 'true';
+        }
         function restart() { stop(); start(); }
         document.getElementById('shipNext').addEventListener('click', function () { goTo(idx + 1, true); });
         document.getElementById('shipPrev').addEventListener('click', function () { goTo(idx - 1, true); });
         show.addEventListener('mouseenter', stop);
-        show.addEventListener('mouseleave', start);
+        show.addEventListener('mouseleave', function () {
+          if (pointerFrame) cancelAnimationFrame(pointerFrame);
+          show.style.setProperty('--ship-tilt-x', '0deg');
+          show.style.setProperty('--ship-tilt-y', '0deg');
+          show.style.setProperty('--ship-pan-x', '0px');
+          show.style.setProperty('--ship-pan-y', '0px');
+          start();
+        });
         show.addEventListener('focusin', stop);
-        show.addEventListener('focusout', start);
+        show.addEventListener('focusout', function (event) {
+          if (!show.contains(event.relatedTarget)) start();
+        });
+        show.addEventListener('keydown', function (event) {
+          if (event.key === 'ArrowLeft') { event.preventDefault(); goTo(idx - 1, true); }
+          if (event.key === 'ArrowRight') { event.preventDefault(); goTo(idx + 1, true); }
+          if (event.key === 'Home') { event.preventDefault(); goTo(0, true); }
+          if (event.key === 'End') { event.preventDefault(); goTo(slides.length - 1, true); }
+        });
+        if (finePointer) {
+          show.addEventListener('pointermove', function (event) {
+            if (pointerFrame) cancelAnimationFrame(pointerFrame);
+            pointerFrame = requestAnimationFrame(function () {
+              pointerFrame = null;
+              var rect = show.getBoundingClientRect();
+              var x = ((event.clientX - rect.left) / rect.width - 0.5) * 2;
+              var y = ((event.clientY - rect.top) / rect.height - 0.5) * 2;
+              show.style.setProperty('--ship-tilt-x', (x * 1.6).toFixed(2) + 'deg');
+              show.style.setProperty('--ship-tilt-y', (y * -1.15).toFixed(2) + 'deg');
+              show.style.setProperty('--ship-pan-x', (x * -7).toFixed(1) + 'px');
+              show.style.setProperty('--ship-pan-y', (y * -5).toFixed(1) + 'px');
+            });
+          }, { passive: true });
+        }
         // pausa quando fora da tela
         if ('IntersectionObserver' in window) {
           new IntersectionObserver(function (entries) {
-            entries.forEach(function (e) { if (e.isIntersecting) start(); else stop(); });
+            entries.forEach(function (e) {
+              inView = e.isIntersecting;
+              if (inView) start(); else stop();
+            });
           }, { threshold: 0.25 }).observe(show);
         } else { start(); }
+        document.addEventListener('visibilitychange', function () {
+          if (document.hidden) stop(); else start();
+        });
         goTo(0);
+        show.dataset.ready = 'true';
       }
 
       // Hero com vídeo de fundo em 3 fases:
