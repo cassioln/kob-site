@@ -955,12 +955,12 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 800; line-height
 .deck__cta {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(150px, 240px) minmax(0, 1fr);
   align-items: center;
-  gap: clamp(18px, 3vw, 34px);
-  max-width: 960px;
-  margin: clamp(26px, 3.4vw, 40px) auto 0;
-  padding: clamp(18px, 2.6vw, 30px) 0 0;
+  gap: clamp(28px, 4.6vw, 58px);
+  max-width: 900px;
+  margin: clamp(24px, 3.4vw, 40px) auto 0;
+  padding: clamp(22px, 3vw, 34px) 0 0;
   overflow: visible;
   text-align: left;
   background: transparent;
@@ -976,6 +976,49 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 800; line-height
   height: 1px;
   background: linear-gradient(90deg, rgba(8, 47, 87, 0), rgba(8, 47, 87, 0.30), rgba(123, 31, 162, 0.24), rgba(8, 47, 87, 0));
 }
+.deck__bonus-card {
+  position: relative;
+  display: block;
+  width: min(100%, 230px);
+  justify-self: end;
+  border-radius: clamp(14px, 1.7vw, 20px);
+  overflow: hidden;
+  transform: rotate(-5deg);
+  transform-origin: 50% 85%;
+  box-shadow: 0 20px 0 rgba(8, 47, 87, 0.13), 0 28px 64px rgba(8, 47, 87, 0.22);
+  transition: transform 220ms var(--ease-quart), box-shadow 220ms var(--ease-quart);
+}
+.deck__bonus-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(115deg, rgba(255,255,255,0) 24%, rgba(255,255,255,0.42) 46%, rgba(255,255,255,0) 64%);
+  opacity: 0;
+  transform: translateX(-110%) skewX(-14deg);
+  transition: opacity 220ms var(--ease-quart), transform 640ms var(--ease-expo);
+}
+.deck__bonus-card:hover,
+.deck__bonus-card:focus-visible {
+  transform: rotate(-2deg) translateY(-8px) scale(1.035);
+  box-shadow: 0 24px 0 rgba(8, 47, 87, 0.12), 0 34px 80px rgba(8, 47, 87, 0.26);
+}
+.deck__bonus-card:hover::after,
+.deck__bonus-card:focus-visible::after {
+  opacity: 0.78;
+  transform: translateX(118%) skewX(-14deg);
+}
+.deck__bonus-card img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.deck__bonus-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 18px;
+}
 .deck__cta p {
   flex: 0 1 auto;
   margin: 0;
@@ -985,37 +1028,11 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 800; line-height
   line-height: 1.42;
 }
 .deck__bonus {
-  position: relative;
-  max-width: 58ch;
-  padding-left: clamp(62px, 8vw, 86px);
-}
-.deck__bonus::before {
-  content: "";
-  position: absolute;
-  left: 4px;
-  top: 50%;
-  width: clamp(38px, 4.8vw, 52px);
-  aspect-ratio: 0.70;
-  border-radius: 9px;
-  transform: translateY(-50%) rotate(-7deg);
-  background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.82), rgba(255, 250, 241, 0.96)),
-    linear-gradient(135deg, var(--ocean-cyan), var(--kriativa-purple));
-  box-shadow: 0 8px 0 rgba(8, 47, 87, 0.12);
-}
-.deck__bonus::after {
-  content: "★";
-  position: absolute;
-  left: clamp(18px, 2.25vw, 25px);
-  top: 50%;
-  transform: translateY(-50%) rotate(-7deg);
-  color: var(--kriativa-purple);
-  font-size: clamp(0.9rem, 1.4vw, 1.08rem);
-  font-weight: 800;
+  max-width: 40ch;
 }
 .deck__bonus > span {
-  display: inline-flex;
-  margin-right: 8px;
+  display: block;
+  margin: 0 0 8px;
   color: var(--ocean-navy);
   font-family: var(--font-display);
   font-size: 0.82em;
@@ -1026,18 +1043,18 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 800; line-height
 .deck__bonus strong { color: var(--action-strong); font-weight: 800; }
 .deck__navio-link {
   position: relative;
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  display: inline-grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 12px;
-  min-width: 252px;
-  padding: 11px 12px;
+  min-width: 210px;
+  padding: 12px 12px 12px 18px;
   color: var(--ocean-abyss);
   background: linear-gradient(135deg, #fffaf1, #ffffff 58%, #f3edf9);
   border-radius: 16px;
-  box-shadow: 0 10px 0 rgba(8, 47, 87, 0.14);
+  box-shadow: 0 8px 0 rgba(8, 47, 87, 0.14);
   text-decoration: none;
-  transform: rotate(-2deg);
+  transform: rotate(-1.4deg);
   transition: transform 180ms var(--ease-quart), box-shadow 180ms var(--ease-quart), color 180ms var(--ease-quart);
 }
 .deck__navio-link::before {
@@ -1047,21 +1064,6 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 800; line-height
   pointer-events: none;
   border: 1px solid rgba(8, 47, 87, 0.14);
   border-radius: 11px;
-}
-.deck__navio-badge {
-  display: grid;
-  place-items: center;
-  width: 48px;
-  aspect-ratio: 0.72;
-  color: var(--foam-white);
-  font-family: var(--font-display);
-  font-size: 0.66rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  border-radius: 10px;
-  background: linear-gradient(145deg, var(--ocean-blue), var(--kriativa-purple));
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.38);
 }
 .deck__navio-copy {
   display: flex;
@@ -1095,7 +1097,7 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 800; line-height
 .deck__navio-link:hover {
   color: var(--action-hover);
   transform: rotate(0deg) translateY(-4px);
-  box-shadow: 0 13px 0 rgba(8, 47, 87, 0.13);
+  box-shadow: 0 11px 0 rgba(8, 47, 87, 0.13);
 }
 .deck__navio-link:hover svg { background: var(--action-hover); }
 @keyframes deck-arrow-bob {
@@ -1191,19 +1193,17 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 800; line-height
     padding-top: 24px;
     text-align: center;
   }
+  .deck__bonus-card {
+    justify-self: center;
+    width: min(72vw, 230px);
+    transform: rotate(-3deg);
+  }
+  .deck__bonus-copy {
+    align-items: center;
+    gap: 16px;
+  }
   .deck__bonus {
     max-width: 30ch;
-    padding: 52px 0 0;
-  }
-  .deck__bonus::before {
-    left: 50%;
-    top: 0;
-    transform: translateX(-50%) rotate(-7deg);
-  }
-  .deck__bonus::after {
-    left: 50%;
-    top: 19px;
-    transform: translateX(-50%) rotate(-7deg);
   }
   .deck__bonus > span {
     display: flex;
@@ -1220,6 +1220,8 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 800; line-height
 @media (prefers-reduced-motion: reduce) {
   .deck__card { transition: none !important; }
   .deck__card::after { animation: none !important; transition: none !important; }
+  .deck__bonus-card,
+  .deck__bonus-card::after { transition: none !important; }
   .deck__navio-link svg { animation: none !important; }
   .js-reveal .deck--cards .deck__card { opacity: 1 !important; transform: translate(calc(-50% + var(--x)), var(--y)) rotate(var(--r)) scale(var(--card-scale)) !important; }
 }

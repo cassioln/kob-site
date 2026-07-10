@@ -198,7 +198,7 @@ Componente de apresentação da experiência: 5 cartas reais dispostas em **lequ
 - Carta central (hero) ligeiramente maior e com glint/shimmer animado na entrada
 - Hover "trazer a carta para perto": scale 1.2, translateY -92px, rotação para 0deg, sombra oceânica + glint branco diagonal
 - Mobile (<861px): leque vira **slider horizontal touch** com scroll-snap (`x mandatory`), cartas 72% da largura da tela, cursor grab, pips visíveis abaixo
-- CTA inferior vira uma ponte de cartas: copy como "Carta bônus" e link `Confira` como mini-carta inclinada para `#navio`
+- CTA inferior usa a arte real `carta-bonus.webp` (Super Trunfo MSC Cruzeiros) como carta clicável para `#navio`, acompanhada por copy curta e link `Confira`
 - Microcopy "Sua próxima jogada começa aqui" com linhas ciano/roxo como separador visual
 
 **Motion:**
