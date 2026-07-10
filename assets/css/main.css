@@ -5804,27 +5804,41 @@ h4 {
 
 .deck__navio-copy small {
   margin-top: 5px;
-  color: rgba(255, 255, 255, 0.80);
+  color: var(--ink-soft);
   font-size: 0.78rem;
   font-weight: 800;
   letter-spacing: 0.04em;
+  transition: color 220ms var(--ease-quart);
 }
 
 .deck__navio-link svg {
-  width: 34px;
-  height: 34px;
-  color: var(--sunset-gold);
+  width: 48px;
+  height: 48px;
+  padding: 13px;
+  color: var(--foam-white);
+  background: var(--action);
+  border-radius: 50%;
+  box-shadow: 0 5px 14px rgba(87, 18, 122, 0.24);
   animation: deck-arrow-bob 1.45s var(--ease-quart) infinite;
+  transition: color 220ms var(--ease-quart), background 220ms var(--ease-quart), box-shadow 220ms var(--ease-quart);
 }
 
 .deck__navio-link:hover {
-  background: var(--action-hover);
-  transform: translateY(-4px);
-  box-shadow: 0 11px 0 rgba(43, 8, 66, 0.9);
+  color: var(--foam-white);
+  background: var(--action);
+  border-color: var(--action);
+  transform: translateY(-3px);
+  box-shadow: 0 16px 32px rgba(58, 21, 96, 0.20);
+}
+
+.deck__navio-link:hover small {
+  color: rgba(255, 255, 255, 0.82);
 }
 
 .deck__navio-link:hover svg {
-  color: var(--foam-white);
+  color: var(--action-strong);
+  background: var(--foam-white);
+  box-shadow: none;
 }
 
 .js-reveal .deck__cta .deck__bonus-head,
