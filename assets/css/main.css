@@ -434,6 +434,12 @@ h4 {
   gap: clamp(8px, 1.6vw, 28px);
 }
 
+/* "O evento" e "O que inclui" só aparecem no menu da 1ª dobra;
+   quando o menu reaparece ao rolar (2ª dobra em diante), somem. */
+.nav[data-scrolled="true"] .nav__link--fold1 {
+  display: none;
+}
+
 .nav__links a {
   color: rgba(255, 255, 255, 0.82);
   text-decoration: none;
@@ -4563,6 +4569,12 @@ h4 {
   .nav[data-scrolled="false"] .nav__right {
     display: flex;
   }
+
+  /* Tablet/mobile: menu sanduíche sempre alinhado à direita. */
+  .nav__right {
+    margin-left: auto;
+    justify-content: flex-end;
+  }
 }
 
 @media (max-width: 720px) {
@@ -4732,7 +4744,7 @@ h4 {
 }
 
 .deck__head {
-  max-width: 760px;
+  /* max-width: 760px; */
   margin: 0 auto;
   text-align: center;
 }
