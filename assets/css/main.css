@@ -430,8 +430,8 @@ h4 {
 
 .nav[data-scrolled="false"] .nav__links {
   flex: 1 1 auto;
-  justify-content: space-between;
-  gap: 0;
+  justify-content: center;
+  gap: clamp(8px, 1.6vw, 28px);
 }
 
 .nav__links a {
@@ -4802,7 +4802,7 @@ h4 {
   position: relative;
   height: clamp(470px, 52vw, 680px);
   max-width: 1120px;
-  /* margin: clamp(38px, 5.5vw, 72px) auto 0; */
+  margin: clamp(38px, 0vw, 72px) auto 0;
   padding: 0;
   list-style: none;
   perspective: 1500px;
