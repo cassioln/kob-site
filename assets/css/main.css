@@ -4470,9 +4470,11 @@ h4 {
 }
 
 .logo-row--pair img {
-  height: 54px;
-  max-width: 260px;
+  width: min(260px, 100%);
+  height: 100px;
+  max-width: none;
   padding: 18px 28px;
+  box-sizing: border-box;
 }
 
 .stay-grid {
