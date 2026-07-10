@@ -1302,7 +1302,7 @@ h4 {
 .event-table {
   position: relative;
   display: grid;
-  place-items: center;
+  place-items: end center;
   justify-self: center;
   width: min(520px, 100%);
   min-height: min(720px, 82vw);
@@ -1324,10 +1324,12 @@ h4 {
 .event-table img {
   position: relative;
   z-index: 2;
-  width: min(440px, 92%);
-  height: auto;
-  max-height: 760px;
-  object-fit: contain;
+  width: min(500px, 104%);
+  height: 96%;
+  max-height: 860px;
+  margin-bottom: 7%;
+  object-fit: cover;
+  object-position: 50% 8%;
   filter: drop-shadow(rgba(0, 0, 0, 0.45) 0px 28px 48px);
 }
 
