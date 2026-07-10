@@ -1169,28 +1169,37 @@ h4 {
 }
 
 .event-kicker {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 8px 14px;
-  border-radius: 999px;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  margin: 0 0 clamp(18px, 3vw, 30px);
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  border-radius: 0;
   font-family: var(--font-display);
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   font-weight: 800;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--foam-white);
-  background: var(--kriativa-purple);
-  box-shadow: rgba(0, 0, 0, 0.18) 0px 5px 0px;
+  text-align: center;
+  color: color-mix(in oklab, var(--foam-white) 78%, transparent);
 }
 
-.event-kicker::before {
+.event-kicker::before,
+.event-kicker::after {
   content: "";
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--sunset-gold);
-  box-shadow: 14px 0 0 var(--ocean-cyan);
+  flex: 0 1 clamp(24px, 8vw, 68px);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--foam-white) 42%, transparent));
+  box-shadow: none;
+}
+
+.event-kicker::after {
+  background: linear-gradient(90deg, color-mix(in oklab, var(--foam-white) 42%, transparent), transparent);
 }
 
 .event-board h2 {
@@ -1486,7 +1495,7 @@ h4 {
   width: calc(var(--event-node-w) + 8px);
   height: calc(var(--event-node) + 8px);
   border-radius: 18px;
-  background: conic-gradient(from var(--ring-angle, 0deg), rgba(41, 195, 245, 0) 0deg, rgba(41, 195, 245, 0) 250deg, var(--ocean-cyan) 340deg, rgba(41, 195, 245, 0) 360deg);
+  background: conic-gradient(from var(--ring-angle, 0deg), rgba(41, 195, 245, 0) 0deg, rgb(41 195 245) 250deg, var(--ocean-cyan) 340deg, rgba(41, 195, 245, 0) 360deg);
   -webkit-mask:
     linear-gradient(#000 0 0) content-box,
     linear-gradient(#000 0 0);
