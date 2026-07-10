@@ -949,6 +949,18 @@ h4 {
   z-index: -1;
 }
 
+.section--from-hero::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  z-index: 1;
+  height: clamp(140px, 28vh, 310px);
+  pointer-events: none;
+  background: linear-gradient(rgba(87, 18, 122, 0) 0%, rgba(87, 18, 122, 0.62) 54%, #57127a 100%);
+}
+
 .section--from-hero,
 .section--from-hero h2 {
   color: var(--foam-white);
@@ -4564,10 +4576,9 @@ h4 {
   padding: clamp(78px, 10vw, 132px) 0 clamp(90px, 12vw, 154px);
   color: var(--ink-strong);
   background:
-    linear-gradient(180deg, #57127a 0%, rgba(87, 18, 122, 0.98) 12%, rgba(87, 18, 122, 0) 32%),
     radial-gradient(62% 36% at 50% 42%, rgba(0, 174, 239, 0.18) 0%, rgba(0, 174, 239, 0) 68%),
     radial-gradient(46% 32% at 18% 44%, rgba(123, 31, 162, 0.14) 0%, rgba(123, 31, 162, 0) 66%),
-    linear-gradient(180deg, #57127a 0%, #57127a 12%, #3a1560 22%, #1c1f4a 32%, #082f57 42%, var(--deck-table-start) 56%, var(--deck-table-mid) 78%, var(--deck-table-end) 100%);
+    linear-gradient(180deg, #57127a 0%, #57127a 10%, #3a1560 20%, #1c1f4a 31%, #082f57 42%, var(--deck-table-start) 56%, var(--deck-table-mid) 78%, var(--deck-table-end) 100%);
 }
 
 .deck--cards::before {
