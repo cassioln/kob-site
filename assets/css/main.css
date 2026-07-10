@@ -1407,7 +1407,7 @@ h4 {
 
 .event-track-wrap {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   margin-top: clamp(var(--sp-lg), 6vw, var(--sp-2xl));
 }
 
