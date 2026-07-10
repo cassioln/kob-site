@@ -5192,9 +5192,15 @@ h4 {
   isolation: isolate;
   max-width: 1120px;
   margin: clamp(10px, 2.4vw, 30px) auto 0;
-  padding-top: clamp(14px, 2vw, 24px);
+  padding: clamp(28px, 4vw, 52px);
   perspective: 1600px;
   text-align: left;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: clamp(22px, 3vw, 38px);
+  box-shadow: 0 24px 70px rgba(4, 21, 34, 0.16);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 .deck__cta::before {
