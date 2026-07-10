@@ -171,6 +171,59 @@
         updateButtons();
       }
 
+      // Edição 2025: 8 destaques sorteados a cada carregamento + arquivo sob demanda.
+      var galleryExpand = document.getElementById('galleryExpand');
+      if (track && galleryExpand) {
+        var memories = Array.prototype.slice.call(track.querySelectorAll('[data-memory]'));
+        var highlightCount = Math.min(parseInt(track.getAttribute('data-highlight-count'), 10) || 8, memories.length);
+        var galleryExpandLabel = galleryExpand.querySelector('[data-gallery-expand-label]');
+        var galleryStatus = document.getElementById('galleryStatus');
+
+        // Fisher-Yates: sorteia quais índices viram destaque nesta visita.
+        var order = memories.map(function (_, i) { return i; });
+        for (var i = order.length - 1; i > 0; i--) {
+          var j = Math.floor(Math.random() * (i + 1));
+          var tmp = order[i]; order[i] = order[j]; order[j] = tmp;
+        }
+        var highlightSet = {};
+        order.slice(0, highlightCount).forEach(function (idx, slot) {
+          highlightSet[idx] = slot + 1;
+        });
+
+        var highlights = [];
+        var archive = [];
+        memories.forEach(function (item, idx) {
+          if (highlightSet[idx]) {
+            item.setAttribute('data-highlight', '');
+            item.style.setProperty('--highlight-slot', highlightSet[idx]);
+            item.hidden = false;
+            highlights.push(item);
+          } else {
+            item.removeAttribute('data-highlight');
+            item.style.removeProperty('--highlight-slot');
+            item.hidden = true;
+            archive.push(item);
+          }
+        });
+
+        var totalLabel = 'Ver todas as ' + memories.length + ' fotografias';
+        galleryExpand.addEventListener('click', function () {
+          var expanded = galleryExpand.getAttribute('aria-expanded') === 'true';
+          var nextState = !expanded;
+          archive.forEach(function (item) { item.hidden = !nextState; });
+          galleryExpand.setAttribute('aria-expanded', nextState ? 'true' : 'false');
+          track.dataset.expanded = nextState ? 'true' : 'false';
+          if (galleryExpandLabel) {
+            galleryExpandLabel.textContent = nextState ? 'Recolher galeria' : totalLabel;
+          }
+          if (galleryStatus) {
+            galleryStatus.textContent = nextState
+              ? 'Galeria expandida. ' + memories.length + ' fotografias disponíveis.'
+              : 'Galeria recolhida. ' + highlights.length + ' destaques disponíveis.';
+          }
+        });
+      }
+
       // Slideshow de banners do navio (autoplay + setas + dots, pausa no hover)
       var show = document.getElementById('shipShow');
       if (show) {
