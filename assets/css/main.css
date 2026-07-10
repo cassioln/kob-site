@@ -1460,9 +1460,21 @@ h4 {
 }
 
 .event-step--now::before {
-  content: "⧗";
-  color: var(--foam-white);
+  content: "";
   background: var(--kriativa-purple);
+}
+
+.event-step--now::after {
+  content: "";
+  position: absolute;
+  top: calc((var(--event-node) + 18px) * -1);
+  left: 0px;
+  width: var(--event-node);
+  height: var(--event-node);
+  background-color: var(--foam-white);
+  -webkit-mask: url("../images/ampulheta.svg") center / 52% 52% no-repeat;
+  mask: url("../images/ampulheta.svg") center / 52% 52% no-repeat;
+  pointer-events: none;
 }
 
 .event-step__year {
@@ -4516,6 +4528,11 @@ h4 {
   }
 
   .event-step::before {
+    top: -6px;
+    left: 0px;
+  }
+
+  .event-step--now::after {
     top: -6px;
     left: 0px;
   }
