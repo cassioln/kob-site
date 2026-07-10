@@ -1164,29 +1164,35 @@ h4 {
   align-items: center;
 }
 
+.event-stage__head {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  margin-bottom: clamp(30px, 5vw, 58px);
+}
+
 .event-stage__copy {
   max-width: 760px;
 }
 
 .event-kicker {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  width: 100%;
-  margin: 0 0 clamp(18px, 3vw, 30px);
+  gap: 14px;
+  margin: 0;
   padding: 0;
   border: 0;
   background: none;
   box-shadow: none;
   border-radius: 0;
   font-family: var(--font-display);
-  font-size: 0.72rem;
+  font-size: clamp(0.82rem, 1.5vw, 1.05rem);
   font-weight: 800;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   text-align: center;
-  color: color-mix(in oklab, var(--foam-white) 78%, transparent);
+  color: color-mix(in oklab, var(--foam-white) 82%, transparent);
 }
 
 .event-kicker::before,
