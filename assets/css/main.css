@@ -1412,8 +1412,8 @@ h4 {
 }
 
 .event-track {
-  --event-node: 44px;
-  --event-node-w: 82px;
+  --event-node: 55px;
+  --event-node-w: 92px;
   counter-reset: event-step 0;
   position: relative;
   display: grid;
@@ -1486,7 +1486,7 @@ h4 {
   width: calc(var(--event-node-w) + 8px);
   height: calc(var(--event-node) + 8px);
   border-radius: 18px;
-  background: conic-gradient(from 0deg, var(--ocean-cyan), var(--sunset-gold), var(--kriativa-purple), rgba(0, 174, 239, 0.12) 72%, var(--ocean-cyan));
+  background: conic-gradient(from 0deg, rgba(41, 195, 245, 0) 0deg, rgba(41, 195, 245, 0) 250deg, var(--ocean-cyan) 340deg, rgba(41, 195, 245, 0) 360deg);
   -webkit-mask:
     linear-gradient(#000 0 0) content-box,
     linear-gradient(#000 0 0);
@@ -1495,7 +1495,7 @@ h4 {
     linear-gradient(#000 0 0) content-box,
     linear-gradient(#000 0 0);
   mask-composite: exclude;
-  padding: 3px;
+  padding: 2px;
   z-index: 0;
   pointer-events: none;
 }
@@ -1561,7 +1561,7 @@ h4 {
   margin-top: 12px;
   padding: 7px 12px;
   border-radius: 999px;
-  font-family: var(--font-display);
+  font-family: var(--font-body);
   font-size: 0.68rem;
   font-weight: 800;
   letter-spacing: 0.12em;
@@ -1601,7 +1601,7 @@ h4 {
   }
 
   .event-step--now .event-step__ring {
-    animation: event-ring-spin 2.6s linear infinite;
+    animation: event-ring-spin 4.5s linear infinite;
   }
 
   .js-reveal .event-track.reveal .event-step {
