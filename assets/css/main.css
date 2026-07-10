@@ -776,6 +776,9 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 800; line-height
    progressive enhancement: sem JS/reduced-motion, o leque já nasce aberto.
    ============================================================ */
 .deck--cards {
+  --deck-table-start: #e7e2d8;
+  --deck-table-mid: #f4eee4;
+  --deck-table-end: #fffaf1;
   position: relative;
   isolation: isolate;
   overflow: hidden;
@@ -784,7 +787,7 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 800; line-height
   background:
     radial-gradient(62% 36% at 50% 28%, rgba(0, 174, 239, 0.24) 0%, rgba(0, 174, 239, 0) 68%),
     radial-gradient(46% 32% at 18% 24%, rgba(123, 31, 162, 0.22) 0%, rgba(123, 31, 162, 0) 66%),
-    linear-gradient(180deg, #041522 0%, #041d3a 17%, #082f57 26%, #e7e2d8 46%, #f4eee4 74%, #fffaf1 100%);
+    linear-gradient(180deg, #041522 0%, #041d3a 17%, #082f57 26%, var(--deck-table-start) 46%, var(--deck-table-mid) 74%, var(--deck-table-end) 100%);
 }
 .deck--cards::before {
   content: "";
@@ -954,18 +957,22 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 800; line-height
 .deck__pips { display: none; }
 .deck__cta {
   position: relative;
-  max-width: 980px;
-  margin: clamp(24px, 4vw, 48px) auto 0;
-  padding-top: clamp(20px, 3vw, 34px);
+  isolation: isolate;
+  max-width: 1120px;
+  margin: clamp(10px, 2.4vw, 30px) auto 0;
+  padding-top: clamp(14px, 2vw, 24px);
   perspective: 1600px;
   text-align: left;
 }
 .deck__cta::before {
   content: "";
   position: absolute;
-  inset: 0 0 auto;
-  height: 2px;
-  background: linear-gradient(90deg, rgba(8, 47, 87, 0), rgba(8, 47, 87, 0.34), rgba(123, 31, 162, 0.32), rgba(8, 47, 87, 0));
+  inset: clamp(-46px, -4vw, -24px) 8% auto;
+  z-index: -1;
+  height: clamp(78px, 10vw, 124px);
+  pointer-events: none;
+  background: radial-gradient(closest-side, rgba(8, 47, 87, 0.16), rgba(8, 47, 87, 0));
+  filter: blur(2px);
 }
 .deck__bonus-panel {
   position: relative;
@@ -974,12 +981,13 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 800; line-height
   overflow: hidden;
   color: var(--ocean-abyss);
   background:
-    radial-gradient(46% 64% at 18% 42%, rgba(0, 174, 239, 0.18), rgba(0, 174, 239, 0) 68%),
-    radial-gradient(42% 52% at 86% 12%, rgba(255, 194, 14, 0.26), rgba(255, 194, 14, 0) 70%),
-    linear-gradient(135deg, #fffaf1 0%, #f2ecdf 46%, #e7eef8 100%);
-  border: 2px solid rgba(8, 47, 87, 0.82);
+    radial-gradient(74% 96% at 50% -18%, rgba(255, 255, 255, 0.52), rgba(255, 255, 255, 0) 58%),
+    radial-gradient(46% 64% at 18% 42%, rgba(0, 174, 239, 0.15), rgba(0, 174, 239, 0) 68%),
+    radial-gradient(42% 52% at 88% 14%, rgba(123, 31, 162, 0.12), rgba(123, 31, 162, 0) 70%),
+    linear-gradient(180deg, var(--deck-table-end) 0%, var(--deck-table-mid) 58%, var(--deck-table-start) 100%);
+  border: 1px solid rgba(8, 47, 87, 0.30);
   border-radius: 16px;
-  box-shadow: 0 12px 0 rgba(8, 47, 87, 0.22), 0 26px 44px rgba(4, 29, 58, 0.18);
+  box-shadow: 0 14px 0 rgba(8, 47, 87, 0.10), 0 34px 90px rgba(4, 29, 58, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.72);
   transform-style: preserve-3d;
 }
 .deck__bonus-panel::before {
@@ -1020,8 +1028,8 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 800; line-height
   grid-template-columns: auto minmax(0, 1fr);
   align-items: stretch;
   min-height: 76px;
-  background: rgba(255, 255, 255, 0.56);
-  box-shadow: inset 0 -2px 0 rgba(8, 47, 87, 0.78);
+  background: linear-gradient(90deg, rgba(255, 250, 241, 0.84), rgba(244, 238, 228, 0.68));
+  box-shadow: inset 0 -1px 0 rgba(8, 47, 87, 0.24);
 }
 .deck__bonus-kicker {
   display: grid;
@@ -1035,7 +1043,7 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 800; line-height
   letter-spacing: 0.06em;
   line-height: 1;
   text-transform: uppercase;
-  box-shadow: inset -2px 0 0 rgba(8, 47, 87, 0.78);
+  box-shadow: inset -1px 0 0 rgba(8, 47, 87, 0.24);
 }
 .deck__bonus-title {
   display: flex;
@@ -1054,7 +1062,7 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 800; line-height
   grid-template-columns: minmax(220px, 0.84fr) minmax(0, 1.16fr);
   align-items: center;
   min-height: clamp(320px, 37vw, 438px);
-  box-shadow: inset 0 -2px 0 rgba(8, 47, 87, 0.78);
+  box-shadow: inset 0 -1px 0 rgba(8, 47, 87, 0.24);
 }
 .deck__bonus-body::before {
   content: "";
@@ -1062,8 +1070,8 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 800; line-height
   top: 0;
   bottom: 0;
   left: 41%;
-  width: 2px;
-  background: rgba(8, 47, 87, 0.78);
+  width: 1px;
+  background: rgba(8, 47, 87, 0.24);
 }
 .deck__bonus-card {
   position: relative;
@@ -1157,8 +1165,8 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 800; line-height
   justify-content: center;
   padding: clamp(20px, 3vw, 32px);
   background:
-    linear-gradient(90deg, rgba(4, 29, 58, 0.96), rgba(8, 47, 87, 0.92), rgba(87, 18, 122, 0.90)),
-    radial-gradient(circle at 50% 0%, rgba(41, 195, 245, 0.32), rgba(41, 195, 245, 0));
+    radial-gradient(80% 170% at 50% -60%, rgba(41, 195, 245, 0.26), rgba(41, 195, 245, 0) 62%),
+    linear-gradient(90deg, var(--ocean-abyss), var(--ocean-navy) 55%, var(--kriativa-purple-deep));
 }
 .deck__navio-link {
   position: relative;
