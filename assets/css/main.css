@@ -707,6 +707,11 @@ h4 {
   opacity: 1;
 }
 
+.hero > .container {
+  width: calc(100% - (2 * var(--gutter)));
+  padding-inline: 0;
+}
+
 .hero__inner {
   position: relative;
   z-index: 2;
@@ -737,6 +742,18 @@ h4 {
   width: clamp(280px, 27vw, 390px);
   height: auto;
   filter: drop-shadow(rgba(7, 28, 53, 0.55) 0px 12px 40px);
+}
+
+@media (min-width: 1280px) {
+  .hero__inner {
+    grid-template-columns: minmax(0, 1fr) clamp(420px, 37vw, 520px);
+    gap: clamp(32px, 3vw, 40px);
+  }
+
+  .hero__logo {
+    width: 100%;
+    max-width: 520px;
+  }
 }
 
 .hero__logo,
