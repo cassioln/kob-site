@@ -5195,9 +5195,9 @@ h4 {
 
 .deck__bonus-head {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  align-items: center;
-  gap: clamp(18px, 3vw, 36px);
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: 10px;
   width: min(100%, 1040px);
   min-height: 0;
   margin-inline: auto;
