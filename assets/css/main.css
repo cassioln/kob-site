@@ -421,7 +421,13 @@ h4 {
   gap: 4px;
 }
 
-/* Primeira dobra: menu ocupa toda a largura, distribuído e centralizado */
+/* Primeira dobra: menu ocupa toda a largura, distribuído e centralizado.
+   Marca e ações saem do fluxo (não só ocultas) para liberar o espaço reservado. */
+.nav[data-scrolled="false"] .nav__brand,
+.nav[data-scrolled="false"] .nav__right {
+  display: none;
+}
+
 .nav[data-scrolled="false"] .nav__links {
   flex: 1 1 auto;
   justify-content: space-between;
@@ -4551,6 +4557,12 @@ h4 {
   .nav__toggle {
     display: inline-flex;
   }
+
+  /* No mobile a marca fica oculta (opacity) mas as ações voltam ao fluxo
+     para o botão de menu aparecer, mesmo na primeira dobra. */
+  .nav[data-scrolled="false"] .nav__right {
+    display: flex;
+  }
 }
 
 @media (max-width: 720px) {
@@ -4790,7 +4802,7 @@ h4 {
   position: relative;
   height: clamp(470px, 52vw, 680px);
   max-width: 1120px;
-  margin: clamp(38px, 5.5vw, 72px) auto 0;
+  /* margin: clamp(38px, 5.5vw, 72px) auto 0; */
   padding: 0;
   list-style: none;
   perspective: 1500px;
