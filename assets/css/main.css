@@ -1157,7 +1157,7 @@ h4 {
 
 .event-stage {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   display: grid;
   grid-template-columns: minmax(0px, 1.08fr) minmax(310px, 0.82fr);
   gap: clamp(28px, 5vw, 76px);
