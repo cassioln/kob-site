@@ -3645,29 +3645,44 @@ h4 {
   z-index: 2;
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 12px 22px;
+  gap: 12px;
+  padding: 15px 28px;
   border: 0px;
   border-radius: var(--r-pill);
   background: var(--kriativa-magenta);
   color: var(--foam-white);
   font-family: var(--font-body);
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
   box-shadow: rgba(229, 0, 126, 0.35) 0px 10px 30px;
+  animation: ship-tour-btn-float 3.6s ease-in-out infinite;
   transition: transform var(--dur-state) var(--ease-quart), box-shadow var(--dur-state) var(--ease-quart), background var(--dur-fast) var(--ease-quart);
 }
 
 .ship-video__tour-btn svg {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
 }
 
 .ship-video__tour-btn:hover {
-  transform: translateY(-2px);
+  animation-play-state: paused;
+  transform: translateY(-3px) scale(1.015);
   background: var(--magenta-glow);
   box-shadow: rgba(229, 0, 126, 0.45) 0px 16px 40px;
+}
+
+@keyframes ship-tour-btn-float {
+  0%,
+  100% {
+    transform: translateY(0);
+    box-shadow: rgba(229, 0, 126, 0.30) 0px 10px 30px;
+  }
+
+  50% {
+    transform: translateY(-5px);
+    box-shadow: rgba(229, 0, 126, 0.42) 0px 16px 38px;
+  }
 }
 
 .ship-video__tour-btn:focus-visible {
@@ -3676,6 +3691,10 @@ h4 {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .ship-video__tour-btn {
+    animation: none;
+  }
+
   .ship-video__tour-btn:hover {
     transform: none;
   }
