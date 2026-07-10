@@ -941,8 +941,9 @@ h4 {
 .section--from-hero::before {
   content: "";
   position: absolute;
+  margin-top: var(--sp-lg);
   inset: clamp(28px, 5vw, 72px) max(18px, 5vw) auto;
-  height: 1px;
+  height: 2px;
   pointer-events: none;
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.28), transparent);
   opacity: 0.8;
@@ -1184,6 +1185,7 @@ h4 {
   background: none;
   box-shadow: none;
   border-radius: 0;
+  margin-top: var(--sp-lg);
   font-family: var(--font-display);
   font-size: clamp(0.82rem, 1.5vw, 1.05rem);
   font-weight: 800;
@@ -1314,9 +1316,16 @@ h4 {
   inset: 11% 0px 5% 8%;
   border-radius: 18px;
   background: linear-gradient(140deg, rgba(123, 31, 162, 0.9), rgba(0, 174, 239, 0.72));
-  transform: rotate(-4deg) skewY(-2deg);
+  transform: rotate(-8.6deg) skewY(0deg);
   box-shadow: rgba(0, 0, 0, 0.18) 0px 8px 0px;
   opacity: 0.9;
+}
+
+
+@media (max-width: 900px) {
+  .event-table::before {
+    transform: rotate(-5.6deg) skewY(0deg);
+  }
 }
 
 .event-table img {
@@ -1325,14 +1334,13 @@ h4 {
   width: min(500px, 104%);
   height: 96%;
   max-height: 860px;
-  margin-bottom: 7%;
+  margin-bottom: 1%;
   object-fit: cover;
-  object-position: 50% 8%;
+  object-position: 59% 0%;
   /* base cropada na mesma angulação do card degradê (rotate(-4deg) skewY(-2deg)
      ≈ 6° combinados, canto direito mais alto). desnível vertical calibrado à
      largura/altura reais da caixa para casar os 6° da base do card */
-  clip-path: polygon(0% 0%, 100% 0%, 100% 93.4%, 0% 100%);
-  filter: drop-shadow(rgba(0, 0, 0, 0.45) 0px 28px 48px);
+  clip-path: polygon(0% 0%, 100% 0%, 100% 91.4%, 7% 100%);
 }
 
 .event-orbit {
@@ -1480,8 +1488,7 @@ h4 {
   letter-spacing: 0.01em;
   line-height: 1;
   color: var(--sunset-gold);
-  box-shadow:
-    inset 0 0 0 2px var(--ocean-cyan),
+  box-shadow: inset 0 0 0 2px var(--ocean-cyan),
     inset 0 0 0 5px rgba(41, 195, 245, 0.18),
     rgba(0, 0, 0, 0.3) 0px 5px 0px;
 }
@@ -1490,8 +1497,7 @@ h4 {
   content: attr(data-year);
   background: var(--kriativa-purple);
   color: var(--foam-white);
-  box-shadow:
-    inset 0 0 0 2px var(--purple-glow),
+  box-shadow: inset 0 0 0 2px var(--purple-glow),
     inset 0 0 0 5px rgba(231, 169, 240, 0.22),
     rgba(0, 0, 0, 0.3) 0px 5px 0px;
   z-index: 1;
@@ -1506,12 +1512,10 @@ h4 {
   height: calc(var(--event-node) + 8px);
   border-radius: 18px;
   background: conic-gradient(from var(--ring-angle, 0deg), rgba(41, 195, 245, 0) 0deg, rgb(41 195 245) 250deg, var(--ocean-cyan) 340deg, rgba(41, 195, 245, 0) 360deg);
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
+  -webkit-mask: linear-gradient(#000 0 0) content-box,
     linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
-  mask:
-    linear-gradient(#000 0 0) content-box,
+  mask: linear-gradient(#000 0 0) content-box,
     linear-gradient(#000 0 0);
   mask-composite: exclude;
   padding: 2px;
@@ -4675,13 +4679,11 @@ h4 {
   --deck-table-start: #e7e2d8;
   --deck-table-mid: #f4eee4;
   --deck-table-end: #fffaf1;
-  isolation: isolate;
   overflow: hidden;
   margin-top: -1px;
   padding: clamp(78px, 10vw, 132px) 0 clamp(90px, 12vw, 154px);
   color: var(--ink-strong);
-  background:
-    radial-gradient(62% 36% at 50% 42%, rgba(0, 174, 239, 0.18) 0%, rgba(0, 174, 239, 0) 68%),
+  background: radial-gradient(62% 36% at 50% 42%, rgba(0, 174, 239, 0.18) 0%, rgba(0, 174, 239, 0) 68%),
     radial-gradient(46% 32% at 18% 44%, rgba(123, 31, 162, 0.14) 0%, rgba(123, 31, 162, 0) 66%),
     linear-gradient(180deg, #57127a 0%, #57127a 10%, #3a1560 20%, #1c1f4a 31%, #082f57 42%, var(--deck-table-start) 56%, var(--deck-table-mid) 78%, var(--deck-table-end) 100%);
 }
