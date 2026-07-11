@@ -7686,8 +7686,9 @@ h4 {
 .route-stop {
   position: absolute;
   display: flex;
+  flex-direction: column;
   align-items: flex-start;
-  gap: 16px;
+  gap: 14px;
   width: min(27%, 310px);
   color: var(--foam-white);
 }
@@ -7711,8 +7712,9 @@ h4 {
 .route-stop__tag {
   position: relative;
   z-index: 2;
-  flex: 0 0 104px;
+  flex: none;
   display: grid;
+  width: 104px;
   min-height: 44px;
   padding: 8px 10px;
   place-items: center;
@@ -7737,7 +7739,8 @@ h4 {
 
 .route-stop__body {
   min-width: 0;
-  padding: 2px 0 20px;
+  width: 100%;
+  padding: 2px 0 20px 68px;
 }
 
 .route-stop__meta {
@@ -8428,6 +8431,10 @@ h4 {
     padding: 24px;
     border-top: 1px solid rgba(41, 195, 245, 0.3);
     background: rgba(255, 255, 255, 0.045);
+  }
+
+  .route-stop__body {
+    padding-left: 0;
   }
 
   .route-stop--parking {
