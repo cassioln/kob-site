@@ -3075,6 +3075,20 @@ h4 {
   margin-bottom: 6px;
 }
 
+/* Discreet decimals (,00) on cabine prices — smaller, less prominent than the main number */
+#panel-cabines .price-card__value .amount .dec {
+  font-size: 0.42em;
+  font-weight: 700;
+  color: rgb(90, 100, 120);
+  margin-left: 1px;
+}
+
+#panel-cabines .price-card__list li span .dec {
+  font-size: 0.78em;
+  font-weight: 500;
+  opacity: 0.6;
+}
+
 .price-card__entry {
   font-size: 0.88rem;
   color: rgb(90, 100, 120);
@@ -3488,6 +3502,11 @@ h4 {
 .cabin-modal__cta {
   margin-top: 22px;
   width: 100%;
+}
+
+/* O atributo hidden precisa vencer o display:inline-flex herdado de .btn */
+.cabin-modal__cta[hidden] {
+  display: none;
 }
 
 /* Escopo bebidas: acento laranja (#f7941e) no modal compartilhado */

@@ -22,7 +22,7 @@
   <!-- Fontes da marca (banner KOB): Gobold Extra2 = display, Chantal = acento manuscrito -->
   <link rel="preload" href="assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
 
-  <link rel="stylesheet" href="assets/css/main.css?v=20260710-bebidas">
+  <link rel="stylesheet" href="assets/css/main.css?v=20260710-bebidas2">
 </head>
 
 <body>
@@ -604,8 +604,8 @@
         </div>
 
         <div class="value-tabs reveal" role="tablist" aria-label="Tipos de valores">
-          <button type="button" role="tab" id="tab-cabines" class="value-tab" aria-selected="true" aria-controls="panel-cabines">Cabines</button>
-          <button type="button" role="tab" id="tab-bebidas" class="value-tab" aria-selected="false" aria-controls="panel-bebidas" tabindex="-1">Pacotes de bebidas</button>
+          <button type="button" role="tab" id="tab-cabines" class="value-tab" aria-selected="true" aria-controls="panel-cabines" style="font-size: 18.4px;">Cabines</button>
+          <button type="button" role="tab" id="tab-bebidas" class="value-tab" aria-selected="false" aria-controls="panel-bebidas" tabindex="-1" style="font-size: 18.4px;">Pacotes de bebidas</button>
         </div>
 
         <div class="value-panel" id="panel-cabines" role="tabpanel" aria-labelledby="tab-cabines" tabindex="0">
@@ -618,11 +618,11 @@
             </div>
             <div class="price-card__body">
               <span class="price-card__from">a partir de</span>
-              <span class="price-card__value"><span class="cur">12x R$</span><span class="amount">215</span><span class="per">/pessoa</span></span>
+              <span class="price-card__value"><span class="cur">12x R$</span><span class="amount">215<span class="dec">,00</span></span><span class="per">/pessoa</span></span>
               <span class="price-card__entry">Entrada de R$ 200,00</span>
               <div class="price-card__rule"></div>
               <ul class="price-card__list">
-                <li><span>Cabine dupla</span><span>12x R$ 215</span></li>
+                <li><span>Cabine dupla</span><span>12x R$ 215<span class="dec">,00</span></span></li>
                 <li class="is-sold"><span>Cabine tripla</span><span>Esgotado</span></li>
                 <li class="is-sold"><span>Cabine quádrupla</span><span>Esgotado</span></li>
               </ul>
@@ -639,11 +639,11 @@
             </div>
             <div class="price-card__body">
               <span class="price-card__from">a partir de</span>
-              <span class="price-card__value"><span class="cur">12x R$</span><span class="amount">226</span><span class="per">/pessoa</span></span>
+              <span class="price-card__value"><span class="cur">12x R$</span><span class="amount">226<span class="dec">,00</span></span><span class="per">/pessoa</span></span>
               <span class="price-card__entry">Entrada de R$ 200,00</span>
               <div class="price-card__rule"></div>
               <ul class="price-card__list">
-                <li><span>Cabine dupla</span><span>12x R$ 226</span></li>
+                <li><span>Cabine dupla</span><span>12x R$ 226<span class="dec">,00</span></span></li>
                 <li class="is-sold"><span>Cabine tripla</span><span>Esgotado</span></li>
                 <li class="is-sold"><span>Cabine quádrupla</span><span>Esgotado</span></li>
               </ul>
@@ -660,12 +660,12 @@
             </div>
             <div class="price-card__body">
               <span class="price-card__from">a partir de</span>
-              <span class="price-card__value"><span class="cur">12x R$</span><span class="amount">247</span><span class="per">/pessoa</span></span>
+              <span class="price-card__value"><span class="cur">12x R$</span><span class="amount">247<span class="dec">,00</span></span><span class="per">/pessoa</span></span>
               <span class="price-card__entry">Entrada de R$ 200,00</span>
               <div class="price-card__rule"></div>
               <ul class="price-card__list">
-                <li><span>Cabine dupla</span><span>12x R$ 247</span></li>
-                <li><span>Cabine tripla</span><span>12x R$ 271</span></li>
+                <li><span>Cabine dupla</span><span>12x R$ 247<span class="dec">,00</span></span></li>
+                <li><span>Cabine tripla</span><span>12x R$ 271<span class="dec">,00</span></span></li>
                 <li class="is-sold"><span>Cabine quádrupla</span><span>Esgotado</span></li>
               </ul>
               <button type="button" class="price-card__details" data-cabin="varanda" aria-haspopup="dialog">Ver
@@ -694,7 +694,7 @@
                   <li><span>Cafés especiais, chás e bebidas quentes</span></li>
                   <li><span>Refrigerantes e energéticos</span></li>
                   <li><span>Sucos, coquetéis de frutas, smoothies e shakes</span></li>
-                  <li><span>Água com e sem gás — AQUA by MSC</span></li>
+                  <li><span>Água com e sem gás</span></li>
                   <li><span>Cervejas, vinhos e coquetéis sem álcool</span></li>
                 </ul>
                 <button type="button" class="price-card__details btn btn--primary" data-cabin="naoalcoolico" aria-haspopup="dialog">Ver detalhes</button>
@@ -713,7 +713,7 @@
                 <div class="price-card__rule"></div>
                 <ul class="price-card__list">
                   <li><span>Café, chá e bebidas quentes</span></li>
-                  <li><span>Refrigerantes, sucos e água AQUA by MSC</span></li>
+                  <li><span>Refrigerantes, sucos e água</span></li>
                   <li><span>Cerveja em garrafa, chope e vinho da casa</span></li>
                   <li><span>Coquetéis clássicos e destilados da casa</span></li>
                   <li><span>Opções sem álcool: mocktails, vinhos e cervejas</span></li>
