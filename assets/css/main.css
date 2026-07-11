@@ -3216,6 +3216,7 @@ h4 {
 #panel-bebidas .btn--primary:hover {
   background: #d97706;
   color: var(--foam-white);
+  box-shadow: rgba(247, 148, 30, 0.42) 0px 12px 30px;
 }
 
 #tab-bebidas[aria-selected="true"] {
