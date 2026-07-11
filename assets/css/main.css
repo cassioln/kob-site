@@ -3208,6 +3208,22 @@ h4 {
   outline-color: #f7941e;
 }
 
+#panel-bebidas .btn--primary {
+  background: #f7941e;
+  color: var(--foam-white);
+}
+
+#panel-bebidas .btn--primary:hover {
+  background: #d97706;
+  color: var(--foam-white);
+}
+
+#tab-bebidas[aria-selected="true"] {
+  background: linear-gradient(135deg, #f7941e, #d97706);
+  color: #fff;
+  box-shadow: 0 6px 20px -8px rgba(247, 148, 30, 0.9);
+}
+
 /* Abas de valores (cabines | bebidas) */
 .value-tabs {
   display: flex;
