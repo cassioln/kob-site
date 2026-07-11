@@ -8571,3 +8571,16 @@ h4 {
     transition: none;
   }
 }
+
+/* Links usam cor e movimento como feedback, sem sublinhado em nenhum estado. */
+a,
+a:hover,
+a:focus,
+a:focus-visible,
+.creator a:hover,
+.ksio-powered-line a:hover,
+.route-destination__link,
+.route-destination__link:hover,
+.route-destination__link:focus-visible {
+  text-decoration: none;
+}
