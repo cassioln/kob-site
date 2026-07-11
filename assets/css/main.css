@@ -8014,7 +8014,7 @@ h4 {
 }
 
 .preboard-route__segment--second {
-  --route-segment-length: 783;
+  --route-segment-length: 849;
 }
 
 .preboard-route__segment--third {
@@ -8042,11 +8042,11 @@ h4 {
 }
 
 .js-reveal .preboard-route__map.reveal.is-in .preboard-route__segment--second {
-  transition: stroke-dashoffset 1.95s linear 2.8s;
+  transition: stroke-dashoffset 2.1s linear 2.8s;
 }
 
 .js-reveal .preboard-route__map.reveal.is-in .preboard-route__segment--third {
-  transition: stroke-dashoffset 1.6s linear 4.75s;
+  transition: stroke-dashoffset 1.6s linear 4.9s;
 }
 
 .js-reveal .preboard-route__map.reveal.is-in .route-stop,
