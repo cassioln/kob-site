@@ -3076,7 +3076,8 @@ h4 {
 }
 
 /* Discreet decimals (,00) on cabine prices — smaller, less prominent than the main number */
-#panel-cabines .price-card__value .amount .dec {
+#panel-cabines .price-card__value .amount .dec,
+#panel-bebidas .price-card__value .amount .dec {
   font-size: 0.42em;
   font-weight: 700;
   color: rgb(90, 100, 120);
