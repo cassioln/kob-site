@@ -7663,6 +7663,146 @@ h4 {
   height: 100%;
   overflow: visible;
   pointer-events: none;
+  z-index: 1;
+}
+
+/* Carta náutica: batimetria, sondagens, rosa dos ventos e moldura de coordenadas.
+   Camadas decorativas atrás da rota; parallax de ponteiro aplicado via JS (transform inline). */
+.preboard-route__chart,
+.preboard-route__frame {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.preboard-route__chart {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.preboard-route__bathy path {
+  fill: none;
+  stroke: url("#preboardChartFade");
+  stroke-width: 1.4;
+  stroke-dasharray: 1 9;
+  stroke-linecap: round;
+}
+
+.preboard-route__soundings circle {
+  fill: var(--ocean-cyan);
+  fill-opacity: 0.42;
+}
+
+.preboard-route__soundings text {
+  fill: var(--ocean-cyan);
+  fill-opacity: 0.3;
+  font: 600 11px/1 var(--font-body);
+}
+
+.preboard-route__compass {
+  position: absolute;
+  bottom: 2%;
+  left: 1%;
+  z-index: 0;
+  width: clamp(72px, 8vw, 96px);
+  aspect-ratio: 1;
+  opacity: 0.42;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.preboard-route__compass svg {
+  width: 100%;
+  height: 100%;
+}
+
+.preboard-route__compass-ring {
+  fill: none;
+  stroke: var(--ocean-cyan);
+  stroke-opacity: 0.4;
+  stroke-width: 1;
+}
+
+.preboard-route__compass-ring--dashed {
+  stroke-opacity: 0.22;
+  stroke-dasharray: 2 5;
+}
+
+.preboard-route__compass-n {
+  fill: var(--sunset-gold);
+  fill-opacity: 0.78;
+}
+
+.preboard-route__compass-s {
+  fill: var(--ocean-cyan);
+  fill-opacity: 0.5;
+}
+
+.preboard-route__compass-e {
+  fill: var(--ocean-cyan);
+  fill-opacity: 0.3;
+}
+
+.preboard-route__compass-label {
+  fill: var(--sunset-gold);
+  fill-opacity: 0.85;
+  font: 800 9px/1 var(--font-body);
+  text-anchor: middle;
+}
+
+.preboard-route__corner {
+  position: absolute;
+  width: 22px;
+  aspect-ratio: 1;
+  border: 0 solid rgba(41, 195, 245, 0.4);
+}
+
+.preboard-route__corner--tl {
+  top: 0;
+  left: 0;
+  border-top-width: 1.5px;
+  border-left-width: 1.5px;
+}
+
+.preboard-route__corner--tr {
+  top: 0;
+  right: 0;
+  border-top-width: 1.5px;
+  border-right-width: 1.5px;
+}
+
+.preboard-route__corner--bl {
+  bottom: 0;
+  left: 0;
+  border-bottom-width: 1.5px;
+  border-left-width: 1.5px;
+}
+
+.preboard-route__corner--br {
+  bottom: 0;
+  right: 0;
+  border-bottom-width: 1.5px;
+  border-right-width: 1.5px;
+}
+
+.preboard-route__coord {
+  position: absolute;
+  color: rgba(41, 195, 245, 0.42);
+  font: 700 10px/1 var(--font-body);
+  letter-spacing: 0.14em;
+}
+
+.preboard-route__coord--lat {
+  top: -20px;
+  left: 12px;
+}
+
+.preboard-route__coord--lng {
+  bottom: -20px;
+  right: 12px;
 }
 
 .preboard-route__line path {
@@ -7697,6 +7837,7 @@ h4 {
 
 .route-stop {
   position: absolute;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -7815,6 +7956,7 @@ h4 {
 
 .route-destination {
   position: absolute;
+  z-index: 2;
   right: 0;
   bottom: 0;
   display: grid;
@@ -8452,6 +8594,12 @@ h4 {
   }
 
   .preboard-route__line {
+    display: none;
+  }
+
+  .preboard-route__chart,
+  .preboard-route__compass,
+  .preboard-route__frame {
     display: none;
   }
 

@@ -1464,4 +1464,45 @@
       }, { rootMargin: '-45% 0px -50% 0px', threshold: 0 });
       panels.forEach(function (p) { spy.observe(p); });
     }
+  // Carta náutica de #hospedagem: parallax de profundidade das camadas decorativas.
+  // Reage ao ponteiro em telas fine-pointer; estático em toque e reduced-motion.
+  (function () {
+    var map = document.querySelector('.preboard-route__map');
+    if (!map) return;
+    var chart = map.querySelector('.preboard-route__chart');
+    var compass = map.querySelector('.preboard-route__compass');
+    var frame = map.querySelector('.preboard-route__frame');
+    if (!chart && !compass && !frame) return;
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var finePointer = window.matchMedia('(pointer: fine)').matches && !reduceMotion;
+    if (!finePointer) return;
+    var inView = false;
+    var raf = null;
+    // profundidades: fundo lento, moldura média, rosa dos ventos rápida (contra o movimento)
+    var layers = [[chart, 0.45], [frame, 0.7], [compass, -1]];
+    function apply(px, py) {
+      layers.forEach(function (pair) {
+        if (pair[0]) pair[0].style.transform = 'translate(' + (px * pair[1]).toFixed(1) + 'px,' + (py * pair[1]).toFixed(1) + 'px)';
+      });
+    }
+    function reset() { apply(0, 0); }
+    map.addEventListener('pointermove', function (event) {
+      if (!inView) return;
+      if (raf) cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(function () {
+        raf = null;
+        var rect = map.getBoundingClientRect();
+        var x = ((event.clientX - rect.left) / rect.width - 0.5) * 2;
+        var y = ((event.clientY - rect.top) / rect.height - 0.5) * 2;
+        apply(x * 12, y * 8);
+      });
+    }, { passive: true });
+    map.addEventListener('pointerleave', reset);
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { inView = e.isIntersecting; if (!inView) reset(); });
+      }, { threshold: 0.15 }).observe(map);
+    } else { inView = true; }
+  })();
+
   })();
