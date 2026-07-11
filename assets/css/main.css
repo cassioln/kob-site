@@ -3044,6 +3044,36 @@ h4 {
   font-weight: 700;
 }
 
+/* Preço promocional: valor antigo riscado acima do preço em destaque */
+.price-card__was {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgb(90, 100, 120);
+}
+
+.price-card__was s {
+  color: rgb(90, 100, 120);
+  text-decoration-color: var(--kriativa-magenta);
+  text-decoration-thickness: 2px;
+}
+
+.price-card__was::after {
+  content: "Promoção";
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--kriativa-magenta);
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
 .price-card__value {
   font-family: var(--font-display);
   font-weight: 800;
