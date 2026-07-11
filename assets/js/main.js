@@ -585,6 +585,26 @@
         });
       })();
 
+      // ---------- Modal da cobertura do seguro viagem ----------
+      (function insuranceCoverage() {
+        var modal = document.getElementById('insuranceModal');
+        var openBtn = document.getElementById('insuranceCoverageOpen');
+        var closeBtn = document.getElementById('insuranceModalClose');
+        if (!modal || !openBtn || !closeBtn || typeof modal.showModal !== 'function') return;
+
+        openBtn.addEventListener('click', function () {
+          modal.showModal();
+          modal.scrollTop = 0;
+          var inner = modal.querySelector('.cabin-modal__inner');
+          if (inner) inner.scrollTop = 0;
+        });
+        closeBtn.addEventListener('click', function () { modal.close(); });
+        modal.addEventListener('click', function (e) {
+          if (e.target === modal) modal.close();
+        });
+        modal.addEventListener('close', function () { openBtn.focus(); });
+      })();
+
       // ---------- Modal "Ver detalhes" das cabines ----------
       (function cabinDetails() {
         var modal = document.getElementById('cabinModal');

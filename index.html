@@ -22,7 +22,7 @@
   <!-- Fontes da marca (banner KOB): Gobold Extra2 = display, Chantal = acento manuscrito -->
   <link rel="preload" href="assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
 
-  <link rel="stylesheet" href="assets/css/main.css?v=20260710-promo">
+  <link rel="stylesheet" href="assets/css/main.css?v=20260711-seguro">
 </head>
 
 <body>
@@ -674,6 +674,11 @@
         </div>
         <p class="price-note">*Valores por pessoa, sujeitos a alteração. Para crianças, consulte a organização.
         </p>
+        <div class="travel-insurance">
+          <span class="travel-insurance__label">Seguro viagem</span>
+          <span class="travel-insurance__price">12x de <strong>R$ 9,33</strong> por pessoa</span>
+          <button class="travel-insurance__link" id="insuranceCoverageOpen" type="button" aria-haspopup="dialog" aria-controls="insuranceModal">Ver cobertura</button>
+        </div>
         </div>
 
         <div class="value-panel" id="panel-bebidas" role="tabpanel" aria-labelledby="tab-bebidas" tabindex="0" hidden="">
@@ -777,6 +782,63 @@
           <div class="cabin-modal__body" id="cabinModalBody"></div>
           <p class="cabin-modal__note" id="cabinModalNote"></p>
           <a class="btn btn--primary cabin-modal__cta" id="cabinModalCta" href="#" target="_blank" rel="noopener">Reservar agora</a>
+        </div>
+      </div>
+    </dialog>
+
+    <!-- MODAL: cobertura do seguro viagem -->
+    <dialog class="cabin-modal insurance-modal" id="insuranceModal" aria-labelledby="insuranceModalTitle">
+      <div class="cabin-modal__inner">
+        <button class="cabin-modal__close" id="insuranceModalClose" type="button" aria-label="Fechar cobertura do seguro">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <path d="M6 6l12 12M18 6 6 18"></path>
+          </svg>
+        </button>
+        <div class="cabin-modal__content">
+          <span class="cabin-modal__eyebrow">Seguro viagem · por pessoa</span>
+          <h3 class="cabin-modal__title" id="insuranceModalTitle">Proteção para os imprevistos da viagem</h3>
+          <p class="cabin-modal__lead">12x de <strong>R$ 9,33</strong> por pessoa. Confira os capitais segurados máximos informados na apólice de referência.</p>
+
+          <div class="insurance-coverage">
+            <section class="insurance-coverage__group">
+              <h4>Saúde e transporte</h4>
+              <dl>
+                <div><dt>Despesas médicas e hospitalares · Brasil</dt><dd>R$ 100.000,00</dd></div>
+                <div><dt>Despesas médicas e hospitalares · exterior</dt><dd>R$ 100.000,00</dd></div>
+                <div><dt>Despesas odontológicas · Brasil</dt><dd>R$ 2.000,00</dd></div>
+                <div><dt>Despesas odontológicas · exterior</dt><dd>R$ 2.000,00</dd></div>
+                <div><dt>Traslado médico</dt><dd>R$ 24.000,00</dd></div>
+                <div><dt>Traslado de corpo</dt><dd>R$ 24.000,00</dd></div>
+                <div><dt>Regresso sanitário</dt><dd>R$ 24.000,00</dd></div>
+              </dl>
+            </section>
+
+            <section class="insurance-coverage__group">
+              <h4>Bagagem e apoio</h4>
+              <dl>
+                <div><dt>Gastos por atraso de bagagem</dt><dd>R$ 400,00</dd></div>
+                <div><dt>Danos à mala</dt><dd>R$ 750,00</dd></div>
+                <div><dt>Bagagem</dt><dd>R$ 2.000,00</dd></div>
+                <div><dt>Despesas farmacêuticas</dt><dd>R$ 2.000,00</dd></div>
+                <div><dt>Passagem de ida e volta para um familiar</dt><dd>R$ 2.000,00</dd></div>
+                <div><dt>Repatriação de menor</dt><dd>R$ 2.000,00</dd></div>
+                <div><dt>Hospedagem para acompanhante em caso de internação</dt><dd>R$ 500,00</dd></div>
+                <div><dt>Hospedagem por convalescença</dt><dd>R$ 2.000,00</dd></div>
+              </dl>
+            </section>
+
+            <section class="insurance-coverage__group">
+              <h4>Acidentes e imprevistos</h4>
+              <dl>
+                <div><dt>Morte acidental em viagem</dt><dd>R$ 80.000,00</dd></div>
+                <div><dt>Invalidez permanente total ou parcial por acidente</dt><dd>R$ 80.000,00</dd></div>
+                <div><dt>Cancelamento de viagem</dt><dd>R$ 30.000,00</dd></div>
+                <div><dt>Interrupção de viagem</dt><dd>R$ 30.000,00</dd></div>
+              </dl>
+            </section>
+          </div>
+
+          <p class="cabin-modal__note">Resumo baseado no bilhete de seguro viagem anexado. O seguro é individual e não se estende a familiares ou acompanhantes. A cobertura de cancelamento é válida somente até o embarque e para os motivos previstos na apólice. Vigência, reembolso, condições, exclusões e limites estão sujeitos às condições gerais da seguradora. Consulte a organização antes da contratação.</p>
         </div>
       </div>
     </dialog>
@@ -1625,7 +1687,7 @@
     </svg>
   </a>
 
-  <script src="assets/js/main.js?v=20260710-bebidas"></script>
+  <script src="assets/js/main.js?v=20260711-seguro"></script>
 
 
 
