@@ -758,7 +758,11 @@
           elLead.textContent = d.lead;
           buildBody(d.groups);
           elNote.textContent = d.note;
-          elCta.href = d.wa;
+          if (elCta) {
+            var isDrink = !!DRINK_KEYS[key];
+            elCta.hidden = isDrink;
+            elCta.href = isDrink ? '#' : d.wa;
+          }
           modal.showModal();
           modal.scrollTop = 0;
           var inner = modal.querySelector('.cabin-modal__inner');
