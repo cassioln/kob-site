@@ -3467,6 +3467,10 @@ h4 {
   transition: background var(--dur-fast) var(--ease-quart), transform var(--dur-fast) var(--ease-quart), border-color var(--dur-fast) var(--ease-quart);
 }
 
+.cabin-tour-btn[hidden] {
+  display: none;
+}
+
 .cabin-tour-btn svg {
   width: 20px;
   height: 20px;
