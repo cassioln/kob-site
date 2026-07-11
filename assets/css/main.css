@@ -6645,75 +6645,50 @@ h4 {
 }
 
 .deck__navio-link {
-  position: relative;
-  display: inline-grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  display: inline-flex;
+  flex-direction: column;
   align-items: center;
-  gap: 18px;
-  min-width: min(100%, 300px);
-  padding: 10px 10px 10px 24px;
+  justify-content: center;
+  gap: 8px;
+  padding: 4px 18px;
   color: var(--action-strong);
-  background: rgba(255, 255, 255, 0.62);
-  border: 1px solid rgba(87, 18, 122, 0.24);
-  border-radius: 999px;
-  box-shadow: 0 10px 30px rgba(58, 21, 96, 0.10);
+  background: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
   text-decoration: none;
   text-transform: uppercase;
-  overflow: hidden;
-  transition: color 220ms var(--ease-quart), transform 220ms var(--ease-quart), box-shadow 220ms var(--ease-quart), background 220ms var(--ease-quart), border-color 220ms var(--ease-quart);
+  transition: color 220ms var(--ease-quart), transform 220ms var(--ease-quart);
 }
 
 .deck__navio-copy {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  line-height: 1;
-}
-
-.deck__navio-copy>span {
   font-family: var(--font-display);
-  font-size: clamp(1.22rem, 2vw, 1.52rem);
+  font-size: 0.82rem;
   font-weight: 800;
-  letter-spacing: 0.08em;
-}
-
-.deck__navio-copy small {
-  margin-top: 5px;
-  color: var(--ink-soft);
-  font-size: 0.78rem;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  transition: color 220ms var(--ease-quart);
+  letter-spacing: 0.18em;
+  line-height: 1;
+  text-align: center;
 }
 
 .deck__navio-link svg {
-  width: 48px;
-  height: 48px;
-  padding: 13px;
-  color: var(--foam-white);
-  background: var(--action);
-  border-radius: 50%;
-  box-shadow: 0 5px 14px rgba(87, 18, 122, 0.24);
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  color: currentColor;
+  background: none;
+  border-radius: 0;
+  box-shadow: none;
   animation: deck-arrow-bob 1.45s var(--ease-quart) infinite;
-  transition: color 220ms var(--ease-quart), background 220ms var(--ease-quart), box-shadow 220ms var(--ease-quart);
+  transition: transform 220ms var(--ease-quart);
 }
 
 .deck__navio-link:hover {
-  color: var(--foam-white);
-  background: var(--action);
-  border-color: var(--action);
+  color: var(--action);
   transform: translateY(-3px);
-  box-shadow: 0 16px 32px rgba(58, 21, 96, 0.20);
-}
-
-.deck__navio-link:hover small {
-  color: rgba(255, 255, 255, 0.82);
 }
 
 .deck__navio-link:hover svg {
-  color: var(--action-strong);
-  background: var(--foam-white);
-  box-shadow: none;
+  transform: translateY(2px);
 }
 
 .js-reveal .deck__cta .deck__bonus-head,
