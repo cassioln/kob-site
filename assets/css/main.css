@@ -2981,6 +2981,85 @@ h4 {
   align-items: stretch;
 }
 
+.price-slider__controls {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .value-panel .price-grid {
+    display: flex;
+    gap: var(--sp-md);
+    align-items: stretch;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 2px;
+    padding: 8px 2px 20px;
+    scrollbar-width: none;
+  }
+
+  .value-panel .price-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .value-panel .price-grid>.price-card {
+    flex: 0 0 calc((100% - var(--sp-md)) / 2);
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+
+  .price-slider__controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    margin-top: 4px;
+  }
+
+  .price-slider__dot {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .price-slider__dot::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.38);
+    transition: width var(--dur-fast) var(--ease-quart), height var(--dur-fast) var(--ease-quart), background var(--dur-fast) var(--ease-quart);
+  }
+
+  .price-slider__dot[aria-current="true"]::before {
+    width: 10px;
+    height: 10px;
+    background: var(--foam-white);
+  }
+
+  .price-slider__dot:hover::before {
+    background: var(--foam-white);
+  }
+
+  .price-slider__dot:focus-visible {
+    outline: 2px solid var(--foam-white);
+    outline-offset: -8px;
+    border-radius: 50%;
+  }
+}
+
+@media (max-width: 680px) {
+  .value-panel .price-grid>.price-card {
+    flex-basis: min(88%, 340px);
+  }
+}
+
 .price-card {
   position: relative;
   background: var(--foam-white);
@@ -4512,26 +4591,17 @@ h4 {
 
 .travel-insurance {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 12px 16px;
+  gap: 6px 12px;
   margin-top: 14px;
-  padding-top: 18px;
-  border-top: 1px solid rgba(133, 201, 245, 0.22);
   color: var(--foam-white);
   text-align: center;
 }
 
 .travel-insurance__label {
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: var(--sunset-gold);
-  color: var(--ocean-navy);
-  font-family: var(--font-display);
-  font-size: 0.72rem;
   font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
 }
 
 .travel-insurance__price {
@@ -4539,38 +4609,30 @@ h4 {
 }
 
 .travel-insurance__price strong {
-  color: var(--sunset-gold);
-  font-family: var(--font-display);
-  font-size: 1.12rem;
+  color: inherit;
+  font: inherit;
+  font-weight: 800;
 }
 
 .travel-insurance__link {
   padding: 6px 2px;
   border: 0;
-  border-bottom: 1px solid currentColor;
   background: transparent;
-  color: var(--ocean-cyan);
+  color: inherit;
   font: inherit;
-  font-size: 0.88rem;
-  font-weight: 700;
+  font-weight: 800;
   cursor: pointer;
-  transition: color var(--dur-fast) var(--ease-quart);
+  transition: opacity var(--dur-fast) var(--ease-quart);
 }
 
 .travel-insurance__link:hover {
-  color: var(--foam-white);
+  opacity: 0.72;
 }
 
 .travel-insurance__link:focus-visible {
-  outline: 2px solid var(--sunset-gold);
+  outline: 2px solid currentColor;
   outline-offset: 4px;
   border-radius: 2px;
-}
-
-@media (max-width: 560px) {
-  .travel-insurance {
-    flex-direction: column;
-  }
 }
 
 .quotes {

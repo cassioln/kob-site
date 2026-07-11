@@ -585,6 +585,105 @@
         });
       })();
 
+      // ---------- Sliders responsivos dos valores (tablet e celular) ----------
+      (function priceSliders() {
+        var tracks = Array.prototype.slice.call(document.querySelectorAll('#valores .value-panel .price-grid'));
+        if (!tracks.length) return;
+        var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        var sliderQuery = window.matchMedia('(max-width: 1024px)');
+
+        tracks.forEach(function (track, trackIndex) {
+          var cards = Array.prototype.slice.call(track.querySelectorAll('.price-card'));
+          if (cards.length < 2) return;
+          var panel = track.closest('.value-panel');
+          var isCabins = panel && panel.id === 'panel-cabines';
+          var label = isCabins ? 'Valores das cabines' : 'Valores dos pacotes de bebidas';
+          var frame = null;
+
+          track.id = track.id || 'priceTrack' + (trackIndex + 1);
+
+          function syncMode() {
+            if (sliderQuery.matches) {
+              track.tabIndex = 0;
+              track.setAttribute('role', 'region');
+              track.setAttribute('aria-roledescription', 'carrossel');
+              track.setAttribute('aria-label', label);
+            } else {
+              track.removeAttribute('tabindex');
+              track.removeAttribute('role');
+              track.removeAttribute('aria-roledescription');
+              track.removeAttribute('aria-label');
+              track.scrollLeft = 0;
+            }
+            requestAnimationFrame(update);
+          }
+
+          var controls = document.createElement('div');
+          controls.className = 'price-slider__controls';
+          controls.setAttribute('role', 'group');
+          controls.setAttribute('aria-label', 'Navegação de ' + label.toLowerCase());
+          var status = document.createElement('span');
+          status.className = 'sr-only';
+          status.setAttribute('aria-live', 'polite');
+          var dots = cards.map(function (_card, index) {
+            var dot = document.createElement('button');
+            dot.type = 'button';
+            dot.className = 'price-slider__dot';
+            dot.setAttribute('aria-label', 'Ir para o card ' + (index + 1) + ' de ' + cards.length);
+            dot.setAttribute('aria-controls', track.id);
+            dot.addEventListener('click', function () { goTo(index); });
+            controls.appendChild(dot);
+            return dot;
+          });
+          controls.appendChild(status);
+          track.insertAdjacentElement('afterend', controls);
+
+          function update() {
+            if (panel && panel.hidden) return;
+            var max = Math.max(0, track.scrollWidth - track.clientWidth);
+            var active = 0;
+            if (track.scrollLeft >= max - 2 && max > 2) active = cards.length - 1;
+            else if (track.scrollLeft > 2) {
+              var bounds = track.getBoundingClientRect();
+              active = cards.reduce(function (best, card, index) {
+                var distance = Math.abs(card.getBoundingClientRect().left - bounds.left);
+                return distance < best.distance ? { index: index, distance: distance } : best;
+              }, { index: 0, distance: Infinity }).index;
+            }
+            dots.forEach(function (dot, index) {
+              if (index === active) dot.setAttribute('aria-current', 'true');
+              else dot.removeAttribute('aria-current');
+            });
+            status.textContent = 'Card ' + (active + 1) + ' de ' + cards.length;
+          }
+
+          function goTo(index) {
+            var card = cards[Math.max(0, Math.min(index, cards.length - 1))];
+            var bounds = track.getBoundingClientRect();
+            var left = track.scrollLeft + card.getBoundingClientRect().left - bounds.left;
+            track.scrollTo({ left: left, behavior: reduceMotion ? 'auto' : 'smooth' });
+          }
+
+          track.addEventListener('scroll', function () {
+            if (frame) cancelAnimationFrame(frame);
+            frame = requestAnimationFrame(update);
+          }, { passive: true });
+          track.addEventListener('keydown', function (event) {
+            if (event.target !== track) return;
+            var active = dots.findIndex(function (dot) { return dot.getAttribute('aria-current') === 'true'; });
+            if (event.key === 'ArrowLeft') { event.preventDefault(); goTo(active - 1); }
+            else if (event.key === 'ArrowRight') { event.preventDefault(); goTo(active + 1); }
+            else if (event.key === 'Home') { event.preventDefault(); goTo(0); }
+            else if (event.key === 'End') { event.preventDefault(); goTo(cards.length - 1); }
+          });
+          window.addEventListener('resize', update);
+          if (panel) new MutationObserver(function () { requestAnimationFrame(update); }).observe(panel, { attributes: true, attributeFilter: ['hidden'] });
+          if (typeof sliderQuery.addEventListener === 'function') sliderQuery.addEventListener('change', syncMode);
+          else sliderQuery.addListener(syncMode);
+          syncMode();
+        });
+      })();
+
       // ---------- Modal da cobertura do seguro viagem ----------
       (function insuranceCoverage() {
         var modal = document.getElementById('insuranceModal');
