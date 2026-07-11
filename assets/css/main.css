@@ -3191,6 +3191,79 @@ h4 {
   margin-top: 0px;
 }
 
+/* Abas de valores (cabines | bebidas) */
+.value-tabs {
+  display: flex;
+  gap: 4px;
+  width: max-content;
+  max-width: 100%;
+  margin: 0 auto var(--sp-md);
+  padding: 5px;
+  border-radius: 999px;
+  background: rgba(133, 201, 245, 0.1);
+  border: 1px solid rgba(133, 201, 245, 0.18);
+}
+
+.value-tab {
+  appearance: none;
+  border: 0;
+  background: none;
+  padding: 10px 22px;
+  border-radius: 999px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.72);
+  cursor: pointer;
+  transition: background var(--dur-state) var(--ease-quart), color var(--dur-state) var(--ease-quart);
+}
+
+.value-tab:hover {
+  color: #fff;
+}
+
+.value-tab[aria-selected="true"] {
+  background: linear-gradient(135deg, var(--kriativa-purple), var(--kriativa-purple-deep));
+  color: #fff;
+  box-shadow: 0 6px 20px -8px rgba(123, 31, 162, 0.9);
+}
+
+.value-tab:focus-visible {
+  outline: 2px solid var(--sunset-gold);
+  outline-offset: 3px;
+}
+
+.value-panel:focus-visible {
+  outline: none;
+}
+
+/* Cartas de pacote com foto no topo */
+.price-card__figure {
+  margin: 0;
+  aspect-ratio: 920 / 620;
+  overflow: hidden;
+  background: var(--dark-navy-2);
+}
+
+.price-card__figure img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--dur-state) var(--ease-quart);
+}
+
+.price-card:hover .price-card__figure img {
+  transform: scale(1.045);
+}
+
+/* Com foto acima, o cabeçalho roxo perde o corte diagonal e encaixa reto */
+.price-card__figure + .price-card__head {
+  clip-path: none;
+  padding-bottom: 24px;
+}
+
 .cabin-modal {
   margin: auto;
   border: 0px;

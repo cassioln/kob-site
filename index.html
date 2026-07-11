@@ -28,7 +28,7 @@
   <!-- Fontes da marca (banner KOB): Gobold Extra2 = display, Chantal = acento manuscrito -->
   <link rel="preload" href="assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
 
-  <link rel="stylesheet" href="assets/css/main.css?v=20260710-voices">
+  <link rel="stylesheet" href="assets/css/main.css?v=20260710-bebidas">
 </head>
 
 <body>
@@ -671,6 +671,14 @@
           <p class="lead">Entrada + 12x no cartão — vagas abertas por tempo limitado.</p>
         </div>
 
+        <div class="value-tabs reveal" role="tablist" aria-label="Tipos de valores">
+          <button type="button" role="tab" id="tab-cabines" class="value-tab" aria-selected="true"
+            aria-controls="panel-cabines">Cabines</button>
+          <button type="button" role="tab" id="tab-bebidas" class="value-tab" aria-selected="false"
+            aria-controls="panel-bebidas" tabindex="-1">Pacotes de bebidas</button>
+        </div>
+
+        <div class="value-panel" id="panel-cabines" role="tabpanel" aria-labelledby="tab-cabines" tabindex="0">
         <div class="price-grid reveal">
           <article class="price-card price-card--featured">
             <span class="price-card__flag">Melhor preço</span>
@@ -747,6 +755,105 @@
         </div>
         <p class="price-note">*Valores por pessoa, sujeitos a alteração. Para crianças, consulte a organização.
         </p>
+        </div>
+
+        <div class="value-panel" id="panel-bebidas" role="tabpanel" aria-labelledby="tab-bebidas" tabindex="0" hidden>
+          <div class="price-grid reveal">
+            <article class="price-card">
+              <figure class="price-card__figure">
+                <img src="assets/images/drinks/pacote-easy.webp"
+                  alt="Seleção de bebidas do Pacote Easy servidas a bordo do MSC Música" width="920" height="720"
+                  loading="lazy" decoding="async">
+              </figure>
+              <div class="price-card__head">
+                <span class="price-card__cabin">Pacote Easy</span>
+                <span class="price-card__type">Um cruzeiro tranquilo, bebida o dia todo</span>
+              </div>
+              <div class="price-card__body">
+                <span class="price-card__from">por pessoa</span>
+                <span class="price-card__value"><span class="cur">R$</span><span class="amount">768</span></span>
+                <span class="price-card__entry">Bares, buffets e restaurantes principais selecionados</span>
+                <div class="price-card__rule"></div>
+                <ul class="price-card__list">
+                  <li><span>Café, chá e bebidas quentes</span></li>
+                  <li><span>Refrigerantes, sucos e água AQUA by MSC</span></li>
+                  <li><span>Cerveja em garrafa, chope e vinho da casa</span></li>
+                  <li><span>Coquetéis clássicos e destilados da casa</span></li>
+                  <li><span>Opções sem álcool: mocktails, vinhos e cervejas</span></li>
+                </ul>
+                <button type="button" class="price-card__details" data-cabin="easy" aria-haspopup="dialog">Ver
+                  detalhes</button>
+                <a class="btn btn--primary"
+                  href="https://api.whatsapp.com/send?phone=5513981580498&amp;text=Ol%C3%A1%2C%20Royal%20Trip!%20Quero%20o%20Pacote%20de%20Bebidas%20Easy%20no%20Kriativos%20On%20Board%202026."
+                  target="_blank" rel="noopener">Quero este pacote</a>
+              </div>
+            </article>
+
+            <article class="price-card price-card--featured">
+              <span class="price-card__flag">Mais completo</span>
+              <figure class="price-card__figure">
+                <img src="assets/images/drinks/pacote-premium.webp"
+                  alt="Bebidas premium do Pacote Premium servidas a bordo do MSC Música" width="920" height="720"
+                  loading="lazy" decoding="async">
+              </figure>
+              <div class="price-card__head">
+                <span class="price-card__cabin">Pacote Premium</span>
+                <span class="price-card__type">Bebidas de primeira em todo o navio</span>
+              </div>
+              <div class="price-card__body">
+                <span class="price-card__from">por pessoa</span>
+                <span class="price-card__value"><span class="cur">R$</span><span class="amount">1.344</span></span>
+                <span class="price-card__entry">Todo o navio, especialidades selecionadas e ilhas privativas</span>
+                <div class="price-card__rule"></div>
+                <ul class="price-card__list">
+                  <li><span>Cafés especiais, chás e bebidas quentes</span></li>
+                  <li><span>Refrigerantes, energéticos, smoothies e shakes</span></li>
+                  <li><span>Ampla seleção de chope e cervejas em garrafa</span></li>
+                  <li><span>Vinhos e espumantes premium em taça</span></li>
+                  <li><span>Destilados, licores e drinks com marcas premium</span></li>
+                </ul>
+                <button type="button" class="price-card__details" data-cabin="premium" aria-haspopup="dialog">Ver
+                  detalhes</button>
+                <a class="btn btn--primary"
+                  href="https://api.whatsapp.com/send?phone=5513981580498&amp;text=Ol%C3%A1%2C%20Royal%20Trip!%20Quero%20o%20Pacote%20de%20Bebidas%20Premium%20no%20Kriativos%20On%20Board%202026."
+                  target="_blank" rel="noopener">Quero este pacote</a>
+              </div>
+            </article>
+
+            <article class="price-card">
+              <figure class="price-card__figure">
+                <img src="assets/images/drinks/pacote-nao-alcoolico.webp"
+                  alt="Bebidas sem álcool do Pacote Não Alcoólico servidas a bordo do MSC Música" width="920"
+                  height="720" loading="lazy" decoding="async">
+              </figure>
+              <div class="price-card__head">
+                <span class="price-card__cabin">Não alcoólico</span>
+                <span class="price-card__type">Revigorante, sem álcool, para adultos</span>
+              </div>
+              <div class="price-card__body">
+                <span class="price-card__from">por pessoa</span>
+                <span class="price-card__value"><span class="cur">R$</span><span class="amount">615</span></span>
+                <span class="price-card__entry">Bares, buffets e restaurantes principais selecionados</span>
+                <div class="price-card__rule"></div>
+                <ul class="price-card__list">
+                  <li><span>Cafés especiais, chás e bebidas quentes</span></li>
+                  <li><span>Refrigerantes e energéticos</span></li>
+                  <li><span>Sucos, coquetéis de frutas, smoothies e shakes</span></li>
+                  <li><span>Água com e sem gás — AQUA by MSC</span></li>
+                  <li><span>Cervejas, vinhos e coquetéis sem álcool</span></li>
+                </ul>
+                <button type="button" class="price-card__details" data-cabin="naoalcoolico" aria-haspopup="dialog">Ver
+                  detalhes</button>
+                <a class="btn btn--primary"
+                  href="https://api.whatsapp.com/send?phone=5513981580498&amp;text=Ol%C3%A1%2C%20Royal%20Trip!%20Quero%20o%20Pacote%20de%20Bebidas%20N%C3%A3o%20Alco%C3%B3lico%20no%20Kriativos%20On%20Board%202026."
+                  target="_blank" rel="noopener">Quero este pacote</a>
+              </div>
+            </article>
+          </div>
+          <p class="price-note">As taxas de serviço já estão incluídas. O pacote não é aceito em restaurantes de
+            especialidades e ilhas particulares. Valores e itens do cardápio podem sofrer alterações; imagens e
+            descrições são ilustrativas.</p>
+        </div>
       </div>
     </section>
 
@@ -1753,7 +1860,7 @@
     </svg>
   </a>
 
-  <script src="assets/js/main.js?v=20260710-edition-random8"></script>
+  <script src="assets/js/main.js?v=20260710-bebidas"></script>
 
 
 

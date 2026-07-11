@@ -558,6 +558,33 @@
         if (h) setTimeout(function () { if (h.dataset.intro !== 'done') h.dataset.intro = 'done'; }, 7000);
       })();
 
+      // ---------- Abas de valores (cabines | bebidas) ----------
+      (function valueTabs() {
+        var tablist = document.querySelector('.value-tabs');
+        if (!tablist) return;
+        var tabs = Array.prototype.slice.call(tablist.querySelectorAll('[role="tab"]'));
+        function select(tab) {
+          tabs.forEach(function (t) {
+            var on = t === tab;
+            t.setAttribute('aria-selected', on ? 'true' : 'false');
+            t.tabIndex = on ? 0 : -1;
+            var panel = document.getElementById(t.getAttribute('aria-controls'));
+            if (panel) panel.hidden = !on;
+          });
+        }
+        tabs.forEach(function (tab, i) {
+          tab.addEventListener('click', function () { select(tab); });
+          tab.addEventListener('keydown', function (e) {
+            var next = null;
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next = tabs[(i + 1) % tabs.length];
+            else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') next = tabs[(i - 1 + tabs.length) % tabs.length];
+            else if (e.key === 'Home') next = tabs[0];
+            else if (e.key === 'End') next = tabs[tabs.length - 1];
+            if (next) { e.preventDefault(); select(next); next.focus(); }
+          });
+        });
+      })();
+
       // ---------- Modal "Ver detalhes" das cabines ----------
       (function cabinDetails() {
         var modal = document.getElementById('cabinModal');
@@ -633,6 +660,66 @@
             }],
             note: '* As cabines para hóspedes com necessidades especiais ou mobilidade reduzida possuem apenas cama de solteiro (exceto cabines 15025). A imagem é apenas ilustrativa; o tamanho, layout e mobília podem variar (dentro da mesma categoria de cabine).',
             wa: WA + encodeURIComponent('Olá, Royal Trip! Quero reservar uma Cabine Varanda (2º lote) no Kriativos On Board 2026.')
+          },
+          easy: {
+            cabin: 'Pacote Easy · R$ 768',
+            img: 'assets/images/drinks/pacote-easy.webp',
+            alt: 'Seleção de bebidas do Pacote Easy servidas a bordo do MSC Música',
+            title: 'Um cruzeiro tranquilo, com bebida o dia inteiro',
+            lead: 'Desfrute de uma ampla seleção de bebidas ao longo do dia. Disponível em bares, buffets e restaurantes principais selecionados.',
+            groups: [{
+              items: [
+                'Café, chá e bebidas quentes',
+                'Refrigerantes e sucos',
+                'Água com e sem gás — AQUA by MSC*',
+                'Cerveja em garrafa e chope — marcas selecionadas',
+                'Vinho da casa e espumante em taça',
+                'Coquetéis clássicos e drinks com destilados da casa',
+                'Opções sem álcool, como mocktails, vinhos e cervejas'
+              ]
+            }],
+            note: '* AQUA by MSC: água enriquecida com minerais servida em copos nos bares e buffets, em garrafas de vidro reutilizáveis de 1L nos principais restaurantes e em estações de recarga, mediante solicitação. Taxas de serviço incluídas. Valores e itens do cardápio podem sofrer alterações; imagens e descrições são ilustrativas.',
+            wa: WA + encodeURIComponent('Olá, Royal Trip! Quero o Pacote de Bebidas Easy no Kriativos On Board 2026.')
+          },
+          premium: {
+            cabin: 'Pacote Premium · R$ 1.344',
+            img: 'assets/images/drinks/pacote-premium.webp',
+            alt: 'Bebidas premium do Pacote Premium servidas a bordo do MSC Música',
+            title: 'Bebidas de primeira qualidade em todo o navio',
+            lead: 'Torne cada momento especial. Disponível em bares, bufês, restaurantes principais, restaurantes de especialidades selecionados e em ilhas privativas.',
+            groups: [{
+              items: [
+                'Cafés especiais, chás e bebidas quentes variadas',
+                'Refrigerantes e energéticos',
+                'Sucos, coquetéis de frutas frescas, smoothies e shakes de proteína',
+                'Água com e sem gás — AQUA by MSC*',
+                'Cervejas, vinhos e coquetéis sem álcool',
+                'Ampla seleção de chope e cervejas em garrafa',
+                'Vinhos e espumantes premium em taça',
+                'Destilados e licores premium',
+                'Coquetéis e drinks elaborados com marcas premium'
+              ]
+            }],
+            note: '* AQUA by MSC: água enriquecida com minerais servida em copos, em garrafas de vidro reutilizáveis de 1L e em estações de recarga, mediante solicitação. Taxas de serviço incluídas. Valores e itens do cardápio podem sofrer alterações; imagens e descrições são ilustrativas.',
+            wa: WA + encodeURIComponent('Olá, Royal Trip! Quero o Pacote de Bebidas Premium no Kriativos On Board 2026.')
+          },
+          naoalcoolico: {
+            cabin: 'Não alcoólico · R$ 615',
+            img: 'assets/images/drinks/pacote-nao-alcoolico.webp',
+            alt: 'Bebidas sem álcool do Pacote Não Alcoólico servidas a bordo do MSC Música',
+            title: 'Revigorante, sem álcool, para adultos',
+            lead: 'Perfeito para quem prefere opções sem álcool. Disponível em bares, buffets e restaurantes principais selecionados.',
+            groups: [{
+              items: [
+                'Cafés especiais, chás e bebidas quentes variadas',
+                'Refrigerantes e energéticos',
+                'Sucos, coquetéis de frutas frescas, smoothies e shakes de proteína',
+                'Água com e sem gás — AQUA by MSC*',
+                'Cervejas, vinhos e coquetéis sem álcool'
+              ]
+            }],
+            note: '* AQUA by MSC: água enriquecida com minerais servida em copos, em garrafas de vidro reutilizáveis de 1L e em estações de recarga, mediante solicitação. Taxas de serviço incluídas. O pacote não é aceito em restaurantes de especialidades e ilhas particulares. Valores e itens do cardápio podem sofrer alterações; imagens e descrições são ilustrativas.',
+            wa: WA + encodeURIComponent('Olá, Royal Trip! Quero o Pacote de Bebidas Não Alcoólico no Kriativos On Board 2026.')
           }
         };
 
