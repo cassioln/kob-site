@@ -8009,9 +8009,21 @@ h4 {
   }
 }
 
+.preboard-route__segment--first {
+  --route-segment-length: 498;
+}
+
+.preboard-route__segment--second {
+  --route-segment-length: 783;
+}
+
+.preboard-route__segment--third {
+  --route-segment-length: 648;
+}
+
 .js-reveal .preboard-route__map.reveal .preboard-route__line-main {
-  stroke-dasharray: 1700;
-  stroke-dashoffset: 1700;
+  stroke-dasharray: var(--route-segment-length);
+  stroke-dashoffset: var(--route-segment-length);
 }
 
 .js-reveal .preboard-route__map.reveal .route-stop,
@@ -8022,7 +8034,19 @@ h4 {
 
 .js-reveal .preboard-route__map.reveal.is-in .preboard-route__line-main {
   stroke-dashoffset: 0;
-  transition: stroke-dashoffset 4.8s var(--ease-quart) 2.1s;
+}
+
+/* Segmentos percorrem a rota em sequência, com velocidade proporcional ao comprimento. */
+.js-reveal .preboard-route__map.reveal.is-in .preboard-route__segment--first {
+  transition: stroke-dashoffset 1.25s linear 1.55s;
+}
+
+.js-reveal .preboard-route__map.reveal.is-in .preboard-route__segment--second {
+  transition: stroke-dashoffset 1.95s linear 2.8s;
+}
+
+.js-reveal .preboard-route__map.reveal.is-in .preboard-route__segment--third {
+  transition: stroke-dashoffset 1.6s linear 4.75s;
 }
 
 .js-reveal .preboard-route__map.reveal.is-in .route-stop,

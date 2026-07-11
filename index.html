@@ -22,7 +22,7 @@
   <!-- Fontes da marca (banner KOB): Gobold Extra2 = display, Chantal = acento manuscrito -->
   <link rel="preload" href="assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
 
-  <link rel="stylesheet" href="assets/css/main.css?v=20260711-route-slow">
+  <link rel="stylesheet" href="assets/css/main.css?v=20260711-route-sequential">
 </head>
 
 <body>
@@ -1328,9 +1328,12 @@
             <path class="preboard-route__line-shadow"
               d="M52 30C52 300 371 300 371 174M371 174C371 520 701 520 701 26M701 26C701 300 842 318 1004 318h152">
             </path>
-            <path class="preboard-route__line-main"
-              d="M52 30C52 300 371 300 371 174M371 174C371 520 701 520 701 26M701 26C701 300 842 318 1004 318h152">
-            </path>
+            <path class="preboard-route__line-main preboard-route__segment--first"
+              d="M52 30C52 300 371 300 371 174"></path>
+            <path class="preboard-route__line-main preboard-route__segment--second"
+              d="M371 174C371 520 701 520 701 26"></path>
+            <path class="preboard-route__line-main preboard-route__segment--third"
+              d="M701 26C701 300 842 318 1004 318h152"></path>
           </svg>
 
           <article class="route-stop route-stop--hotel route-stop--first">
