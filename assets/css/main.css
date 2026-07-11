@@ -8022,7 +8022,7 @@ h4 {
 
 .js-reveal .preboard-route__map.reveal.is-in .preboard-route__line-main {
   stroke-dashoffset: 0;
-  transition: stroke-dashoffset 1.8s var(--ease-expo);
+  transition: stroke-dashoffset 4.8s var(--ease-quart) 2.1s;
 }
 
 .js-reveal .preboard-route__map.reveal.is-in .route-stop,
