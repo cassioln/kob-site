@@ -1121,6 +1121,55 @@
       </div>
     </section>
 
+    <!-- LIGHTBOX (galeria navegável) -->
+    <dialog class="lightbox" id="lightbox" aria-label="Galeria de fotos">
+      <div class="lightbox__inner">
+        <button class="lightbox__close" id="lbClose" aria-label="Fechar galeria" autofocus="">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M6 6l12 12M18 6L6 18"></path>
+          </svg>
+        </button>
+        <button class="lightbox__btn lightbox__prev" id="lbPrev" aria-label="Foto anterior">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 18l-6-6 6-6"></path>
+          </svg>
+        </button>
+        <figure class="lightbox__figure">
+          <img class="lightbox__img" id="lbImg" src="assets/images/gallery/2025/kob-2025-0372.webp" alt="">
+          <figcaption class="lightbox__cap"><span id="lbCap"></span><b id="lbCounter"></b></figcaption>
+        </figure>
+        <button class="lightbox__btn lightbox__next" id="lbNext" aria-label="Próxima foto">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 18l6-6-6-6"></path>
+          </svg>
+        </button>
+      </div>
+    </dialog>
+
+    <!-- PARTICIPAÇÕES ESPECIAIS -->
+    <section class="section section--navy section--dark section--center" id="participacoes" aria-labelledby="part-title">
+      <div class="container">
+        <div class="section__head reveal u-center">
+          <h2 id="part-title" class="h2--md">Participações especiais confirmadas</h2>
+          <p class="lead u-lead-center">Creators e comunidades de board games que já embarcam nessa com a
+            gente.</p>
+        </div>
+        <div class="creators reveal">
+          <figure class="creator"><img src="assets/images/creators/pena-jogando-offline.jpg" alt="Pena, do canal Jogando Offline" loading="lazy"><b>Pena</b><a href="https://www.instagram.com/penadoxo" target="_blank" rel="noopener">@penadoxo</a>
+          </figure>
+          <figure class="creator"><img src="assets/images/creators/barbara-seu-movimento.jpeg" alt="Bárbara Côrtes, do Seu Movimento" loading="lazy"><b>Bárbara Côrtes</b><a href="https://www.instagram.com/seumovimento" target="_blank" rel="noopener">@seumovimento</a></figure>
+          <figure class="creator"><img src="assets/images/creators/paulo-bota-na-mesa.jpeg" alt="Paulo Rezende, do Bota na Mesa" loading="lazy"><b>Paulo Rezende</b><a href="https://www.instagram.com/botanamesabg" target="_blank" rel="noopener">@botanamesabg</a></figure>
+          <figure class="creator"><img src="assets/images/creators/turista-board-game.jpeg" alt="Gui e Naty, do Turista Board Game" loading="lazy"><b>Gui e Naty</b><a href="https://www.instagram.com/turistaboardgame" target="_blank" rel="noopener">@turistaboardgame</a>
+          </figure>
+          <figure class="creator"><img src="assets/images/creators/jamilton-bg-barueri.jpeg" alt="Jamilton, do BG Barueri" loading="lazy"><b>Jamilton</b><a href="https://www.instagram.com/bgbarueri" target="_blank" rel="noopener">@bgbarueri</a>
+          </figure>
+          <figure class="creator"><img src="assets/images/creators/ludosport-sao-paulo.jpeg" alt="Luis, do LudoSport São Paulo" loading="lazy"><b>Luis</b><a href="https://www.instagram.com/ludosport.saopaulo" target="_blank" rel="noopener">@ludosport.saopaulo</a>
+          </figure>
+        </div>
+        <p class="lead u-lead-footnote">E também <a href="https://www.instagram.com/geekinformado" target="_blank" rel="noopener" class="link-action">@geekinformado</a>, <a href="https://www.instagram.com/nickbgg" target="_blank" rel="noopener" class="link-action">@nickbgg</a>, <a href="https://www.instagram.com/universoludicobg" target="_blank" rel="noopener" class="link-action">@universoludicobg</a> e <a href="https://www.instagram.com/bgzosp" target="_blank" rel="noopener" class="link-action">@bgzosp</a>.</p>
+      </div>
+    </section>
+
     <!-- DEPOIMENTOS -->
     <section class="section section--navy section--dark section--center" id="depoimentos" aria-labelledby="dep-title">
       <div class="container">
@@ -1197,55 +1246,6 @@
             <footer>Thais e Luis <span>@viajanerd_</span></footer>
           </blockquote>
         </div>
-      </div>
-    </section>
-
-    <!-- LIGHTBOX (galeria navegável) -->
-    <dialog class="lightbox" id="lightbox" aria-label="Galeria de fotos">
-      <div class="lightbox__inner">
-        <button class="lightbox__close" id="lbClose" aria-label="Fechar galeria" autofocus="">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-            <path d="M6 6l12 12M18 6L6 18"></path>
-          </svg>
-        </button>
-        <button class="lightbox__btn lightbox__prev" id="lbPrev" aria-label="Foto anterior">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M15 18l-6-6 6-6"></path>
-          </svg>
-        </button>
-        <figure class="lightbox__figure">
-          <img class="lightbox__img" id="lbImg" src="assets/images/gallery/2025/kob-2025-0372.webp" alt="">
-          <figcaption class="lightbox__cap"><span id="lbCap"></span><b id="lbCounter"></b></figcaption>
-        </figure>
-        <button class="lightbox__btn lightbox__next" id="lbNext" aria-label="Próxima foto">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M9 18l6-6-6-6"></path>
-          </svg>
-        </button>
-      </div>
-    </dialog>
-
-    <!-- PARTICIPAÇÕES ESPECIAIS -->
-    <section class="section section--navy section--dark section--center" id="participacoes" aria-labelledby="part-title">
-      <div class="container">
-        <div class="section__head reveal u-center">
-          <h2 id="part-title" class="h2--md">Participações especiais confirmadas</h2>
-          <p class="lead u-lead-center">Creators e comunidades de board games que já embarcam nessa com a
-            gente.</p>
-        </div>
-        <div class="creators reveal">
-          <figure class="creator"><img src="assets/images/creators/pena-jogando-offline.jpg" alt="Pena, do canal Jogando Offline" loading="lazy"><b>Pena</b><a href="https://www.instagram.com/penadoxo" target="_blank" rel="noopener">@penadoxo</a>
-          </figure>
-          <figure class="creator"><img src="assets/images/creators/barbara-seu-movimento.jpeg" alt="Bárbara Côrtes, do Seu Movimento" loading="lazy"><b>Bárbara Côrtes</b><a href="https://www.instagram.com/seumovimento" target="_blank" rel="noopener">@seumovimento</a></figure>
-          <figure class="creator"><img src="assets/images/creators/paulo-bota-na-mesa.jpeg" alt="Paulo Rezende, do Bota na Mesa" loading="lazy"><b>Paulo Rezende</b><a href="https://www.instagram.com/botanamesabg" target="_blank" rel="noopener">@botanamesabg</a></figure>
-          <figure class="creator"><img src="assets/images/creators/turista-board-game.jpeg" alt="Gui e Naty, do Turista Board Game" loading="lazy"><b>Gui e Naty</b><a href="https://www.instagram.com/turistaboardgame" target="_blank" rel="noopener">@turistaboardgame</a>
-          </figure>
-          <figure class="creator"><img src="assets/images/creators/jamilton-bg-barueri.jpeg" alt="Jamilton, do BG Barueri" loading="lazy"><b>Jamilton</b><a href="https://www.instagram.com/bgbarueri" target="_blank" rel="noopener">@bgbarueri</a>
-          </figure>
-          <figure class="creator"><img src="assets/images/creators/ludosport-sao-paulo.jpeg" alt="Luis, do LudoSport São Paulo" loading="lazy"><b>Luis</b><a href="https://www.instagram.com/ludosport.saopaulo" target="_blank" rel="noopener">@ludosport.saopaulo</a>
-          </figure>
-        </div>
-        <p class="lead u-lead-footnote">E também <a href="https://www.instagram.com/geekinformado" target="_blank" rel="noopener" class="link-action">@geekinformado</a>, <a href="https://www.instagram.com/nickbgg" target="_blank" rel="noopener" class="link-action">@nickbgg</a>, <a href="https://www.instagram.com/universoludicobg" target="_blank" rel="noopener" class="link-action">@universoludicobg</a> e <a href="https://www.instagram.com/bgzosp" target="_blank" rel="noopener" class="link-action">@bgzosp</a>.</p>
       </div>
     </section>
 
