@@ -585,6 +585,44 @@
         });
       })();
 
+      // ---------- #evento: timeline horizontal só no celular ----------
+      (function eventTimelineAdapt() {
+        var track = document.querySelector('#evento .event-track');
+        if (!track) return;
+        var mobile = window.matchMedia('(max-width: 680px)');
+        var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        function syncMode() {
+          if (mobile.matches) {
+            track.tabIndex = 0;
+            track.setAttribute('role', 'region');
+            track.setAttribute('aria-roledescription', 'linha do tempo horizontal');
+            track.setAttribute('aria-label', 'História do Kriativos On Board. Deslize ou use as setas para navegar pelos anos.');
+          } else {
+            track.removeAttribute('tabindex');
+            track.removeAttribute('role');
+            track.removeAttribute('aria-roledescription');
+            track.setAttribute('aria-label', 'Linha do tempo do Kriativos On Board');
+            track.scrollLeft = 0;
+          }
+        }
+
+        function move(direction) {
+          track.scrollBy({ left: direction * track.clientWidth * 0.84, behavior: reduceMotion ? 'auto' : 'smooth' });
+        }
+
+        track.addEventListener('keydown', function (event) {
+          if (event.target !== track || !mobile.matches) return;
+          if (event.key === 'ArrowLeft') { event.preventDefault(); move(-1); }
+          else if (event.key === 'ArrowRight') { event.preventDefault(); move(1); }
+          else if (event.key === 'Home') { event.preventDefault(); track.scrollTo({ left: 0, behavior: reduceMotion ? 'auto' : 'smooth' }); }
+          else if (event.key === 'End') { event.preventDefault(); track.scrollTo({ left: track.scrollWidth, behavior: reduceMotion ? 'auto' : 'smooth' }); }
+        });
+        if (typeof mobile.addEventListener === 'function') mobile.addEventListener('change', syncMode);
+        else mobile.addListener(syncMode);
+        syncMode();
+      })();
+
       // ---------- Sliders responsivos dos valores (tablet e celular) ----------
       (function priceSliders() {
         var tracks = Array.prototype.slice.call(document.querySelectorAll('#valores .value-panel .price-grid'));
