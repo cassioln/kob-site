@@ -3191,6 +3191,23 @@ h4 {
   margin-top: 0px;
 }
 
+/* Pacotes de bebidas: acento laranja no lugar do roxo (escopo #panel-bebidas) */
+#panel-bebidas .price-card__head {
+  background: linear-gradient(135deg, #f7941e 0%, #d97706 100%);
+}
+
+#panel-bebidas .price-card__details {
+  color: #d97706;
+}
+
+#panel-bebidas .price-card__details:hover {
+  color: #b45f09;
+}
+
+#panel-bebidas .price-card--featured {
+  outline-color: #f7941e;
+}
+
 /* Abas de valores (cabines | bebidas) */
 .value-tabs {
   display: flex;
