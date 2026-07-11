@@ -22,7 +22,7 @@
   <!-- Fontes da marca (banner KOB): Gobold Extra2 = display, Chantal = acento manuscrito -->
   <link rel="preload" href="assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
 
-  <link rel="stylesheet" href="assets/css/main.css?v=20260711-route-options-2">
+  <link rel="stylesheet" href="assets/css/main.css?v=20260711-port-map">
 </head>
 
 <body>
@@ -1379,11 +1379,54 @@
                 <path d="M5 42c4-2 7 2 11 0s7 2 11 0 7 2 16 0"></path>
               </svg>
             </span>
-            <span class="route-destination__copy"><b>Porto de Santos</b><small>Próxima parada: MSC Música</small></span>
+            <span class="route-destination__copy">
+              <b>Porto de Santos</b>
+              <small>Próxima parada: MSC Música</small>
+              <button class="route-destination__link" id="portMapOpen" type="button" aria-haspopup="dialog">
+                Ver localização
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M12 21s6-5.15 6-11a6 6 0 1 0-12 0c0 5.85 6 11 6 11Z"></path>
+                  <circle cx="12" cy="10" r="2"></circle>
+                </svg>
+              </button>
+            </span>
           </div>
         </div>
       </div>
     </section>
+
+    <!-- MODAL: localização do Porto de Santos -->
+    <dialog class="tour360 map-modal" id="portMapModal" aria-labelledby="portMapTitle">
+      <div class="tour360__bar map-modal__bar">
+        <div class="map-modal__heading">
+          <span class="map-modal__marker" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M12 21s6-5.15 6-11a6 6 0 1 0-12 0c0 5.85 6 11 6 11Z"></path>
+              <circle cx="12" cy="10" r="2"></circle>
+            </svg>
+          </span>
+          <span>
+            <b class="tour360__label" id="portMapTitle">Porto de Santos</b>
+            <small class="map-modal__address">Terminal de Passageiros · Santos, SP</small>
+          </span>
+        </div>
+        <button class="tour360__icon-btn tour360__close" id="portMapClose" type="button"
+          aria-label="Fechar mapa do Porto de Santos">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            aria-hidden="true">
+            <path d="M6 6l12 12M18 6 6 18"></path>
+          </svg>
+        </button>
+      </div>
+      <div class="tour360__stage map-modal__stage">
+        <div class="tour360__spinner map-modal__spinner" aria-hidden="true">
+          <div class="tour360__spinner-dots"><span></span><span></span><span></span></div>
+        </div>
+        <iframe class="map-modal__frame" id="portMapFrame" title="Mapa do Porto de Santos"
+          data-src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3645.841599567781!2d-46.301943699999995!3d-23.9660408!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94ce023adff33bdf%3A0xd240067393fee36a!2sPorto%20de%20Santos!5e0!3m2!1spt-BR!2sbr!4v1783785227330!5m2!1spt-BR!2sbr"
+          allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+      </div>
+    </dialog>
 
     <!-- FAQ -->
     <section class="section preboard-faq" id="faq" aria-labelledby="faq-title">
@@ -1817,7 +1860,7 @@
     </svg>
   </a>
 
-  <script src="assets/js/main.js?v=20260711-ship-video-youtube"></script>
+  <script src="assets/js/main.js?v=20260711-port-map-2"></script>
 
 
 

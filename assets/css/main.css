@@ -7801,7 +7801,7 @@ h4 {
 .route-destination {
   position: absolute;
   right: 0;
-  bottom: 19px;
+  bottom: -31px;
   display: grid;
   grid-template-columns: 58px 1fr;
   align-items: center;
@@ -7861,6 +7861,141 @@ h4 {
   font-weight: 800;
   letter-spacing: 0.05em;
   text-transform: uppercase;
+}
+
+.route-destination__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  width: fit-content;
+  min-height: 44px;
+  margin-top: 2px;
+  padding: 8px 0;
+  border: 0;
+  color: var(--ocean-abyss);
+  background: transparent;
+  font: 800 0.76rem/1 var(--font-body);
+  text-decoration: underline;
+  text-decoration-color: rgba(4, 22, 44, 0.45);
+  text-underline-offset: 4px;
+  cursor: pointer;
+  transition: color var(--dur-state) var(--ease-quart), text-decoration-color var(--dur-state) var(--ease-quart);
+}
+
+.route-destination__link svg {
+  width: 17px;
+  stroke: currentcolor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform var(--dur-state) var(--ease-expo);
+}
+
+.route-destination__link:hover,
+.route-destination__link:focus-visible {
+  color: var(--kriativa-purple);
+  text-decoration-color: currentcolor;
+}
+
+.route-destination__link:hover svg,
+.route-destination__link:focus-visible svg {
+  transform: translateY(-2px);
+}
+
+.route-destination__link:focus-visible {
+  outline: 2px solid var(--ocean-abyss);
+  outline-offset: 3px;
+}
+
+.map-modal[open] {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.map-modal__bar {
+  position: relative;
+  z-index: 3;
+  padding: 12px 14px 12px 16px;
+  border-bottom-color: rgba(41, 195, 245, 0.28);
+}
+
+.map-modal__heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.map-modal__heading > span:last-child {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.map-modal__marker {
+  flex: 0 0 42px;
+  display: grid;
+  width: 42px;
+  aspect-ratio: 1;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--ocean-abyss);
+  background: var(--sunset-gold);
+}
+
+.map-modal__marker svg {
+  width: 23px;
+  stroke: currentcolor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.map-modal__address {
+  overflow: hidden;
+  color: var(--ink-invert-soft);
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.map-modal .tour360__icon-btn {
+  width: 44px;
+  height: 44px;
+}
+
+.map-modal__stage {
+  height: auto;
+  min-height: 0;
+  background: #e8edf1;
+}
+
+.map-modal__frame {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.map-modal__spinner::after {
+  content: "Carregando mapa…";
+}
+
+@media (max-width: 620px) {
+  .map-modal {
+    width: 94vw;
+    height: min(720px, 86dvh);
+  }
+
+  .map-modal__address {
+    max-width: 52vw;
+  }
 }
 
 @keyframes routePulse {

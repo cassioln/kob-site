@@ -1292,6 +1292,40 @@
       })();
     })();
 
+  /* Mapa do Porto de Santos: iframe sob demanda em dialog nativo */
+  (function portMap() {
+    var dialog = document.getElementById('portMapModal');
+    var openBtn = document.getElementById('portMapOpen');
+    var closeBtn = document.getElementById('portMapClose');
+    var frame = document.getElementById('portMapFrame');
+    if (!dialog || !openBtn || !closeBtn || !frame || typeof dialog.showModal !== 'function') {
+      if (openBtn) openBtn.hidden = true;
+      return;
+    }
+
+    var stage = dialog.querySelector('.map-modal__stage');
+    var source = frame.dataset.src;
+    frame.addEventListener('load', function () {
+      if (frame.src && frame.src !== 'about:blank' && stage) stage.classList.remove('is-loading');
+    });
+
+    openBtn.addEventListener('click', function () {
+      if (stage) stage.classList.add('is-loading');
+      frame.src = source;
+      dialog.showModal();
+    });
+
+    closeBtn.addEventListener('click', function () { dialog.close(); });
+    dialog.addEventListener('click', function (event) {
+      if (event.target === dialog) dialog.close();
+    });
+    dialog.addEventListener('close', function () {
+      frame.src = 'about:blank';
+      if (stage) stage.classList.remove('is-loading');
+      openBtn.focus();
+    });
+  })();
+
   /* FAQ / Manual de bordo: busca instantânea + scroll-spy por categoria */
   (function () {
     var navLinks = Array.prototype.slice.call(document.querySelectorAll('[data-faq-nav]'));
