@@ -1223,7 +1223,7 @@
           return;
         }
 
-        var EMBED = 'https://www.youtube.com/embed/LrnNnp0PbXQ?rel=0&modestbranding=1&playsinline=1&autoplay=1';
+        var EMBED = 'https://www.youtube.com/embed/LrnNnp0PbXQ?si=d2V0EOsymLoyZsOv';
         var bgVideo = document.querySelector('.ship-video__media');
         var lastFocus = null;
 
