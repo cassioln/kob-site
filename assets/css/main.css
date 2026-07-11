@@ -7652,8 +7652,8 @@ h4 {
 
 .preboard-route__map {
   position: relative;
-  min-height: 490px;
-  margin-top: clamp(64px, 8vw, 110px);
+  min-height: 560px;
+  margin-top: clamp(72px, 7vw, 96px);
 }
 
 .preboard-route__line {
@@ -7672,15 +7672,27 @@ h4 {
 }
 
 .preboard-route__line-shadow {
-  stroke: rgba(0, 0, 0, 0.24);
-  stroke-width: 10;
+  stroke: rgba(41, 195, 245, 0.13);
+  stroke-width: 18;
 }
 
 .preboard-route__line-main {
-  stroke: var(--ocean-cyan);
-  stroke-width: 3;
+  stroke: url("#preboardRouteGradient");
+  stroke-width: 4;
   stroke-dasharray: 2 13;
-  filter: drop-shadow(0 0 6px rgba(41, 195, 245, 0.65));
+  filter: drop-shadow(0 0 7px rgba(41, 195, 245, 0.55));
+}
+
+.preboard-route__gradient--cyan {
+  stop-color: var(--ocean-cyan);
+}
+
+.preboard-route__gradient--purple {
+  stop-color: var(--kriativa-purple);
+}
+
+.preboard-route__gradient--gold {
+  stop-color: var(--sunset-gold);
 }
 
 .route-stop {
@@ -7694,18 +7706,18 @@ h4 {
 }
 
 .route-stop--first {
-  top: 8px;
+  top: 0;
   left: 0;
 }
 
 .route-stop--second {
-  top: 152px;
-  left: 27%;
+  top: 220px;
+  left: 30%;
 }
 
 .route-stop--parking {
-  top: 0;
-  left: 55%;
+  top: 16px;
+  left: 60%;
   width: min(29%, 330px);
 }
 
@@ -7804,7 +7816,7 @@ h4 {
 .route-destination {
   position: absolute;
   right: 0;
-  bottom: -31px;
+  bottom: 0;
   display: grid;
   grid-template-columns: 58px 1fr;
   align-items: center;
@@ -8010,15 +8022,15 @@ h4 {
 }
 
 .preboard-route__segment--first {
-  --route-segment-length: 498;
+  --route-segment-length: 672;
 }
 
 .preboard-route__segment--second {
-  --route-segment-length: 849;
+  --route-segment-length: 832;
 }
 
 .preboard-route__segment--third {
-  --route-segment-length: 648;
+  --route-segment-length: 658;
 }
 
 .js-reveal .preboard-route__map.reveal .preboard-route__line-main {
@@ -8038,15 +8050,15 @@ h4 {
 
 /* Segmentos percorrem a rota em sequência, com velocidade proporcional ao comprimento. */
 .js-reveal .preboard-route__map.reveal.is-in .preboard-route__segment--first {
-  transition: stroke-dashoffset 1.25s linear 1.55s;
+  transition: stroke-dashoffset 1.7s linear 1.45s;
 }
 
 .js-reveal .preboard-route__map.reveal.is-in .preboard-route__segment--second {
-  transition: stroke-dashoffset 2.1s linear 2.8s;
+  transition: stroke-dashoffset 2.1s linear 3.15s;
 }
 
 .js-reveal .preboard-route__map.reveal.is-in .preboard-route__segment--third {
-  transition: stroke-dashoffset 1.6s linear 4.9s;
+  transition: stroke-dashoffset 1.65s linear 5.25s;
 }
 
 .js-reveal .preboard-route__map.reveal.is-in .route-stop,

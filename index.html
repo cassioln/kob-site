@@ -22,7 +22,7 @@
   <!-- Fontes da marca (banner KOB): Gobold Extra2 = display, Chantal = acento manuscrito -->
   <link rel="preload" href="assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
 
-  <link rel="stylesheet" href="assets/css/main.css?v=20260711-route-continuous">
+  <link rel="stylesheet" href="assets/css/main.css?v=20260711-route-ribbon">
 </head>
 
 <body>
@@ -1323,17 +1323,28 @@
         </header>
 
         <div class="preboard-route__map reveal" aria-label="Rota sugerida para chegar ao Porto de Santos">
-          <svg class="preboard-route__line" viewBox="0 0 1180 430" fill="none" aria-hidden="true"
+          <svg class="preboard-route__line" viewBox="0 0 1180 500" fill="none" aria-hidden="true"
             preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="preboardRouteGradient" gradientUnits="userSpaceOnUse" x1="52" y1="22" x2="1150"
+                y2="382">
+                <stop class="preboard-route__gradient--cyan" offset="0"></stop>
+                <stop class="preboard-route__gradient--cyan" offset="0.58"></stop>
+                <stop class="preboard-route__gradient--purple" offset="0.82"></stop>
+                <stop class="preboard-route__gradient--gold" offset="1"></stop>
+              </linearGradient>
+            </defs>
             <path class="preboard-route__line-shadow"
-              d="M52 30C52 300 371 300 371 174M371 174C371 520 590 520 650 190C668 91 620 26 650 26H701M701 26C701 300 842 318 1004 318h152">
+              d="M52 22C52 180 75 350 230 350C330 350 335 216 359 216H411M411 216C411 365 470 446 590 446C700 446 690 80 713 38H765M765 38C765 190 755 300 820 342C875 378 920 382 987 382H1150">
             </path>
             <path class="preboard-route__line-main preboard-route__segment--first"
-              d="M52 30C52 300 371 300 371 174"></path>
+              d="M52 22C52 180 75 350 230 350C330 350 335 216 359 216H411">
+            </path>
             <path class="preboard-route__line-main preboard-route__segment--second"
-              d="M371 174C371 520 590 520 650 190C668 91 620 26 650 26H701"></path>
+              d="M411 216C411 365 470 446 590 446C700 446 690 80 713 38H765">
+            </path>
             <path class="preboard-route__line-main preboard-route__segment--third"
-              d="M701 26C701 300 842 318 1004 318h152"></path>
+              d="M765 38C765 190 755 300 820 342C875 378 920 382 987 382H1150"></path>
           </svg>
 
           <article class="route-stop route-stop--hotel route-stop--first">
