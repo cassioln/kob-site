@@ -3104,7 +3104,7 @@ h4 {
   color: rgb(56, 65, 90);
 }
 
-.price-card__list li span:last-child {
+.price-card__list li span:last-child:not(:first-child) {
   font-weight: 700;
   color: var(--ink-on-light);
   font-variant-numeric: tabular-nums;
