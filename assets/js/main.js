@@ -1212,26 +1212,67 @@
         });
       })();
 
-      /* Modal de vídeo do tour a bordo (YouTube embed) */
+      /* Modal de vídeo do tour a bordo (YouTube IFrame Player API) */
       (function shipVideo() {
         var dialog = document.getElementById('shipVideoModal');
         var openBtn = document.getElementById('shipVideoPlay');
         var closeBtn = document.getElementById('shipVideoClose');
-        var frame = document.getElementById('shipVideoFrame');
-        if (!dialog || !openBtn || !frame || typeof dialog.showModal !== 'function') {
+        var target = document.getElementById('shipVideoFrame');
+        if (!dialog || !openBtn || !target || typeof dialog.showModal !== 'function') {
           if (openBtn) openBtn.hidden = true;
           return;
         }
 
-        var EMBED = 'https://www.youtube.com/embed/LrnNnp0PbXQ?si=d2V0EOsymLoyZsOv';
+        var VIDEO_ID = target.dataset.videoId || 'LrnNnp0PbXQ';
         var bgVideo = document.querySelector('.ship-video__media');
         var lastFocus = null;
+        var player = null;      // instância YT.Player
+        var playerReady = false;
+        var apiLoading = false;
+        var wantsPlay = false;  // usuário abriu antes da API/player ficar pronto
+
+        // Carrega o script iframe_api uma única vez, sob demanda.
+        function loadApi() {
+          if (window.YT && window.YT.Player) { onApiReady(); return; }
+          if (apiLoading) return;
+          apiLoading = true;
+          // Preserva qualquer callback já registrado por outro embed.
+          var prev = window.onYouTubeIframeAPIReady;
+          window.onYouTubeIframeAPIReady = function () {
+            if (typeof prev === 'function') { try { prev(); } catch (e) {} }
+            onApiReady();
+          };
+          var tag = document.createElement('script');
+          tag.src = 'https://www.youtube.com/iframe_api';
+          var first = document.getElementsByTagName('script')[0];
+          first.parentNode.insertBefore(tag, first);
+        }
+
+        // A API substitui o <div#shipVideoFrame> pelo <iframe> do player.
+        function onApiReady() {
+          if (player) return;
+          player = new YT.Player('shipVideoFrame', {
+            videoId: VIDEO_ID,
+            playerVars: { rel: 0, modestbranding: 1, playsinline: 1 },
+            events: {
+              onReady: function () {
+                playerReady = true;
+                if (wantsPlay && typeof player.playVideo === 'function') player.playVideo();
+              }
+            }
+          });
+        }
 
         function open() {
           lastFocus = document.activeElement;
           if (bgVideo && typeof bgVideo.pause === 'function') bgVideo.pause();
-          frame.src = EMBED;
+          wantsPlay = true;
           dialog.showModal();
+          if (playerReady && player && typeof player.playVideo === 'function') {
+            player.playVideo();
+          } else {
+            loadApi();
+          }
         }
 
         function close() {
@@ -1245,7 +1286,8 @@
           if (e.target === dialog) close();
         });
         dialog.addEventListener('close', function () {
-          frame.src = 'about:blank';
+          wantsPlay = false;
+          if (playerReady && player && typeof player.stopVideo === 'function') player.stopVideo();
           if (bgVideo && typeof bgVideo.play === 'function') {
             var p = bgVideo.play();
             if (p && typeof p.catch === 'function') p.catch(function () {});
