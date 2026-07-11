@@ -22,7 +22,7 @@
   <!-- Fontes da marca (banner KOB): Gobold Extra2 = display, Chantal = acento manuscrito -->
   <link rel="preload" href="assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
 
-  <link rel="stylesheet" href="assets/css/main.css?v=20260711-footer-arrival-2">
+  <link rel="stylesheet" href="assets/css/main.css?v=20260711-route-options-2">
 </head>
 
 <body>
@@ -1311,59 +1311,123 @@
       </div>
     </section>
 
-    <!-- HOSPEDAGEM E ESTACIONAMENTO -->
-    <section class="section section--abyss" id="hospedagem" aria-labelledby="stay-title">
-      <div class="container">
-        <div class="section__head reveal">
-          <h2 id="stay-title" class="h2--md">Chegou antes? Onde ficar e estacionar</h2>
-          <p class="lead">O embarque é no Porto de Santos (Av. Conselheiro Rodrigues Alves, s/n). Se você vem
-            de longe,
-            seguem opções para a véspera.</p>
-        </div>
-        <div class="stay-grid reveal">
-          <article class="stay-card">
-            <h3>Estacionamento Concais</h3>
-            <p>O terminal do Porto de Santos oferece estacionamento para passageiros. Reserve a vaga com
-              antecedência
-              para evitar lotação.</p>
-            <a class="btn btn--ghost" href="https://www.concais.com.br/" target="_blank" rel="noopener">Saiba mais</a>
+    <!-- HOSPEDAGEM E ESTACIONAMENTO / ROTA ATÉ O PORTO -->
+    <section class="section preboard-route" id="hospedagem" aria-labelledby="stay-title">
+      <div class="preboard-route__glow" aria-hidden="true"></div>
+      <div class="container preboard-route__inner">
+        <header class="preboard-route__head reveal">
+          <p class="preboard-route__script">Evite imprevistos no dia do embarque</p>
+          <h2 id="stay-title">Sua viagem começa <span>antes do navio sair.</span></h2>
+          <p class="lead">Escolha uma base em Santos, descanse e chegue ao terminal com tudo resolvido. O
+            destino final é o Porto de Santos, na Av. Conselheiro Rodrigues Alves, s/n.</p>
+        </header>
+
+        <div class="preboard-route__map reveal" aria-label="Rota sugerida para chegar ao Porto de Santos">
+          <svg class="preboard-route__line" viewBox="0 0 1180 430" fill="none" aria-hidden="true"
+            preserveAspectRatio="none">
+            <path class="preboard-route__line-shadow"
+              d="M52 30C52 300 371 300 371 174M371 174C371 520 701 520 701 26M701 26C701 300 842 318 1004 318h152">
+            </path>
+            <path class="preboard-route__line-main"
+              d="M52 30C52 300 371 300 371 174M371 174C371 520 701 520 701 26M701 26C701 300 842 318 1004 318h152">
+            </path>
+          </svg>
+
+          <article class="route-stop route-stop--hotel route-stop--first">
+            <span class="route-stop__tag">Onde ficar</span>
+            <div class="route-stop__body">
+              <p class="route-stop__meta">Cerca de 15 min do porto</p>
+              <h3>ibis Santos Gonzaga</h3>
+              <p>Uma chegada tranquila, de frente para o mar, para começar a manhã já perto do embarque.</p>
+              <a class="route-stop__link"
+                href="https://all.accor.com/booking/pt-br/accor/hotel/5530?destination=santos-state-of-sao-paulo-brazil&compositions=1&dateIn=2026-11-20&dateOut=2026-11-23&nights=3&hideWDR=false&accessibleRoom=false"
+                target="_blank" rel="noopener">Ver
+                hospedagem <span aria-hidden="true">↗</span></a>
+            </div>
           </article>
-          <article class="stay-card">
-            <h3>ibis Santos Gonzaga</h3>
-            <p>Hospedagem acolhedora virada para o mar, a cerca de 15 minutos de carro do porto.</p>
-            <a class="btn btn--ghost" href="https://all.accor.com/" target="_blank" rel="noopener">Reservar</a>
+
+          <article class="route-stop route-stop--hotel route-stop--second">
+            <span class="route-stop__tag">Outra opção</span>
+            <div class="route-stop__body">
+              <p class="route-stop__meta">Cerca de 17 min do porto</p>
+              <h3>Novotel Santos</h3>
+              <p>Ao lado do Shopping Pátio Iporanga, na Av. Dona Ana Costa, com acesso rápido ao terminal.</p>
+              <a class="route-stop__link"
+                href="https://all.accor.com/booking/pt-br/novotel/hotel/8649?destination=santos-state-of-sao-paulo-brazil&compositions=1&dateIn=2026-07-11&dateOut=2026-07-12&nights=1&hideWDR=false&accessibleRoom=false"
+                target="_blank" rel="noopener">Ver
+                hospedagem <span aria-hidden="true">↗</span></a>
+            </div>
           </article>
-          <article class="stay-card">
-            <h3>Novotel Santos</h3>
-            <p>Na Av. Dona Ana Costa, ao lado do Shopping Pátio Iporanga, a cerca de 17 minutos do porto.
-            </p>
-            <a class="btn btn--ghost" href="https://all.accor.com/" target="_blank" rel="noopener">Reservar</a>
+
+          <article class="route-stop route-stop--parking">
+            <span class="route-stop__tag">Onde estacionar</span>
+            <div class="route-stop__body">
+              <p class="route-stop__meta">Reserve com antecedência</p>
+              <h3>Estacionamento Concais</h3>
+              <p>Deixe o carro no terminal e siga direto para o despacho das malas, sem improviso no cais.</p>
+              <a class="route-stop__link" href="https://www.concais.com.br/" target="_blank" rel="noopener">Ver
+                estacionamento <span aria-hidden="true">↗</span></a>
+            </div>
           </article>
+
+          <div class="route-destination" aria-label="Destino: Terminal de Passageiros do Porto de Santos">
+            <span class="route-destination__pulse" aria-hidden="true"></span>
+            <span class="route-destination__icon" aria-hidden="true">
+              <svg viewBox="0 0 48 48" fill="none">
+                <path d="M7 31.5h34l-4.5 8h-25L7 31.5Z"></path>
+                <path d="M13 31.5V18h21v13.5M18 18V11h10v7M24 11V6"></path>
+                <path d="M5 42c4-2 7 2 11 0s7 2 11 0 7 2 16 0"></path>
+              </svg>
+            </span>
+            <span class="route-destination__copy"><b>Porto de Santos</b><small>Próxima parada: MSC Música</small></span>
+          </div>
         </div>
       </div>
     </section>
 
     <!-- FAQ -->
-    <section class="section section--abyss" id="faq" aria-labelledby="faq-title">
-      <div class="container">
-        <div class="section__head section--center reveal u-center">
-          <h2 id="faq-title">Ainda com dúvidas?</h2>
-        </div>
-        <div class="faq reveal">
+    <section class="section preboard-faq" id="faq" aria-labelledby="faq-title">
+      <div class="container faq-manual">
+        <header class="faq-manual__head reveal">
+          <div class="faq-manual__title">
+            <p class="faq-manual__script">Dúvidas Frequentes</p>
+            <h2 id="faq-title">Seu manual <span>de bordo.</span></h2>
+            <p class="lead">Documentos, jogos, refeições e regras — encontre a resposta e siga para a próxima
+              jogada.</p>
+          </div>
+          <label class="faq-search" for="faq-search">
+            <span>O que você precisa saber?</span>
+            <span class="faq-search__field">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle cx="11" cy="11" r="6.5"></circle>
+                <path d="m16 16 4 4"></path>
+              </svg>
+              <input id="faq-search" type="search" placeholder="Ex.: documentos, bebidas, jogos…" autocomplete="off"
+                aria-describedby="faq-search-status">
+              <kbd aria-hidden="true">⌘ K</kbd>
+            </span>
+            <small id="faq-search-status" aria-live="polite">27 respostas organizadas por tema</small>
+          </label>
+        </header>
+        <div class="faq reveal" style="--faq-progress: 0%">
           <nav class="faq__nav" aria-label="Categorias do FAQ">
-            <span class="faq__nav-eyebrow">Navegue por tema</span>
+            <span class="faq__nav-eyebrow">Roteiro de consulta</span>
+            <span class="faq__nav-track" aria-hidden="true"><i></i></span>
             <a class="faq__nav-item is-active" href="#faq-embarque" data-faq-nav="">Embarque &amp;
               documentos <span class="faq__nav-count">09</span></a>
-            <a class="faq__nav-item" href="#faq-bordo" data-faq-nav="">A bordo &amp; os jogos <span class="faq__nav-count">06</span></a>
-            <a class="faq__nav-item" href="#faq-comida" data-faq-nav="">Comida, bebida &amp; cabine <span class="faq__nav-count">08</span></a>
-            <a class="faq__nav-item" href="#faq-regras" data-faq-nav="">Seguro, saúde &amp; regras <span class="faq__nav-count">04</span></a>
+            <a class="faq__nav-item" href="#faq-bordo" data-faq-nav="">A bordo &amp; os jogos <span
+                class="faq__nav-count">06</span></a>
+            <a class="faq__nav-item" href="#faq-comida" data-faq-nav="">Comida, bebida &amp; cabine <span
+                class="faq__nav-count">08</span></a>
+            <a class="faq__nav-item" href="#faq-regras" data-faq-nav="">Seguro, saúde &amp; regras <span
+                class="faq__nav-count">04</span></a>
           </nav>
 
           <div class="faq__panels">
             <div class="faq__panel" id="faq-embarque">
               <div class="faq__panel-head">
                 <span class="faq__panel-num">01</span>
-                <h3>Embarque, check-in e documentos</h3>
+                <h3>Embarque, <span class="u-nowrap">check-in</span> e documentos</h3>
               </div>
               <div class="faq__list">
                 <details>
@@ -1586,7 +1650,9 @@
             </div>
           </div>
         </div>
-        <p class="lead u-lead-tip">Continua com dúvidas? <a href="https://api.whatsapp.com/send?phone=5513981580498&amp;text=Ol%C3%A1%2C%20Royal%20Trip!%20Tenho%20uma%20d%C3%BAvida%20sobre%20o%20Kriativos%20On%20Board%202026." target="_blank" rel="noopener" class="link-action--bold">Fale com um agente da Royal
+        <p class="lead u-lead-tip">Continua com dúvidas?<br> <a
+            href="https://api.whatsapp.com/send?phone=5513981580498&amp;text=Ol%C3%A1%2C%20Royal%20Trip!%20Tenho%20uma%20d%C3%BAvida%20sobre%20o%20Kriativos%20On%20Board%202026."
+            target="_blank" rel="noopener" class="link-action--bold">Fale com um agente da Royal
             Trip no WhatsApp.</a></p>
       </div>
     </section>
