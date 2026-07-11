@@ -3460,6 +3460,24 @@ h4 {
   width: 100%;
 }
 
+/* Escopo bebidas: acento laranja (#f7941e) no modal compartilhado */
+.cabin-modal[data-kind="bebida"] .cabin-modal__eyebrow {
+  color: #d97706;
+}
+
+.cabin-modal[data-kind="bebida"] .cabin-modal__close:hover {
+  background: #d97706;
+  border-color: #d97706;
+}
+
+.cabin-modal[data-kind="bebida"] .cabin-modal__cta.btn--primary {
+  background: #f7941e;
+}
+
+.cabin-modal[data-kind="bebida"] .cabin-modal__cta.btn--primary:hover {
+  background: #d97706;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .cabin-modal[open] {
     animation: cabinModalIn 260ms var(--ease-expo);

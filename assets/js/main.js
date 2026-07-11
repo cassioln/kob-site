@@ -741,10 +741,12 @@
           });
         }
 
+        var DRINK_KEYS = { easy: 1, premium: 1, naoalcoolico: 1 };
         function open(key) {
           var d = DATA[key];
           if (!d) return;
           currentKey = key;
+          modal.dataset.kind = DRINK_KEYS[key] ? 'bebida' : 'cabine';
           lastFocus = document.activeElement;
           elCabin.textContent = d.cabin;
           if (elImg) {
