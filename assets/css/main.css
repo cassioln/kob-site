@@ -8538,7 +8538,7 @@ h4 {
 #hospedagem.preboard-route h2 {
   max-width: 12ch;
   color: var(--foam-white);
-  font-size: clamp(3.25rem, 7vw, 5.9rem);
+  font-size: clamp(2.275rem, 4.9vw, 4.13rem);
   line-height: 0.99;
   letter-spacing: 0.005em;
 }
