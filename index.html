@@ -61,7 +61,7 @@
   <!-- Fontes da marca (banner KOB): Gobold Extra2 = display, Chantal = acento manuscrito -->
   <link rel="preload" href="assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
 
-  <link rel="stylesheet" href="assets/css/main.css?v=20260712-reserve-delight-final">
+  <link rel="stylesheet" href="assets/css/main.css?v=20260712-incluso-delight-final">
 </head>
 
 <body>
@@ -476,52 +476,80 @@
     </section>
 
     <!-- INCLUSO -->
-    <section class="section section--deep section--dark board-motif" id="incluso" aria-labelledby="incluso-title">
+    <section class="section section--deep section--dark" id="incluso" aria-labelledby="incluso-title">
       <div class="container">
-        <div class="section__head reveal">
-          <h2 id="incluso-title">O que já está incluso</h2>
-          <p class="lead">Sua cabine, todas as refeições e a estrutura completa do navio. A jogatina é por
-            nossa conta:
-            literalmente 24 horas por dia.</p>
+        <div class="incluso__intro reveal">
+          <h2 id="incluso-title">Seu pacote já vem pronto para jogar</h2>
+          <p class="lead">Cabine, refeições e estrutura completa do MSC Música já estão resolvidas. No KOB,
+            até a sala de jogos fica aberta 24 horas.</p>
         </div>
+
         <div class="incl reveal">
           <div class="incl__yes">
-            <h3>Incluso no pacote</h3>
-            <ul>
-              <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M20 6L9 17l-5-5"></path>
-                </svg><span>Cabine padrão conforme a categoria escolhida</span></li>
-              <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M20 6L9 17l-5-5"></path>
-                </svg><span>Pensão completa: café, almoço e jantar diários</span></li>
-              <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M20 6L9 17l-5-5"></path>
-                </svg><span>Sala de jogos exclusiva aberta 24h</span></li>
-              <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M20 6L9 17l-5-5"></path>
-                </svg><span>Torneios, sorteios, RPG e festas temáticas</span></li>
-              <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M20 6L9 17l-5-5"></path>
-                </svg><span>Espetáculos, piscinas, academia e entretenimento a bordo</span></li>
-              <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M20 6L9 17l-5-5"></path>
-                </svg><span>Recreação para crianças e adolescentes</span></li>
-            </ul>
+            <div class="incl__manifest">
+              <h3>Tudo isso embarca com você</h3>
+              <ul>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    aria-hidden="true">
+                    <path d="M20 6L9 17l-5-5"></path>
+                  </svg><span><strong>Sua cabine</strong><small>na categoria escolhida</small></span></li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    aria-hidden="true">
+                    <path d="M20 6L9 17l-5-5"></path>
+                  </svg><span><strong>Pensão completa</strong><small>café, almoço e jantar diários</small></span></li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    aria-hidden="true">
+                    <path d="M20 6L9 17l-5-5"></path>
+                  </svg><span><strong>Sala de jogos exclusiva</strong><small>aberta 24 horas</small></span></li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    aria-hidden="true">
+                    <path d="M20 6L9 17l-5-5"></path>
+                  </svg><span><strong>Programação KOB</strong><small>torneios, sorteios, RPG e festas</small></span>
+                </li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    aria-hidden="true">
+                    <path d="M20 6L9 17l-5-5"></path>
+                  </svg><span><strong>Estrutura do MSC Música</strong><small>shows, piscinas e academia</small></span>
+                </li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    aria-hidden="true">
+                    <path d="M20 6L9 17l-5-5"></path>
+                  </svg><span><strong>Recreação</strong><small>para crianças e adolescentes</small></span></li>
+              </ul>
+            </div>
+
+            <div class="incl__playtime" role="img" aria-label="Sala de jogos exclusiva aberta 24 horas">
+              <div class="incl__clock" aria-hidden="true">
+                <span>24h</span>
+                <em>jogatina</em>
+                <i></i>
+              </div>
+              <p><strong>A sala de jogos não fecha.</strong><span>Dia, noite e madrugada.</span></p>
+            </div>
           </div>
-          <div class="incl__no">
-            <h3>Não incluso</h3>
+
+          <aside class="incl__no" aria-labelledby="incluso-planeje-title">
+            <div class="incl__no-head">
+              <h3 id="incluso-planeje-title">Planeje à parte</h3>
+              <p>Três pontos para organizar antes de embarcar.</p>
+            </div>
             <ul>
-              <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  aria-hidden="true">
                   <path d="M18 6L6 18M6 6l12 12"></path>
-                </svg><span>Passagens aéreas e traslados até o porto</span></li>
-              <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                </svg><span><strong>Chegada ao porto</strong><small>passagens aéreas e traslados</small></span></li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  aria-hidden="true">
                   <path d="M18 6L6 18M6 6l12 12"></path>
-                </svg><span>Bebidas (pacotes opcionais à parte), excursões em terra</span></li>
-              <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                </svg><span><strong>Extras de viagem</strong><small>bebidas, excursões e despesas de
+                    bordo</small></span></li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  aria-hidden="true">
                   <path d="M18 6L6 18M6 6l12 12"></path>
-                </svg><span>Seguro-viagem, serviços pessoais e despesas de bordo</span></li>
+                </svg><span><strong>Proteção e serviços</strong><small>seguro-viagem e serviços pessoais</small></span>
+              </li>
             </ul>
-          </div>
+          </aside>
         </div>
       </div>
     </section>
