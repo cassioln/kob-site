@@ -669,10 +669,18 @@ document.documentElement.classList.add('js');
     });
   })();
 
+  function bindSwipeHint(scroller, hint) {
+    if (!scroller || !hint) return;
+    scroller.addEventListener('scroll', function () {
+      if (scroller.scrollLeft > 8) hint.classList.add('is-used');
+    }, { passive: true });
+  }
+
   // ---------- #evento: timeline horizontal só no celular ----------
   (function eventTimelineAdapt() {
     var track = document.querySelector('#evento .event-track');
     if (!track) return;
+    var hint = document.querySelector('[data-event-track-hint]');
     var mobile = window.matchMedia('(max-width: 680px)');
     var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -702,10 +710,13 @@ document.documentElement.classList.add('js');
       else if (event.key === 'Home') { event.preventDefault(); track.scrollTo({ left: 0, behavior: reduceMotion ? 'auto' : 'smooth' }); }
       else if (event.key === 'End') { event.preventDefault(); track.scrollTo({ left: track.scrollWidth, behavior: reduceMotion ? 'auto' : 'smooth' }); }
     });
+    bindSwipeHint(track, hint);
     if (typeof mobile.addEventListener === 'function') mobile.addEventListener('change', syncMode);
     else mobile.addListener(syncMode);
     syncMode();
   })();
+
+  bindSwipeHint(document.querySelector('#embarque .deck__fan'), document.querySelector('[data-deck-swipe-hint]'));
 
   // ---------- Sliders responsivos dos valores (tablet e celular) ----------
   (function priceSliders() {

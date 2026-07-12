@@ -22,7 +22,7 @@
   <!-- Fontes da marca (banner KOB): Gobold Extra2 = display, Chantal = acento manuscrito -->
   <link rel="preload" href="assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
 
-  <link rel="stylesheet" href="assets/css/main.css?v=20260712-edition-player-cleanup">
+  <link rel="stylesheet" href="assets/css/main.css?v=20260712-timeline-swipe-hint">
 </head>
 
 <body>
@@ -261,6 +261,10 @@
             <span class="event-step__token" style="font-size: 14.88px; letter-spacing: 2.6656px; font-weight: 800;">Próxima parada</span>
           </li>
         </ol>
+        <p class="swipe-hint event-track-hint" data-event-track-hint="" aria-hidden="true">
+          <span>Deslize para navegar</span>
+          <span class="swipe-hint__motion"><i></i></span>
+        </p>
       </div>
     </section>
 
@@ -275,7 +279,6 @@
             monitoria!</span>
         </header>
 
-        <p class="deck__swipe" aria-hidden="true">Arraste para navegar pelas cartas</p>
         <ul class="deck__fan" aria-label="Cartas de experiência do Kriativos On Board" tabindex="0">
           <li class="deck__card deck__card--comunidade" style="--i:0; --x:-134%; --y:34px; --r:-17deg; --z:1">
             <img src="assets/images/story/cards/carta-comunidade.webp" alt="Carta Comunidade" width="720" height="1080" loading="lazy" decoding="async">
@@ -293,6 +296,10 @@
             <img src="assets/images/story/cards/carta-monitoria.webp" alt="Carta Monitoria" width="720" height="1080" loading="lazy" decoding="async">
           </li>
         </ul>
+        <p class="swipe-hint deck__swipe" data-deck-swipe-hint="" aria-hidden="true">
+          <span>Deslize para navegar</span>
+          <span class="swipe-hint__motion"><i></i></span>
+        </p>
 
         <div class="deck__pips" aria-hidden="true">
           <span></span><span></span><span></span><span></span><span></span>
@@ -2041,7 +2048,7 @@
     </svg>
   </a>
 
-  <script src="assets/js/main.js?v=20260712-mobile-testimonials"></script>
+  <script src="assets/js/main.js?v=20260712-timeline-swipe-hint"></script>
 
 
 
