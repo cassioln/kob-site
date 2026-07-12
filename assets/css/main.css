@@ -9734,7 +9734,7 @@ h4 {
 
   #faq .faq__nav {
     position: sticky;
-    top: 76px;
+    top: 106px;
     z-index: 3;
     flex-flow: row nowrap;
     margin-inline: calc(var(--gutter) * -1);
