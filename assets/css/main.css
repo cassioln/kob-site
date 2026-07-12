@@ -1518,7 +1518,7 @@ h4 {
 
 .event-score__label {
   font-family: var(--font-display);
-  font-size: 0.78rem;
+  font-size: 1.5rem;
   font-weight: 800;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -3110,6 +3110,7 @@ h4 {
 }
 
 @media (max-width: 900px) {
+
   .incluso__intro,
   .incl__yes,
   .incl__no {
