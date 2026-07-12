@@ -8166,10 +8166,6 @@ h4 {
   }
 }
 
-.deck__pips {
-  display: none;
-}
-
 .deck__cta {
   position: relative;
   max-width: 1160px;
@@ -8646,25 +8642,6 @@ h4 {
   .js-reveal .deck--cards.is-in .deck__card {
     opacity: 1;
     transform: none;
-  }
-
-  .deck__pips {
-    display: flex;
-    justify-content: center;
-    gap: 7px;
-    margin: 6px 0 0;
-  }
-
-  .deck__pips span {
-    width: 7px;
-    height: 7px;
-    border-radius: 999px;
-    background: rgba(8, 47, 87, 0.20);
-  }
-
-  .deck__pips span:nth-child(3) {
-    width: 22px;
-    background: var(--kriativa-purple);
   }
 
   .deck--cards.is-in .deck__card:active {
