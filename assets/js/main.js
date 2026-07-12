@@ -1416,11 +1416,6 @@ document.documentElement.classList.add('js');
     var ended = false;
     var monitor = null;
 
-    function setProgress(seconds) {
-      var progress = Math.max(0, Math.min(100, (seconds / END_SECONDS) * 100));
-      dialog.style.setProperty('--edition-progress', progress.toFixed(2) + '%');
-    }
-
     function stopMonitor() {
       if (monitor) window.clearInterval(monitor);
       monitor = null;
@@ -1430,8 +1425,9 @@ document.documentElement.classList.add('js');
       if (ended || !dialog.open) return;
       ended = true;
       stopMonitor();
-      setProgress(END_SECONDS);
       if (playerReady && player && typeof player.pauseVideo === 'function') player.pauseVideo();
+      var iframe = stage && stage.querySelector('iframe');
+      if (iframe) iframe.inert = true;
       dialog.classList.add('is-ended');
       endScreen.hidden = false;
       if (status) status.textContent = 'O filme chegou ao corte final de 4 minutos e 1 segundo.';
@@ -1443,7 +1439,6 @@ document.documentElement.classList.add('js');
     function checkTime() {
       if (!playerReady || !player || ended || !dialog.open || typeof player.getCurrentTime !== 'function') return;
       var current = Number(player.getCurrentTime()) || 0;
-      setProgress(current);
       if (current >= END_SECONDS - 0.2) finish();
     }
 
@@ -1456,7 +1451,8 @@ document.documentElement.classList.add('js');
       ended = false;
       dialog.classList.remove('is-ended');
       endScreen.hidden = true;
-      setProgress(0);
+      var iframe = stage && stage.querySelector('iframe');
+      if (iframe) iframe.inert = false;
       if (status) status.textContent = '';
     }
 
@@ -1467,8 +1463,10 @@ document.documentElement.classList.add('js');
       player = new YT.Player(target, {
         videoId: VIDEO_ID,
         playerVars: {
-          controls: 1,
+          controls: 0,
           end: END_SECONDS,
+          fs: 0,
+          iv_load_policy: 3,
           modestbranding: 1,
           playsinline: 1,
           rel: 0
