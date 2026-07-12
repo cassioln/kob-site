@@ -4,5 +4,8 @@ bkp/
 # Arquivos da ferramenta Hermes (attachments, cache)
 .hermes/
 
+# Worktrees locais de desenvolvimento
+.worktrees/
+
 # Sistema
 .DS_Store

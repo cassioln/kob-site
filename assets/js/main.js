@@ -30,8 +30,8 @@ document.documentElement.classList.add('js');
   var drawer = document.getElementById('drawer');
   var toggle = document.getElementById('navToggle');
   var closeBtn = document.getElementById('drawerClose');
-  function openDrawer() { drawer.dataset.open = 'true'; drawer.setAttribute('aria-hidden', 'false'); toggle.setAttribute('aria-expanded', 'true'); document.body.style.overflow = 'hidden'; setInert(true); closeBtn.focus(); }
-  function closeDrawer() { drawer.dataset.open = 'false'; drawer.setAttribute('aria-hidden', 'true'); toggle.setAttribute('aria-expanded', 'false'); document.body.style.overflow = ''; setInert(false); toggle.focus(); }
+  function openDrawer() { drawer.dataset.open = 'true'; drawer.setAttribute('aria-hidden', 'false'); drawer.removeAttribute('inert'); toggle.setAttribute('aria-expanded', 'true'); document.body.style.overflow = 'hidden'; setInert(true); closeBtn.focus(); }
+  function closeDrawer() { drawer.dataset.open = 'false'; drawer.setAttribute('aria-hidden', 'true'); drawer.setAttribute('inert', ''); toggle.setAttribute('aria-expanded', 'false'); document.body.style.overflow = ''; setInert(false); toggle.focus(); }
   function setInert(on) {
     ['main', 'header.nav', 'footer'].forEach(function (sel) {
       var el = document.querySelector(sel);
@@ -687,7 +687,7 @@ document.documentElement.classList.add('js');
     function syncMode() {
       if (mobile.matches) {
         track.tabIndex = 0;
-        track.setAttribute('role', 'region');
+        track.setAttribute('role', 'list');
         track.setAttribute('aria-roledescription', 'linha do tempo horizontal');
         track.setAttribute('aria-label', 'História do Kriativos On Board. Deslize ou use as setas para navegar pelos anos.');
       } else {
