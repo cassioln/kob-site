@@ -46,24 +46,61 @@ document.documentElement.classList.add('js');
 
   // (Tabs removidas: a antiga seção "Informações" virou "Itinerário", sem abas.)
 
-  // Countdown → 20/11/2026 09:00 (horário de Brasília, -03:00)
+  // Countdown + ampulheta de turno → ciclo anual até 20/11/2026 09:00 (Brasília, -03:00)
+  var countdownStart = new Date('2025-11-20T09:00:00-03:00').getTime();
   var target = new Date('2026-11-20T09:00:00-03:00').getTime();
+  var countdown = document.getElementById('countdown');
   var elDays = document.querySelector('[data-count="days"]');
   var elHours = document.querySelector('[data-count="hours"]');
   var elMin = document.querySelector('[data-count="minutes"]');
+  var sandLabel = document.querySelector('[data-sand-label]');
+  var countdownLabel = countdown && countdown.querySelector('.event-score__label');
+  var countdownReduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function setCount(el, value) {
+    value = String(value);
+    if (!el || el.textContent === value) return;
+    el.textContent = value;
+    if (!countdownReduce && typeof el.animate === 'function') {
+      el.animate([
+        { opacity: 0.45, transform: 'translateY(-4px)' },
+        { opacity: 1, transform: 'translateY(0)' }
+      ], { duration: 320, easing: 'cubic-bezier(.25, 1, .5, 1)' });
+    }
+  }
   function tick() {
-    var diff = target - Date.now();
+    var now = Date.now();
+    var diff = target - now;
+    var total = target - countdownStart;
+    var progress = Math.max(0, Math.min(1, (now - countdownStart) / total));
+    var progressPercent = Math.round(progress * 100);
+    countdown.style.setProperty('--sand-progress', progress.toFixed(6));
+    countdown.style.setProperty('--sand-remaining', (1 - progress).toFixed(6));
     if (diff <= 0) {
-      elDays.textContent = '0'; elHours.textContent = '00'; elMin.textContent = '00';
+      setCount(elDays, '0'); setCount(elHours, '00'); setCount(elMin, '00');
+      countdown.dataset.complete = 'true';
+      if (countdownLabel) countdownLabel.textContent = 'É hora de embarcar!';
+      if (sandLabel) sandLabel.textContent = 'Embarque liberado';
+      countdown.setAttribute('aria-label', 'A contagem terminou. É hora de embarcar.');
       return;
     }
     var s = Math.floor(diff / 1000);
-    elDays.textContent = Math.floor(s / 86400);
-    elHours.textContent = pad(Math.floor((s % 86400) / 3600));
-    elMin.textContent = pad(Math.floor((s % 3600) / 60));
+    var days = Math.floor(s / 86400);
+    var hours = Math.floor((s % 86400) / 3600);
+    var minutes = Math.floor((s % 3600) / 60);
+    setCount(elDays, days);
+    setCount(elHours, pad(hours));
+    setCount(elMin, pad(minutes));
+    countdown.dataset.complete = 'false';
+    if (countdownLabel) countdownLabel.textContent = 'Turno em andamento';
+    if (sandLabel) sandLabel.textContent = progressPercent + '% do caminho percorrido';
+    countdown.setAttribute('aria-label', 'Faltam ' + days + ' dias, ' + hours + ' horas e ' + minutes + ' minutos para o embarque. ' + progressPercent + '% do caminho percorrido.');
   }
-  if (elDays) { tick(); setInterval(tick, 30000); }
+  if (countdown && elDays && elHours && elMin) {
+    tick();
+    window.requestAnimationFrame(function () { countdown.classList.add('is-ready'); });
+    setInterval(tick, 30000);
+  }
 
   // Reveal ao rolar (realça um default já visível; respeita reduced-motion)
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
