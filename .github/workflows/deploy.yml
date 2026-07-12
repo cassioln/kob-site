@@ -23,6 +23,7 @@ jobs:
           localDir: '.'
           remoteDir: 'public_html' # Pasta padrão da Locaweb. Se o seu domínio usar outra pasta, altere aqui.
           options: >-
+            --delete
             -x ^\.git/
             -x ^\.github/
             -x ^\.hermes/
