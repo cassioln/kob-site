@@ -31,6 +31,7 @@ jobs:
             -x ^\.od-skills/
             -x ^\.playwright-mcp/
             -x ^bkp/
+            -x ^assets/images/creators/
             -x ^README\.md$
             -x ^PRODUCT\.md$
             -x ^DESIGN\.md$

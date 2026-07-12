@@ -226,8 +226,15 @@ document.documentElement.classList.add('js');
 
     var highlights = [];
     var archive = [];
+    function loadMemoryImage(item) {
+      var image = item.querySelector('img[data-src]');
+      if (!image) return;
+      image.src = image.dataset.src;
+      image.removeAttribute('data-src');
+    }
     memories.forEach(function (item, idx) {
       if (highlightSet[idx]) {
+        loadMemoryImage(item);
         item.setAttribute('data-highlight', '');
         item.style.setProperty('--highlight-slot', highlightSet[idx]);
         item.hidden = false;
@@ -244,7 +251,10 @@ document.documentElement.classList.add('js');
     galleryExpand.addEventListener('click', function () {
       var expanded = galleryExpand.getAttribute('aria-expanded') === 'true';
       var nextState = !expanded;
-      archive.forEach(function (item) { item.hidden = !nextState; });
+      archive.forEach(function (item) {
+        if (nextState) loadMemoryImage(item);
+        item.hidden = !nextState;
+      });
       galleryExpand.setAttribute('aria-expanded', nextState ? 'true' : 'false');
       track.dataset.expanded = nextState ? 'true' : 'false';
       if (galleryExpandLabel) {
