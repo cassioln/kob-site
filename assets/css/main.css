@@ -1735,18 +1735,6 @@ h4 {
   stroke-width: 1;
 }
 
-.turn-hourglass__status {
-  max-width: 16ch;
-  margin-top: -2px;
-  font-size: 0.62rem;
-  font-weight: 800;
-  line-height: 1.3;
-  text-align: center;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  color: rgba(255, 255, 255, 0.8);
-}
-
 .event-score[data-complete="true"] .turn-hourglass__stream,
 .event-score[data-complete="true"] .turn-hourglass__grain {
   display: none;
@@ -7318,11 +7306,6 @@ h4 {
   .turn-hourglass__svg {
     width: 90px;
     height: 113px;
-  }
-
-  .turn-hourglass__status {
-    max-width: 12ch;
-    font-size: 0.53rem;
   }
 
   .event-table {

@@ -53,7 +53,6 @@ document.documentElement.classList.add('js');
   var elDays = document.querySelector('[data-count="days"]');
   var elHours = document.querySelector('[data-count="hours"]');
   var elMin = document.querySelector('[data-count="minutes"]');
-  var sandLabel = document.querySelector('[data-sand-label]');
   var countdownLabel = countdown && countdown.querySelector('.event-score__label');
   var countdownReduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   function pad(n) { return (n < 10 ? '0' : '') + n; }
@@ -80,7 +79,6 @@ document.documentElement.classList.add('js');
       setCount(elDays, '0'); setCount(elHours, '00'); setCount(elMin, '00');
       countdown.dataset.complete = 'true';
       if (countdownLabel) countdownLabel.textContent = 'É hora de embarcar!';
-      if (sandLabel) sandLabel.textContent = 'Embarque liberado';
       countdown.setAttribute('aria-label', 'A contagem terminou. É hora de embarcar.');
       return;
     }
@@ -92,8 +90,7 @@ document.documentElement.classList.add('js');
     setCount(elHours, pad(hours));
     setCount(elMin, pad(minutes));
     countdown.dataset.complete = 'false';
-    if (countdownLabel) countdownLabel.textContent = 'Turno em andamento';
-    if (sandLabel) sandLabel.textContent = progressPercent + '% do caminho percorrido';
+    if (countdownLabel) countdownLabel.textContent = 'Contagem Regressiva';
     countdown.setAttribute('aria-label', 'Faltam ' + days + ' dias, ' + hours + ' horas e ' + minutes + ' minutos para o embarque. ' + progressPercent + '% do caminho percorrido.');
   }
   if (countdown && elDays && elHours && elMin) {
