@@ -6532,7 +6532,7 @@ h4 {
 @media (max-width: 560px) {
   .final-cta h2 {
     max-width: 9.5ch;
-    font-size: clamp(3rem, 15vw, 4.8rem);
+    font-size: clamp(3rem, 15vw, 4.8rem) !important;
   }
 
   .final-cta .reserve__copy .lead {
