@@ -258,11 +258,20 @@ document.documentElement.classList.add('js');
     });
   }
 
-  // Depoimentos: designers permanecem primeiro; 3 relatos abrem e 3 ficam no arquivo.
+  // Depoimentos: designers permanecem primeiro; celular abre 1 relato e telas maiores, 3.
   var voicesDeck = document.getElementById('voices');
   var voicesExpand = document.getElementById('voicesExpand');
   if (voicesDeck && voicesExpand) {
     var randomVoices = Array.prototype.slice.call(voicesDeck.querySelectorAll('[data-voice-random]'));
+    var featuredVoiceCount = voicesDeck.querySelectorAll('[data-voice-featured]').length;
+    var mobileVoices = window.matchMedia('(max-width: 680px)');
+    function collapsedRandomCount() { return mobileVoices.matches ? 1 : 3; }
+    function setVoicesVisibility(expanded) {
+      var visibleRandomCount = collapsedRandomCount();
+      randomVoices.forEach(function (voice, slot) {
+        voice.hidden = !expanded && slot >= visibleRandomCount;
+      });
+    }
     for (var voiceIndex = randomVoices.length - 1; voiceIndex > 0; voiceIndex--) {
       var randomIndex = Math.floor(Math.random() * (voiceIndex + 1));
       var randomVoice = randomVoices[voiceIndex];
@@ -271,19 +280,18 @@ document.documentElement.classList.add('js');
     }
 
     randomVoices.forEach(function (voice, slot) {
-      voice.hidden = slot >= 3;
       voice.setAttribute('data-voice-slot', String(slot + 1));
       voice.style.setProperty('--depth', String((slot % 3) + 1));
       voicesDeck.appendChild(voice);
     });
 
-    var archiveVoices = randomVoices.slice(3);
+    setVoicesVisibility(false);
     var voicesExpandLabel = voicesExpand.querySelector('[data-voices-expand-label]');
     var voicesStatus = document.getElementById('voicesStatus');
     voicesExpand.addEventListener('click', function () {
       var expanded = voicesExpand.getAttribute('aria-expanded') === 'true';
       var nextState = !expanded;
-      archiveVoices.forEach(function (voice) { voice.hidden = !nextState; });
+      setVoicesVisibility(nextState);
       voicesExpand.setAttribute('aria-expanded', nextState ? 'true' : 'false');
       voicesDeck.dataset.expanded = nextState ? 'true' : 'false';
       if (voicesExpandLabel) {
@@ -291,9 +299,12 @@ document.documentElement.classList.add('js');
       }
       if (voicesStatus) {
         voicesStatus.textContent = nextState
-          ? 'Todos os 8 depoimentos estão visíveis.'
-          : 'Depoimentos recolhidos. 5 relatos estão visíveis.';
+          ? 'Todos os ' + (featuredVoiceCount + randomVoices.length) + ' depoimentos estão visíveis.'
+          : 'Depoimentos recolhidos. ' + (featuredVoiceCount + collapsedRandomCount()) + ' relatos estão visíveis.';
       }
+    });
+    mobileVoices.addEventListener('change', function () {
+      if (voicesExpand.getAttribute('aria-expanded') !== 'true') setVoicesVisibility(false);
     });
   }
 
