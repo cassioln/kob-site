@@ -506,14 +506,22 @@ document.documentElement.classList.add('js');
     dive.addEventListener('playing', markMediaLive);
     loop.addEventListener('playing', markMediaLive);
 
-    // Pré-carrega os frames do scrubbing (nomes frame-001.webp ... frame-060.webp)
-    for (var i = 1; i <= FRAME_COUNT; i++) {
-      var img = new Image();
-      img.decoding = 'async';
-      img.onload = function () { framesLoaded++; };
-      img.src = 'assets/hero-frames/frame-' + String(i).padStart(3, '0') + '.webp';
-      frames.push(img);
+    // Adia o carregamento dos 60 frames do canvas para liberar banda de rede para os vídeos
+    var framesStarted = false;
+    function loadFrames() {
+      if (framesStarted) return;
+      framesStarted = true;
+      for (var i = 1; i <= FRAME_COUNT; i++) {
+        var img = new Image();
+        img.decoding = 'async';
+        img.onload = function () { framesLoaded++; };
+        img.src = 'assets/hero-frames/frame-' + String(i).padStart(3, '0') + '.webp';
+        frames.push(img);
+      }
     }
+    // Carrega em segundo plano após um delay confortável de 1.8 segundos,
+    // garantindo que o vídeo de entrada já tenha buffer suficiente
+    setTimeout(loadFrames, 1800);
 
     // Desenha um frame no canvas com lógica "cover"
     function drawFrame(n) {
@@ -612,6 +620,7 @@ document.documentElement.classList.add('js');
       } else { raf = null; }
     }
     function onScroll() {
+      loadFrames();
       // Se o usuário rolar antes do fim da intro (~2.8s), revela já o
       // conteúdo do hero em vez de esperar o timer — evita ver a 2ª dobra
       // com o hero ainda "vazio". Idempotente.
