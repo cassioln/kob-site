@@ -697,11 +697,6 @@ h4 {
   grid-template-areas: "content logo";
   align-items: center;
   gap: clamp(32px, 6vw, 88px);
-  opacity: 0;
-  transition: opacity 520ms var(--ease-quart);
-}
-
-.hero[data-intro="done"] .hero__inner {
   opacity: 1;
 }
 
@@ -736,53 +731,12 @@ h4 {
 .hero__sub,
 .hero__meta,
 .hero__cta {
-  opacity: 0;
-  transform: translateY(16px);
-  transition: opacity 560ms var(--ease-quart), transform 640ms var(--ease-expo);
-}
-
-.hero__logo {
-  transform: translateY(10px) scale(0.975);
-}
-
-.hero[data-intro="done"] .hero__logo,
-.hero[data-intro="done"] h1,
-.hero[data-intro="done"] .hero__sub,
-.hero[data-intro="done"] .hero__meta,
-.hero[data-intro="done"] .hero__cta {
   opacity: 1;
   transform: none;
 }
 
-.hero[data-intro="done"] .hero__logo {
-  transition-delay: 40ms;
-}
-
-.hero[data-intro="done"] h1 {
-  transition-delay: 80ms;
-}
-
-.hero[data-intro="done"] .hero__sub {
-  transition-delay: 140ms;
-}
-
-.hero[data-intro="done"] .hero__meta {
-  transition-delay: 200ms;
-}
-
-.hero[data-intro="done"] .hero__cta {
-  transition-delay: 260ms;
-}
-
 @media (prefers-reduced-motion: reduce) {
-
-  .hero__bg::after,
-  .hero__inner,
-  .hero__logo,
-  .hero h1,
-  .hero__sub,
-  .hero__meta,
-  .hero__cta {
+  .hero__bg::after {
     transition: none;
   }
 }
