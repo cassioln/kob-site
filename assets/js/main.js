@@ -882,7 +882,7 @@ document.documentElement.classList.add('js');
           ]
         }],
         note: '* Cabines para hóspedes com necessidades especiais ou mobilidade reduzida possuem apenas camas de solteiro. A imagem é apenas ilustrativa; o tamanho, layout e mobília podem variar (dentro da mesma categoria de cabine).',
-        wa: WA + encodeURIComponent('Olá, Royal Trip! Quero reservar uma Cabine Interna (2º lote) no Kriativos On Board 2026.')
+        wa: WA + encodeURIComponent('Olá, Royal Trip! Vi a Cabine Interna na seção de valores do Kriativos On Board 2026 e quero reservar essa opção no 2º lote.')
       },
       janela: {
         cabin: 'Cabine janela',
@@ -902,7 +902,7 @@ document.documentElement.classList.add('js');
           ]
         }],
         note: '* Cabines para hóspedes com necessidades especiais ou mobilidade reduzida possuem apenas camas de solteiro. A imagem é apenas ilustrativa; o tamanho, layout e mobília podem variar (dentro da mesma categoria de cabine).',
-        wa: WA + encodeURIComponent('Olá, Royal Trip! Quero reservar uma Cabine Janela (2º lote) no Kriativos On Board 2026.')
+        wa: WA + encodeURIComponent('Olá, Royal Trip! Vi a Cabine Janela na seção de valores do Kriativos On Board 2026 e quero reservar essa opção no 2º lote.')
       },
       varanda: {
         cabin: 'Cabine varanda',
@@ -921,7 +921,7 @@ document.documentElement.classList.add('js');
           ]
         }],
         note: '* As cabines para hóspedes com necessidades especiais ou mobilidade reduzida possuem apenas cama de solteiro (exceto cabines 15025). A imagem é apenas ilustrativa; o tamanho, layout e mobília podem variar (dentro da mesma categoria de cabine).',
-        wa: WA + encodeURIComponent('Olá, Royal Trip! Quero reservar uma Cabine Varanda (2º lote) no Kriativos On Board 2026.')
+        wa: WA + encodeURIComponent('Olá, Royal Trip! Vi a Cabine Varanda na seção de valores do Kriativos On Board 2026 e quero reservar essa opção no 2º lote.')
       },
       easy: {
         cabin: 'Pacote Easy · R$ 768',
@@ -941,7 +941,7 @@ document.documentElement.classList.add('js');
           ]
         }],
         note: '* AQUA by MSC: água enriquecida com minerais servida em copos nos bares e buffets, em garrafas de vidro reutilizáveis de 1L nos principais restaurantes e em estações de recarga, mediante solicitação. Taxas de serviço incluídas. Valores e itens do cardápio podem sofrer alterações; imagens e descrições são ilustrativas.',
-        wa: WA + encodeURIComponent('Olá, Royal Trip! Quero o Pacote de Bebidas Easy no Kriativos On Board 2026.')
+        wa: WA + encodeURIComponent('Olá, Royal Trip! Vi o Pacote de Bebidas Easy na seção de bebidas do Kriativos On Board 2026 e quero contratar essa opção.')
       },
       premium: {
         cabin: 'Pacote Premium · R$ 1.344',
@@ -963,7 +963,7 @@ document.documentElement.classList.add('js');
           ]
         }],
         note: '* AQUA by MSC: água enriquecida com minerais servida em copos, em garrafas de vidro reutilizáveis de 1L e em estações de recarga, mediante solicitação. Taxas de serviço incluídas. Valores e itens do cardápio podem sofrer alterações; imagens e descrições são ilustrativas.',
-        wa: WA + encodeURIComponent('Olá, Royal Trip! Quero o Pacote de Bebidas Premium no Kriativos On Board 2026.')
+        wa: WA + encodeURIComponent('Olá, Royal Trip! Vi o Pacote de Bebidas Premium na seção de bebidas do Kriativos On Board 2026 e quero contratar essa opção.')
       },
       naoalcoolico: {
         cabin: 'Não alcoólico · R$ 615',
@@ -981,7 +981,7 @@ document.documentElement.classList.add('js');
           ]
         }],
         note: '* AQUA by MSC: água enriquecida com minerais servida em copos, em garrafas de vidro reutilizáveis de 1L e em estações de recarga, mediante solicitação. Taxas de serviço incluídas. O pacote não é aceito em restaurantes de especialidades e ilhas particulares. Valores e itens do cardápio podem sofrer alterações; imagens e descrições são ilustrativas.',
-        wa: WA + encodeURIComponent('Olá, Royal Trip! Quero o Pacote de Bebidas Não Alcoólico no Kriativos On Board 2026.')
+        wa: WA + encodeURIComponent('Olá, Royal Trip! Vi o Pacote de Bebidas Não Alcoólico na seção de bebidas do Kriativos On Board 2026 e quero contratar essa opção.')
       }
     };
 
