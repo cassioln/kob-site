@@ -226,17 +226,32 @@ document.documentElement.classList.add('js');
 
     var highlights = [];
     var archive = [];
+    function thumbnailUrl(original, width) {
+      return original.replace(/([^/]+)\.webp$/, 'thumbs/$1-' + width + '.webp');
+    }
     function loadMemoryImage(item) {
       var image = item.querySelector('img[data-src]');
       if (!image) return;
-      image.src = image.dataset.src;
+      var original = image.dataset.src;
+      var slot = parseInt(item.style.getPropertyValue('--highlight-slot'), 10);
+      var desktopSize = '25vw';
+      if (!item.classList.contains('edition-memory--portrait')) {
+        if (slot === 1) desktopSize = '58vw';
+        else if (slot === 2 || slot === 3) desktopSize = '42vw';
+        else if (slot === 4 || slot === 5 || slot === 8) desktopSize = '50vw';
+      }
+      image.src = thumbnailUrl(original, 480);
+      image.srcset = thumbnailUrl(original, 480) + ' 480w, ' + thumbnailUrl(original, 960) + ' 960w';
+      image.sizes = item.hasAttribute('data-highlight')
+        ? '(max-width: 680px) 100vw, (max-width: 980px) 66vw, ' + desktopSize
+        : '(max-width: 680px) 100vw, (max-width: 980px) 50vw, 25vw';
       image.removeAttribute('data-src');
     }
     memories.forEach(function (item, idx) {
       if (highlightSet[idx]) {
-        loadMemoryImage(item);
         item.setAttribute('data-highlight', '');
         item.style.setProperty('--highlight-slot', highlightSet[idx]);
+        loadMemoryImage(item);
         item.hidden = false;
         highlights.push(item);
       } else {
