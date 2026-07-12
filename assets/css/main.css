@@ -1395,7 +1395,7 @@ h4 {
   font-family: var(--font-display);
   font-size: clamp(0.82rem, 1.5vw, 1.05rem);
   font-weight: 800;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   text-align: center;
   color: color-mix(in oklab, var(--foam-white) 82%, transparent);
@@ -3521,12 +3521,12 @@ h4 {
     height: 8px;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.38);
-    transition: width var(--dur-fast) var(--ease-quart), height var(--dur-fast) var(--ease-quart), background var(--dur-fast) var(--ease-quart);
+    transform: scale(1);
+    transition: transform var(--dur-fast) var(--ease-quart), background var(--dur-fast) var(--ease-quart);
   }
 
   .price-slider__dot[aria-current="true"]::before {
-    width: 10px;
-    height: 10px;
+    transform: scale(1.25);
     background: var(--foam-white);
   }
 
@@ -5956,27 +5956,6 @@ h4 {
   transition: transform 900ms var(--ease-quart), filter 400ms var(--ease-quart);
 }
 
-#edicao2025 .edition-memory::after {
-  content: "";
-  position: absolute;
-  inset: auto 0 0;
-  z-index: 1;
-  height: 34%;
-  background: linear-gradient(180deg, transparent, rgba(4, 29, 58, 0.66));
-  pointer-events: none;
-}
-
-.edition-memory__index {
-  position: absolute;
-  z-index: 2;
-  right: 10px;
-  bottom: 8px;
-  color: rgba(255, 255, 255, 0.82);
-  font-family: var(--font-display);
-  font-size: 0.72rem;
-  letter-spacing: 0.12em;
-}
-
 #edicao2025 .edition-memory:hover img,
 #edicao2025 .edition-memory:focus-visible img {
   transform: scale(1.045);
@@ -7947,7 +7926,6 @@ h4 {
   z-index: 0;
   height: clamp(140px, 12vw, 180px);
   pointer-events: none;
-  background: linear-gradient(180deg, rgba(14, 139, 188, 0) 0%, rgba(7, 91, 139, 0.72) 38%, var(--ocean-abyss) 100%);
 }
 
 .deck__wake {
