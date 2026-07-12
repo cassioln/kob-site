@@ -1703,6 +1703,7 @@ h4 {
 }
 
 @keyframes turn-sand-grain {
+
   0%,
   20% {
     opacity: 0;
@@ -1720,6 +1721,7 @@ h4 {
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   .event-score .tlc,
   .turn-hourglass__svg,
   .turn-hourglass__sand {
@@ -6333,6 +6335,7 @@ h4 {
 .final-cta h2 {
   max-width: 11ch;
   margin: 0;
+  margin-top: 20px;
   font-size: clamp(3.5rem, 7.4vw, 6rem);
   line-height: 0.92;
   letter-spacing: -0.025em;
@@ -7528,6 +7531,7 @@ h4 {
 }
 
 @keyframes event-track-swipe-hint {
+
   0%,
   20% {
     transform: translateX(0);
