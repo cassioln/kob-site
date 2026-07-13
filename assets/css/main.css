@@ -636,6 +636,11 @@ h4 {
   opacity: 1;
 }
 
+.hero__bg[data-handoff="direct"] .hero__video,
+.hero__bg[data-handoff="direct"] .hero__canvas {
+  transition: none;
+}
+
 .hero__canvas {
   width: 100%;
   height: 100%;
@@ -739,11 +744,12 @@ h4 {
 
 .hero__logo {
   transform-origin: 50% 55%;
-  transition-property: transform;
-  transition-duration: 760ms;
+  transition-property: opacity, transform;
+  transition-duration: 560ms, 760ms;
 }
 
 html.js .hero:not([data-intro="done"]) .hero__logo {
+  opacity: 0;
   transform: translate3d(18px, 10px, 0) scale(0.965);
 }
 

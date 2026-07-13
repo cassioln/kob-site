@@ -460,7 +460,7 @@ document.documentElement.classList.add('js');
 
   // Hero com vídeo de fundo em 3 fases:
   //  1) assets/videos/hero-intro.mp4 autoplay 0→4s (vídeo)
-  //  2) aos 4s, cross-fade para assets/videos/hero-loop.mp4 em loop (vídeo)
+  //  2) aos 4s, corte direto para assets/videos/hero-loop.mp4 já renderizado
   //  3) scroll na 1ª dobra faz scrubbing por SEQUÊNCIA DE FRAMES em <canvas>
   //     (evita o stutter de seek em <video>; frames = trecho 5s→fim do hero-intro)
   var heroBg = document.getElementById('heroBg');
@@ -469,9 +469,7 @@ document.documentElement.classList.add('js');
   var canvas = document.getElementById('heroCanvas');
   if (heroBg && dive && loop && canvas) {
     var INTRO_END = 4;      // fim da fase 1 / dive: frame que melhor casa com o loop@0
-    var LOOP_PRELOAD = 2.6; // aquece a rede sem manter dois decoders ativos
-    var LOOP_PREROLL = 3.7; // só 300ms de vídeo escondido antes da troca
-    var REVEAL_AT = 2.8;      // revela conteúdo+logo do hero (independente do dive)
+    var REVEAL_AT = 3;      // inicia a entrada do hero__inner após 3s reais de playback
     var FRAME_COUNT = 60;   // frames do scrub, pré-extraídos do master completo a partir de 4s (WebP 1080p)
     var phase = 'intro';    // intro | loop | scrub
     var ctx = canvas.getContext('2d');
@@ -502,6 +500,29 @@ document.documentElement.classList.add('js');
       requestAnimationFrame(function () {
         setTimeout(revealHero, 40);
       });
+    }
+
+    var revealTracking = false;
+    function trackIntroTimeline() {
+      if (revealTracking) return;
+      revealTracking = true;
+      if (typeof dive.requestVideoFrameCallback === 'function') {
+        function onIntroFrame(now, metadata) {
+          if (phase !== 'intro' || !diveDisplayArmed) return;
+          if (metadata.mediaTime >= REVEAL_AT) revealHero();
+          if (metadata.mediaTime >= INTRO_END) { switchToLoop(); return; }
+          dive.requestVideoFrameCallback(onIntroFrame);
+        }
+        dive.requestVideoFrameCallback(onIntroFrame);
+      } else {
+        function checkIntroTime() {
+          if (phase !== 'intro' || !diveDisplayArmed) return;
+          if (dive.currentTime >= REVEAL_AT) revealHero();
+          if (dive.currentTime >= INTRO_END) { switchToLoop(); return; }
+          requestAnimationFrame(checkIntroTime);
+        }
+        requestAnimationFrame(checkIntroTime);
+      }
     }
 
     // Mantém o buffer do canvas igual ao tamanho REAL exibido na tela
@@ -664,58 +685,54 @@ document.documentElement.classList.add('js');
       ctx.drawImage(img, dx, dy, dw, dh);
     }
 
-    // Handshake da troca dive→loop, à prova de piscada:
-    // 1) faz pré-roll do loop (tocando, porém invisível) antes do corte;
-    // 2) no corte, revela o loop (que já está pintando frames, por cima do
-    //    dive) e só ENTÃO esconde o dive — crossfade sem gap/fundo à mostra.
-    var loopPrepared = false, loopPrerolled = false, switching = false;
-    function prepareLoop() {
-      if (loopPrepared) return;
-      loopPrepared = true;
+    // Handoff direto dive→loop: o decoder já foi aquecido antes da intro.
+    // Em 4s, inicia o loop no frame 0 e só corta após esse frame ser pintado.
+    var loopStarted = false, switching = false;
+    var loopFrameReady = false;
+    function commitLoopHandoff() {
+      if (!switching || !loopFrameReady || loop.paused) return;
+      phase = 'loop';
+      heroBg.dataset.handoff = 'direct';
+      show(loop); hide(dive); hide(canvas);
+      revealHero();
+      requestAnimationFrame(function () {
+        dive.pause();
+        try { dive.currentTime = 0; } catch (e) { }
+        requestAnimationFrame(function () { delete heroBg.dataset.handoff; });
+      });
     }
-    function startLoopPreroll() {
-      if (loopPrerolled) return;
-      loopPrerolled = true;
-      prepareLoop();
+    function markLoopFrameReady() {
+      loopFrameReady = true;
+      commitLoopHandoff();
+    }
+    function watchLoopFirstFrame() {
+      if (loopFrameReady) return;
+      if (typeof loop.requestVideoFrameCallback === 'function') {
+        loop.requestVideoFrameCallback(markLoopFrameReady);
+      } else {
+        requestAnimationFrame(function () { requestAnimationFrame(markLoopFrameReady); });
+      }
+    }
+    function startLoopAtHandoff() {
+      if (loopStarted) return;
+      loopStarted = true;
       try { loop.currentTime = 0; } catch (e) { }
       loopDisplayArmed = true;
-      var p = loop.play(); if (p && p.catch) p.catch(function () { });
+      var p = loop.play();
+      if (p && p.then) p.then(watchLoopFirstFrame).catch(function () { });
+      else loop.addEventListener('playing', watchLoopFirstFrame, { once: true });
     }
     function switchToLoop() {
       if (switching || phase !== 'intro') return;
       switching = true;
-      phase = 'loop';
-      startLoopPreroll();
-      // O loop já está tocando por baixo (pré-roll), sem um segundo seek que
-      // invalidaria o decoder aquecido. Revela-o e faz o DIVE
-      // (que está por cima) desaparecer em crossfade de 480ms — cruza suave,
-      // sem gap nem piscada, disfarçando a diferença de posição dos objetos.
-      show(loop);
-      revealHero();
-      function crossfadeOutDive() {
-        hide(dive); hide(canvas);         // dispara o fade-out (opacity→0, 700ms)
-        // Só pausa/reseta o dive DEPOIS do fade, senão o último frame congela e pisca.
-        setTimeout(function () {
-          dive.pause();
-          try { dive.currentTime = 0; } catch (e) { }
-        }, 520);
-      }
-      // Espera o loop estar realmente pintando antes de cruzar (evita ver o
-      // loop preto/vazio por baixo do dive sumindo).
-      if (loop.readyState >= 2 && !loop.paused) {
-        requestAnimationFrame(crossfadeOutDive);
-      } else {
-        loop.addEventListener('playing', crossfadeOutDive, { once: true });
-        setTimeout(crossfadeOutDive, 250); // rede de segurança
-      }
+      startLoopAtHandoff();
+      commitLoopHandoff();
     }
 
     // FASE 1 → 2: monitora o tempo do dive durante a intro
     dive.addEventListener('timeupdate', function () {
       if (phase !== 'intro') return;
       if (dive.currentTime >= REVEAL_AT) revealHero();
-      if (dive.currentTime >= LOOP_PRELOAD) prepareLoop();
-      if (dive.currentTime >= LOOP_PREROLL) startLoopPreroll();
       if (dive.currentTime >= INTRO_END) switchToLoop();
     });
     // Se o dive terminar sozinho (chega ao fim antes do corte), troca também.
@@ -726,15 +743,13 @@ document.documentElement.classList.add('js');
     // depois parar esperando rede.
     (function startIntro() {
       hide(dive); hide(loop); hide(canvas);
-      // A entrada do conteúdo começa após o primeiro paint, sem esperar o
-      // vídeo chegar a 2,8s. O logo permanece visível para não atrasar o LCP.
-      revealHeroAfterPaint();
 
       var connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
       var shouldStayStatic = window.matchMedia('(max-width: 767px)').matches || (connection && connection.saveData);
       if (shouldStayStatic || !selectedVideoSource(dive) || !selectedVideoSource(loop)) {
         phase = 'fallback';
         heroBg.dataset.videoBuffer = 'static';
+        revealHeroAfterPaint();
         return;
       }
 
@@ -749,12 +764,14 @@ document.documentElement.classList.add('js');
                 heroBg.dataset.videoBuffer = 'ready';
                 diveDisplayArmed = true;
                 try { dive.currentTime = 0; } catch (e) { }
+                trackIntroTimeline();
                 var p = dive.play();
                 if (p && p.catch) p.catch(function () {
                   diveDisplayArmed = false;
                   phase = 'fallback';
                   heroBg.dataset.videoBuffer = 'static';
                   hide(dive); hide(loop); hide(canvas);
+                  revealHeroAfterPaint();
                 });
               });
           }
@@ -772,15 +789,12 @@ document.documentElement.classList.add('js');
           phase = 'fallback';
           heroBg.dataset.videoBuffer = 'static';
           hide(dive); hide(loop); hide(canvas);
+          revealHeroAfterPaint();
         });
     })();
 
-    // Rede de segurança: se o dive falhar/travar ou nunca terminar, revela
-    // o hero mesmo assim para não deixar o conteúdo escondido.
+    // Em falha real, mantém o fallback e revela o conteúdo sem depender do vídeo.
     dive.addEventListener('error', revealHeroAfterPaint);
-    dive.addEventListener('stalled', revealHeroAfterPaint);
-    setTimeout(revealHero, REVEAL_AT * 1000);
-    setTimeout(revealHero, (INTRO_END + 2.5) * 1000);
 
     // FASE 3: scrubbing por frames sincronizado ao scroll
     function tick() {
@@ -797,10 +811,6 @@ document.documentElement.classList.add('js');
       // composição do hero sem disputar banda com o conteúdo de conversão.
       if (window.matchMedia('(max-width: 767px)').matches) return;
       loadFrames();
-      // Se o usuário rolar antes do fim da intro (~2.8s), revela já o
-      // conteúdo do hero em vez de esperar o timer — evita ver a 2ª dobra
-      // com o hero ainda "vazio". Idempotente.
-      revealHero();
       var hero = document.querySelector('.hero');
       var rect = hero.getBoundingClientRect();
       var total = rect.height || window.innerHeight;
@@ -819,6 +829,9 @@ document.documentElement.classList.add('js');
       // evita trocar para um canvas transparente no primeiro gesto de scroll.
       if (!nextFrame || !nextFrame.complete || !nextFrame.naturalWidth) return;
       if (phase !== 'scrub') {
+        // Scroll antes dos 3s interrompe a timeline; revela o conteúdo para
+        // não deixá-lo oculto caso a pessoa retorne ao topo.
+        revealHero();
         phase = 'scrub';
         loop.pause(); dive.pause();
         if (currentFrame < 0) { drawFrame(0); }
@@ -838,7 +851,10 @@ document.documentElement.classList.add('js');
   // garante que o hero apareça mesmo assim.
   (function heroSafety() {
     var h = document.querySelector('.hero');
-    if (h) setTimeout(function () { if (h.dataset.intro !== 'done') h.dataset.intro = 'done'; }, 7000);
+    var bg = document.getElementById('heroBg');
+    if (h) setTimeout(function () {
+      if (h.dataset.intro !== 'done' && (!bg || bg.dataset.videoBuffer === 'static')) h.dataset.intro = 'done';
+    }, 7000);
   })();
 
   // O tour fica várias dobras abaixo do hero. `autoplay` no HTML fazia o
