@@ -590,6 +590,7 @@ h4 {
   position: absolute;
   inset: 0px;
   z-index: 0;
+  container-type: size;
   background: rgb(6, 50, 88);
 }
 
@@ -691,6 +692,24 @@ h4 {
 
 .hero[data-intro="done"] .hero__bg::after {
   opacity: 1;
+}
+
+.hero__watermark-shade {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 3;
+  width: max(100%, calc(100cqh * 16 / 9));
+  height: max(100%, calc(100cqw * 9 / 16));
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 8% 10% at 90.625% 83.333%,
+    rgba(6, 50, 88, 0.82) 0%,
+    rgba(6, 50, 88, 0.66) 28%,
+    rgba(6, 50, 88, 0.3) 56%,
+    rgba(6, 50, 88, 0) 100%
+  );
 }
 
 .hero>.container {
