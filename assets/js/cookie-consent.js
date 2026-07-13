@@ -121,6 +121,46 @@
     return state;
   }
 
+  function denyOptionalStorage() {
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      window.dataLayer.push(arguments);
+    }
+
+    gtag('consent', 'update', {
+      analytics_storage: 'denied',
+      ad_storage: 'denied',
+      ad_user_data: 'denied',
+      ad_personalization: 'denied'
+    });
+  }
+
+  function clearAnalyticsCookies() {
+    var analyticsCookie = /^(?:_ga(?:$|_)|_gid$|_gat(?:$|_)|_gac_|_gcl_au$|AMP_TOKEN$)/;
+    var names = document.cookie.split(';').map(function (entry) {
+      return entry.trim().split('=')[0];
+    }).filter(function (name) {
+      return name && analyticsCookie.test(name);
+    });
+    var hostname = window.location.hostname;
+    var domains = [];
+
+    if (hostname && hostname !== 'localhost' && !/^\d+(?:\.\d+){3}$/.test(hostname)) {
+      domains.push(hostname);
+      var labels = hostname.split('.');
+      if (labels.length > 2) domains.push(labels.slice(1).join('.'));
+    }
+
+    names.forEach(function (name) {
+      var expired = name + '=; Path=/; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax';
+      document.cookie = expired;
+      domains.forEach(function (domain) {
+        document.cookie = expired + '; Domain=' + domain;
+      });
+    });
+  }
+
   function pushConsentAcceptedEvent() {
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
@@ -298,6 +338,11 @@
     services[SERVICE_GA4] = analyticsAllowed;
     var state = setConsentState(analyticsAllowed ? 'accepted' : 'denied', services);
 
+    if (!state.analytics) {
+      denyOptionalStorage();
+      clearAnalyticsCookies();
+    }
+
     if (previousState.status !== state.status) {
       if (state.status === 'accepted') pushConsentAcceptedEvent();
       else pushConsentDeniedEvent();
@@ -406,6 +451,8 @@
     queueConsentRestoredEvent(initialState);
   } else if (initialState.status === 'denied') {
     banner.hidden = true;
+    denyOptionalStorage();
+    clearAnalyticsCookies();
   } else {
     openCookiePreferences({ focus: false, expanded: false });
   }
