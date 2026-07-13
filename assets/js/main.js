@@ -459,8 +459,8 @@ document.documentElement.classList.add('js');
   }
 
   // Hero com vídeo de fundo em 3 fases:
-  //  1) assets/videos/hero-intro.mp4 autoplay 0→4s (vídeo)
-  //  2) aos 4s, corte direto para assets/videos/hero-loop.mp4 já renderizado
+  //  1) hero-intro WebM/MP4 autoplay 0→4s
+  //  2) aos 4s, corte direto para hero-loop já renderizado
   //  3) scroll na 1ª dobra faz scrubbing por SEQUÊNCIA DE FRAMES em <canvas>
   //     (evita o stutter de seek em <video>; frames = trecho 5s→fim do hero-intro)
   var heroBg = document.getElementById('heroBg');
@@ -472,6 +472,7 @@ document.documentElement.classList.add('js');
     var REVEAL_AT = 3;      // inicia a entrada do hero__inner após 3s reais de playback
     var FRAME_COUNT = 60;   // frames do scrub, pré-extraídos do master completo a partir de 4s (WebP 1080p)
     var phase = 'intro';    // intro | loop | scrub | fallback
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     var ctx = canvas.getContext('2d');
     if (ctx) { ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high'; }
     var frames = [];
@@ -514,7 +515,7 @@ document.documentElement.classList.add('js');
       dive.pause(); loop.pause();
       hide(dive); hide(loop); hide(canvas);
       revealHeroAfterPaint();
-      syncFallbackScrub();
+      syncPendingScrub();
     }
 
     var revealTracking = false;
@@ -697,11 +698,11 @@ document.documentElement.classList.add('js');
     // rolar o hero. Não os baixa por timer: são 60 requests / ~3,7 MB fora do
     // caminho crítico.
     var framesStarted = false;
-    var fallbackFrameRaf = null;
-    function syncFallbackScrub() {
-      if (phase !== 'fallback' || fallbackFrameRaf || window.scrollY <= 0) return;
-      fallbackFrameRaf = requestAnimationFrame(function () {
-        fallbackFrameRaf = null;
+    var frameSyncRaf = null;
+    function syncPendingScrub() {
+      if (phase === 'scrub' || frameSyncRaf || window.scrollY <= 0) return;
+      frameSyncRaf = requestAnimationFrame(function () {
+        frameSyncRaf = null;
         onScroll();
       });
     }
@@ -714,7 +715,7 @@ document.documentElement.classList.add('js');
         img.fetchPriority = 'low';
         img.onload = function () {
           framesLoaded++;
-          syncFallbackScrub();
+          syncPendingScrub();
         };
         img.src = 'assets/hero-frames/frame-' + String(i).padStart(3, '0') + '.webp';
         frames.push(img);
@@ -795,7 +796,7 @@ document.documentElement.classList.add('js');
       hide(dive); hide(loop); hide(canvas);
 
       var connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-      var shouldStayStatic = window.matchMedia('(max-width: 767px)').matches || (connection && connection.saveData);
+      var shouldStayStatic = reduceMotion.matches || (connection && connection.saveData);
       if (shouldStayStatic || !selectedVideoSource(dive) || !selectedVideoSource(loop)) {
         activateStaticFallback();
         return;
@@ -847,9 +848,7 @@ document.documentElement.classList.add('js');
       } else { raf = null; }
     }
     function onScroll() {
-      // No mobile o frame estático é a experiência intencional: preserva a
-      // composição do hero sem disputar banda com o conteúdo de conversão.
-      if (window.matchMedia('(max-width: 767px)').matches) return;
+      if (reduceMotion.matches) return;
       loadFrames();
       var hero = document.querySelector('.hero');
       var rect = hero.getBoundingClientRect();
