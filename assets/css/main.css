@@ -810,6 +810,11 @@ html.js .hero:not([data-intro="done"]) .hero__cta {
   transition-delay: 260ms;
 }
 
+html.js .hero:not([data-intro="done"]) .hero__scroll {
+  opacity: 0;
+  transform: translate(-50%, 10px);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .hero__bg::after,
   .hero__video,
@@ -827,10 +832,15 @@ html.js .hero:not([data-intro="done"]) .hero__cta {
   html.js .hero:not([data-intro="done"]) h1,
   html.js .hero:not([data-intro="done"]) .hero__sub,
   html.js .hero:not([data-intro="done"]) .hero__meta,
-  html.js .hero:not([data-intro="done"]) .hero__cta {
+  html.js .hero:not([data-intro="done"]) .hero__cta,
+  html.js .hero:not([data-intro="done"]) .hero__scroll {
     opacity: 1;
     transform: none;
     filter: none;
+  }
+
+  html.js .hero:not([data-intro="done"]) .hero__scroll {
+    transform: translateX(-50%);
   }
 }
 
