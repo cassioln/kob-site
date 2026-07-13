@@ -161,12 +161,12 @@
   transition: background-color 180ms cubic-bezier(0.25, 1, 0.5, 1), transform 180ms cubic-bezier(0.25, 1, 0.5, 1);
 }
 
-.cookie-consent__button--accept {
+.cookie-consent__button--accept,
+.cookie-consent__button--save {
   background: var(--consent-purple);
 }
 
-.cookie-consent__button--essential,
-.cookie-consent__button--save {
+.cookie-consent__button--essential {
   background: var(--consent-navy);
 }
 
@@ -578,13 +578,13 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .cookie-consent__button--accept:hover {
+  .cookie-consent__button--accept:hover,
+  .cookie-consent__button--save:hover {
     background: var(--consent-purple-deep);
     transform: translateY(-1px);
   }
 
-  .cookie-consent__button--essential:hover,
-  .cookie-consent__button--save:hover {
+  .cookie-consent__button--essential:hover {
     background: var(--consent-abyss);
     transform: translateY(-1px);
   }
