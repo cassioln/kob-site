@@ -735,24 +735,40 @@ document.documentElement.classList.add('js');
 
     // Handoff direto dive→loop: o decoder já foi aquecido antes da intro.
     // Quando a intro termina, inicia o loop no frame 0 e só corta após esse
-    // primeiro frame ser pintado. O último frame da intro permanece visível.
+    // primeiro frame ser composto sob a intro. O último frame segue visível.
     var loopStarted = false, switching = false;
-    var loopFrameReady = false;
-    function commitLoopHandoff() {
-      if (phase !== 'intro' || !switching || !loopFrameReady || loop.paused) return;
+    var loopFrameReady = false, loopSwapQueued = false;
+    function finishLoopHandoff() {
+      if (phase !== 'intro' || !switching || !loopSwapQueued) {
+        delete heroBg.dataset.handoff;
+        return;
+      }
       phase = 'loop';
-      heroBg.dataset.handoff = 'direct';
-      show(loop); hide(dive); hide(canvas);
+      hide(dive);
       revealHero();
+      var resume = loop.play();
+      if (resume && resume.catch) resume.catch(activateStaticFallback);
       requestAnimationFrame(function () {
         dive.pause();
         try { dive.currentTime = 0; } catch (e) { }
         requestAnimationFrame(function () { delete heroBg.dataset.handoff; });
       });
     }
+    function primeLoopHandoff() {
+      if (phase !== 'intro' || !switching || !loopFrameReady || loopSwapQueued) return;
+      loopSwapQueued = true;
+      heroBg.dataset.handoff = 'direct';
+      show(loop); hide(canvas);
+      // rVFC confirma decode, mas alguns compositores só apresentam a camada
+      // no paint seguinte. Dois rAFs garantem um paint completo sob a intro.
+      requestAnimationFrame(function () {
+        requestAnimationFrame(finishLoopHandoff);
+      });
+    }
     function markLoopFrameReady() {
+      loop.pause();
       loopFrameReady = true;
-      commitLoopHandoff();
+      primeLoopHandoff();
     }
     function watchLoopFirstFrame() {
       if (loopFrameReady) return;
@@ -775,7 +791,7 @@ document.documentElement.classList.add('js');
       if (switching || phase !== 'intro') return;
       switching = true;
       startLoopAtHandoff();
-      commitLoopHandoff();
+      primeLoopHandoff();
     }
 
     // A entrada do conteúdo segue a timeline; o handoff aguarda o fim real.
