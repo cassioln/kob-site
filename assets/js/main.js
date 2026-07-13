@@ -468,7 +468,6 @@ document.documentElement.classList.add('js');
   var loop = document.getElementById('heroLoop');
   var canvas = document.getElementById('heroCanvas');
   if (heroBg && dive && loop && canvas) {
-    var INTRO_END = 4;      // fim da fase 1 / dive: frame que melhor casa com o loop@0
     var REVEAL_AT = 3;      // inicia a entrada do hero__inner após 3s reais de playback
     var FRAME_COUNT = 60;   // frames do scrub, pré-extraídos do master completo a partir de 4s (WebP 1080p)
     var phase = 'intro';    // intro | loop | scrub | fallback
@@ -525,16 +524,14 @@ document.documentElement.classList.add('js');
       if (typeof dive.requestVideoFrameCallback === 'function') {
         function onIntroFrame(now, metadata) {
           if (phase !== 'intro' || !diveDisplayArmed) return;
-          if (metadata.mediaTime >= REVEAL_AT) revealHero();
-          if (metadata.mediaTime >= INTRO_END) { switchToLoop(); return; }
+          if (metadata.mediaTime >= REVEAL_AT) { revealHero(); return; }
           dive.requestVideoFrameCallback(onIntroFrame);
         }
         dive.requestVideoFrameCallback(onIntroFrame);
       } else {
         function checkIntroTime() {
           if (phase !== 'intro' || !diveDisplayArmed) return;
-          if (dive.currentTime >= REVEAL_AT) revealHero();
-          if (dive.currentTime >= INTRO_END) { switchToLoop(); return; }
+          if (dive.currentTime >= REVEAL_AT) { revealHero(); return; }
           requestAnimationFrame(checkIntroTime);
         }
         requestAnimationFrame(checkIntroTime);
@@ -737,7 +734,8 @@ document.documentElement.classList.add('js');
     }
 
     // Handoff direto dive→loop: o decoder já foi aquecido antes da intro.
-    // Em 4s, inicia o loop no frame 0 e só corta após esse frame ser pintado.
+    // Quando a intro termina, inicia o loop no frame 0 e só corta após esse
+    // primeiro frame ser pintado. O último frame da intro permanece visível.
     var loopStarted = false, switching = false;
     var loopFrameReady = false;
     function commitLoopHandoff() {
@@ -780,13 +778,12 @@ document.documentElement.classList.add('js');
       commitLoopHandoff();
     }
 
-    // FASE 1 → 2: monitora o tempo do dive durante a intro
+    // A entrada do conteúdo segue a timeline; o handoff aguarda o fim real.
     dive.addEventListener('timeupdate', function () {
       if (phase !== 'intro') return;
       if (dive.currentTime >= REVEAL_AT) revealHero();
-      if (dive.currentTime >= INTRO_END) switchToLoop();
     });
-    // Se o dive terminar sozinho (chega ao fim antes do corte), troca também.
+    // Corte seco: ended → loop@0, sem fade e sem relógio fixo.
     dive.addEventListener('ended', switchToLoop);
 
     // Inicia a fase 1 somente depois que intro + loop estiverem integralmente
