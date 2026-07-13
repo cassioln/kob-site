@@ -549,7 +549,7 @@ document.documentElement.classList.add('js');
 
     dive.addEventListener('loadedmetadata', function () { heroBg.dataset.videoReady = 'true'; });
 
-    // Faz o download completo dos MP4 selecionados antes de iniciar a intro.
+    // Faz o download completo dos vídeos selecionados antes de iniciar a intro.
     // O vídeo passa a ler de um Blob local, sem disputar frames com a rede.
     var heroVideoObjectUrls = [];
     function selectedVideoSource(video) {
@@ -589,26 +589,36 @@ document.documentElement.classList.add('js');
       video.load();
       return waitUntilPlayable(video);
     }
+    function videoDeliveryLabel(url) {
+      return /\.webm(?:[?#]|$)/i.test(url) ? 'local-webm' : 'local-mp4';
+    }
+    function attachNativeVideo(video, url) {
+      video.src = url;
+      video.preload = 'auto';
+      video.dataset.delivery = videoDeliveryLabel(url);
+      video.load();
+      return waitUntilPlayable(video);
+    }
     function preloadVideoAsset(video) {
       var source = selectedVideoSource(video);
       if (!source) return Promise.reject(new Error('no matching video source'));
       var primaryUrl = source.getAttribute('src');
       var fallbackUrl = source.getAttribute('data-fallback-src');
       // fetch(file://) é bloqueado por CORS. Em preview aberto diretamente do
-      // disco, o próprio <video> carrega a source local da Locaweb.
+      // disco, o próprio <video> carrega a source local selecionada.
       if (window.location.protocol === 'file:') {
-        video.src = fallbackUrl || primaryUrl;
-        video.preload = 'auto';
-        video.dataset.delivery = 'locaweb';
-        video.load();
-        return waitUntilPlayable(video);
+        return attachNativeVideo(video, primaryUrl)
+          .catch(function (primaryError) {
+            if (!fallbackUrl || fallbackUrl === primaryUrl) throw primaryError;
+            return attachNativeVideo(video, fallbackUrl);
+          });
       }
       return fetchVideoBlob(primaryUrl)
-        .then(function (blob) { return attachVideoBlob(video, blob, 'jsdelivr'); })
+        .then(function (blob) { return attachVideoBlob(video, blob, videoDeliveryLabel(primaryUrl)); })
         .catch(function (primaryError) {
           if (!fallbackUrl || fallbackUrl === primaryUrl) throw primaryError;
           return fetchVideoBlob(fallbackUrl)
-            .then(function (blob) { return attachVideoBlob(video, blob, 'locaweb'); });
+            .then(function (blob) { return attachVideoBlob(video, blob, videoDeliveryLabel(fallbackUrl)); });
         });
     }
     function warmVideoDecoder(video) {
