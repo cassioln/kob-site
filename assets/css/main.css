@@ -770,26 +770,24 @@ h4 {
 .hero__cta {
   opacity: 1;
   transform: none;
-  transition: opacity 560ms var(--ease-quart), transform 680ms var(--ease-expo);
+  transition: transform 680ms var(--ease-expo), filter 680ms var(--ease-quart);
 }
 
 .hero__logo {
   transform-origin: 50% 55%;
-  transition-property: opacity, transform;
-  transition-duration: 560ms, 760ms;
+  transition-duration: 760ms;
 }
 
 html.js .hero:not([data-intro="done"]) .hero__logo {
-  opacity: 0;
-  transform: translate3d(18px, 10px, 0) scale(0.965);
+  transform: translate3d(12px, 6px, 0) scale(0.965);
+  filter: drop-shadow(rgba(7, 28, 53, 0.55) 0px 12px 40px) saturate(0.88) brightness(0.92);
 }
 
 html.js .hero:not([data-intro="done"]) h1,
 html.js .hero:not([data-intro="done"]) .hero__sub,
 html.js .hero:not([data-intro="done"]) .hero__meta,
 html.js .hero:not([data-intro="done"]) .hero__cta {
-  opacity: 0;
-  transform: translate3d(0, 16px, 0);
+  transform: translate3d(0, 10px, 0);
 }
 
 .hero[data-intro="done"] .hero__logo {
@@ -812,11 +810,6 @@ html.js .hero:not([data-intro="done"]) .hero__cta {
   transition-delay: 260ms;
 }
 
-html.js .hero:not([data-intro="done"]) .hero__scroll {
-  opacity: 0;
-  transform: translate(-50%, 10px);
-}
-
 @media (prefers-reduced-motion: reduce) {
   .hero__bg::after,
   .hero__video,
@@ -837,6 +830,7 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
   html.js .hero:not([data-intro="done"]) .hero__cta {
     opacity: 1;
     transform: none;
+    filter: none;
   }
 }
 
