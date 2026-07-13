@@ -733,6 +733,21 @@ h4 {
   opacity: 1;
 }
 
+html.js .hero__inner {
+  transform-origin: 50% 45%;
+  animation: hero-inner-arrival 900ms var(--ease-expo) both;
+}
+
+@keyframes hero-inner-arrival {
+  from {
+    transform: translate3d(0, 8px, 0) scale(0.996);
+  }
+
+  to {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
 .hero__content {
   grid-area: content;
   width: 100%;
@@ -818,6 +833,11 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html.js .hero__inner {
+    animation: none;
+    transform: none;
+  }
+
   .hero__bg::after,
   .hero__video,
   .hero__canvas,
