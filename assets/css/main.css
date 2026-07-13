@@ -557,10 +557,6 @@ h4 {
   color: var(--foam-white) !important;
 }
 
-.hero__scroll {
-  color: rgba(255, 255, 255, 0.7) !important;
-}
-
 .hero .eyebrow {
   color: var(--purple-glow) !important;
 }
@@ -955,33 +951,51 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
   left: 50%;
   transform: translateX(-50%);
   z-index: 2;
-  color: var(--ink-faint);
-  font-size: 0.75rem;
-  letter-spacing: 0.14em;
+  color: var(--sunset-gold);
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  line-height: 1;
+  text-shadow: 0 2px 10px rgba(4, 29, 58, 0.82);
   text-transform: uppercase;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
   opacity: 1;
   transition: opacity 480ms var(--ease-quart), transform 560ms var(--ease-expo);
+}
+
+.hero__scroll::before {
+  content: "";
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--ocean-cyan);
+  box-shadow: -38px 0 0 rgba(255, 255, 255, 0.5), 38px 0 0 rgba(255, 255, 255, 0.5), 0 0 10px rgba(41, 195, 245, 0.8);
+  transform: translateY(5px);
 }
 
 .hero__scroll span {
   position: relative;
   overflow: hidden;
-  width: 1px;
-  height: 38px;
-  background-image: linear-gradient(rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.08));
+  width: 2px;
+  height: 40px;
+  background: linear-gradient(to bottom, rgba(41, 195, 245, 0.72), rgba(255, 255, 255, 0.4) 58%, transparent);
 }
 
 .hero__scroll span::after {
   content: "";
   position: absolute;
-  inset: 0 0 auto;
-  height: 42%;
-  background: var(--ocean-cyan);
-  box-shadow: 0 0 10px rgba(41, 195, 245, 0.75);
+  top: 0;
+  left: 50%;
+  width: 4px;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--sunset-gold);
+  box-shadow: 0 0 8px rgba(255, 192, 82, 0.9);
+  transform: translate(-50%, -120%);
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -992,11 +1006,11 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
 
 @keyframes hero-scroll-pulse {
   from {
-    transform: translateY(-110%);
+    transform: translate(-50%, -120%);
   }
 
   to {
-    transform: translateY(340%);
+    transform: translate(-50%, 460%);
   }
 }
 
