@@ -656,8 +656,13 @@ h4 {
   opacity: 0;
 }
 
+.hero__bg[data-scrub-origin="fallback"] .hero__canvas {
+  transition-duration: 900ms;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .hero__fallback {
+  .hero__fallback,
+  .hero__bg[data-scrub-origin="fallback"] .hero__canvas {
     transition: none;
   }
 }

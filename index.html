@@ -77,7 +77,7 @@
   <!-- Fontes da marca (banner KOB): Gobold Extra2 = display, Chantal = acento manuscrito -->
   <link rel="preload" href="assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
 
-  <link rel="stylesheet" href="assets/css/main.css?v=20260713-hero-handoff">
+  <link rel="stylesheet" href="assets/css/main.css?v=20260713-hero-fallback-scroll">
 </head>
 
 <body>
@@ -153,9 +153,9 @@
             media="(min-width: 1921px)">
           <source src="assets/videos/hero-intro.webm?v=webm-local-v1"
             data-fallback-src="assets/videos/hero-intro.mp4?v=20260712-crf25-trim48" type="video/webm"
-            media="(min-width: 768px) and (max-width: 1920px)">
+            media="(max-width: 1920px)">
           <source src="assets/videos/hero-intro.mp4?v=20260712-crf25-trim48" type="video/mp4"
-            media="(min-width: 768px) and (max-width: 1920px)">
+            media="(max-width: 1920px)">
         </video>
         <video class="hero__video" id="heroLoop" muted="" playsinline="" loop="" preload="none" aria-hidden="true">
           <source src="assets/videos/hero-loop-1440.webm?v=webm-local-v1"
@@ -165,12 +165,12 @@
             media="(min-width: 1921px)">
           <source src="assets/videos/hero-loop.webm?v=webm-local-v1"
             data-fallback-src="assets/videos/hero-loop.mp4?v=20260712-crf25-trim48" type="video/webm"
-            media="(min-width: 768px) and (max-width: 1920px)">
+            media="(max-width: 1920px)">
           <source src="assets/videos/hero-loop.mp4?v=20260712-crf25-trim48" type="video/mp4"
-            media="(min-width: 768px) and (max-width: 1920px)">
+            media="(max-width: 1920px)">
         </video>
         <canvas class="hero__canvas" id="heroCanvas" width="1280" height="720" aria-hidden="true"></canvas>
-        <img class="hero__fallback" src="assets/images/hero/hero-fallback.webp?v=20260713-boardgame-ocean" alt="" width="1920" height="1080">
+        <img class="hero__fallback" src="assets/images/hero/hero-fallback.webp?v=20260713-ocean-sky" alt="" width="1920" height="1080">
       </div>
       <div class="container hero__inner">
         <img class="hero__logo" src="assets/images/brand/kriativos-on-board-4-edicao.png"
@@ -546,6 +546,7 @@
     <section class="ship-video" aria-label="Tour em vídeo pelo MSC Música">
       <video class="ship-video__media" muted="" loop="" playsinline="" preload="none"
         data-poster="assets/images/ship/msc-musica-life-on-board.webp">
+        <source data-src="assets/videos/msc-musica-tour.webm" type="video/webm">
         <source data-src="assets/videos/msc-musica-tour.mp4" type="video/mp4">
       </video>
       <div class="ship-video__veil"></div>
@@ -2544,7 +2545,7 @@
     </svg>
   </a>
 
-  <script src="assets/js/main.js?v=20260713-hero-webm-local"></script>
+  <script src="assets/js/main.js?v=20260713-ship-video-webm-fallback"></script>
 
 
 

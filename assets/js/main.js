@@ -459,8 +459,8 @@ document.documentElement.classList.add('js');
   }
 
   // Hero com vídeo de fundo em 3 fases:
-  //  1) assets/videos/hero-intro.mp4 autoplay 0→4s (vídeo)
-  //  2) aos 4s, corte direto para assets/videos/hero-loop.mp4 já renderizado
+  //  1) hero-intro WebM/MP4 autoplay 0→4s
+  //  2) aos 4s, corte direto para hero-loop já renderizado
   //  3) scroll na 1ª dobra faz scrubbing por SEQUÊNCIA DE FRAMES em <canvas>
   //     (evita o stutter de seek em <video>; frames = trecho 5s→fim do hero-intro)
   var heroBg = document.getElementById('heroBg');
@@ -468,10 +468,10 @@ document.documentElement.classList.add('js');
   var loop = document.getElementById('heroLoop');
   var canvas = document.getElementById('heroCanvas');
   if (heroBg && dive && loop && canvas) {
-    var INTRO_END = 4;      // fim da fase 1 / dive: frame que melhor casa com o loop@0
     var REVEAL_AT = 3;      // inicia a entrada do hero__inner após 3s reais de playback
     var FRAME_COUNT = 60;   // frames do scrub, pré-extraídos do master completo a partir de 4s (WebP 1080p)
-    var phase = 'intro';    // intro | loop | scrub
+    var phase = 'intro';    // intro | loop | scrub | fallback
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     var ctx = canvas.getContext('2d');
     if (ctx) { ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high'; }
     var frames = [];
@@ -502,6 +502,21 @@ document.documentElement.classList.add('js');
       });
     }
 
+    // Um único caminho terminal cobre falha inicial, autoplay e erro pós-live.
+    function activateStaticFallback() {
+      phase = 'fallback';
+      heroBg.dataset.videoBuffer = 'static';
+      heroBg.dataset.scrubOrigin = 'fallback';
+      delete heroBg.dataset.mediaLive;
+      delete heroBg.dataset.handoff;
+      diveDisplayArmed = false;
+      loopDisplayArmed = false;
+      dive.pause(); loop.pause();
+      hide(dive); hide(loop); hide(canvas);
+      revealHeroAfterPaint();
+      syncPendingScrub();
+    }
+
     var revealTracking = false;
     function trackIntroTimeline() {
       if (revealTracking) return;
@@ -509,16 +524,14 @@ document.documentElement.classList.add('js');
       if (typeof dive.requestVideoFrameCallback === 'function') {
         function onIntroFrame(now, metadata) {
           if (phase !== 'intro' || !diveDisplayArmed) return;
-          if (metadata.mediaTime >= REVEAL_AT) revealHero();
-          if (metadata.mediaTime >= INTRO_END) { switchToLoop(); return; }
+          if (metadata.mediaTime >= REVEAL_AT) { revealHero(); return; }
           dive.requestVideoFrameCallback(onIntroFrame);
         }
         dive.requestVideoFrameCallback(onIntroFrame);
       } else {
         function checkIntroTime() {
           if (phase !== 'intro' || !diveDisplayArmed) return;
-          if (dive.currentTime >= REVEAL_AT) revealHero();
-          if (dive.currentTime >= INTRO_END) { switchToLoop(); return; }
+          if (dive.currentTime >= REVEAL_AT) { revealHero(); return; }
           requestAnimationFrame(checkIntroTime);
         }
         requestAnimationFrame(checkIntroTime);
@@ -682,6 +695,14 @@ document.documentElement.classList.add('js');
     // rolar o hero. Não os baixa por timer: são 60 requests / ~3,7 MB fora do
     // caminho crítico.
     var framesStarted = false;
+    var frameSyncRaf = null;
+    function syncPendingScrub() {
+      if (phase === 'scrub' || frameSyncRaf || window.scrollY <= 0) return;
+      frameSyncRaf = requestAnimationFrame(function () {
+        frameSyncRaf = null;
+        onScroll();
+      });
+    }
     function loadFrames() {
       if (framesStarted) return;
       framesStarted = true;
@@ -689,7 +710,10 @@ document.documentElement.classList.add('js');
         var img = new Image();
         img.decoding = 'async';
         img.fetchPriority = 'low';
-        img.onload = function () { framesLoaded++; };
+        img.onload = function () {
+          framesLoaded++;
+          syncPendingScrub();
+        };
         img.src = 'assets/hero-frames/frame-' + String(i).padStart(3, '0') + '.webp';
         frames.push(img);
       }
@@ -710,24 +734,41 @@ document.documentElement.classList.add('js');
     }
 
     // Handoff direto dive→loop: o decoder já foi aquecido antes da intro.
-    // Em 4s, inicia o loop no frame 0 e só corta após esse frame ser pintado.
+    // Quando a intro termina, inicia o loop no frame 0 e só corta após esse
+    // primeiro frame ser composto sob a intro. O último frame segue visível.
     var loopStarted = false, switching = false;
-    var loopFrameReady = false;
-    function commitLoopHandoff() {
-      if (!switching || !loopFrameReady || loop.paused) return;
+    var loopFrameReady = false, loopSwapQueued = false;
+    function finishLoopHandoff() {
+      if (phase !== 'intro' || !switching || !loopSwapQueued) {
+        delete heroBg.dataset.handoff;
+        return;
+      }
       phase = 'loop';
-      heroBg.dataset.handoff = 'direct';
-      show(loop); hide(dive); hide(canvas);
+      hide(dive);
       revealHero();
+      var resume = loop.play();
+      if (resume && resume.catch) resume.catch(activateStaticFallback);
       requestAnimationFrame(function () {
         dive.pause();
         try { dive.currentTime = 0; } catch (e) { }
         requestAnimationFrame(function () { delete heroBg.dataset.handoff; });
       });
     }
+    function primeLoopHandoff() {
+      if (phase !== 'intro' || !switching || !loopFrameReady || loopSwapQueued) return;
+      loopSwapQueued = true;
+      heroBg.dataset.handoff = 'direct';
+      show(loop); hide(canvas);
+      // rVFC confirma decode, mas alguns compositores só apresentam a camada
+      // no paint seguinte. Dois rAFs garantem um paint completo sob a intro.
+      requestAnimationFrame(function () {
+        requestAnimationFrame(finishLoopHandoff);
+      });
+    }
     function markLoopFrameReady() {
+      loop.pause();
       loopFrameReady = true;
-      commitLoopHandoff();
+      primeLoopHandoff();
     }
     function watchLoopFirstFrame() {
       if (loopFrameReady) return;
@@ -743,23 +784,22 @@ document.documentElement.classList.add('js');
       try { loop.currentTime = 0; } catch (e) { }
       loopDisplayArmed = true;
       var p = loop.play();
-      if (p && p.then) p.then(watchLoopFirstFrame).catch(function () { });
+      if (p && p.then) p.then(watchLoopFirstFrame).catch(activateStaticFallback);
       else loop.addEventListener('playing', watchLoopFirstFrame, { once: true });
     }
     function switchToLoop() {
       if (switching || phase !== 'intro') return;
       switching = true;
       startLoopAtHandoff();
-      commitLoopHandoff();
+      primeLoopHandoff();
     }
 
-    // FASE 1 → 2: monitora o tempo do dive durante a intro
+    // A entrada do conteúdo segue a timeline; o handoff aguarda o fim real.
     dive.addEventListener('timeupdate', function () {
       if (phase !== 'intro') return;
       if (dive.currentTime >= REVEAL_AT) revealHero();
-      if (dive.currentTime >= INTRO_END) switchToLoop();
     });
-    // Se o dive terminar sozinho (chega ao fim antes do corte), troca também.
+    // Corte seco: ended → loop@0, sem fade e sem relógio fixo.
     dive.addEventListener('ended', switchToLoop);
 
     // Inicia a fase 1 somente depois que intro + loop estiverem integralmente
@@ -769,11 +809,9 @@ document.documentElement.classList.add('js');
       hide(dive); hide(loop); hide(canvas);
 
       var connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-      var shouldStayStatic = window.matchMedia('(max-width: 767px)').matches || (connection && connection.saveData);
+      var shouldStayStatic = reduceMotion.matches || (connection && connection.saveData);
       if (shouldStayStatic || !selectedVideoSource(dive) || !selectedVideoSource(loop)) {
-        phase = 'fallback';
-        heroBg.dataset.videoBuffer = 'static';
-        revealHeroAfterPaint();
+        activateStaticFallback();
         return;
       }
 
@@ -785,18 +823,13 @@ document.documentElement.classList.add('js');
             warmVideoDecoder(dive)
               .then(function () { return warmVideoDecoder(loop); })
               .then(function () {
+                if (phase !== 'intro') return;
                 heroBg.dataset.videoBuffer = 'ready';
                 diveDisplayArmed = true;
                 try { dive.currentTime = 0; } catch (e) { }
                 trackIntroTimeline();
                 var p = dive.play();
-                if (p && p.catch) p.catch(function () {
-                  diveDisplayArmed = false;
-                  phase = 'fallback';
-                  heroBg.dataset.videoBuffer = 'static';
-                  hide(dive); hide(loop); hide(canvas);
-                  revealHeroAfterPaint();
-                });
+                if (p && p.catch) p.catch(activateStaticFallback);
               });
           }
           if (document.hidden) {
@@ -809,18 +842,15 @@ document.documentElement.classList.add('js');
             playIntro();
           }
         })
-        .catch(function () {
-          phase = 'fallback';
-          heroBg.dataset.videoBuffer = 'static';
-          hide(dive); hide(loop); hide(canvas);
-          revealHeroAfterPaint();
-        });
+        .catch(activateStaticFallback);
     })();
 
-    // Em falha real, mantém o fallback e revela o conteúdo sem depender do vídeo.
-    dive.addEventListener('error', revealHeroAfterPaint);
+    // Falha depois de frames visíveis também restaura o fallback estático.
+    dive.addEventListener('error', activateStaticFallback);
+    loop.addEventListener('error', activateStaticFallback);
 
     // FASE 3: scrubbing por frames sincronizado ao scroll
+    var scrubReturnPhase = 'loop';
     function tick() {
       if (currentFrame !== targetFrame) {
         // aproxima suavemente o frame exibido do frame alvo (easing)
@@ -831,9 +861,7 @@ document.documentElement.classList.add('js');
       } else { raf = null; }
     }
     function onScroll() {
-      // No mobile o frame estático é a experiência intencional: preserva a
-      // composição do hero sem disputar banda com o conteúdo de conversão.
-      if (window.matchMedia('(max-width: 767px)').matches) return;
+      if (reduceMotion.matches) return;
       loadFrames();
       var hero = document.querySelector('.hero');
       var rect = hero.getBoundingClientRect();
@@ -841,9 +869,15 @@ document.documentElement.classList.add('js');
       var scrolled = Math.min(Math.max(-rect.top / total, 0), 1);
       if (scrolled <= 0.02) {
         if (phase === 'scrub') {
-          phase = 'loop';
-          show(loop); hide(dive); hide(canvas);
-          var lp = loop.play(); if (lp && lp.catch) lp.catch(function () { });
+          phase = scrubReturnPhase;
+          hide(canvas); hide(dive);
+          if (phase === 'fallback') {
+            hide(loop);
+          } else {
+            delete heroBg.dataset.scrubOrigin;
+            show(loop);
+            var lp = loop.play(); if (lp && lp.catch) lp.catch(activateStaticFallback);
+          }
         }
         return;
       }
@@ -856,9 +890,16 @@ document.documentElement.classList.add('js');
         // Scroll antes dos 3s interrompe a timeline; revela o conteúdo para
         // não deixá-lo oculto caso a pessoa retorne ao topo.
         revealHero();
+        scrubReturnPhase = phase === 'fallback' || heroBg.dataset.mediaLive !== 'true' ? 'fallback' : 'loop';
+        if (scrubReturnPhase === 'fallback') {
+          heroBg.dataset.videoBuffer = 'static';
+          heroBg.dataset.scrubOrigin = 'fallback';
+          delete heroBg.dataset.mediaLive;
+        }
         phase = 'scrub';
         loop.pause(); dive.pause();
-        if (currentFrame < 0) { drawFrame(0); }
+        if (currentFrame < 0) drawFrame(targetFrame);
+        if (currentFrame < 0) return;
         show(canvas); hide(loop); hide(dive);
       }
       if (!raf) raf = requestAnimationFrame(tick);
@@ -883,11 +924,11 @@ document.documentElement.classList.add('js');
 
   // O tour fica várias dobras abaixo do hero. `autoplay` no HTML fazia o
   // navegador transferir ~8 MB imediatamente mesmo com preload="none".
-  // Hidrata poster + source apenas quando a seção se aproxima da viewport.
+  // Hidrata poster + sources apenas quando a seção se aproxima da viewport.
   (function lazyShipBackgroundVideo() {
     var video = document.querySelector('.ship-video__media');
     if (!video) return;
-    var source = video.querySelector('source[data-src]');
+    var sources = Array.prototype.slice.call(video.querySelectorAll('source[data-src]'));
     var hydrated = false;
     var inView = false;
 
@@ -895,7 +936,9 @@ document.documentElement.classList.add('js');
       if (hydrated) return;
       hydrated = true;
       if (video.dataset.poster) video.poster = video.dataset.poster;
-      if (source && source.dataset.src) source.src = source.dataset.src;
+      sources.forEach(function (source) {
+        if (source.dataset.src) source.src = source.dataset.src;
+      });
       video.load();
     }
 
