@@ -924,11 +924,11 @@ document.documentElement.classList.add('js');
 
   // O tour fica várias dobras abaixo do hero. `autoplay` no HTML fazia o
   // navegador transferir ~8 MB imediatamente mesmo com preload="none".
-  // Hidrata poster + source apenas quando a seção se aproxima da viewport.
+  // Hidrata poster + sources apenas quando a seção se aproxima da viewport.
   (function lazyShipBackgroundVideo() {
     var video = document.querySelector('.ship-video__media');
     if (!video) return;
-    var source = video.querySelector('source[data-src]');
+    var sources = Array.prototype.slice.call(video.querySelectorAll('source[data-src]'));
     var hydrated = false;
     var inView = false;
 
@@ -936,7 +936,9 @@ document.documentElement.classList.add('js');
       if (hydrated) return;
       hydrated = true;
       if (video.dataset.poster) video.poster = video.dataset.poster;
-      if (source && source.dataset.src) source.src = source.dataset.src;
+      sources.forEach(function (source) {
+        if (source.dataset.src) source.src = source.dataset.src;
+      });
       video.load();
     }
 
