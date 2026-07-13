@@ -9,3 +9,6 @@ bkp/
 
 # Sistema
 .DS_Store
+
+# Loop finder
+loop_finder/*
