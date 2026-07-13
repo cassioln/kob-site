@@ -573,28 +573,42 @@ document.documentElement.classList.add('js');
         video.addEventListener('error', failed, { once: true });
       });
     }
-    function preloadVideoAsset(video) {
-      var source = selectedVideoSource(video);
-      if (!source) return Promise.reject(new Error('no matching video source'));
-      // fetch(file://) é bloqueado por CORS. Em preview aberto diretamente do
-      // disco, o próprio <video> pode carregar a source local com segurança.
-      if (window.location.protocol === 'file:') {
-        video.preload = 'auto';
-        video.load();
-        return waitUntilPlayable(video);
-      }
-      return fetch(source.getAttribute('src'), { cache: 'force-cache' })
+    function fetchVideoBlob(url) {
+      return fetch(url, { cache: 'force-cache' })
         .then(function (response) {
           if (!response.ok) throw new Error('video download failed: ' + response.status);
           return response.blob();
-        })
-        .then(function (blob) {
-          var objectUrl = URL.createObjectURL(blob);
-          heroVideoObjectUrls.push(objectUrl);
-          video.preload = 'auto';
-          video.src = objectUrl;
-          video.load();
-          return waitUntilPlayable(video);
+        });
+    }
+    function attachVideoBlob(video, blob, delivery) {
+      var objectUrl = URL.createObjectURL(blob);
+      heroVideoObjectUrls.push(objectUrl);
+      video.src = objectUrl;
+      video.preload = 'auto';
+      video.dataset.delivery = delivery;
+      video.load();
+      return waitUntilPlayable(video);
+    }
+    function preloadVideoAsset(video) {
+      var source = selectedVideoSource(video);
+      if (!source) return Promise.reject(new Error('no matching video source'));
+      var primaryUrl = source.getAttribute('src');
+      var fallbackUrl = source.getAttribute('data-fallback-src');
+      // fetch(file://) é bloqueado por CORS. Em preview aberto diretamente do
+      // disco, o próprio <video> carrega a source local da Locaweb.
+      if (window.location.protocol === 'file:') {
+        video.src = fallbackUrl || primaryUrl;
+        video.preload = 'auto';
+        video.dataset.delivery = 'locaweb';
+        video.load();
+        return waitUntilPlayable(video);
+      }
+      return fetchVideoBlob(primaryUrl)
+        .then(function (blob) { return attachVideoBlob(video, blob, 'jsdelivr'); })
+        .catch(function (primaryError) {
+          if (!fallbackUrl || fallbackUrl === primaryUrl) throw primaryError;
+          return fetchVideoBlob(fallbackUrl)
+            .then(function (blob) { return attachVideoBlob(video, blob, 'locaweb'); });
         });
     }
     function warmVideoDecoder(video) {

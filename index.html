@@ -145,13 +145,21 @@
     <!-- HERO -->
     <section class="hero" aria-labelledby="hero-title">
       <div class="hero__bg" id="heroBg">
-        <video class="hero__video" id="heroDive" muted="" playsinline="" preload="auto" aria-hidden="true">
-          <source src="assets/videos/hero-intro-1440.mp4?v=20260712-crf25-trim48" type="video/mp4" media="(min-width: 1921px)">
-          <source src="assets/videos/hero-intro.mp4?v=20260712-crf25-trim48" type="video/mp4" media="(min-width: 768px) and (max-width: 1920px)">
+        <video class="hero__video" id="heroDive" muted="" playsinline="" preload="none" aria-hidden="true">
+          <source src="https://cdn.jsdelivr.net/gh/cassioln/kob-site-media@v1.0.0/videos/hero-intro-1440.mp4"
+            data-fallback-src="assets/videos/hero-intro-1440.mp4?v=20260712-crf25-trim48" type="video/mp4"
+            media="(min-width: 1921px)">
+          <source src="https://cdn.jsdelivr.net/gh/cassioln/kob-site-media@v1.0.0/videos/hero-intro.mp4"
+            data-fallback-src="assets/videos/hero-intro.mp4?v=20260712-crf25-trim48" type="video/mp4"
+            media="(min-width: 768px) and (max-width: 1920px)">
         </video>
         <video class="hero__video" id="heroLoop" muted="" playsinline="" loop="" preload="none" aria-hidden="true">
-          <source src="assets/videos/hero-loop-1440.mp4?v=20260712-crf25-trim48" type="video/mp4" media="(min-width: 1921px)">
-          <source src="assets/videos/hero-loop.mp4?v=20260712-crf25-trim48" type="video/mp4" media="(min-width: 768px) and (max-width: 1920px)">
+          <source src="https://cdn.jsdelivr.net/gh/cassioln/kob-site-media@v1.0.0/videos/hero-loop-1440.mp4"
+            data-fallback-src="assets/videos/hero-loop-1440.mp4?v=20260712-crf25-trim48" type="video/mp4"
+            media="(min-width: 1921px)">
+          <source src="https://cdn.jsdelivr.net/gh/cassioln/kob-site-media@v1.0.0/videos/hero-loop.mp4"
+            data-fallback-src="assets/videos/hero-loop.mp4?v=20260712-crf25-trim48" type="video/mp4"
+            media="(min-width: 768px) and (max-width: 1920px)">
         </video>
         <canvas class="hero__canvas" id="heroCanvas" width="1280" height="720" aria-hidden="true"></canvas>
         <img class="hero__fallback" src="assets/images/hero/hero-fallback.webp?v=20260713-boardgame-ocean" alt="" width="1920" height="1080">
@@ -2528,7 +2536,7 @@
     </svg>
   </a>
 
-  <script src="assets/js/main.js?v=20260713-hero-handoff"></script>
+  <script src="assets/js/main.js?v=20260713-hero-cdn"></script>
 
 
 
