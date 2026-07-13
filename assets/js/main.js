@@ -471,7 +471,7 @@ document.documentElement.classList.add('js');
     var INTRO_END = 4;      // fim da fase 1 / dive: frame que melhor casa com o loop@0
     var REVEAL_AT = 3;      // inicia a entrada do hero__inner após 3s reais de playback
     var FRAME_COUNT = 60;   // frames do scrub, pré-extraídos do master completo a partir de 4s (WebP 1080p)
-    var phase = 'intro';    // intro | loop | scrub
+    var phase = 'intro';    // intro | loop | scrub | fallback
     var ctx = canvas.getContext('2d');
     if (ctx) { ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high'; }
     var frames = [];
@@ -500,6 +500,21 @@ document.documentElement.classList.add('js');
       requestAnimationFrame(function () {
         setTimeout(revealHero, 40);
       });
+    }
+
+    // Um único caminho terminal cobre falha inicial, autoplay e erro pós-live.
+    function activateStaticFallback() {
+      phase = 'fallback';
+      heroBg.dataset.videoBuffer = 'static';
+      heroBg.dataset.scrubOrigin = 'fallback';
+      delete heroBg.dataset.mediaLive;
+      delete heroBg.dataset.handoff;
+      diveDisplayArmed = false;
+      loopDisplayArmed = false;
+      dive.pause(); loop.pause();
+      hide(dive); hide(loop); hide(canvas);
+      revealHeroAfterPaint();
+      syncFallbackScrub();
     }
 
     var revealTracking = false;
@@ -682,6 +697,14 @@ document.documentElement.classList.add('js');
     // rolar o hero. Não os baixa por timer: são 60 requests / ~3,7 MB fora do
     // caminho crítico.
     var framesStarted = false;
+    var fallbackFrameRaf = null;
+    function syncFallbackScrub() {
+      if (phase !== 'fallback' || fallbackFrameRaf || window.scrollY <= 0) return;
+      fallbackFrameRaf = requestAnimationFrame(function () {
+        fallbackFrameRaf = null;
+        onScroll();
+      });
+    }
     function loadFrames() {
       if (framesStarted) return;
       framesStarted = true;
@@ -689,7 +712,10 @@ document.documentElement.classList.add('js');
         var img = new Image();
         img.decoding = 'async';
         img.fetchPriority = 'low';
-        img.onload = function () { framesLoaded++; };
+        img.onload = function () {
+          framesLoaded++;
+          syncFallbackScrub();
+        };
         img.src = 'assets/hero-frames/frame-' + String(i).padStart(3, '0') + '.webp';
         frames.push(img);
       }
@@ -714,7 +740,7 @@ document.documentElement.classList.add('js');
     var loopStarted = false, switching = false;
     var loopFrameReady = false;
     function commitLoopHandoff() {
-      if (!switching || !loopFrameReady || loop.paused) return;
+      if (phase !== 'intro' || !switching || !loopFrameReady || loop.paused) return;
       phase = 'loop';
       heroBg.dataset.handoff = 'direct';
       show(loop); hide(dive); hide(canvas);
@@ -743,7 +769,7 @@ document.documentElement.classList.add('js');
       try { loop.currentTime = 0; } catch (e) { }
       loopDisplayArmed = true;
       var p = loop.play();
-      if (p && p.then) p.then(watchLoopFirstFrame).catch(function () { });
+      if (p && p.then) p.then(watchLoopFirstFrame).catch(activateStaticFallback);
       else loop.addEventListener('playing', watchLoopFirstFrame, { once: true });
     }
     function switchToLoop() {
@@ -771,9 +797,7 @@ document.documentElement.classList.add('js');
       var connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
       var shouldStayStatic = window.matchMedia('(max-width: 767px)').matches || (connection && connection.saveData);
       if (shouldStayStatic || !selectedVideoSource(dive) || !selectedVideoSource(loop)) {
-        phase = 'fallback';
-        heroBg.dataset.videoBuffer = 'static';
-        revealHeroAfterPaint();
+        activateStaticFallback();
         return;
       }
 
@@ -785,18 +809,13 @@ document.documentElement.classList.add('js');
             warmVideoDecoder(dive)
               .then(function () { return warmVideoDecoder(loop); })
               .then(function () {
+                if (phase !== 'intro') return;
                 heroBg.dataset.videoBuffer = 'ready';
                 diveDisplayArmed = true;
                 try { dive.currentTime = 0; } catch (e) { }
                 trackIntroTimeline();
                 var p = dive.play();
-                if (p && p.catch) p.catch(function () {
-                  diveDisplayArmed = false;
-                  phase = 'fallback';
-                  heroBg.dataset.videoBuffer = 'static';
-                  hide(dive); hide(loop); hide(canvas);
-                  revealHeroAfterPaint();
-                });
+                if (p && p.catch) p.catch(activateStaticFallback);
               });
           }
           if (document.hidden) {
@@ -809,18 +828,15 @@ document.documentElement.classList.add('js');
             playIntro();
           }
         })
-        .catch(function () {
-          phase = 'fallback';
-          heroBg.dataset.videoBuffer = 'static';
-          hide(dive); hide(loop); hide(canvas);
-          revealHeroAfterPaint();
-        });
+        .catch(activateStaticFallback);
     })();
 
-    // Em falha real, mantém o fallback e revela o conteúdo sem depender do vídeo.
-    dive.addEventListener('error', revealHeroAfterPaint);
+    // Falha depois de frames visíveis também restaura o fallback estático.
+    dive.addEventListener('error', activateStaticFallback);
+    loop.addEventListener('error', activateStaticFallback);
 
     // FASE 3: scrubbing por frames sincronizado ao scroll
+    var scrubReturnPhase = 'loop';
     function tick() {
       if (currentFrame !== targetFrame) {
         // aproxima suavemente o frame exibido do frame alvo (easing)
@@ -841,9 +857,15 @@ document.documentElement.classList.add('js');
       var scrolled = Math.min(Math.max(-rect.top / total, 0), 1);
       if (scrolled <= 0.02) {
         if (phase === 'scrub') {
-          phase = 'loop';
-          show(loop); hide(dive); hide(canvas);
-          var lp = loop.play(); if (lp && lp.catch) lp.catch(function () { });
+          phase = scrubReturnPhase;
+          hide(canvas); hide(dive);
+          if (phase === 'fallback') {
+            hide(loop);
+          } else {
+            delete heroBg.dataset.scrubOrigin;
+            show(loop);
+            var lp = loop.play(); if (lp && lp.catch) lp.catch(activateStaticFallback);
+          }
         }
         return;
       }
@@ -856,9 +878,16 @@ document.documentElement.classList.add('js');
         // Scroll antes dos 3s interrompe a timeline; revela o conteúdo para
         // não deixá-lo oculto caso a pessoa retorne ao topo.
         revealHero();
+        scrubReturnPhase = phase === 'fallback' || heroBg.dataset.mediaLive !== 'true' ? 'fallback' : 'loop';
+        if (scrubReturnPhase === 'fallback') {
+          heroBg.dataset.videoBuffer = 'static';
+          heroBg.dataset.scrubOrigin = 'fallback';
+          delete heroBg.dataset.mediaLive;
+        }
         phase = 'scrub';
         loop.pause(); dive.pause();
-        if (currentFrame < 0) { drawFrame(0); }
+        if (currentFrame < 0) drawFrame(targetFrame);
+        if (currentFrame < 0) return;
         show(canvas); hide(loop); hide(dive);
       }
       if (!raf) raf = requestAnimationFrame(tick);
