@@ -1,8 +1,16 @@
 <!doctype html>
 <!-- impeccable-disable numbered-section-markers, overused-font, single-font -- datas e contadores reais; Montserrat só no corpo, com Gobold e Chantal na identidade da marca -->
-<html lang="pt-BR">
+<html lang="pt-BR" class="no-js">
 
 <head>
+  <script>document.documentElement.classList.replace('no-js', 'js');</script>
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-TK5L6TJF');</script>
+  <!-- End Google Tag Manager -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Kriativos On Board 2026 — O cruzeiro de jogos de tabuleiro do Brasil</title>
@@ -69,10 +77,14 @@
   <!-- Fontes da marca (banner KOB): Gobold Extra2 = display, Chantal = acento manuscrito -->
   <link rel="preload" href="assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
 
-  <link rel="stylesheet" href="assets/css/main.css?v=20260712-impeccable">
+  <link rel="stylesheet" href="assets/css/main.css?v=20260712-hero-motion">
 </head>
 
 <body>
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TK5L6TJF"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
   <a class="skip-link" href="#main">Pular para o conteúdo</a>
 
   <!-- NAV -->
@@ -134,12 +146,12 @@
     <section class="hero" aria-labelledby="hero-title">
       <div class="hero__bg" id="heroBg">
         <video class="hero__video" id="heroDive" muted="" playsinline="" preload="auto" aria-hidden="true">
-          <source src="assets/videos/hero-intro-1440.mp4" type="video/mp4" media="(min-width: 1280px)">
-          <source src="assets/videos/hero-intro.mp4" type="video/mp4">
+          <source src="assets/videos/hero-intro-1440.mp4" type="video/mp4" media="(min-width: 1921px)">
+          <source src="assets/videos/hero-intro.mp4" type="video/mp4" media="(min-width: 768px) and (max-width: 1920px)">
         </video>
         <video class="hero__video" id="heroLoop" muted="" playsinline="" loop="" preload="none" aria-hidden="true">
-          <source src="assets/videos/hero-loop-1440.mp4" type="video/mp4" media="(min-width: 1280px)">
-          <source src="assets/videos/hero-loop.mp4" type="video/mp4">
+          <source src="assets/videos/hero-loop-1440.mp4" type="video/mp4" media="(min-width: 1921px)">
+          <source src="assets/videos/hero-loop.mp4" type="video/mp4" media="(min-width: 768px) and (max-width: 1920px)">
         </video>
         <canvas class="hero__canvas" id="heroCanvas" width="1280" height="720" aria-hidden="true"></canvas>
         <img class="hero__fallback" src="assets/hero-frames/frame-001.webp"
@@ -148,7 +160,7 @@
       </div>
       <div class="container hero__inner">
         <img class="hero__logo" src="assets/images/brand/kriativos-on-board-4-edicao.png"
-          alt="Kriativos On Board — 4ª edição" width="842" height="596">
+          alt="Kriativos On Board — 4ª edição" width="842" height="596" fetchpriority="high">
         <div class="hero__content">
           <h1 id="hero-title">O maior cruzeiro de <span class="accent">jogos de tabuleiro</span> do Brasil
           </h1>
@@ -518,9 +530,9 @@
 
     <!-- VÍDEO DO NAVIO -->
     <section class="ship-video" aria-label="Tour em vídeo pelo MSC Música">
-      <video class="ship-video__media" autoplay="" muted="" loop="" playsinline="" preload="none"
-        poster="assets/images/ship/msc-musica-life-on-board.webp">
-        <source src="assets/videos/msc-musica-tour.mp4" type="video/mp4">
+      <video class="ship-video__media" muted="" loop="" playsinline="" preload="none"
+        data-poster="assets/images/ship/msc-musica-life-on-board.webp">
+        <source data-src="assets/videos/msc-musica-tour.mp4" type="video/mp4">
       </video>
       <div class="ship-video__veil"></div>
       <button class="ship-video__play" id="shipVideoPlay" type="button" aria-haspopup="dialog"
@@ -2518,7 +2530,7 @@
     </svg>
   </a>
 
-  <script src="assets/js/main.js?v=20260712-gallery-thumbs"></script>
+  <script src="assets/js/main.js?v=20260712-hero-motion"></script>
 
 
 

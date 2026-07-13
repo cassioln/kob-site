@@ -616,6 +616,7 @@ h4 {
 .hero__video,
 .hero__canvas {
   opacity: 0;
+  transition: opacity 480ms var(--ease-quart);
 }
 
 .hero__video#heroDive {
@@ -733,11 +734,72 @@ h4 {
 .hero__cta {
   opacity: 1;
   transform: none;
+  transition: opacity 560ms var(--ease-quart), transform 680ms var(--ease-expo);
+}
+
+.hero__logo {
+  transform-origin: 50% 55%;
+  transition-property: transform;
+  transition-duration: 760ms;
+}
+
+html.js .hero:not([data-intro="done"]) .hero__logo {
+  transform: translate3d(18px, 10px, 0) scale(0.965);
+}
+
+html.js .hero:not([data-intro="done"]) h1,
+html.js .hero:not([data-intro="done"]) .hero__sub,
+html.js .hero:not([data-intro="done"]) .hero__meta,
+html.js .hero:not([data-intro="done"]) .hero__cta {
+  opacity: 0;
+  transform: translate3d(0, 16px, 0);
+}
+
+.hero[data-intro="done"] .hero__logo {
+  transition-delay: 40ms;
+}
+
+.hero[data-intro="done"] h1 {
+  transition-delay: 80ms;
+}
+
+.hero[data-intro="done"] .hero__sub {
+  transition-delay: 140ms;
+}
+
+.hero[data-intro="done"] .hero__meta {
+  transition-delay: 200ms;
+}
+
+.hero[data-intro="done"] .hero__cta {
+  transition-delay: 260ms;
+}
+
+html.js .hero:not([data-intro="done"]) .hero__scroll {
+  opacity: 0;
+  transform: translate(-50%, 10px);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero__bg::after {
+  .hero__bg::after,
+  .hero__video,
+  .hero__canvas,
+  .hero__logo,
+  .hero h1,
+  .hero__sub,
+  .hero__meta,
+  .hero__cta,
+  .hero__scroll {
     transition: none;
+  }
+
+  html.js .hero:not([data-intro="done"]) .hero__logo,
+  html.js .hero:not([data-intro="done"]) h1,
+  html.js .hero:not([data-intro="done"]) .hero__sub,
+  html.js .hero:not([data-intro="done"]) .hero__meta,
+  html.js .hero:not([data-intro="done"]) .hero__cta {
+    opacity: 1;
+    transform: none;
   }
 }
 
@@ -860,6 +922,8 @@ h4 {
   flex-direction: column;
   align-items: center;
   gap: 8px;
+  opacity: 1;
+  transition: opacity 480ms var(--ease-quart), transform 560ms var(--ease-expo);
 }
 
 .hero__scroll span {

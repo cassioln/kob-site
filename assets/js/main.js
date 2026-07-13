@@ -468,8 +468,9 @@ document.documentElement.classList.add('js');
   var loop = document.getElementById('heroLoop');
   var canvas = document.getElementById('heroCanvas');
   if (heroBg && dive && loop && canvas) {
-    var INTRO_END = 4;   // fim da fase 1 / dive: frame que melhor casa com o loop@0
-    var LOOP_PREROLL = 3;  // inicia o loop (escondido) antes, p/ já estar pintando na troca
+    var INTRO_END = 4;      // fim da fase 1 / dive: frame que melhor casa com o loop@0
+    var LOOP_PRELOAD = 2.6; // aquece a rede sem manter dois decoders ativos
+    var LOOP_PREROLL = 3.7; // só 300ms de vídeo escondido antes da troca
     var REVEAL_AT = 2.8;      // revela conteúdo+logo do hero (independente do dive)
     var FRAME_COUNT = 60;   // frames do scrub, extraídos do trecho 4s→fim do hero-intro.mp4 (WebP 1080p)
     var phase = 'intro';    // intro | loop | scrub
@@ -489,6 +490,18 @@ document.documentElement.classList.add('js');
       if (heroSection && heroSection.dataset.intro !== 'done') {
         heroSection.dataset.intro = 'done';
       }
+    }
+    var revealScheduled = false;
+    function revealHeroAfterPaint() {
+      if (revealScheduled || (heroSection && heroSection.dataset.intro === 'done')) return;
+      revealScheduled = true;
+      // Materializa o estado inicial também quando não há source de vídeo
+      // (mobile), para que o navegador tenha dois estados para interpolar.
+      var motionAnchor = heroSection && heroSection.querySelector('h1');
+      if (motionAnchor) motionAnchor.getBoundingClientRect();
+      requestAnimationFrame(function () {
+        setTimeout(revealHero, 40);
+      });
     }
 
     // Mantém o buffer do canvas igual ao tamanho REAL exibido na tela
@@ -515,13 +528,107 @@ document.documentElement.classList.add('js');
 
     dive.addEventListener('loadedmetadata', function () { heroBg.dataset.videoReady = 'true'; });
 
-    // Esconde o fallback só quando um vídeo realmente começa a exibir frames
-    // (evento 'playing'), fazendo crossfade suave em vez de corte seco.
-    function markMediaLive() { heroBg.dataset.mediaLive = 'true'; }
-    dive.addEventListener('playing', markMediaLive);
-    loop.addEventListener('playing', markMediaLive);
+    // Faz o download completo dos MP4 selecionados antes de iniciar a intro.
+    // O vídeo passa a ler de um Blob local, sem disputar frames com a rede.
+    var heroVideoObjectUrls = [];
+    function selectedVideoSource(video) {
+      var sources = Array.prototype.slice.call(video.querySelectorAll('source'));
+      return sources.find(function (source) {
+        var mediaMatches = !source.media || window.matchMedia(source.media).matches;
+        var typeMatches = !source.type || video.canPlayType(source.type) !== '';
+        return mediaMatches && typeMatches;
+      });
+    }
+    function waitUntilPlayable(video) {
+      return new Promise(function (resolve, reject) {
+        function cleanup() {
+          video.removeEventListener('canplaythrough', done);
+          video.removeEventListener('error', failed);
+        }
+        function done() { cleanup(); resolve(); }
+        function failed() { cleanup(); reject(new Error('video decode failed')); }
+        if (video.readyState >= 4) { resolve(); return; }
+        video.addEventListener('canplaythrough', done, { once: true });
+        video.addEventListener('error', failed, { once: true });
+      });
+    }
+    function preloadVideoAsset(video) {
+      var source = selectedVideoSource(video);
+      if (!source) return Promise.reject(new Error('no matching video source'));
+      return fetch(source.getAttribute('src'), { cache: 'force-cache' })
+        .then(function (response) {
+          if (!response.ok) throw new Error('video download failed: ' + response.status);
+          return response.blob();
+        })
+        .then(function (blob) {
+          var objectUrl = URL.createObjectURL(blob);
+          heroVideoObjectUrls.push(objectUrl);
+          video.preload = 'auto';
+          video.src = objectUrl;
+          video.load();
+          return waitUntilPlayable(video);
+        });
+    }
+    function warmVideoDecoder(video) {
+      return new Promise(function (resolve) {
+        var finished = false;
+        var fallbackTimer;
+        function finish() {
+          if (finished) return;
+          finished = true;
+          clearTimeout(fallbackTimer);
+          video.pause();
+          try { video.currentTime = 0; } catch (e) { }
+          requestAnimationFrame(resolve);
+        }
+        var p = video.play();
+        if (p && p.catch) p.catch(finish);
+        if (typeof video.requestVideoFrameCallback === 'function') {
+          var paintedFrames = 0;
+          function onFrame() {
+            paintedFrames++;
+            if (paintedFrames >= 3) finish();
+            else video.requestVideoFrameCallback(onFrame);
+          }
+          video.requestVideoFrameCallback(onFrame);
+        } else {
+          setTimeout(finish, 180);
+        }
+        fallbackTimer = setTimeout(finish, 600);
+      });
+    }
+    window.addEventListener('pagehide', function () {
+      heroVideoObjectUrls.forEach(function (url) { URL.revokeObjectURL(url); });
+    }, { once: true });
 
-    // Adia o carregamento dos 60 frames do canvas para liberar banda de rede para os vídeos
+    // Esconde o fallback só quando um vídeo realmente começa a exibir frames.
+    var diveDisplayArmed = false;
+    var loopDisplayArmed = false;
+    var diveVisibleCommitted = false;
+    function markMediaLive() { heroBg.dataset.mediaLive = 'true'; }
+    dive.addEventListener('playing', function () {
+      if (!diveDisplayArmed || diveVisibleCommitted) return;
+      function commitDiveVisibility() {
+        if (!diveDisplayArmed || diveVisibleCommitted) return;
+        diveVisibleCommitted = true;
+        show(dive);
+        markMediaLive();
+      }
+      if (typeof dive.requestVideoFrameCallback === 'function') {
+        dive.requestVideoFrameCallback(function () {
+          dive.requestVideoFrameCallback(commitDiveVisibility);
+        });
+      } else {
+        requestAnimationFrame(commitDiveVisibility);
+      }
+    });
+    loop.addEventListener('playing', function () {
+      if (loopDisplayArmed) markMediaLive();
+    });
+
+    // Os frames do canvas só são necessários depois que a pessoa começa a
+    // rolar o hero. Não os baixa por timer: são 60 requests / ~3,7 MB fora do
+    // caminho crítico.
     var framesStarted = false;
     function loadFrames() {
       if (framesStarted) return;
@@ -529,15 +636,12 @@ document.documentElement.classList.add('js');
       for (var i = 1; i <= FRAME_COUNT; i++) {
         var img = new Image();
         img.decoding = 'async';
+        img.fetchPriority = 'low';
         img.onload = function () { framesLoaded++; };
         img.src = 'assets/hero-frames/frame-' + String(i).padStart(3, '0') + '.webp';
         frames.push(img);
       }
     }
-    // Carrega em segundo plano após um delay confortável de 1.8 segundos,
-    // garantindo que o vídeo de entrada já tenha buffer suficiente
-    setTimeout(loadFrames, 1800);
-
     // Desenha um frame no canvas com lógica "cover"
     function drawFrame(n) {
       n = Math.max(0, Math.min(FRAME_COUNT - 1, n));
@@ -557,11 +661,17 @@ document.documentElement.classList.add('js');
     // 1) faz pré-roll do loop (tocando, porém invisível) antes do corte;
     // 2) no corte, revela o loop (que já está pintando frames, por cima do
     //    dive) e só ENTÃO esconde o dive — crossfade sem gap/fundo à mostra.
-    var loopPrerolled = false, switching = false;
+    var loopPrepared = false, loopPrerolled = false, switching = false;
+    function prepareLoop() {
+      if (loopPrepared) return;
+      loopPrepared = true;
+    }
     function startLoopPreroll() {
       if (loopPrerolled) return;
       loopPrerolled = true;
+      prepareLoop();
       try { loop.currentTime = 0; } catch (e) { }
+      loopDisplayArmed = true;
       var p = loop.play(); if (p && p.catch) p.catch(function () { });
     }
     function switchToLoop() {
@@ -569,11 +679,9 @@ document.documentElement.classList.add('js');
       switching = true;
       phase = 'loop';
       startLoopPreroll();
-      // Alinha o loop ao frame casado (loop@0 ≈ dive@INTRO_END) no instante da
-      // troca; o pré-roll serviu para o decoder já estar "quente".
-      try { loop.currentTime = 0; } catch (e) { }
-      // O loop já está tocando por baixo (pré-roll). Revela-o e faz o DIVE
-      // (que está por cima) desaparecer em crossfade de 700ms — cruza suave,
+      // O loop já está tocando por baixo (pré-roll), sem um segundo seek que
+      // invalidaria o decoder aquecido. Revela-o e faz o DIVE
+      // (que está por cima) desaparecer em crossfade de 480ms — cruza suave,
       // sem gap nem piscada, disfarçando a diferença de posição dos objetos.
       show(loop);
       revealHero();
@@ -583,7 +691,7 @@ document.documentElement.classList.add('js');
         setTimeout(function () {
           dive.pause();
           try { dive.currentTime = 0; } catch (e) { }
-        }, 750);
+        }, 520);
       }
       // Espera o loop estar realmente pintando antes de cruzar (evita ver o
       // loop preto/vazio por baixo do dive sumindo).
@@ -599,28 +707,71 @@ document.documentElement.classList.add('js');
     dive.addEventListener('timeupdate', function () {
       if (phase !== 'intro') return;
       if (dive.currentTime >= REVEAL_AT) revealHero();
+      if (dive.currentTime >= LOOP_PRELOAD) prepareLoop();
       if (dive.currentTime >= LOOP_PREROLL) startLoopPreroll();
       if (dive.currentTime >= INTRO_END) switchToLoop();
     });
     // Se o dive terminar sozinho (chega ao fim antes do corte), troca também.
     dive.addEventListener('ended', switchToLoop);
 
-    // Inicia a fase 1 (autoplay). Se o navegador bloquear, cai direto no loop.
+    // Inicia a fase 1 somente depois que intro + loop estiverem integralmente
+    // disponíveis como Blob local. Assim a experiência nunca começa para
+    // depois parar esperando rede.
     (function startIntro() {
-      show(dive); hide(loop); hide(canvas);
-      var p = dive.play();
-      if (p && p.catch) p.catch(function () {
-        phase = 'loop';
-        show(loop); hide(dive); hide(canvas);
-        var lp = loop.play(); if (lp && lp.catch) lp.catch(function () { });
-        revealHero();
-      });
+      hide(dive); hide(loop); hide(canvas);
+      // A entrada do conteúdo começa após o primeiro paint, sem esperar o
+      // vídeo chegar a 2,8s. O logo permanece visível para não atrasar o LCP.
+      revealHeroAfterPaint();
+
+      var connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+      var shouldStayStatic = window.matchMedia('(max-width: 767px)').matches || (connection && connection.saveData);
+      if (shouldStayStatic || !selectedVideoSource(dive) || !selectedVideoSource(loop)) {
+        phase = 'fallback';
+        heroBg.dataset.videoBuffer = 'static';
+        return;
+      }
+
+      heroBg.dataset.videoBuffer = 'loading';
+      Promise.all([preloadVideoAsset(dive), preloadVideoAsset(loop)])
+        .then(function () {
+          function playIntro() {
+            heroBg.dataset.videoBuffer = 'warming';
+            warmVideoDecoder(dive)
+              .then(function () { return warmVideoDecoder(loop); })
+              .then(function () {
+                heroBg.dataset.videoBuffer = 'ready';
+                diveDisplayArmed = true;
+                try { dive.currentTime = 0; } catch (e) { }
+                var p = dive.play();
+                if (p && p.catch) p.catch(function () {
+                  diveDisplayArmed = false;
+                  phase = 'fallback';
+                  heroBg.dataset.videoBuffer = 'static';
+                  hide(dive); hide(loop); hide(canvas);
+                });
+              });
+          }
+          if (document.hidden) {
+            document.addEventListener('visibilitychange', function onVisible() {
+              if (document.hidden) return;
+              document.removeEventListener('visibilitychange', onVisible);
+              playIntro();
+            });
+          } else {
+            playIntro();
+          }
+        })
+        .catch(function () {
+          phase = 'fallback';
+          heroBg.dataset.videoBuffer = 'static';
+          hide(dive); hide(loop); hide(canvas);
+        });
     })();
 
     // Rede de segurança: se o dive falhar/travar ou nunca terminar, revela
     // o hero mesmo assim para não deixar o conteúdo escondido.
-    dive.addEventListener('error', revealHero);
-    dive.addEventListener('stalled', revealHero);
+    dive.addEventListener('error', revealHeroAfterPaint);
+    dive.addEventListener('stalled', revealHeroAfterPaint);
     setTimeout(revealHero, REVEAL_AT * 1000);
     setTimeout(revealHero, (INTRO_END + 2.5) * 1000);
 
@@ -635,6 +786,9 @@ document.documentElement.classList.add('js');
       } else { raf = null; }
     }
     function onScroll() {
+      // No mobile o frame estático é a experiência intencional: preserva a
+      // composição do hero sem disputar banda com o conteúdo de conversão.
+      if (window.matchMedia('(max-width: 767px)').matches) return;
       loadFrames();
       // Se o usuário rolar antes do fim da intro (~2.8s), revela já o
       // conteúdo do hero em vez de esperar o timer — evita ver a 2ª dobra
@@ -652,13 +806,17 @@ document.documentElement.classList.add('js');
         }
         return;
       }
+      targetFrame = Math.round(scrolled * (FRAME_COUNT - 1));
+      var nextFrame = frames[targetFrame];
+      // Mantém a mídia atual até haver um frame válido para desenhar. Isso
+      // evita trocar para um canvas transparente no primeiro gesto de scroll.
+      if (!nextFrame || !nextFrame.complete || !nextFrame.naturalWidth) return;
       if (phase !== 'scrub') {
         phase = 'scrub';
         loop.pause(); dive.pause();
         if (currentFrame < 0) { drawFrame(0); }
         show(canvas); hide(loop); hide(dive);
       }
-      targetFrame = Math.round(scrolled * (FRAME_COUNT - 1));
       if (!raf) raf = requestAnimationFrame(tick);
     }
     window.addEventListener('scroll', onScroll, { passive: true });
@@ -674,6 +832,50 @@ document.documentElement.classList.add('js');
   (function heroSafety() {
     var h = document.querySelector('.hero');
     if (h) setTimeout(function () { if (h.dataset.intro !== 'done') h.dataset.intro = 'done'; }, 7000);
+  })();
+
+  // O tour fica várias dobras abaixo do hero. `autoplay` no HTML fazia o
+  // navegador transferir ~8 MB imediatamente mesmo com preload="none".
+  // Hidrata poster + source apenas quando a seção se aproxima da viewport.
+  (function lazyShipBackgroundVideo() {
+    var video = document.querySelector('.ship-video__media');
+    if (!video) return;
+    var source = video.querySelector('source[data-src]');
+    var hydrated = false;
+    var inView = false;
+
+    function hydrate() {
+      if (hydrated) return;
+      hydrated = true;
+      if (video.dataset.poster) video.poster = video.dataset.poster;
+      if (source && source.dataset.src) source.src = source.dataset.src;
+      video.load();
+    }
+
+    function play() {
+      hydrate();
+      var promise = video.play();
+      if (promise && promise.catch) promise.catch(function () { });
+    }
+
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          inView = entry.isIntersecting;
+          if (inView) play();
+          else if (hydrated) video.pause();
+        });
+      }, { rootMargin: '320px 0px', threshold: 0.01 }).observe(video);
+    } else {
+      inView = true;
+      play();
+    }
+
+    document.addEventListener('visibilitychange', function () {
+      if (!hydrated) return;
+      if (document.hidden || !inView) video.pause();
+      else play();
+    });
   })();
 
   // ---------- Abas de valores (cabines | bebidas) ----------
