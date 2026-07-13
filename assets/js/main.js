@@ -485,6 +485,7 @@ document.documentElement.classList.add('js');
     // Revela overlay + conteúdo do hero quando o loop começa (fim da intro).
     // Idempotente: pode ser chamada mais de uma vez sem efeito colateral.
     var heroSection = document.querySelector('.hero');
+    var heroScrollCue = heroSection && heroSection.querySelector('.hero__scroll');
     function revealHero() {
       if (heroSection && heroSection.dataset.intro !== 'done') {
         heroSection.dataset.intro = 'done';
@@ -874,12 +875,16 @@ document.documentElement.classList.add('js');
       } else { raf = null; }
     }
     function onScroll() {
-      if (reduceMotion.matches) return;
-      loadFrames();
-      var hero = document.querySelector('.hero');
+      var hero = heroSection || document.querySelector('.hero');
       var rect = hero.getBoundingClientRect();
       var total = rect.height || window.innerHeight;
       var scrolled = Math.min(Math.max(-rect.top / total, 0), 1);
+      if (heroScrollCue) {
+        var cueProgress = Math.min(scrolled / 0.16, 1);
+        heroScrollCue.style.setProperty('--hero-scroll-progress', cueProgress.toFixed(3));
+      }
+      if (reduceMotion.matches) return;
+      loadFrames();
       if (scrolled <= 0.02) {
         if (phase === 'scrub') {
           phase = scrubReturnPhase;
