@@ -472,7 +472,7 @@ document.documentElement.classList.add('js');
     var LOOP_PRELOAD = 2.6; // aquece a rede sem manter dois decoders ativos
     var LOOP_PREROLL = 3.7; // só 300ms de vídeo escondido antes da troca
     var REVEAL_AT = 2.8;      // revela conteúdo+logo do hero (independente do dive)
-    var FRAME_COUNT = 60;   // frames do scrub, extraídos do trecho 4s→fim do hero-intro.mp4 (WebP 1080p)
+    var FRAME_COUNT = 60;   // frames do scrub, pré-extraídos do master completo a partir de 4s (WebP 1080p)
     var phase = 'intro';    // intro | loop | scrub
     var ctx = canvas.getContext('2d');
     if (ctx) { ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high'; }
