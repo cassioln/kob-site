@@ -555,6 +555,13 @@ document.documentElement.classList.add('js');
     function preloadVideoAsset(video) {
       var source = selectedVideoSource(video);
       if (!source) return Promise.reject(new Error('no matching video source'));
+      // fetch(file://) é bloqueado por CORS. Em preview aberto diretamente do
+      // disco, o próprio <video> pode carregar a source local com segurança.
+      if (window.location.protocol === 'file:') {
+        video.preload = 'auto';
+        video.load();
+        return waitUntilPlayable(video);
+      }
       return fetch(source.getAttribute('src'), { cache: 'force-cache' })
         .then(function (response) {
           if (!response.ok) throw new Error('video download failed: ' + response.status);
