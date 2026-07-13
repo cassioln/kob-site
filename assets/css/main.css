@@ -658,6 +658,7 @@ h4 {
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   .hero__fallback,
   .hero__bg[data-scrub-origin="fallback"] .hero__canvas {
     transition: none;
@@ -700,14 +701,12 @@ h4 {
   transform: translate(-50%, -50%);
   pointer-events: none;
   opacity: 0.72;
-  background: linear-gradient(
-    135deg,
-    rgba(6, 50, 88, 0) 0%,
-    rgba(6, 50, 88, 0) 68%,
-    rgba(6, 50, 88, 0.14) 76%,
-    rgba(6, 50, 88, 0.52) 88%,
-    rgba(6, 50, 88, 0.86) 100%
-  );
+  background: linear-gradient(135deg,
+      rgba(6, 50, 88, 0) 0%,
+      rgba(6, 50, 88, 0) 68%,
+      rgba(6, 50, 88, 0.14) 76%,
+      rgba(6, 50, 88, 0.52) 88%,
+      rgba(6, 50, 88, 0.86) 100%);
   transition: opacity 480ms var(--ease-quart);
 }
 
@@ -731,6 +730,21 @@ h4 {
   align-items: center;
   gap: clamp(32px, 6vw, 88px);
   opacity: 1;
+}
+
+html.js .hero__inner {
+  transform-origin: 50% 45%;
+  animation: hero-inner-arrival 900ms var(--ease-expo) both;
+}
+
+@keyframes hero-inner-arrival {
+  from {
+    transform: translate3d(0, 8px, 0) scale(0.996);
+  }
+
+  to {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
 }
 
 .hero__content {
@@ -818,6 +832,12 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
 }
 
 @media (prefers-reduced-motion: reduce) {
+
+  html.js .hero__inner {
+    animation: none;
+    transform: none;
+  }
+
   .hero__bg::after,
   .hero__video,
   .hero__canvas,
@@ -3901,10 +3921,7 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
   margin-top: auto;
   margin-bottom: 10px;
   background: none;
-  border-width: 0px 0px 1px;
-  border-style: none none solid;
-  border-color: currentcolor currentcolor transparent;
-  border-image: initial;
+  border-color: transparent;
   padding: 4px 0px;
   align-self: center;
   font-family: var(--font-body);
@@ -3912,14 +3929,13 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--action-ink);
+  color: var(--ocean-blue);
   cursor: pointer;
   transition: color var(--dur-fast) var(--ease-quart), border-color var(--dur-fast) var(--ease-quart);
 }
 
 .price-card__details:hover {
   color: var(--action-hover);
-  border-bottom-color: currentcolor;
 }
 
 .price-card__details:focus-visible {
@@ -7393,7 +7409,7 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
 .ksio-powered-line {
   flex: 0 0 auto;
   color: color-mix(in oklab, var(--foam-white) 52%, var(--ocean-cyan));
-  font-size: 0.78rem;
+  font-size: 1rem;
   letter-spacing: 0.035em;
   text-align: right;
 }
@@ -7403,6 +7419,7 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
   min-height: 44px;
   align-items: center;
   color: var(--ocean-cyan);
+  font-size: 1.2rem;
   font-weight: 700;
   text-decoration: none;
   transition: color var(--dur-state) var(--ease-quart);

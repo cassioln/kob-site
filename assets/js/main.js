@@ -2028,6 +2028,7 @@ document.documentElement.classList.add('js');
     var navLinks = Array.prototype.slice.call(document.querySelectorAll('[data-faq-nav]'));
     if (!navLinks.length) return;
     var faq = document.querySelector('.faq');
+    var faqNav = document.querySelector('.faq__nav');
     var search = document.getElementById('faq-search');
     var searchStatus = document.getElementById('faq-search-status');
     var panels = navLinks
@@ -2036,18 +2037,41 @@ document.documentElement.classList.add('js');
     if (!panels.length) return;
 
     var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var mobileNav = window.matchMedia('(max-width: 900px)');
+    var navSlideFrame = null;
+
+    function keepActiveVisible(link) {
+      if (!faqNav || !link || !mobileNav.matches) return;
+      if (navSlideFrame) cancelAnimationFrame(navSlideFrame);
+      navSlideFrame = requestAnimationFrame(function () {
+        navSlideFrame = null;
+        var navRect = faqNav.getBoundingClientRect();
+        var linkRect = link.getBoundingClientRect();
+        var edge = 12;
+        if (linkRect.left >= navRect.left + edge && linkRect.right <= navRect.right - edge) return;
+        var centered = faqNav.scrollLeft + linkRect.left - navRect.left - ((navRect.width - linkRect.width) / 2);
+        var max = Math.max(0, faqNav.scrollWidth - faqNav.clientWidth);
+        faqNav.scrollTo({
+          left: Math.max(0, Math.min(centered, max)),
+          behavior: reduce ? 'auto' : 'smooth'
+        });
+      });
+    }
 
     function setActive(id) {
+      var activeLink = null;
       navLinks.forEach(function (a, index) {
         var active = a.getAttribute('href') === '#' + id;
         a.classList.toggle('is-active', active);
         if (active) {
+          activeLink = a;
           a.setAttribute('aria-current', 'true');
           if (faq) faq.style.setProperty('--faq-progress', ((index / (navLinks.length - 1)) * 100) + '%');
         } else {
           a.removeAttribute('aria-current');
         }
       });
+      keepActiveVisible(activeLink);
     }
 
     function normalize(value) {
