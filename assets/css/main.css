@@ -769,17 +769,23 @@ h4 {
   transition: transform 680ms var(--ease-expo), filter 680ms var(--ease-quart);
 }
 
+/* Marca e título já compõem o primeiro paint: a entrada cinematográfica
+   acontece no fundo e no conteúdo de apoio, sem postergar o LCP. */
+.hero__logo,
+.hero h1 {
+  transition: none;
+}
+
 .hero__logo {
   transform-origin: 50% 55%;
   transition-duration: 760ms;
 }
 
 html.js .hero:not([data-intro="done"]) .hero__logo {
-  transform: translate3d(12px, 6px, 0) scale(0.965);
-  filter: drop-shadow(rgba(7, 28, 53, 0.55) 0px 12px 40px) saturate(0.88) brightness(0.92);
+  transform: none;
+  filter: drop-shadow(rgba(7, 28, 53, 0.55) 0px 12px 40px);
 }
 
-html.js .hero:not([data-intro="done"]) h1,
 html.js .hero:not([data-intro="done"]) .hero__sub,
 html.js .hero:not([data-intro="done"]) .hero__meta,
 html.js .hero:not([data-intro="done"]) .hero__cta {
@@ -2622,6 +2628,7 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
 .ship-show__dots button {
   position: relative;
   width: 100%;
+  min-height: 46px;
   aspect-ratio: 16 / 9;
   overflow: hidden;
   padding: 0;
@@ -3887,6 +3894,10 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
 }
 
 .price-card__details {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
   margin-top: auto;
   margin-bottom: 10px;
   background: none;
@@ -5195,6 +5206,9 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
 }
 
 .travel-insurance__link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   padding: 6px 2px;
   border: 0;
   background: transparent;
@@ -7530,18 +7544,44 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: rgba(0, 0, 0, 0.35) 0px 10px 30px;
-  transition: transform var(--dur-state) var(--ease-quart);
+  box-shadow: rgba(0, 0, 0, 0.3) 0px 6px 8px;
+  transition: opacity var(--dur-state) var(--ease-quart), transform var(--dur-state) var(--ease-quart), visibility 0s linear;
 }
 
 .wa-float:hover {
   transform: scale(1.08);
 }
 
+.wa-float[data-occluded="true"] {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(12px) scale(0.86);
+}
+
+.wa-float:focus-visible {
+  outline: 3px solid var(--foam-white);
+  outline-offset: 3px;
+}
+
 .wa-float svg {
   width: 32px;
   height: 32px;
   fill: rgb(255, 255, 255);
+}
+
+@media (max-width: 680px) {
+  .wa-float {
+    right: 12px;
+    bottom: max(12px, env(safe-area-inset-bottom));
+    width: 52px;
+    height: 52px;
+  }
+
+  .wa-float svg {
+    width: 28px;
+    height: 28px;
+  }
 }
 
 .reveal {
@@ -9464,7 +9504,8 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
   grid-template-columns: 22px 1fr auto;
   align-items: center;
   gap: 11px;
-  padding: 12px 14px;
+  min-height: 52px;
+  padding: 4px 14px;
   border: 1px solid rgba(255, 255, 255, 0.22);
   border-radius: var(--r-md);
   background: rgba(255, 255, 255, 0.08);
@@ -9487,6 +9528,7 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
 
 .faq-search input {
   width: 100%;
+  min-height: 44px;
   min-width: 0;
   border: 0;
   outline: 0;

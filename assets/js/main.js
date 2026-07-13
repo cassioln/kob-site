@@ -5,26 +5,32 @@ document.documentElement.classList.add('js');
   // Nav: some ao rolar dentro do hero; reaparece (com fundo) a partir da
   // seção #navio em diante — o header fica visível dela pra frente.
   var nav = document.getElementById('nav');
-  var heroEl = document.querySelector('.hero');
   var navioEl = document.getElementById('navio');
-  var onScroll = function () {
+  var navioReached = false;
+  var navScrollFrame = null;
+  function syncNavScroll() {
+    navScrollFrame = null;
     var y = window.scrollY;
-    // Gatilho: a seção #navio começa a entrar sob o header fixo.
-    // Descontamos a altura do header para ele reaparecer logo antes,
-    // sem cobrir o título da seção. Fallback: 1x altura do hero.
-    var navH = nav ? nav.offsetHeight : 0;
-    var trigger = navioEl
-      ? navioEl.offsetTop - navH
-      : (heroEl ? heroEl.offsetHeight : window.innerHeight);
-    var passedFold = y >= trigger - 1;
+    var passedFold = navioEl ? navioReached : y >= window.innerHeight;
     // A partir de #navio: header visível com fundo azul
     nav.dataset.scrolled = passedFold ? 'true' : 'false';
     // Antes de #navio e já rolando: oculta; no topo (<=20) fica visível
     nav.dataset.hidden = (!passedFold && y > 20) ? 'true' : 'false';
-  };
-  onScroll();
-  window.addEventListener('scroll', onScroll, { passive: true });
-  window.addEventListener('resize', onScroll, { passive: true });
+  }
+  function queueNavScroll() {
+    if (!navScrollFrame) navScrollFrame = requestAnimationFrame(syncNavScroll);
+  }
+  queueNavScroll();
+  window.addEventListener('scroll', queueNavScroll, { passive: true });
+  window.addEventListener('resize', queueNavScroll, { passive: true });
+  if (navioEl && 'IntersectionObserver' in window) {
+    new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        navioReached = entry.isIntersecting || entry.boundingClientRect.top < 0;
+      });
+      queueNavScroll();
+    }, { threshold: 0 }).observe(navioEl);
+  }
 
   // Drawer mobile
   var drawer = document.getElementById('drawer');
@@ -145,29 +151,43 @@ document.documentElement.classList.add('js');
     }
   }
 
-  // Lightbox navegável da galeria (usa <dialog> nativo: Escape + focus trap de graça)
+  var track = document.getElementById('gallery');
+
+  // Lightbox navegável da galeria (delegação mantém o arquivo progressivo sob demanda).
   var dialog = document.getElementById('lightbox');
-  var links = Array.prototype.slice.call(document.querySelectorAll('.gallery a'));
-  if (dialog && links.length && typeof dialog.showModal === 'function') {
+  if (dialog && track && typeof dialog.showModal === 'function') {
     var lbImg = document.getElementById('lbImg');
     var lbCap = document.getElementById('lbCap');
     var lbCounter = document.getElementById('lbCounter');
-    var items = links.map(function (a) {
-      var img = a.querySelector('img');
-      return { src: a.getAttribute('href'), alt: img ? img.getAttribute('alt') : '' };
-    });
+    var items = [];
     var current = 0;
+    function refreshLightboxItems() {
+      return Array.prototype.slice.call(track.querySelectorAll('a[data-memory]'));
+    }
     function render() {
       var it = items[current];
+      if (!it) return;
       lbImg.src = it.src;
       lbImg.alt = it.alt;
       lbCap.textContent = it.alt;
       lbCounter.textContent = (current + 1) + ' / ' + items.length;
     }
-    function open(i) { current = i; render(); if (!dialog.open) dialog.showModal(); }
+    function open(link) {
+      var links = refreshLightboxItems();
+      current = Math.max(0, links.indexOf(link));
+      items = links.map(function (anchor) {
+        var image = anchor.querySelector('img');
+        return { src: anchor.getAttribute('href'), alt: image ? image.getAttribute('alt') : '' };
+      });
+      render();
+      if (!dialog.open) dialog.showModal();
+    }
     function go(step) { current = (current + step + items.length) % items.length; render(); }
-    links.forEach(function (a, i) {
-      a.addEventListener('click', function (e) { e.preventDefault(); open(i); });
+    track.addEventListener('click', function (event) {
+      var link = event.target.closest('a[data-memory]');
+      if (!link || !track.contains(link)) return;
+      event.preventDefault();
+      open(link);
     });
     document.getElementById('lbNext').addEventListener('click', function () { go(1); });
     document.getElementById('lbPrev').addEventListener('click', function () { go(-1); });
@@ -183,7 +203,6 @@ document.documentElement.classList.add('js');
   }
 
   // Slider da galeria (setas navegam o trilho; estado das setas nas pontas)
-  var track = document.getElementById('gallery');
   var galPrev = document.getElementById('galPrev');
   var galNext = document.getElementById('galNext');
   if (track && galPrev && galNext) {
@@ -208,7 +227,9 @@ document.documentElement.classList.add('js');
   // Edição 2025: 8 destaques sorteados a cada carregamento + arquivo sob demanda.
   var galleryExpand = document.getElementById('galleryExpand');
   if (track && galleryExpand) {
-    var memories = Array.prototype.slice.call(track.querySelectorAll('[data-memory]'));
+    var galleryTemplate = document.getElementById('galleryMemories');
+    var gallerySource = galleryTemplate ? galleryTemplate.content : track;
+    var memories = Array.prototype.slice.call(gallerySource.querySelectorAll('[data-memory]'));
     var highlightCount = Math.min(parseInt(track.getAttribute('data-highlight-count'), 10) || 8, memories.length);
     var galleryExpandLabel = galleryExpand.querySelector('[data-gallery-expand-label]');
     var galleryStatus = document.getElementById('galleryStatus');
@@ -253,6 +274,7 @@ document.documentElement.classList.add('js');
         item.style.setProperty('--highlight-slot', highlightSet[idx]);
         loadMemoryImage(item);
         item.hidden = false;
+        track.appendChild(item);
         highlights.push(item);
       } else {
         item.removeAttribute('data-highlight');
@@ -263,9 +285,16 @@ document.documentElement.classList.add('js');
     });
 
     var totalLabel = 'Ver todas as ' + memories.length + ' fotografias';
+    var archiveMaterialized = false;
     galleryExpand.addEventListener('click', function () {
       var expanded = galleryExpand.getAttribute('aria-expanded') === 'true';
       var nextState = !expanded;
+      if (nextState && !archiveMaterialized) {
+        var archiveFragment = document.createDocumentFragment();
+        archive.forEach(function (item) { archiveFragment.appendChild(item); });
+        track.appendChild(archiveFragment);
+        archiveMaterialized = true;
+      }
       archive.forEach(function (item) {
         if (nextState) loadMemoryImage(item);
         item.hidden = !nextState;
@@ -486,6 +515,8 @@ document.documentElement.classList.add('js');
     // Idempotente: pode ser chamada mais de uma vez sem efeito colateral.
     var heroSection = document.querySelector('.hero');
     var heroScrollCue = heroSection && heroSection.querySelector('.hero__scroll');
+    var heroTop = 0;
+    var heroHeight = window.innerHeight;
     function revealHero() {
       if (heroSection && heroSection.dataset.intro !== 'done') {
         heroSection.dataset.intro = 'done';
@@ -495,10 +526,6 @@ document.documentElement.classList.add('js');
     function revealHeroAfterPaint() {
       if (revealScheduled || (heroSection && heroSection.dataset.intro === 'done')) return;
       revealScheduled = true;
-      // Materializa o estado inicial também quando não há source de vídeo
-      // (mobile), para que o navegador tenha dois estados para interpolar.
-      var motionAnchor = heroSection && heroSection.querySelector('h1');
-      if (motionAnchor) motionAnchor.getBoundingClientRect();
       requestAnimationFrame(function () {
         setTimeout(revealHero, 40);
       });
@@ -554,23 +581,32 @@ document.documentElement.classList.add('js');
     // Mantém o buffer do canvas igual ao tamanho REAL exibido na tela
     // (com devicePixelRatio), para o "cover" acompanhar a tela como o
     // object-fit:cover dos vídeos — sem deformar em telas estreitas/mobile.
-    function resizeCanvas() {
-      var dpr = Math.min(window.devicePixelRatio || 1, 2);
-      var w = canvas.clientWidth || heroBg.clientWidth || window.innerWidth;
-      var h = canvas.clientHeight || heroBg.clientHeight || window.innerHeight;
-      var bw = Math.max(1, Math.round(w * dpr));
-      var bh = Math.max(1, Math.round(h * dpr));
-      if (canvas.width !== bw || canvas.height !== bh) {
-        canvas.width = bw;
-        canvas.height = bh;
-        // Alterar as dimensões do canvas reseta o contexto: reaplica o
-        // smoothing de alta qualidade para o cover ficar nítido.
-        ctx.imageSmoothingEnabled = true;
-        ctx.imageSmoothingQuality = 'high';
-        var prev = currentFrame;   // redesenha o frame atual no novo tamanho
-        currentFrame = -1;
-        if (prev >= 0) drawFrame(prev);
-      }
+    var canvasResizeFrame = null;
+    var pendingCanvasSize = { width: window.innerWidth, height: window.innerHeight };
+    function resizeCanvas(size) {
+      if (size && size.width && size.height) pendingCanvasSize = size;
+      if (canvasResizeFrame) return;
+      canvasResizeFrame = requestAnimationFrame(function () {
+        canvasResizeFrame = null;
+        var nextSize = pendingCanvasSize;
+        var dpr = Math.min(window.devicePixelRatio || 1, 2);
+        var w = nextSize.width || window.innerWidth;
+        var h = nextSize.height || window.innerHeight;
+        heroHeight = h;
+        var bw = Math.max(1, Math.round(w * dpr));
+        var bh = Math.max(1, Math.round(h * dpr));
+        if (canvas.width !== bw || canvas.height !== bh) {
+          canvas.width = bw;
+          canvas.height = bh;
+          // Alterar as dimensões do canvas reseta o contexto: reaplica o
+          // smoothing de alta qualidade para o cover ficar nítido.
+          ctx.imageSmoothingEnabled = true;
+          ctx.imageSmoothingQuality = 'high';
+          var prev = currentFrame;   // redesenha o frame atual no novo tamanho
+          currentFrame = -1;
+          if (prev >= 0) drawFrame(prev);
+        }
+      });
     }
 
     dive.addEventListener('loadedmetadata', function () { heroBg.dataset.videoReady = 'true'; });
@@ -874,11 +910,10 @@ document.documentElement.classList.add('js');
         raf = requestAnimationFrame(tick);
       } else { raf = null; }
     }
-    function onScroll() {
-      var hero = heroSection || document.querySelector('.hero');
-      var rect = hero.getBoundingClientRect();
-      var total = rect.height || window.innerHeight;
-      var scrolled = Math.min(Math.max(-rect.top / total, 0), 1);
+    var heroScrollFrame = null;
+    function syncHeroScroll() {
+      heroScrollFrame = null;
+      var scrolled = Math.min(Math.max((window.scrollY - heroTop) / heroHeight, 0), 1);
       if (heroScrollCue) {
         var cueProgress = Math.min(scrolled / 0.16, 1);
         heroScrollCue.style.setProperty('--hero-scroll-progress', cueProgress.toFixed(3));
@@ -922,12 +957,25 @@ document.documentElement.classList.add('js');
       }
       if (!raf) raf = requestAnimationFrame(tick);
     }
+    function onScroll() {
+      if (!heroScrollFrame) heroScrollFrame = requestAnimationFrame(syncHeroScroll);
+    }
     window.addEventListener('scroll', onScroll, { passive: true });
 
     // Ajusta o buffer ao tamanho real e re-crop ao mudar a viewport
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas, { passive: true });
-    window.addEventListener('orientationchange', resizeCanvas);
+    function resizeCanvasFromViewport() {
+      resizeCanvas({ width: window.innerWidth, height: window.innerHeight });
+    }
+    resizeCanvasFromViewport();
+    if ('ResizeObserver' in window) {
+      new ResizeObserver(function (entries) {
+        var size = entries[0] && entries[0].contentRect;
+        if (size) resizeCanvas({ width: size.width, height: size.height });
+      }).observe(heroBg);
+    } else {
+      window.addEventListener('resize', resizeCanvasFromViewport, { passive: true });
+    }
+    window.addEventListener('orientationchange', resizeCanvasFromViewport);
   }
 
   // Fallback global: se o bloco de vídeo acima não rodar (elemento ausente),
@@ -962,6 +1010,10 @@ document.documentElement.classList.add('js');
 
     function play() {
       hydrate();
+      if (document.querySelector('dialog[open]')) {
+        video.pause();
+        return;
+      }
       var promise = video.play();
       if (promise && promise.catch) promise.catch(function () { });
     }
@@ -1503,17 +1555,22 @@ document.documentElement.classList.add('js');
     var closeBtn = document.getElementById('shipTourClose');
     var maxBtn = document.getElementById('shipTourMaximize');
     var navToggle = document.getElementById('shipTourNavToggle');
+    var bgVideo = document.querySelector('.ship-video__media');
     var lastFocus = null;
     var items = [];
     var groupEls = [];
     var current = null;
 
-    // O backup veio de um browser vivo e pode trazer a sidebar já renderizada.
-    // Sempre zera antes de montar para evitar duplicação de ambientes.
-    nav.textContent = '';
+    var navBuilt = false;
+    function buildNav() {
+      if (navBuilt) return;
+      navBuilt = true;
+      // O HTML mantém apenas um template inerte. A sidebar e as miniaturas
+      // entram no DOM somente quando a pessoa solicita o tour.
+      nav.textContent = '';
 
-    // Monta a sidebar como accordion (um grupo aberto por vez).
-    GROUPS.forEach(function (group, gi) {
+      // Monta a sidebar como accordion (um grupo aberto por vez).
+      GROUPS.forEach(function (group, gi) {
       var section = document.createElement('div');
       section.className = 'shiptour__group';
 
@@ -1547,7 +1604,7 @@ document.documentElement.classList.add('js');
         btn.className = 'shiptour__item';
         btn.setAttribute('aria-current', 'false');
         var img = document.createElement('img');
-        img.src = THUMBS + scene + '.jpg';
+        img.dataset.src = THUMBS + scene + '.jpg';
         img.alt = '';
         img.loading = 'lazy';
         img.width = 72;
@@ -1564,8 +1621,9 @@ document.documentElement.classList.add('js');
       section.appendChild(head);
       section.appendChild(panel);
       nav.appendChild(section);
-      groupEls.push({ section: section, head: head });
-    });
+        groupEls.push({ section: section, head: head, panel: panelInner });
+      });
+    }
 
     // Abre um grupo (fecha os demais). Passar open=false recolhe todos.
     function openGroup(index, open) {
@@ -1573,6 +1631,12 @@ document.documentElement.classList.add('js');
         var on = open !== false && i === index;
         g.section.classList.toggle('is-open', on);
         g.head.setAttribute('aria-expanded', on ? 'true' : 'false');
+        if (on) {
+          g.panel.querySelectorAll('img[data-src]').forEach(function (image) {
+            image.src = image.dataset.src;
+            image.removeAttribute('data-src');
+          });
+        }
       });
     }
 
@@ -1621,8 +1685,11 @@ document.documentElement.classList.add('js');
       lastFocus = document.activeElement;
       setMaximized(false);
       toggleNav(false);
+      buildNav();
+      if (!items.length) return;
       if (!current) select(items[0].scene, items[0].name);
       dialog.showModal();
+      if (bgVideo) bgVideo.pause();
     }
 
     function close() {
@@ -1647,6 +1714,13 @@ document.documentElement.classList.add('js');
       if (stage) stage.classList.remove('is-loading');
       setMaximized(false);
       toggleNav(false);
+      if (bgVideo) {
+        var bgRect = bgVideo.getBoundingClientRect();
+        if (bgRect.bottom > 0 && bgRect.top < window.innerHeight) {
+          var resume = bgVideo.play();
+          if (resume && resume.catch) resume.catch(function () { });
+        }
+      }
       if (lastFocus && typeof lastFocus.focus === 'function') lastFocus.focus();
     });
   })();
@@ -2046,6 +2120,95 @@ document.documentElement.classList.add('js');
       }, { rootMargin: '-45% 0px -50% 0px', threshold: 0 });
       panels.forEach(function (p) { spy.observe(p); });
     }
+  })();
+
+  // WhatsApp contextual: evita cobrir conteúdo denso e some quando já existe
+  // um CTA equivalente à vista. O link retorna automaticamente nas transições.
+  (function contextualWhatsapp() {
+    var floating = document.querySelector('.wa-float');
+    if (!floating || !('IntersectionObserver' in window)) return;
+    var blockers = Array.prototype.slice.call(document.querySelectorAll(
+      '#navio, #valores, #edicao2025, #faq, #reserve, footer, a[href*="api.whatsapp.com"]:not(.wa-float)'
+    ));
+    var visible = new Set();
+    function sync() {
+      var occluded = visible.size > 0;
+      floating.dataset.occluded = occluded ? 'true' : 'false';
+      floating.setAttribute('aria-hidden', occluded ? 'true' : 'false');
+      floating.tabIndex = occluded ? -1 : 0;
+    }
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) visible.add(entry.target);
+        else visible.delete(entry.target);
+      });
+      sync();
+    }, { threshold: 0.08, rootMargin: '-8% 0px -8% 0px' });
+    blockers.forEach(function (blocker) { observer.observe(blocker); });
+    sync();
+  })();
+
+  // Eventos enxutos para acompanhar a jornada longa sem adicionar biblioteca.
+  // O dataLayer funciona como fila enquanto o GTM aguarda a primeira interação.
+  (function journeyAnalytics() {
+    function push(eventName, data) {
+      window.dataLayer = window.dataLayer || [];
+      var payload = data || {};
+      payload.event = eventName;
+      window.dataLayer.push(payload);
+    }
+
+    if ('IntersectionObserver' in window) {
+      var sectionObserver = new IntersectionObserver(function (entries, observer) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          push('kob_section_view', { section_id: entry.target.id });
+          observer.unobserve(entry.target);
+        });
+      }, { threshold: 0.28 });
+      ['evento', 'navio', 'valores', 'faq', 'reserve'].forEach(function (id) {
+        var section = document.getElementById(id);
+        if (section) sectionObserver.observe(section);
+      });
+    }
+
+    document.addEventListener('click', function (event) {
+      var link = event.target.closest('a[href*="api.whatsapp.com"]');
+      if (!link) return;
+      var section = link.closest('section, header, footer, aside');
+      push('kob_whatsapp_click', {
+        placement: link.classList.contains('wa-float') ? 'floating' : (section && (section.id || section.tagName.toLowerCase())) || 'page'
+      });
+    });
+
+    var faqSearch = document.getElementById('faq-search');
+    var faqTimer = null;
+    if (faqSearch) faqSearch.addEventListener('input', function () {
+      clearTimeout(faqTimer);
+      faqTimer = setTimeout(function () {
+        if (faqSearch.value.trim().length < 2) return;
+        push('kob_faq_search', {
+          result_count: document.querySelectorAll('#faq details:not([hidden])').length
+        });
+      }, 600);
+    });
+
+    var depthMarks = [25, 50, 75, 90];
+    var depthFrame = null;
+    window.addEventListener('scroll', function () {
+      if (depthFrame) return;
+      depthFrame = requestAnimationFrame(function () {
+        depthFrame = null;
+        var max = document.documentElement.scrollHeight - window.innerHeight;
+        if (max <= 0) return;
+        var depth = Math.round((window.scrollY / max) * 100);
+        depthMarks = depthMarks.filter(function (mark) {
+          if (depth < mark) return true;
+          push('kob_scroll_depth', { percent: mark });
+          return false;
+        });
+      });
+    }, { passive: true });
   })();
 
   // Carta náutica de #hospedagem: parallax de profundidade das camadas decorativas.

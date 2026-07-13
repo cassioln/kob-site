@@ -4,12 +4,28 @@
 
 <head>
   <script>document.documentElement.classList.replace('no-js', 'js');</script>
-  <!-- Google Tag Manager -->
-  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-  })(window,document,'script','dataLayer','GTM-TK5L6TJF');</script>
+  <!-- Google Tag Manager: sai do caminho crítico e hidrata na primeira interação. -->
+  <script>
+    (function (w, d, s, l, i) {
+      w[l] = w[l] || [];
+      var loaded = false;
+      function load() {
+        if (loaded) return;
+        loaded = true;
+        w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+        var first = d.getElementsByTagName(s)[0];
+        var tag = d.createElement(s);
+        var dl = l !== 'dataLayer' ? '&l=' + l : '';
+        tag.async = true;
+        tag.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+        first.parentNode.insertBefore(tag, first);
+      }
+      ['pointerdown', 'keydown', 'touchstart', 'scroll'].forEach(function (eventName) {
+        w.addEventListener(eventName, load, { once: true, passive: true });
+      });
+      w.addEventListener('load', function () { w.setTimeout(load, 10000); }, { once: true });
+    })(window, document, 'script', 'dataLayer', 'GTM-TK5L6TJF');
+  </script>
   <!-- End Google Tag Manager -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -77,7 +93,7 @@
   <!-- Fontes da marca (banner KOB): Gobold Extra2 = display, Chantal = acento manuscrito -->
   <link rel="preload" href="assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
 
-  <link rel="stylesheet" href="assets/css/main.css?v=20260713-hero-scroll-fade">
+  <link rel="stylesheet" href="assets/css/main.css?v=20260713-audit-opt">
 </head>
 
 <body>
@@ -578,7 +594,7 @@
     <section class="section section--deep section--dark" id="incluso" aria-labelledby="incluso-title">
       <div class="container">
         <div class="incluso__intro reveal">
-          <h2 id="incluso-title">Experiência completa</h2>
+          <h2 id="incluso-title">Experiência completa</h2>
           <p class="lead">Cabine, refeições e estrutura completa do MSC Música já estão resolvidas. No KOB,
             até a sala de jogos fica aberta 24 horas.</p>
         </div>
@@ -782,7 +798,7 @@
               <div>
                 <span class="iday__date">Dom · 22 nov</span>
                 <h3 class="iday__title">Búzios · RJ</h3>
-                <p class="iday__text">Chegada à península mais charmosa do litoral fluminense — praias,
+                <p class="iday__text">Chegada à península mais charmosa do litoral fluminense: praias,
                   ruas de pedra e
                   sol antes de voltar às mesas.</p>
               </div>
@@ -816,7 +832,7 @@
         <div class="section__head reveal">
           <span class="eyebrow eyebrow--urgent">2º lote · valores por pessoa</span>
           <h2 id="valores-title">Escolha sua cabine e embarque</h2>
-          <p class="lead">Entrada + 12x no cartão — vagas abertas por tempo limitado.</p>
+          <p class="lead">Entrada + 12x no cartão. Vagas abertas por tempo limitado.</p>
         </div>
 
         <div class="value-tabs reveal" role="tablist" aria-label="Tipos de valores">
@@ -1217,6 +1233,7 @@
           <span>Ambientes</span>
         </button>
         <nav class="shiptour__nav" id="shipTourNav" aria-label="Ambientes do navio">
+          <template id="shipTourFallback">
           <div class="shiptour__group is-open"><button type="button" class="shiptour__group-head"
               aria-expanded="true"><span>Áreas comuns</span><svg class="shiptour__chevron" viewBox="0 0 24 24"
                 aria-hidden="true">
@@ -1323,6 +1340,7 @@
                     height="44"><span>Sala de yoga</span></button></div>
             </div>
           </div>
+          </template>
         </nav>
         <div class="shiptour__stage">
           <div class="shiptour__spinner" id="shipTourSpinner" aria-hidden="true">
@@ -1353,7 +1371,7 @@
         <div class="edition-2025__head reveal">
           <p class="edition-2025__signal"><span>Edição 2025</span><span>Costa Diadema</span></p>
           <h2 id="edicao2025-title">Melhores momentos do <span>KOB 2025</span></h2>
-          <p class="lead">Encontros, mesas e histórias que transformou cinco dias a bordo em memórias para o ano
+          <p class="lead">Encontros, mesas e histórias que transformaram cinco dias a bordo em memórias para o ano
             inteiro.</p>
         </div>
 
@@ -1386,6 +1404,7 @@
 
         <div class="gallery edition-constellation reveal" id="gallery" role="region" aria-label="Galeria da edição 2025"
           data-highlight-count="8">
+          <template id="galleryMemories">
           <a class="edition-memory" href="assets/images/gallery/2025/kob-2025-0372.webp"
             aria-label="Abrir foto 1 de 51 da edição 2025" data-memory="" hidden="">
             <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
@@ -1794,6 +1813,7 @@
               decoding="async">
 
           </a>
+          </template>
         </div>
         <button class="edition-expand reveal" id="galleryExpand" type="button" aria-expanded="false"
           aria-controls="gallery">
@@ -1871,7 +1891,7 @@
         <div class="voices-deck__head reveal">
           <h2 id="dep-title">Quem embarca uma vez, volta no ano seguinte</h2>
           <div class="voices-deck__intro">
-            <p class="lead">Designers internacionais, criadores de conteudo e jogadores contam por que o Kriativos On
+            <p class="lead">Designers internacionais, criadores de conteúdo e jogadores contam por que o Kriativos On
               Board
               permanece muito depois do desembarque.</p>
 
@@ -2104,7 +2124,7 @@
           <div class="faq-manual__title">
             <p class="faq-manual__script">Dúvidas Frequentes</p>
             <h2 id="faq-title">Seu manual <span>de bordo.</span></h2>
-            <p class="lead">Documentos, jogos, refeições e regras, encontre a resposta e siga para a próxima
+            <p class="lead">Encontre respostas sobre documentos, jogos, refeições e regras. Depois, siga para a próxima
               jogada.</p>
           </div>
           <label class="faq-search" for="faq-search">
@@ -2246,7 +2266,7 @@
                     bordo.</div>
                 </details>
                 <details>
-                  <summary>Existe treinamento no navio?</summary>
+                  <summary>O treinamento de segurança é obrigatório?</summary>
                   <div>Sim, é obrigatório o treinamento de segurança do navio, que também pode ser
                     feito pelo aplicativo
                     da
@@ -2504,7 +2524,7 @@
               height="1796">
           </a>
           <p>Sua próxima grande jogada começa aqui</p>
-          <span class="footer__voyage-code">Santos · Búzios · 20—23 nov 2026</span>
+          <span class="footer__voyage-code">Santos · Búzios · 20–23 nov 2026</span>
         </div>
 
         <nav class="footer__col" aria-labelledby="footer-plan-title">
@@ -2536,7 +2556,7 @@
   </footer>
 
   <!-- WHATSAPP FLUTUANTE -->
-  <a class="wa-float"
+  <a class="wa-float" data-occluded="false"
     href="https://api.whatsapp.com/send?phone=5513981580498&amp;text=Ol%C3%A1%2C%20Royal%20Trip%21%20Estou%20no%20site%20do%20Kriativos%20On%20Board%202026%20e%20preciso%20de%20ajuda%20com%20minha%20reserva."
     target="_blank" rel="noopener" aria-label="Falar no WhatsApp com a Royal Trip">
     <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -2546,7 +2566,7 @@
     </svg>
   </a>
 
-  <script src="assets/js/main.js?v=20260713-hero-scroll-fade"></script>
+  <script src="assets/js/main.js?v=20260713-audit-opt"></script>
 
 
 
