@@ -703,13 +703,20 @@ h4 {
   height: max(100%, calc(100cqw * 9 / 16));
   transform: translate(-50%, -50%);
   pointer-events: none;
-  background: radial-gradient(
-    ellipse 8% 10% at 90.625% 83.333%,
-    rgba(6, 50, 88, 0.82) 0%,
-    rgba(6, 50, 88, 0.66) 28%,
-    rgba(6, 50, 88, 0.3) 56%,
-    rgba(6, 50, 88, 0) 100%
+  opacity: 0.72;
+  background: linear-gradient(
+    135deg,
+    rgba(6, 50, 88, 0) 0%,
+    rgba(6, 50, 88, 0) 68%,
+    rgba(6, 50, 88, 0.14) 76%,
+    rgba(6, 50, 88, 0.52) 88%,
+    rgba(6, 50, 88, 0.86) 100%
   );
+  transition: opacity 480ms var(--ease-quart);
+}
+
+.hero__bg[data-watermark-shade="strong"] .hero__watermark-shade {
+  opacity: 1;
 }
 
 .hero>.container {

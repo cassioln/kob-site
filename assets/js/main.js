@@ -468,6 +468,7 @@ document.documentElement.classList.add('js');
   var loop = document.getElementById('heroLoop');
   var canvas = document.getElementById('heroCanvas');
   if (heroBg && dive && loop && canvas) {
+    var SHADE_STRONG_AT = 2; // reforça a sombra diagonal quando a marca fica mais visível
     var REVEAL_AT = 3;      // inicia a entrada do hero__inner após 3s reais de playback
     var FRAME_COUNT = 60;   // frames do scrub, pré-extraídos do master completo a partir de 4s (WebP 1080p)
     var phase = 'intro';    // intro | loop | scrub | fallback
@@ -507,6 +508,7 @@ document.documentElement.classList.add('js');
       phase = 'fallback';
       heroBg.dataset.videoBuffer = 'static';
       heroBg.dataset.scrubOrigin = 'fallback';
+      delete heroBg.dataset.watermarkShade;
       delete heroBg.dataset.mediaLive;
       delete heroBg.dataset.handoff;
       diveDisplayArmed = false;
@@ -518,20 +520,30 @@ document.documentElement.classList.add('js');
     }
 
     var revealTracking = false;
+    function updateIntroTimeline(mediaTime) {
+      if (mediaTime >= SHADE_STRONG_AT && heroBg.dataset.watermarkShade !== 'strong') {
+        heroBg.dataset.watermarkShade = 'strong';
+      }
+      if (mediaTime >= REVEAL_AT) {
+        revealHero();
+        return true;
+      }
+      return false;
+    }
     function trackIntroTimeline() {
       if (revealTracking) return;
       revealTracking = true;
       if (typeof dive.requestVideoFrameCallback === 'function') {
         function onIntroFrame(now, metadata) {
           if (phase !== 'intro' || !diveDisplayArmed) return;
-          if (metadata.mediaTime >= REVEAL_AT) { revealHero(); return; }
+          if (updateIntroTimeline(metadata.mediaTime)) return;
           dive.requestVideoFrameCallback(onIntroFrame);
         }
         dive.requestVideoFrameCallback(onIntroFrame);
       } else {
         function checkIntroTime() {
           if (phase !== 'intro' || !diveDisplayArmed) return;
-          if (dive.currentTime >= REVEAL_AT) { revealHero(); return; }
+          if (updateIntroTimeline(dive.currentTime)) return;
           requestAnimationFrame(checkIntroTime);
         }
         requestAnimationFrame(checkIntroTime);
@@ -797,7 +809,7 @@ document.documentElement.classList.add('js');
     // A entrada do conteúdo segue a timeline; o handoff aguarda o fim real.
     dive.addEventListener('timeupdate', function () {
       if (phase !== 'intro') return;
-      if (dive.currentTime >= REVEAL_AT) revealHero();
+      updateIntroTimeline(dive.currentTime);
     });
     // Corte seco: ended → loop@0, sem fade e sem relógio fixo.
     dive.addEventListener('ended', switchToLoop);
@@ -826,6 +838,7 @@ document.documentElement.classList.add('js');
                 if (phase !== 'intro') return;
                 heroBg.dataset.videoBuffer = 'ready';
                 diveDisplayArmed = true;
+                delete heroBg.dataset.watermarkShade;
                 try { dive.currentTime = 0; } catch (e) { }
                 trackIntroTimeline();
                 var p = dive.play();
