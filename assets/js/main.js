@@ -20,7 +20,6 @@ document.documentElement.classList.add('js');
   function queueNavScroll() {
     if (!navScrollFrame) navScrollFrame = requestAnimationFrame(syncNavScroll);
   }
-  queueNavScroll();
   window.addEventListener('scroll', queueNavScroll, { passive: true });
   window.addEventListener('resize', queueNavScroll, { passive: true });
   if (navioEl && 'IntersectionObserver' in window) {
@@ -516,7 +515,7 @@ document.documentElement.classList.add('js');
     var heroSection = document.querySelector('.hero');
     var heroScrollCue = heroSection && heroSection.querySelector('.hero__scroll');
     var heroTop = 0;
-    var heroHeight = window.innerHeight;
+    var heroHeight = 1;
     function revealHero() {
       if (heroSection && heroSection.dataset.intro !== 'done') {
         heroSection.dataset.intro = 'done';
@@ -582,7 +581,7 @@ document.documentElement.classList.add('js');
     // (com devicePixelRatio), para o "cover" acompanhar a tela como o
     // object-fit:cover dos vídeos — sem deformar em telas estreitas/mobile.
     var canvasResizeFrame = null;
-    var pendingCanvasSize = { width: window.innerWidth, height: window.innerHeight };
+    var pendingCanvasSize = { width: 1, height: 1 };
     function resizeCanvas(size) {
       if (size && size.width && size.height) pendingCanvasSize = size;
       if (canvasResizeFrame) return;
@@ -966,13 +965,13 @@ document.documentElement.classList.add('js');
     function resizeCanvasFromViewport() {
       resizeCanvas({ width: window.innerWidth, height: window.innerHeight });
     }
-    resizeCanvasFromViewport();
     if ('ResizeObserver' in window) {
       new ResizeObserver(function (entries) {
         var size = entries[0] && entries[0].contentRect;
         if (size) resizeCanvas({ width: size.width, height: size.height });
       }).observe(heroBg);
     } else {
+      resizeCanvasFromViewport();
       window.addEventListener('resize', resizeCanvasFromViewport, { passive: true });
     }
     window.addEventListener('orientationchange', resizeCanvasFromViewport);
