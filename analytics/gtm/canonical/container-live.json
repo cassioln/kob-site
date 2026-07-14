@@ -1,0 +1,66 @@
+{
+  "snapshot_type": "canonical_ui_audit",
+  "observed_at_utc": "2026-07-14T21:45:07Z",
+  "account_id": "6365663008",
+  "container_id": "258081200",
+  "public_id": "GTM-TK5L6TJF",
+  "workspace_id": "4",
+  "live_version": {
+    "id": "3",
+    "tags_count": 3,
+    "triggers_count": 1,
+    "user_defined_variables_count": 0
+  },
+  "tags": [
+    {
+      "name": "Consent - Default (Estado Padrão)",
+      "type": "custom_html",
+      "triggers": ["Consent Initialization - All Pages"]
+    },
+    {
+      "name": "Consent - Update (Aceite do Usuário)",
+      "type": "custom_html",
+      "triggers": ["Evento - Aceite de Cookies"]
+    },
+    {
+      "name": "GA4 - TAG",
+      "type": "google_tag",
+      "tag_id": "G-8SYDL3EXVM",
+      "triggers": ["Initialization - All Pages", "All Pages"]
+    }
+  ],
+  "custom_triggers": [
+    {
+      "name": "Evento - Aceite de Cookies",
+      "type": "custom_event",
+      "event_name": "cookie_consent_accepted"
+    }
+  ],
+  "workspace_pending_changes": {
+    "total": 12,
+    "kind": "built_in_variable_activation",
+    "variables": [
+      "Click Classes",
+      "Click Element",
+      "Click ID",
+      "Click Text",
+      "Click URL",
+      "Scroll Depth Threshold",
+      "Scroll Depth Units",
+      "Video Percent",
+      "Video Provider",
+      "Video Status",
+      "Video Title",
+      "Video URL"
+    ]
+  },
+  "confirmed_risks": [
+    "cookie_consent_restored_has_no_trigger",
+    "google_tag_has_two_page_triggers",
+    "custom_html_gtag_consent_warning"
+  ],
+  "limitations": [
+    "This is a normalized snapshot derived from authenticated UI inspection, not a raw GTM API export.",
+    "Runtime duplicate page_view remains to be proven with Preview/network evidence."
+  ]
+}

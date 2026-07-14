@@ -1,0 +1,14 @@
+observed_at_utc: '2026-07-14T21:45:07Z'
+existing: []
+planned_event_scoped:
+  - { parameter: section_id, display_name: Section ID, status: planned }
+  - { parameter: cta_id, display_name: CTA ID, status: planned }
+  - { parameter: placement, display_name: CTA Placement, status: planned }
+  - { parameter: intent, display_name: Contact Intent, status: planned }
+  - { parameter: item_id, display_name: Contact Item ID, status: planned }
+  - { parameter: item_category, display_name: Contact Item Category, status: planned }
+not_registered:
+  - schema_version
+notes:
+  - Parâmetros nativos de ecommerce dentro de items não devem ser duplicados como dimensões personalizadas sem necessidade.
+  - Nada será criado no GA4 antes de Preview, validação de cardinalidade e revisão manual.

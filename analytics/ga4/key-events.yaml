@@ -1,0 +1,22 @@
+observed_at_utc: '2026-07-14T21:45:07Z'
+existing:
+  - name: close_convert_lead
+    key_event: true
+    data_last_28_days: false
+  - name: purchase
+    key_event: true
+    locked_in_ui: true
+    data_last_28_days: false
+  - name: qualify_lead
+    key_event: true
+    data_last_28_days: false
+planned:
+  - name: kob_whatsapp_click
+    classification: secondary_intent
+    approved_by: Cassio Lima
+    status: approved_not_configured
+not_allowed_as_substitutes:
+  - generate_lead
+  - begin_checkout
+  - purchase
+reason: Um clique abre um canal externo, mas não comprova contato, lead, checkout ou reserva.

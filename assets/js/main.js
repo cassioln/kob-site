@@ -2,6 +2,95 @@ document.documentElement.classList.add('js');
 (function () {
   'use strict';
 
+  // Contrato analytics v1: o site declara fatos de negócio no dataLayer;
+  // consentimento, allowlist e envio ao GA4 continuam sob responsabilidade do GTM.
+  function compactAnalyticsValue(value) {
+    if (value === null || typeof value === 'undefined') return undefined;
+    if (typeof value === 'string' && value.trim() === '') return undefined;
+    if (Array.isArray(value)) {
+      return value.map(compactAnalyticsValue).filter(function (item) {
+        return typeof item !== 'undefined';
+      });
+    }
+    if (typeof value === 'object') {
+      var compactObject = {};
+      Object.keys(value).forEach(function (key) {
+        var compactValue = compactAnalyticsValue(value[key]);
+        if (typeof compactValue !== 'undefined') compactObject[key] = compactValue;
+      });
+      return compactObject;
+    }
+    return value;
+  }
+
+  function trackAnalytics(eventName, data) {
+    if (!/^[a-z][a-z0-9_]*$/.test(eventName)) return null;
+    var cleanData = compactAnalyticsValue(data || {});
+    var payload = { event: eventName, schema_version: 1 };
+    Object.keys(cleanData).forEach(function (key) {
+      if (key !== 'event' && key !== 'schema_version') payload[key] = cleanData[key];
+    });
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push(payload);
+    return payload;
+  }
+
+  window.KOBAnalytics = Object.freeze({ track: trackAnalytics });
+
+  var VALUE_LISTS = {
+    'panel-cabines': {
+      item_list_id: 'cabins_2026',
+      item_list_name: 'Cabines 2026',
+      items: [
+        { key: 'interna', item_id: 'cabin_internal', item_name: 'Cabine interna', item_category: 'cabin' },
+        { key: 'janela', item_id: 'cabin_ocean_view', item_name: 'Cabine janela', item_category: 'cabin' },
+        { key: 'varanda', item_id: 'cabin_balcony', item_name: 'Cabine varanda', item_category: 'cabin' }
+      ]
+    },
+    'panel-bebidas': {
+      item_list_id: 'drink_packages_2026',
+      item_list_name: 'Pacotes de bebidas 2026',
+      items: [
+        { key: 'naoalcoolico', item_id: 'drink_non_alcoholic', item_name: 'Pacote não alcoólico', item_category: 'drink_package' },
+        { key: 'easy', item_id: 'drink_easy', item_name: 'Pacote Easy', item_category: 'drink_package' },
+        { key: 'premium', item_id: 'drink_premium', item_name: 'Pacote Premium', item_category: 'drink_package' }
+      ]
+    }
+  };
+  var trackedValueLists = {};
+
+  function analyticsItem(item) {
+    if (!item) return null;
+    return {
+      item_id: item.item_id,
+      item_name: item.item_name,
+      item_category: item.item_category
+    };
+  }
+
+  function findAnalyticsItem(key) {
+    var found = null;
+    Object.keys(VALUE_LISTS).some(function (panelId) {
+      var list = VALUE_LISTS[panelId];
+      var item = list.items.find(function (candidate) { return candidate.key === key; });
+      if (!item) return false;
+      found = { list: list, item: item };
+      return true;
+    });
+    return found;
+  }
+
+  function trackValueList(panelId) {
+    var list = VALUE_LISTS[panelId];
+    if (!list || trackedValueLists[list.item_list_id]) return;
+    trackedValueLists[list.item_list_id] = true;
+    trackAnalytics('view_item_list', {
+      item_list_id: list.item_list_id,
+      item_list_name: list.item_list_name,
+      items: list.items.map(analyticsItem)
+    });
+  }
+
   // Nav: some ao rolar dentro do hero; reaparece (com fundo) a partir da
   // seção #navio em diante — o header fica visível dela pra frente.
   var nav = document.getElementById('nav');
@@ -1049,6 +1138,7 @@ document.documentElement.classList.add('js');
         t.tabIndex = on ? 0 : -1;
         var panel = document.getElementById(t.getAttribute('aria-controls'));
         if (panel) panel.hidden = !on;
+        if (on) trackValueList(t.getAttribute('aria-controls'));
       });
     }
     tabs.forEach(function (tab, i) {
@@ -1392,6 +1482,7 @@ document.documentElement.classList.add('js');
     function open(key) {
       var d = DATA[key];
       if (!d) return;
+      var analyticsSelection = findAnalyticsItem(key);
       currentKey = key;
       modal.dataset.kind = DRINK_KEYS[key] ? 'bebida' : 'cabine';
       lastFocus = document.activeElement;
@@ -1409,8 +1500,22 @@ document.documentElement.classList.add('js');
         var isDrink = !!DRINK_KEYS[key];
         elCta.hidden = isDrink;
         elCta.href = isDrink ? '#' : d.wa;
+        if (isDrink || !analyticsSelection) {
+          delete elCta.dataset.analyticsItemId;
+          delete elCta.dataset.analyticsItemCategory;
+        } else {
+          elCta.dataset.analyticsChannel = 'whatsapp';
+          elCta.dataset.analyticsCtaId = 'cabin_modal_reserve';
+          elCta.dataset.analyticsPlacement = 'cabin_modal';
+          elCta.dataset.analyticsIntent = 'reservation';
+          elCta.dataset.analyticsItemId = analyticsSelection.item.item_id;
+          elCta.dataset.analyticsItemCategory = analyticsSelection.item.item_category;
+        }
       }
       modal.showModal();
+      if (analyticsSelection) {
+        trackAnalytics('view_item', { items: [analyticsItem(analyticsSelection.item)] });
+      }
       modal.scrollTop = 0;
       var inner = modal.querySelector('.cabin-modal__inner');
       if (inner) inner.scrollTop = 0;
@@ -1421,7 +1526,17 @@ document.documentElement.classList.add('js');
     }
 
     document.querySelectorAll('.price-card__details').forEach(function (btn) {
-      btn.addEventListener('click', function () { open(btn.dataset.cabin); });
+      btn.addEventListener('click', function () {
+        var selection = findAnalyticsItem(btn.dataset.cabin);
+        if (selection) {
+          trackAnalytics('select_item', {
+            item_list_id: selection.list.item_list_id,
+            item_list_name: selection.list.item_list_name,
+            items: [analyticsItem(selection.item)]
+          });
+        }
+        open(btn.dataset.cabin);
+      });
     });
     closeBtn.addEventListener('click', close);
     // Clique no backdrop (fora do conteúdo) fecha
@@ -2171,24 +2286,18 @@ document.documentElement.classList.add('js');
     sync();
   })();
 
-  // Eventos enxutos para acompanhar a jornada longa sem adicionar biblioteca.
-  // O dataLayer funciona como fila enquanto o GTM aguarda a primeira interação.
+  // Eventos de jornada do contrato v1. O dataLayer funciona como fila enquanto
+  // o GTM aguarda a primeira interação e aplica o estado de consentimento.
   (function journeyAnalytics() {
-    function push(eventName, data) {
-      window.dataLayer = window.dataLayer || [];
-      var payload = data || {};
-      payload.event = eventName;
-      window.dataLayer.push(payload);
-    }
-
     if ('IntersectionObserver' in window) {
       var sectionObserver = new IntersectionObserver(function (entries, observer) {
         entries.forEach(function (entry) {
           if (!entry.isIntersecting) return;
-          push('kob_section_view', { section_id: entry.target.id });
+          trackAnalytics('kob_section_view', { section_id: entry.target.id });
+          if (entry.target.id === 'valores') trackValueList('panel-cabines');
           observer.unobserve(entry.target);
         });
-      }, { threshold: 0.28 });
+      }, { threshold: 0, rootMargin: '-45% 0px -45% 0px' });
       ['evento', 'navio', 'valores', 'faq', 'reserve'].forEach(function (id) {
         var section = document.getElementById(id);
         if (section) sectionObserver.observe(section);
@@ -2196,11 +2305,14 @@ document.documentElement.classList.add('js');
     }
 
     document.addEventListener('click', function (event) {
-      var link = event.target.closest('a[href*="api.whatsapp.com"]');
+      var link = event.target.closest('a[data-analytics-channel="whatsapp"]');
       if (!link) return;
-      var section = link.closest('section, header, footer, aside');
-      push('kob_whatsapp_click', {
-        placement: link.classList.contains('wa-float') ? 'floating' : (section && (section.id || section.tagName.toLowerCase())) || 'page'
+      trackAnalytics('kob_whatsapp_click', {
+        cta_id: link.dataset.analyticsCtaId,
+        placement: link.dataset.analyticsPlacement,
+        intent: link.dataset.analyticsIntent,
+        item_id: link.dataset.analyticsItemId,
+        item_category: link.dataset.analyticsItemCategory
       });
     });
 
@@ -2210,28 +2322,13 @@ document.documentElement.classList.add('js');
       clearTimeout(faqTimer);
       faqTimer = setTimeout(function () {
         if (faqSearch.value.trim().length < 2) return;
-        push('kob_faq_search', {
-          result_count: document.querySelectorAll('#faq details:not([hidden])').length
+        var resultCount = document.querySelectorAll('#faq details:not([hidden])').length;
+        trackAnalytics('kob_faq_search', {
+          result_count: resultCount,
+          has_results: resultCount > 0
         });
       }, 600);
     });
-
-    var depthMarks = [25, 50, 75, 90];
-    var depthFrame = null;
-    window.addEventListener('scroll', function () {
-      if (depthFrame) return;
-      depthFrame = requestAnimationFrame(function () {
-        depthFrame = null;
-        var max = document.documentElement.scrollHeight - window.innerHeight;
-        if (max <= 0) return;
-        var depth = Math.round((window.scrollY / max) * 100);
-        depthMarks = depthMarks.filter(function (mark) {
-          if (depth < mark) return true;
-          push('kob_scroll_depth', { percent: mark });
-          return false;
-        });
-      });
-    }, { passive: true });
   })();
 
   // Carta náutica de #hospedagem: parallax de profundidade das camadas decorativas.

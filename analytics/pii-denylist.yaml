@@ -1,0 +1,41 @@
+version: 1
+policy: deny
+prohibited_keys:
+  - email
+  - e_mail
+  - phone
+  - telefone
+  - whatsapp_url
+  - whatsapp_message
+  - message
+  - href
+  - full_url
+  - inner_text
+  - search_term
+  - user_name
+prohibited_value_patterns:
+  - name: email
+    regex: '[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}'
+  - name: whatsapp_url
+    regex: '(api\\.whatsapp\\.com|wa\\.me|whatsapp://)'
+  - name: whatsapp_query
+    regex: '(^|[?&])(phone|text)='
+  - name: brazil_phone
+    regex: '(?:\\+?55\\s*)?(?:\\(?\\d{2}\\)?[\\s.-]*)?9?\\d{4}[\\s.-]?\\d{4}'
+allowed_business_fields:
+  - event
+  - schema_version
+  - section_id
+  - item_list_id
+  - item_list_name
+  - items
+  - item_id
+  - item_name
+  - item_category
+  - cta_id
+  - placement
+  - intent
+notes:
+  - Termos digitados na busca do FAQ nunca são enviados.
+  - URL, telefone e mensagem predefinida do WhatsApp nunca são enviados.
+  - Um clique no WhatsApp é intenção de contato, não lead confirmado.

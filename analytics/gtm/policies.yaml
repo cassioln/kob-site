@@ -1,0 +1,45 @@
+publication:
+  automated: false
+  human_reviewer: Cassio Lima
+  human_publisher: Cassio Lima
+  second_high_risk_approver: null
+  require_preview: true
+  require_semantic_diff: true
+  require_debugview: true
+  require_rollback_version: true
+consent:
+  control_event_prefixes: [cookie_]
+  forward_control_events_to_ga4: false
+  required_paths:
+    - default_denied_before_google_tag
+    - accepted_grants_analytics_only
+    - restored_grants_analytics_only
+    - denied_revokes_optional_storage
+  prohibited_grants: [ad_storage, ad_user_data, ad_personalization]
+event_forwarding:
+  wildcard_trigger_allowed: false
+  allowlist:
+    - kob_section_view
+    - view_item_list
+    - select_item
+    - view_item
+    - kob_whatsapp_click
+naming:
+  google_tag: Google Tag - Config - Web
+  ga4_event_prefix: GA4 - Event -
+  custom_event_trigger_prefix: CE -
+  data_layer_variable_prefix: DLV -
+workspace:
+  preferred_name: analytics/tracking-v1
+  create_only_after_site_tests_pass: true
+  publish: false
+known_live_risks:
+  - id: consent_restored_not_triggered
+    severity: high
+    status: confirmed
+  - id: google_tag_two_page_triggers
+    severity: high
+    status: confirmed_risk_runtime_duplicate_not_yet_proven
+  - id: custom_html_gtag_consent_warning
+    severity: medium
+    status: confirmed_ui_warning

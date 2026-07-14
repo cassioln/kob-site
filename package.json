@@ -1,0 +1,17 @@
+{
+  "name": "kob-site",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "npm run test:analytics",
+    "test:analytics": "playwright test",
+    "test:analytics:headed": "playwright test --headed",
+    "validate:analytics": "node analytics/scripts/validate-config.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.61.1",
+    "ajv": "8.20.0",
+    "yaml": "2.9.0"
+  }
+}

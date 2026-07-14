@@ -1,0 +1,54 @@
+observed_at_utc: '2026-07-14T21:45:07Z'
+source: authenticated_ui_read_only_audit
+account:
+  id: '400900337'
+property:
+  id: '545265818'
+  name: Kriativos On Board
+  current_timezone: America/Rio_Branco
+  current_timezone_label: Brasil — GMT-05:00 Horário Rio Branco
+  recommended_timezone: America/Sao_Paulo
+  timezone_change_status: approved_recommendation_not_applied
+stream:
+  id: '15244673087'
+  name: kob
+  url: https://www.kriativosonboard.com.br/
+  measurement_id: G-8SYDL3EXVM
+  receiving_traffic_last_48_hours: true
+enhanced_measurement:
+  enabled: true
+  page_views: true
+  scrolls: true
+  outbound_clicks: true
+  site_search: true
+  form_interactions: true
+  video_engagement: true
+  file_downloads: true
+google_signals:
+  enabled: true
+  regions_allowed: 307
+  regions_total: 307
+user_provided_data_collection: false
+granular_location_and_device_collection: true
+data_retention:
+  event_data_months: 14
+  user_data_months: 14
+  reset_on_new_activity: true
+data_filters:
+  - name: Internal Traffic
+    operation: exclude
+    state: testing
+custom_dimensions_count: 0
+custom_metrics_count: 0
+connected_site_tags_count: 0
+google_ads_links_count: 0
+bigquery:
+  project_id: gen-lang-client-0510628651
+  location: southamerica-east1
+  linked: true
+  daily_export: true
+  streaming_export: false
+  daily_user_data_export: false
+  billing_account_linked: false
+  sandbox: true
+  dataset_present_at_audit: false
