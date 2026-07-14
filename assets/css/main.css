@@ -7710,7 +7710,7 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
   }
 
   .event-score__label {
-    font-size: 0.7rem;
+    font-size: 1.2rem;
   }
 
   .event-score__date {
