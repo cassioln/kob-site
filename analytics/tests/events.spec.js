@@ -158,3 +158,19 @@ test('abrir o tour 360 da cabine emite kob_virtual_tour_open (cabin) por ação 
   assertSchema(cabin);
   assertNoPii(cabin);
 });
+
+test('engajamento de vídeo fica no Enhanced Measurement: site não emite video_* no dataLayer', async ({ page }) => {
+  // Abre o modal do tour em vídeo do navio.
+  await page.locator('#shipVideoPlay').click({ force: true });
+  await page.waitForTimeout(500);
+  await page.keyboard.press('Escape');
+  // Abre o modal do filme da edição 2025.
+  await page.locator('#editionVideoOpen').click({ force: true });
+  await page.waitForTimeout(500);
+
+  // Nenhum video_start/progress/complete deve viajar no dataLayer (evita dupla
+  // contagem com o Enhanced Measurement do GA4, que já captura esses eventos).
+  const videoEvents = await page.evaluate(() => (window.dataLayer || [])
+    .filter((entry) => ['video_start', 'video_progress', 'video_complete'].includes(entry?.event)));
+  expect(videoEvents).toEqual([]);
+});

@@ -183,10 +183,27 @@ item_catalogs:
       - { item_id: drink_non_alcoholic, item_name: Pacote não alcoólico, item_category: drink_package }
       - { item_id: drink_easy, item_name: Pacote Easy, item_category: drink_package }
       - { item_id: drink_premium, item_name: Pacote Premium, item_category: drink_package }
-deferred_events:
-  - video_start
-  - video_progress
-  - video_complete
+deferred_events: []
+enhanced_measurement_events:
+  policy: rely_on_ga4_enhanced_measurement_no_custom_dataLayer_emit
+  reason: >-
+    O GA4 Enhanced Measurement (video_engagement=true) já captura video_start,
+    video_progress e video_complete nativamente para os players YouTube que usam
+    a IFrame API (tour do navio e filme da edição). Emitir eventos custom com os
+    mesmos nomes causaria dupla contagem. O site NÃO emite esses eventos no
+    dataLayer; o engajamento de vídeo fica inteiramente sob o Enhanced Measurement.
+  covered_by_enhanced_measurement:
+    - video_start
+    - video_progress
+    - video_complete
+  players:
+    - id: ship_video
+      surface: Modal de tour em vídeo do MSC Música (shipVideoModal)
+      youtube_iframe_api: true
+    - id: edition_2025
+      surface: Modal do filme da edição 2025 com corte em 04:01 (editionVideoModal)
+      youtube_iframe_api: true
+  non_emission_test: analytics/tests/events.spec.js
 excluded_from_phase_1:
   - generate_lead
   - purchase
