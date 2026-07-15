@@ -1,5 +1,12 @@
 publication:
+  # Modelo de permissao (decisao de Cassio, 2026-07-15): autonomia TOTAL para
+  # o agente montar/importar/editar workspace e rodar Preview. A UNICA parada
+  # obrigatoria e pedir OK explicito antes de PUBLICAR no container live.
+  agent_may_edit_workspace: true
+  agent_may_import_container: true
+  agent_may_run_preview: true
   automated: false
+  publish_requires_explicit_approval: true
   human_reviewer: Cassio Lima
   human_publisher: Cassio Lima
   second_high_risk_approver: null
@@ -35,7 +42,7 @@ naming:
 workspace:
   preferred_name: analytics/tracking-v1
   create_only_after_site_tests_pass: true
-  publish: false
+  publish: false  # publish so apos OK explicito de Cassio (publish_requires_explicit_approval)
 live_gate:
   command: npm run test:analytics:live
   collection_requests: intercepted_and_aborted
