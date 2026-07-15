@@ -1,14 +1,21 @@
-observed_at_utc: '2026-07-14T21:45:07Z'
-existing: []
+observed_at_utc: '2026-07-15T17:30:00Z'
+existing:
+  - { parameter: faq_category, display_name: FAQ Category, scope: event }
+  - { parameter: faq_id, display_name: FAQ ID, scope: event }
+  - { parameter: content_type, display_name: Content Type, scope: event }
+  - { parameter: content_id, display_name: Content ID, scope: event }
+  - { parameter: tour_type, display_name: Tour Type, scope: event }
+  - { parameter: tour_id, display_name: Tour ID, scope: event }
 planned_event_scoped:
-  - { parameter: section_id, display_name: Section ID, status: planned }
-  - { parameter: cta_id, display_name: CTA ID, status: planned }
-  - { parameter: placement, display_name: CTA Placement, status: planned }
-  - { parameter: intent, display_name: Contact Intent, status: planned }
-  - { parameter: item_id, display_name: Contact Item ID, status: planned }
-  - { parameter: item_category, display_name: Contact Item Category, status: planned }
+  - { parameter: cta_id, display_name: CTA ID, status: planned, rationale: Segmentar generate_lead/kob_whatsapp_click por CTA. }
+  - { parameter: placement, display_name: CTA Placement, status: planned, rationale: Segmentar leads/cliques por posição na página. }
+  - { parameter: item_category, display_name: Contact Item Category, status: planned, rationale: Distinguir lead de cabine vs pacote de bebida. }
 not_registered:
   - schema_version
+  - { parameter: intent, reason: Coberto por eventos distintos (generate_lead só dispara em intent=reservation); dimensão redundante. }
+  - { parameter: section_id, reason: Analisável via nome do evento kob_section_view; dimensão não prioritária. }
+  - { parameter: item_id, reason: Alta cardinalidade; item_category cobre a segmentação de negócio sem estourar limite de dimensões. }
 notes:
+  - As 6 dimensões existing foram criadas no GA4 em 2026-07-15 (faq/content/tour), escopo de evento.
   - Parâmetros nativos de ecommerce dentro de items não devem ser duplicados como dimensões personalizadas sem necessidade.
   - Nada será criado no GA4 antes de Preview, validação de cardinalidade e revisão manual.
