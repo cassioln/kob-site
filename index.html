@@ -5,6 +5,41 @@
 <head>
   <meta charset="UTF-8">
   <script>document.documentElement.classList.replace('no-js', 'js');</script>
+  <script>
+    (function (d) {
+      function safeHref(link) {
+        var ctaId = link.dataset.analyticsCtaId;
+        if (!ctaId) return '#reserve';
+        var href = '/whatsapp.html?cta=' + encodeURIComponent(ctaId);
+        var itemId = link.dataset.analyticsItemId;
+        if (itemId) href += '&item=' + encodeURIComponent(itemId);
+        return href;
+      }
+      function bind(link) {
+        if (link.dataset.kobWhatsappBound || link.getAttribute('href') === '#') return;
+        var destination = link.href;
+        if (!destination) return;
+        link.href = safeHref(link);
+        link.dataset.kobWhatsappBound = 'inline';
+        link.addEventListener('click', function (event) {
+          event.preventDefault();
+          window.open(destination, '_blank', 'noopener');
+        });
+      }
+      function scan(root) {
+        if (root.matches && root.matches('a[data-analytics-channel="whatsapp"]')) bind(root);
+        if (root.querySelectorAll) root.querySelectorAll('a[data-analytics-channel="whatsapp"]').forEach(bind);
+      }
+      var observer = new MutationObserver(function (records) {
+        records.forEach(function (record) { record.addedNodes.forEach(scan); });
+      });
+      observer.observe(d.documentElement, { childList: true, subtree: true });
+      d.addEventListener('DOMContentLoaded', function () {
+        scan(d);
+        observer.disconnect();
+      }, { once: true });
+    })(document);
+  </script>
   <!-- Google Tag Manager: sai do caminho crítico e hidrata na primeira interação. -->
   <script>
     (function (w, d, s, l, i) {
@@ -251,6 +286,8 @@
     </nav>
     <div class="nav__right">
       <a class="btn btn--primary"
+        data-analytics-channel="whatsapp" data-analytics-cta-id="nav_reserve" data-analytics-placement="header"
+        data-analytics-intent="reservation"
         href="https://api.whatsapp.com/send?phone=5513981580498&amp;text=Ol%C3%A1%2C%20Royal%20Trip%21%20Quero%20garantir%20minha%20vaga%20no%20Kriativos%20On%20Board%202026%20e%20fechar%20a%20reserva%20da%20minha%20cabine.%20Podem%20me%20ajudar%3F"
         target="_blank" rel="noopener">Garantir minha vaga</a>
       <button type="button" class="nav__toggle" id="navToggle" aria-label="Abrir menu" aria-expanded="false"
@@ -283,6 +320,8 @@
       <a href="#faq">Dúvidas</a>
     </nav>
     <a class="btn btn--primary btn--lg"
+      data-analytics-channel="whatsapp" data-analytics-cta-id="drawer_reserve" data-analytics-placement="mobile_nav"
+      data-analytics-intent="reservation"
       href="https://api.whatsapp.com/send?phone=5513981580498&amp;text=Ol%C3%A1%2C%20Royal%20Trip%21%20Quero%20garantir%20minha%20vaga%20no%20Kriativos%20On%20Board%202026%20e%20fechar%20a%20reserva%20da%20minha%20cabine.%20Podem%20me%20ajudar%3F"
       target="_blank" rel="noopener">Garantir minha vaga</a>
   </div>
@@ -353,6 +392,8 @@
           <div class="hero__cta">
             <a class="btn btn--ghost btn--lg" href="#navio">Conhecer o navio</a>
             <a class="btn btn--primary btn--lg"
+              data-analytics-channel="whatsapp" data-analytics-cta-id="hero_reserve" data-analytics-placement="hero"
+              data-analytics-intent="reservation"
               href="https://api.whatsapp.com/send?phone=5513981580498&amp;text=Ol%C3%A1%2C%20Royal%20Trip%21%20Conheci%20o%20Kriativos%20On%20Board%202026%20pelo%20destaque%20principal%20do%20site%20e%20quero%20garantir%20minha%20vaga.%20Podem%20me%20ajudar%20a%20escolher%20e%20reservar%20uma%20cabine%3F"
               target="_blank" rel="noopener">Garantir minha vaga</a>
           </div>
@@ -997,6 +1038,9 @@
                 <button type="button" class="price-card__details" data-cabin="interna" aria-haspopup="dialog">Ver
                   detalhes</button>
                 <a class="btn btn--primary"
+                  data-analytics-channel="whatsapp" data-analytics-cta-id="cabin_internal_reserve"
+                  data-analytics-placement="values_cabins" data-analytics-intent="reservation"
+                  data-analytics-item-id="cabin_internal" data-analytics-item-category="cabin"
                   href="https://api.whatsapp.com/send?phone=5513981580498&amp;text=Ol%C3%A1%2C%20Royal%20Trip%21%20Vi%20a%20Cabine%20Interna%20na%20se%C3%A7%C3%A3o%20de%20valores%20do%20Kriativos%20On%20Board%202026%20e%20quero%20reservar%20essa%20op%C3%A7%C3%A3o%20no%202%C2%BA%20lote."
                   target="_blank" rel="noopener">Reservar agora</a>
               </div>
@@ -1021,6 +1065,9 @@
                 <button type="button" class="price-card__details" data-cabin="janela" aria-haspopup="dialog">Ver
                   detalhes</button>
                 <a class="btn btn--primary"
+                  data-analytics-channel="whatsapp" data-analytics-cta-id="cabin_ocean_view_reserve"
+                  data-analytics-placement="values_cabins" data-analytics-intent="reservation"
+                  data-analytics-item-id="cabin_ocean_view" data-analytics-item-category="cabin"
                   href="https://api.whatsapp.com/send?phone=5513981580498&amp;text=Ol%C3%A1%2C%20Royal%20Trip%21%20Vi%20a%20Cabine%20Janela%20na%20se%C3%A7%C3%A3o%20de%20valores%20do%20Kriativos%20On%20Board%202026%20e%20quero%20reservar%20essa%20op%C3%A7%C3%A3o%20no%202%C2%BA%20lote."
                   target="_blank" rel="noopener">Reservar agora</a>
               </div>
@@ -1045,6 +1092,9 @@
                 <button type="button" class="price-card__details" data-cabin="varanda" aria-haspopup="dialog">Ver
                   detalhes</button>
                 <a class="btn btn--primary"
+                  data-analytics-channel="whatsapp" data-analytics-cta-id="cabin_balcony_reserve"
+                  data-analytics-placement="values_cabins" data-analytics-intent="reservation"
+                  data-analytics-item-id="cabin_balcony" data-analytics-item-category="cabin"
                   href="https://api.whatsapp.com/send?phone=5513981580498&amp;text=Ol%C3%A1%2C%20Royal%20Trip%21%20Vi%20a%20Cabine%20Varanda%20na%20se%C3%A7%C3%A3o%20de%20valores%20do%20Kriativos%20On%20Board%202026%20e%20quero%20reservar%20essa%20op%C3%A7%C3%A3o%20no%202%C2%BA%20lote."
                   target="_blank" rel="noopener">Reservar agora</a>
               </div>
@@ -1171,6 +1221,8 @@
           <div class="cabin-modal__body" id="cabinModalBody"></div>
           <p class="cabin-modal__note" id="cabinModalNote"></p>
           <a class="btn btn--primary cabin-modal__cta" id="cabinModalCta" href="#" target="_blank"
+            data-analytics-channel="whatsapp" data-analytics-cta-id="cabin_modal_reserve"
+            data-analytics-placement="cabin_modal" data-analytics-intent="reservation"
             rel="noopener">Reservar agora</a>
         </div>
       </div>
@@ -2513,6 +2565,8 @@
           </div>
         </div>
         <p class="lead u-lead-tip">Continua com dúvidas?<br> <a
+            data-analytics-channel="whatsapp" data-analytics-cta-id="faq_support" data-analytics-placement="faq"
+            data-analytics-intent="support"
             href="https://api.whatsapp.com/send?phone=5513981580498&amp;text=Ol%C3%A1%2C%20Royal%20Trip%21%20Consultei%20a%20se%C3%A7%C3%A3o%20de%20d%C3%BAvidas%20frequentes%20do%20Kriativos%20On%20Board%202026%2C%20mas%20ainda%20preciso%20de%20ajuda%20com%20uma%20informa%C3%A7%C3%A3o."
             target="_blank" rel="noopener" class="link-action--bold">Fale com um agente da Royal
             Trip no WhatsApp.</a></p>
@@ -2556,6 +2610,8 @@
           </ol>
 
           <a class="btn btn--primary btn--lg reserve__button"
+            data-analytics-channel="whatsapp" data-analytics-cta-id="final_reserve" data-analytics-placement="final_cta"
+            data-analytics-intent="reservation"
             href="https://api.whatsapp.com/send?phone=5513981580498&amp;text=Ol%C3%A1%2C%20Royal%20Trip%21%20Quero%20embarcar%20no%20Kriativos%20On%20Board%202026%20e%20fechar%20minha%20reserva.%20Podem%20me%20ajudar%20a%20escolher%20a%20cabine%20e%20concluir%20o%20pedido%3F"
             target="_blank" rel="noopener">
             <svg class="btn__wa" viewBox="0 0 24 24" aria-hidden="true">
@@ -2663,7 +2719,9 @@
 
         <nav class="footer__col" aria-labelledby="footer-plan-title">
           <h3 id="footer-plan-title">Planeje sua viagem</h3>
-          <a href="https://api.whatsapp.com/send?phone=5513981580498&amp;text=Ol%C3%A1%2C%20Royal%20Trip%21%20Estou%20planejando%20minha%20viagem%20para%20o%20Kriativos%20On%20Board%202026%20e%20gostaria%20de%20orienta%C3%A7%C3%A3o%20sobre%20reserva%2C%20valores%20e%20embarque."
+          <a data-analytics-channel="whatsapp" data-analytics-cta-id="footer_support" data-analytics-placement="footer"
+            data-analytics-intent="reservation_support"
+            href="https://api.whatsapp.com/send?phone=5513981580498&amp;text=Ol%C3%A1%2C%20Royal%20Trip%21%20Estou%20planejando%20minha%20viagem%20para%20o%20Kriativos%20On%20Board%202026%20e%20gostaria%20de%20orienta%C3%A7%C3%A3o%20sobre%20reserva%2C%20valores%20e%20embarque."
             target="_blank" rel="noopener">WhatsApp Royal Trip</a>
           <a href="#valores">Ver valores</a>
           <a href="#itinerario">Itinerário</a>
@@ -2696,6 +2754,8 @@
 
   <!-- WHATSAPP FLUTUANTE -->
   <a class="wa-float" data-occluded="false"
+    data-analytics-channel="whatsapp" data-analytics-cta-id="floating_support" data-analytics-placement="floating"
+    data-analytics-intent="reservation_support"
     href="https://api.whatsapp.com/send?phone=5513981580498&amp;text=Ol%C3%A1%2C%20Royal%20Trip%21%20Estou%20no%20site%20do%20Kriativos%20On%20Board%202026%20e%20preciso%20de%20ajuda%20com%20minha%20reserva."
     target="_blank" rel="noopener" aria-label="Falar no WhatsApp com a Royal Trip">
     <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -2705,7 +2765,7 @@
     </svg>
   </a>
 
-  <script src="assets/js/main.js?v=20260713-faq-nav-slide"></script>
+  <script src="assets/js/main.js?v=20260715-p1-content-expand"></script>
 
 
 

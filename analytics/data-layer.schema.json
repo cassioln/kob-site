@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kriativosonboard.com.br/analytics/data-layer.schema.json",
+  "title": "KOB dataLayer business events v1",
+  "oneOf": [
+    { "$ref": "#/$defs/sectionView" },
+    { "$ref": "#/$defs/viewItemList" },
+    { "$ref": "#/$defs/selectItem" },
+    { "$ref": "#/$defs/viewItem" },
+    { "$ref": "#/$defs/whatsappClick" },
+    { "$ref": "#/$defs/faqSearch" },
+    { "$ref": "#/$defs/faqOpen" },
+    { "$ref": "#/$defs/contentExpand" }
+  ],
+  "$defs": {
+    "eventName": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$"
+    },
+    "stableId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$",
+      "maxLength": 80
+    },
+    "item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["item_id", "item_name", "item_category"],
+      "properties": {
+        "item_id": { "$ref": "#/$defs/stableId" },
+        "item_name": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "item_category": { "enum": ["cabin", "drink_package"] }
+      }
+    },
+    "sectionView": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["event", "schema_version", "section_id"],
+      "properties": {
+        "event": { "const": "kob_section_view" },
+        "schema_version": { "const": 1 },
+        "section_id": { "enum": ["evento", "navio", "valores", "faq", "reserve"] }
+      }
+    },
+    "viewItemList": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["event", "schema_version", "item_list_id", "item_list_name", "items"],
+      "properties": {
+        "event": { "const": "view_item_list" },
+        "schema_version": { "const": 1 },
+        "item_list_id": { "enum": ["cabins_2026", "drink_packages_2026"] },
+        "item_list_name": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 10,
+          "items": { "$ref": "#/$defs/item" }
+        }
+      }
+    },
+    "selectItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["event", "schema_version", "item_list_id", "item_list_name", "items"],
+      "properties": {
+        "event": { "const": "select_item" },
+        "schema_version": { "const": 1 },
+        "item_list_id": { "enum": ["cabins_2026", "drink_packages_2026"] },
+        "item_list_name": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1,
+          "items": { "$ref": "#/$defs/item" }
+        }
+      }
+    },
+    "viewItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["event", "schema_version", "items"],
+      "properties": {
+        "event": { "const": "view_item" },
+        "schema_version": { "const": 1 },
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1,
+          "items": { "$ref": "#/$defs/item" }
+        }
+      }
+    },
+    "whatsappClick": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["event", "schema_version", "cta_id", "placement", "intent"],
+      "properties": {
+        "event": { "const": "kob_whatsapp_click" },
+        "schema_version": { "const": 1 },
+        "cta_id": { "$ref": "#/$defs/stableId" },
+        "placement": { "$ref": "#/$defs/stableId" },
+        "intent": { "enum": ["reservation", "reservation_support", "support"] },
+        "item_id": { "$ref": "#/$defs/stableId" },
+        "item_category": { "enum": ["cabin", "drink_package"] }
+      }
+    },
+    "faqSearch": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["event", "schema_version", "result_count", "has_results"],
+      "properties": {
+        "event": { "const": "kob_faq_search" },
+        "schema_version": { "const": 1 },
+        "result_count": { "type": "integer", "minimum": 0, "maximum": 1000 },
+        "has_results": { "type": "boolean" }
+      }
+    },
+    "faqOpen": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["event", "schema_version", "faq_id", "faq_category"],
+      "properties": {
+        "event": { "const": "kob_faq_open" },
+        "schema_version": { "const": 1 },
+        "faq_id": { "$ref": "#/$defs/stableId" },
+        "faq_category": { "enum": ["embarque", "bordo", "comida", "regras"] }
+      }
+    },
+    "contentExpand": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["event", "schema_version", "content_type", "content_id"],
+      "properties": {
+        "event": { "const": "kob_content_expand" },
+        "schema_version": { "const": 1 },
+        "content_type": { "enum": ["gallery", "testimonials"] },
+        "content_id": { "$ref": "#/$defs/stableId" }
+      }
+    }
+  }
+}

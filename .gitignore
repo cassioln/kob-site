@@ -10,5 +10,10 @@ bkp/
 # Sistema
 .DS_Store
 
+# Dependências e artefatos de testes locais
+node_modules/
+test-results/
+playwright-report/
+
 # Loop finder
 loop_finder/*

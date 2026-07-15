@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="referrer" content="no-referrer">
+  <title>Redirecionando para o WhatsApp — Kriativos On Board</title>
+  <style>
+    :root { color-scheme: dark; font-family: system-ui, sans-serif; }
+    body { min-height: 100vh; margin: 0; display: grid; place-items: center; background: #07192b; color: #fff; }
+    main { max-width: 36rem; padding: 2rem; text-align: center; }
+    a { color: #50e3ff; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Redirecionando para o WhatsApp…</h1>
+    <p>Se a conversa não abrir, <a href="/#reserve">volte para a área de reserva</a>.</p>
+  </main>
+  <script>
+    (function () {
+      'use strict';
+
+      var phone = '5513981580498';
+      var messages = Object.freeze({
+        nav_reserve: 'Olá, Royal Trip! Quero garantir minha vaga no Kriativos On Board 2026 e fechar a reserva da minha cabine. Podem me ajudar?',
+        drawer_reserve: 'Olá, Royal Trip! Quero garantir minha vaga no Kriativos On Board 2026 e fechar a reserva da minha cabine. Podem me ajudar?',
+        hero_reserve: 'Olá, Royal Trip! Conheci o Kriativos On Board 2026 pelo destaque principal do site e quero garantir minha vaga. Podem me ajudar a escolher e reservar uma cabine?',
+        cabin_internal_reserve: 'Olá, Royal Trip! Vi a Cabine Interna na seção de valores do Kriativos On Board 2026 e quero reservar essa opção no 2º lote.',
+        cabin_ocean_view_reserve: 'Olá, Royal Trip! Vi a Cabine Janela na seção de valores do Kriativos On Board 2026 e quero reservar essa opção no 2º lote.',
+        cabin_balcony_reserve: 'Olá, Royal Trip! Vi a Cabine Varanda na seção de valores do Kriativos On Board 2026 e quero reservar essa opção no 2º lote.',
+        faq_support: 'Olá, Royal Trip! Consultei a seção de dúvidas frequentes do Kriativos On Board 2026, mas ainda preciso de ajuda com uma informação.',
+        final_reserve: 'Olá, Royal Trip! Quero embarcar no Kriativos On Board 2026 e fechar minha reserva. Podem me ajudar a escolher a cabine e concluir o pedido?',
+        footer_support: 'Olá, Royal Trip! Estou planejando minha viagem para o Kriativos On Board 2026 e gostaria de orientação sobre reserva, valores e embarque.',
+        floating_support: 'Olá, Royal Trip! Estou no site do Kriativos On Board 2026 e preciso de ajuda com minha reserva.'
+      });
+      var cabinMessages = Object.freeze({
+        cabin_internal: messages.cabin_internal_reserve,
+        cabin_ocean_view: messages.cabin_ocean_view_reserve,
+        cabin_balcony: messages.cabin_balcony_reserve
+      });
+      var params = new URLSearchParams(window.location.search);
+      var ctaId = params.get('cta');
+      var itemId = params.get('item');
+      var message = ctaId === 'cabin_modal_reserve' ? cabinMessages[itemId] : messages[ctaId];
+
+      if (!message) {
+        window.location.replace('/#reserve');
+        return;
+      }
+
+      var destination = 'https://api.whatsapp.com/send?phone=' + encodeURIComponent(phone)
+        + '&text=' + encodeURIComponent(message);
+      window.location.replace(destination);
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+{
+  "snapshot_type": "canonical_ui_audit",
+  "observed_at_utc": "2026-07-15T12:40:00Z",
+  "observation_source": "Estado publicado reportado pelo operador do GTM + validação de comportamento ao vivo via Chrome DevTools (não é export raw da API GTM).",
+  "account_id": "6365663008",
+  "container_id": "258081200",
+  "public_id": "GTM-TK5L6TJF",
+  "workspace_id": "4",
+  "live_version": {
+    "id": "4",
+    "tags_count": 3,
+    "triggers_count": 2,
+    "user_defined_variables_count": 0,
+    "note": "Versão publicada em 2026-07-15 adicionando o acionador de restauração de consentimento à tag Consent - Update existente."
+  },
+  "tags": [
+    {
+      "name": "Consent - Default (Estado Padrão)",
+      "type": "custom_html",
+      "triggers": ["Consent Initialization - All Pages"]
+    },
+    {
+      "name": "Consent - Update (Aceite do Usuário)",
+      "type": "custom_html",
+      "triggers": ["Evento - Aceite de Cookies", "Evento - Restauração de Consentimento"]
+    },
+    {
+      "name": "GA4 - TAG",
+      "type": "google_tag",
+      "tag_id": "G-8SYDL3EXVM",
+      "triggers": ["Initialization - All Pages", "All Pages"]
+    }
+  ],
+  "custom_triggers": [
+    {
+      "name": "Evento - Aceite de Cookies",
+      "type": "custom_event",
+      "event_name": "cookie_consent_accepted"
+    },
+    {
+      "name": "Evento - Restauração de Consentimento",
+      "type": "custom_event",
+      "event_name": "cookie_consent_restored"
+    }
+  ],
+  "workspace_pending_changes": {
+    "total": 12,
+    "kind": "built_in_variable_activation",
+    "variables": [
+      "Click Classes",
+      "Click Element",
+      "Click ID",
+      "Click Text",
+      "Click URL",
+      "Scroll Depth Threshold",
+      "Scroll Depth Units",
+      "Video Percent",
+      "Video Provider",
+      "Video Status",
+      "Video Title",
+      "Video URL"
+    ]
+  },
+  "resolved_risks": [
+    {
+      "risk": "cookie_consent_restored_has_no_trigger",
+      "resolved_at_utc": "2026-07-15T12:40:00Z",
+      "resolution": "Acionador 'Evento - Restauração de Consentimento' (custom_event: cookie_consent_restored) criado e vinculado à tag existente 'Consent - Update (Aceite do Usuário)'; versão publicada em produção. Validado ao vivo: reload com consentimento restaurado emite gcs=G101 no primeiro collect."
+    }
+  ],
+  "confirmed_risks": [
+    "google_tag_has_two_page_triggers",
+    "custom_html_gtag_consent_warning"
+  ],
+  "limitations": [
+    "This is a normalized snapshot derived from authenticated UI inspection, not a raw GTM API export.",
+    "Runtime duplicate page_view remains to be proven with Preview/network evidence."
+  ]
+}

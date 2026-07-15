@@ -1,0 +1,183 @@
+schema_version: 1
+owner: Cassio Lima
+publication:
+  mode: manual
+  publisher: Cassio Lima
+  second_high_risk_approver: null
+consent:
+  mode: advanced
+  default_owner: gtm
+  grant_owner: gtm
+  denial_safeguard_owner: site_and_gtm
+  site_may_queue_before_consent: true
+  gtm_must_require_analytics_storage: true
+  control_events_forward_to_ga4: false
+naming:
+  event: lower_snake_case
+  stable_ids: lower_snake_case
+  omit_absent_optional_values: true
+pii_policy:
+  allow_pii: false
+  prohibited_sources:
+    - visible_text
+    - whatsapp_url
+    - whatsapp_prefilled_message
+    - faq_search_term
+    - email
+    - phone
+baseline_matrix:
+  kob_section_view: keep_and_enrich
+  kob_whatsapp_click: keep_and_enrich
+  kob_faq_search: deferred_to_phase_1_backlog
+  kob_scroll_depth: remove_after_enhanced_measurement_audit
+control_events:
+  - cookie_consent_accepted
+  - cookie_consent_denied
+  - cookie_preferences_updated
+  - cookie_consent_restored
+events:
+  - name: kob_section_view
+    priority: P0
+    ga4_event: kob_section_view
+    purpose: Medir progressão por marcos de negócio da landing page.
+    firing_rule: Uma vez por section_id por page view quando o marco cruza a faixa central do viewport.
+    deduplication: section_id_once_per_page_view
+    consent: queue_on_site_and_forward_only_when_analytics_granted
+    required_parameters:
+      section_id:
+        type: string
+        allowed_values: [evento, navio, valores, faq, reserve]
+    automated_test: analytics/tests/events.spec.js
+  - name: view_item_list
+    priority: P0
+    ga4_event: view_item_list
+    purpose: Exibir listas de cabines ou pacotes de bebidas.
+    firing_rule: Cabines ao entrar em visão; bebidas somente na primeira ativação da aba.
+    deduplication: item_list_id_once_per_page_view
+    consent: queue_on_site_and_forward_only_when_analytics_granted
+    required_parameters:
+      item_list_id:
+        type: string
+        allowed_values: [cabins_2026, drink_packages_2026]
+      item_list_name:
+        type: string
+      items:
+        type: array
+    automated_test: analytics/tests/events.spec.js
+  - name: select_item
+    priority: P0
+    ga4_event: select_item
+    purpose: Registrar seleção explícita de Ver detalhes em uma lista.
+    firing_rule: Em cada ativação real do botão Ver detalhes.
+    deduplication: none_user_action
+    consent: queue_on_site_and_forward_only_when_analytics_granted
+    required_parameters:
+      item_list_id:
+        type: string
+        allowed_values: [cabins_2026, drink_packages_2026]
+      item_list_name: { type: string }
+      items: { type: array, min_items: 1, max_items: 1 }
+    automated_test: analytics/tests/journeys.spec.js
+  - name: view_item
+    priority: P0
+    ga4_event: view_item
+    purpose: Registrar detalhe exibido com sucesso no modal.
+    firing_rule: Após dialog.showModal concluir para um item válido.
+    deduplication: none_each_successful_open
+    consent: queue_on_site_and_forward_only_when_analytics_granted
+    required_parameters:
+      items: { type: array, min_items: 1, max_items: 1 }
+    automated_test: analytics/tests/journeys.spec.js
+  - name: kob_whatsapp_click
+    priority: P0
+    ga4_event: kob_whatsapp_click
+    purpose: Medir intenção secundária de contato/reserva via WhatsApp.
+    firing_rule: Em cada clique real em CTA explicitamente marcado como canal WhatsApp.
+    deduplication: none_user_action
+    consent: queue_on_site_and_forward_only_when_analytics_granted
+    key_event: secondary_intent_approved_not_configured
+    required_parameters:
+      cta_id: { type: string }
+      placement: { type: string }
+      intent:
+        type: string
+        allowed_values: [reservation, reservation_support, support]
+    optional_parameters:
+      item_id: { type: string }
+      item_category:
+        type: string
+        allowed_values: [cabin, drink_package]
+    automated_test: analytics/tests/journeys.spec.js
+  - name: kob_faq_search
+    priority: P1
+    status: deferred_not_emitted
+    ga4_event: kob_faq_search
+    forwarding_status: deferred_not_in_phase_1_allowlist
+    purpose: Medir uso e utilidade da busca interna do FAQ sem coletar o termo digitado.
+    firing_rule: Após 600 ms sem digitação, para consultas com pelo menos dois caracteres.
+    deduplication: none_each_debounced_search
+    consent: queue_on_site_and_forward_only_when_analytics_granted
+    prohibited_parameters: [search_term, query, inner_text]
+    required_parameters:
+      result_count: { type: integer, minimum: 0 }
+      has_results: { type: boolean }
+    automated_test: analytics/tests/events.spec.js
+  - name: kob_faq_open
+    priority: P1
+    ga4_event: kob_faq_open
+    forwarding_status: deferred_not_in_phase_1_allowlist
+    purpose: Medir quais dúvidas do manual de bordo são efetivamente abertas, sem coletar o texto da pergunta.
+    firing_rule: No evento toggle de cada details do FAQ, apenas quando abre, uma vez por faq_id por page view.
+    deduplication: faq_id_once_per_page_view
+    consent: queue_on_site_and_forward_only_when_analytics_granted
+    prohibited_parameters: [question, summary_text, inner_text]
+    required_parameters:
+      faq_id:
+        type: string
+      faq_category:
+        type: string
+        allowed_values: [embarque, bordo, comida, regras]
+    automated_test: analytics/tests/events.spec.js
+  - name: kob_content_expand
+    priority: P1
+    ga4_event: kob_content_expand
+    forwarding_status: deferred_not_in_phase_1_allowlist
+    purpose: Medir a expansão de blocos de conteúdo aprofundado (galeria e depoimentos) sem coletar texto.
+    firing_rule: Ao expandir o bloco (aria-expanded passa a true), uma vez por content_id por page view.
+    deduplication: content_id_once_per_page_view
+    consent: queue_on_site_and_forward_only_when_analytics_granted
+    prohibited_parameters: [inner_text, content_text]
+    required_parameters:
+      content_type:
+        type: string
+        allowed_values: [gallery, testimonials]
+      content_id:
+        type: string
+    automated_test: analytics/tests/events.spec.js
+item_catalogs:
+  cabins_2026:
+    name: Cabines 2026
+    items:
+      - { item_id: cabin_internal, item_name: Cabine interna, item_category: cabin }
+      - { item_id: cabin_ocean_view, item_name: Cabine janela, item_category: cabin }
+      - { item_id: cabin_balcony, item_name: Cabine varanda, item_category: cabin }
+  drink_packages_2026:
+    name: Pacotes de bebidas 2026
+    items:
+      - { item_id: drink_non_alcoholic, item_name: Pacote não alcoólico, item_category: drink_package }
+      - { item_id: drink_easy, item_name: Pacote Easy, item_category: drink_package }
+      - { item_id: drink_premium, item_name: Pacote Premium, item_category: drink_package }
+deferred_events:
+  - video_start
+  - video_progress
+  - video_complete
+  - kob_virtual_tour_open
+excluded_from_phase_1:
+  - generate_lead
+  - purchase
+  - begin_checkout
+  - add_to_cart
+  - lead_form_submit
+price_policy:
+  send_value: false
+  reason: Definição de preço total versus entrada versus parcela ainda não aprovada.
