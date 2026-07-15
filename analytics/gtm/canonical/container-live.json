@@ -105,13 +105,16 @@
       "risk": "built_in_variables_pending_activation",
       "resolved_at_utc": "2026-07-15T13:30:00Z",
       "resolution": "As 12 variáveis built-in (Click/Scroll/Video) foram ativadas durante a implementação P1 e publicadas."
+    },
+    {
+      "risk": "custom_html_gtag_consent_warning",
+      "resolved_at_utc": "2026-07-15T14:30:00Z",
+      "resolution": "Revisão técnica (Housekeeping 2) via inspeção do gtm.js publicado (v5). As 2 Custom HTML (tag_id 5 e 7) são o único mecanismo do Consent Mode v2: tag 5 = consent default (analytics_storage=denied, wait_for_update=500) na inicialização antes da Google Tag; tag 7 = consent update (analytics_storage=granted) em cookie_consent_accepted e cookie_consent_restored. A Google Tag (__googtag) não emite consent default próprio (sem duplicidade). O aviso do GTM é genérico para qualquer gtag() em Custom HTML, não indica conflito. Comportamento confirmado ao vivo (G100→G101). Classificação: NECESSÁRIA. Decisão: MANTER e documentar."
     }
   ],
-  "confirmed_risks": [
-    "custom_html_gtag_consent_warning"
-  ],
+  "confirmed_risks": [],
   "limitations": [
     "This is a normalized snapshot derived from authenticated UI inspection, not a raw GTM API export.",
-    "custom_html_gtag_consent_warning permanece como aviso de UI da tag Custom HTML de consent; revisado, sem comportamento inesperado observado."
+    "custom_html_gtag_consent_warning encerrado em 2026-07-15: revisado e classificado como NECESSÁRIO (único mecanismo de Consent Mode v2, sem duplicidade com a Google Tag). Decisão registrada em resolved_risks e em analytics/gtm/policies.yaml. A tag é mantida por design."
   ]
 }

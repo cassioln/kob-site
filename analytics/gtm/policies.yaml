@@ -49,4 +49,19 @@ known_live_risks:
     status: ui_risk_runtime_single_page_view_verified_on_acceptance_path
   - id: custom_html_gtag_consent_warning
     severity: medium
-    status: confirmed_ui_warning
+    status: reviewed_decision_keep_necessary
+    decision: keep
+    classification: necessary
+    rationale: >-
+      As duas tags Custom HTML (tag_id 5 e 7) sao o unico mecanismo que
+      estabelece o Consent Mode v2 no container. Tag 5 emite
+      gtag('consent','default', analytics_storage=denied, ad_*=denied,
+      wait_for_update=500) na inicializacao (gtm.js/init), antes da Google Tag.
+      Tag 7 emite gtag('consent','update', analytics_storage=granted) no aceite
+      (cookie_consent_accepted) e na restauracao (cookie_consent_restored).
+      A Google Tag (__googtag) NAO emite consent default proprio
+      (googtag_has_own_consent_default=false), logo NAO ha duplicidade de
+      consent default. O aviso do GTM e generico (qualquer gtag() em Custom HTML
+      dispara), nao indica conflito. Comportamento validado ao vivo:
+      G100 na 1a visita, G101 apos aceite e apos reload restaurado.
+      Remover as tags quebraria o Consent Mode. Decisao: MANTER.
