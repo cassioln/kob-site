@@ -5,10 +5,10 @@ account:
 property:
   id: '545265818'
   name: Kriativos On Board
-  current_timezone: America/Rio_Branco
-  current_timezone_label: Brasil — GMT-05:00 Horário Rio Branco
+  current_timezone: America/Sao_Paulo
+  current_timezone_label: Brasil — GMT-03:00 Horário de Brasília
   recommended_timezone: America/Sao_Paulo
-  timezone_change_status: approved_recommendation_not_applied
+  timezone_change_status: applied_2026_07_15
 stream:
   id: '15244673087'
   name: kob
@@ -42,8 +42,19 @@ data_retention:
 data_filters:
   - name: Internal Traffic
     operation: exclude
-    state: testing
-custom_dimensions_count: 0
+    state: active
+    traffic_type: internal
+    note: >-
+      Regra Home baseada em IP público residencial (Vivo Fibra, dinâmico).
+      Se o IP mudar, a regra precisa ser atualizada. Ativado em 2026-07-15.
+custom_dimensions_count: 6
+custom_dimensions:
+  - { parameter: faq_category, scope: event }
+  - { parameter: faq_id, scope: event }
+  - { parameter: content_type, scope: event }
+  - { parameter: content_id, scope: event }
+  - { parameter: tour_type, scope: event }
+  - { parameter: tour_id, scope: event }
 custom_metrics_count: 0
 connected_site_tags_count: 0
 google_ads_links_count: 0

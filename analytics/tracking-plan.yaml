@@ -125,7 +125,7 @@ events:
   - name: kob_faq_open
     priority: P1
     ga4_event: kob_faq_open
-    forwarding_status: deferred_not_in_phase_1_allowlist
+    forwarding_status: forwarded_phase_1
     purpose: Medir quais dúvidas do manual de bordo são efetivamente abertas, sem coletar o texto da pergunta.
     firing_rule: No evento toggle de cada details do FAQ, apenas quando abre, uma vez por faq_id por page view.
     deduplication: faq_id_once_per_page_view
@@ -141,7 +141,7 @@ events:
   - name: kob_content_expand
     priority: P1
     ga4_event: kob_content_expand
-    forwarding_status: deferred_not_in_phase_1_allowlist
+    forwarding_status: forwarded_phase_1
     purpose: Medir a expansão de blocos de conteúdo aprofundado (galeria e depoimentos) sem coletar texto.
     firing_rule: Ao expandir o bloco (aria-expanded passa a true), uma vez por content_id por page view.
     deduplication: content_id_once_per_page_view
@@ -157,7 +157,7 @@ events:
   - name: kob_virtual_tour_open
     priority: P1
     ga4_event: kob_virtual_tour_open
-    forwarding_status: deferred_not_in_phase_1_allowlist
+    forwarding_status: forwarded_phase_1
     purpose: Medir a abertura dos tours virtuais (navio e cabines) sem coletar URL nem rótulo.
     firing_rule: Em cada abertura real de um modal de tour virtual, por ação do usuário.
     deduplication: none_user_action

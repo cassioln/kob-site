@@ -91,14 +91,20 @@ export function validateTrackingPlanSchema(plan, jsonSchema) {
 
 const eventNames = validateTrackingPlanSchema(trackingPlan, schema);
 if (trackingPlan.schema_version !== 1) throw new Error('schema_version inesperado.');
+// A allowlist do GTM deve conter exatamente os eventos encaminhados nesta fase:
+// todos os P0, mais os P1 explicitamente promovidos com forwarding_status: forwarded_phase_1.
+const forwardedEventNames = trackingPlan.events
+  .filter((event) => event.priority === 'P0' || event.forwarding_status === 'forwarded_phase_1')
+  .map((event) => event.name)
+  .sort();
+const forwardingAllowlist = [...gtmPolicies.event_forwarding.allowlist].sort();
+if (forwardedEventNames.join('\n') !== forwardingAllowlist.join('\n')) {
+  throw new Error('Allowlist GTM e eventos encaminhados (P0 + forwarded_phase_1) estão fora de sincronia.');
+}
 const p0EventNames = trackingPlan.events
   .filter((event) => event.priority === 'P0')
   .map((event) => event.name)
   .sort();
-const forwardingAllowlist = [...gtmPolicies.event_forwarding.allowlist].sort();
-if (p0EventNames.join('\n') !== forwardingAllowlist.join('\n')) {
-  throw new Error('Allowlist GTM e eventos P0 estão fora de sincronia.');
-}
 if (trackingPlan.consent.default_owner !== 'gtm' || trackingPlan.consent.grant_owner !== 'gtm') {
   throw new Error('Consent default e grants devem permanecer sob responsabilidade do GTM.');
 }
@@ -147,6 +153,5 @@ if (property.enhanced_measurement.outbound_clicks
 }
 if (property.property.id !== '545265818') throw new Error('Property ID divergente do baseline.');
 if (canonical.public_id !== 'GTM-TK5L6TJF') throw new Error('Container GTM divergente do baseline.');
-if (canonical.workspace_pending_changes.total !== 12) throw new Error('Baseline das 12 alterações divergente.');
 
 console.log(`analytics_config=ok events=${eventNames.length} p0_allowlist=${p0EventNames.length} pii_patterns=${Object.keys(piiPatterns).length} schema_version=${trackingPlan.schema_version}`);

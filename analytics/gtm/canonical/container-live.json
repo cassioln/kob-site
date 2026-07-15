@@ -1,17 +1,17 @@
 {
   "snapshot_type": "canonical_ui_audit",
-  "observed_at_utc": "2026-07-15T12:40:00Z",
-  "observation_source": "Estado publicado reportado pelo operador do GTM + validação de comportamento ao vivo via Chrome DevTools (não é export raw da API GTM).",
+  "observed_at_utc": "2026-07-15T13:30:00Z",
+  "observation_source": "Estado publicado reportado pelo operador do GTM (Preview + Tag Assistant) + validação de comportamento ao vivo via Chrome DevTools (não é export raw da API GTM).",
   "account_id": "6365663008",
   "container_id": "258081200",
   "public_id": "GTM-TK5L6TJF",
   "workspace_id": "4",
   "live_version": {
-    "id": "4",
-    "tags_count": 3,
-    "triggers_count": 2,
-    "user_defined_variables_count": 0,
-    "note": "Versão publicada em 2026-07-15 adicionando o acionador de restauração de consentimento à tag Consent - Update existente."
+    "id": "5",
+    "tags_count": 6,
+    "triggers_count": 5,
+    "user_defined_variables_count": 6,
+    "note": "Versão publicada em 2026-07-15 encaminhando os eventos P1 (kob_faq_open, kob_content_expand, kob_virtual_tour_open) ao GA4 via tags GA4 Event dedicadas, com Data Layer Variables e trigger de evento personalizado por evento. Consent Mode inalterado."
   },
   "tags": [
     {
@@ -29,6 +29,30 @@
       "type": "google_tag",
       "tag_id": "G-8SYDL3EXVM",
       "triggers": ["Initialization - All Pages", "All Pages"]
+    },
+    {
+      "name": "GA4 - FAQ Open",
+      "type": "ga4_event",
+      "event_name": "kob_faq_open",
+      "event_parameters": ["faq_id", "faq_category"],
+      "consent": "requires_analytics_storage",
+      "triggers": ["Evento - FAQ Open"]
+    },
+    {
+      "name": "GA4 - Content Expand",
+      "type": "ga4_event",
+      "event_name": "kob_content_expand",
+      "event_parameters": ["content_id", "content_type"],
+      "consent": "requires_analytics_storage",
+      "triggers": ["Evento - Content Expand"]
+    },
+    {
+      "name": "GA4 - Virtual Tour Open",
+      "type": "ga4_event",
+      "event_name": "kob_virtual_tour_open",
+      "event_parameters": ["tour_id", "tour_type"],
+      "consent": "requires_analytics_storage",
+      "triggers": ["Evento - Virtual Tour Open"]
     }
   ],
   "custom_triggers": [
@@ -41,39 +65,53 @@
       "name": "Evento - Restauração de Consentimento",
       "type": "custom_event",
       "event_name": "cookie_consent_restored"
+    },
+    {
+      "name": "Evento - FAQ Open",
+      "type": "custom_event",
+      "event_name": "kob_faq_open"
+    },
+    {
+      "name": "Evento - Content Expand",
+      "type": "custom_event",
+      "event_name": "kob_content_expand"
+    },
+    {
+      "name": "Evento - Virtual Tour Open",
+      "type": "custom_event",
+      "event_name": "kob_virtual_tour_open"
     }
   ],
-  "workspace_pending_changes": {
-    "total": 12,
-    "kind": "built_in_variable_activation",
-    "variables": [
-      "Click Classes",
-      "Click Element",
-      "Click ID",
-      "Click Text",
-      "Click URL",
-      "Scroll Depth Threshold",
-      "Scroll Depth Units",
-      "Video Percent",
-      "Video Provider",
-      "Video Status",
-      "Video Title",
-      "Video URL"
-    ]
-  },
+  "user_defined_variables": [
+    { "name": "DLV - faq_id", "type": "data_layer_variable", "data_layer_key": "faq_id" },
+    { "name": "DLV - faq_category", "type": "data_layer_variable", "data_layer_key": "faq_category" },
+    { "name": "DLV - content_id", "type": "data_layer_variable", "data_layer_key": "content_id" },
+    { "name": "DLV - content_type", "type": "data_layer_variable", "data_layer_key": "content_type" },
+    { "name": "DLV - tour_id", "type": "data_layer_variable", "data_layer_key": "tour_id" },
+    { "name": "DLV - tour_type", "type": "data_layer_variable", "data_layer_key": "tour_type" }
+  ],
   "resolved_risks": [
     {
       "risk": "cookie_consent_restored_has_no_trigger",
       "resolved_at_utc": "2026-07-15T12:40:00Z",
       "resolution": "Acionador 'Evento - Restauração de Consentimento' (custom_event: cookie_consent_restored) criado e vinculado à tag existente 'Consent - Update (Aceite do Usuário)'; versão publicada em produção. Validado ao vivo: reload com consentimento restaurado emite gcs=G101 no primeiro collect."
+    },
+    {
+      "risk": "google_tag_has_two_page_triggers",
+      "resolved_at_utc": "2026-07-15T13:30:00Z",
+      "resolution": "Acompanhado em GTM Preview durante a sessão de publicação P1: não foi observada dupla contagem de page_view em runtime. Risco de UI sem impacto em produção."
+    },
+    {
+      "risk": "built_in_variables_pending_activation",
+      "resolved_at_utc": "2026-07-15T13:30:00Z",
+      "resolution": "As 12 variáveis built-in (Click/Scroll/Video) foram ativadas durante a implementação P1 e publicadas."
     }
   ],
   "confirmed_risks": [
-    "google_tag_has_two_page_triggers",
     "custom_html_gtag_consent_warning"
   ],
   "limitations": [
     "This is a normalized snapshot derived from authenticated UI inspection, not a raw GTM API export.",
-    "Runtime duplicate page_view remains to be proven with Preview/network evidence."
+    "custom_html_gtag_consent_warning permanece como aviso de UI da tag Custom HTML de consent; revisado, sem comportamento inesperado observado."
   ]
 }
