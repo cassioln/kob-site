@@ -108,6 +108,24 @@ events:
         type: string
         allowed_values: [cabin, drink_package]
     automated_test: analytics/tests/journeys.spec.js
+  - name: generate_lead
+    priority: P0
+    ga4_event: generate_lead
+    purpose: Registrar lead qualificado quando o usuário inicia uma reserva via WhatsApp (venda fecha off-site na Royal Trip).
+    firing_rule: Em cada clique real de CTA WhatsApp com intent=reservation; não dispara para reservation_support nem support.
+    deduplication: none_user_action
+    consent: queue_on_site_and_forward_only_when_analytics_granted
+    key_event: primary_conversion_lead_offsite_sale
+    value_policy: no_value_lead_gen_offsite_sale
+    required_parameters:
+      cta_id: { type: string }
+      placement: { type: string }
+    optional_parameters:
+      item_id: { type: string }
+      item_category:
+        type: string
+        allowed_values: [cabin, drink_package]
+    automated_test: analytics/tests/journeys.spec.js
   - name: kob_faq_search
     priority: P1
     status: deferred_not_emitted
@@ -205,11 +223,20 @@ enhanced_measurement_events:
       youtube_iframe_api: true
   non_emission_test: analytics/tests/events.spec.js
 excluded_from_phase_1:
-  - generate_lead
-  - purchase
-  - begin_checkout
-  - add_to_cart
   - lead_form_submit
+not_applicable_offsite_sale:
+  reason: >-
+    O site não vende diretamente: o CTA de reserva abre um contato no WhatsApp e a
+    venda é fechada off-site pela agência Royal Trip. Eventos de ecommerce
+    transacional não têm origem no site e não devem ser emitidos aqui. A conversão
+    que o site controla é o lead (generate_lead no clique de reserva).
+  events:
+    - purchase
+    - begin_checkout
+    - add_to_cart
 price_policy:
   send_value: false
-  reason: Definição de preço total versus entrada versus parcela ainda não aprovada.
+  reason: >-
+    Lead-gen com venda off-site: generate_lead não carrega value (não há transação
+    no site). Um valor estimado por cabine pode ser adicionado no futuro sem
+    bloquear a conversão.

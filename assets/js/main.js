@@ -2356,6 +2356,16 @@ document.documentElement.classList.add('js');
         item_id: link.dataset.analyticsItemId,
         item_category: link.dataset.analyticsItemCategory
       });
+      // Lead qualificado (conversão): só quando a intenção é reservar de fato.
+      // A venda fecha off-site (WhatsApp/Royal Trip), então o site mede até o lead.
+      if (link.dataset.analyticsIntent === 'reservation') {
+        trackAnalytics('generate_lead', {
+          cta_id: link.dataset.analyticsCtaId,
+          placement: link.dataset.analyticsPlacement,
+          item_id: link.dataset.analyticsItemId,
+          item_category: link.dataset.analyticsItemCategory
+        });
+      }
       if (link.dataset.kobWhatsappBound !== 'inline') {
         var destination = whatsappDestinations.get(link);
         if (destination) window.open(destination, '_blank', 'noopener');

@@ -11,7 +11,8 @@
     { "$ref": "#/$defs/faqSearch" },
     { "$ref": "#/$defs/faqOpen" },
     { "$ref": "#/$defs/contentExpand" },
-    { "$ref": "#/$defs/virtualTourOpen" }
+    { "$ref": "#/$defs/virtualTourOpen" },
+    { "$ref": "#/$defs/generateLead" }
   ],
   "$defs": {
     "eventName": {
@@ -148,6 +149,19 @@
         "schema_version": { "const": 1 },
         "tour_type": { "enum": ["ship", "cabin"] },
         "tour_id": { "$ref": "#/$defs/stableId" }
+      }
+    },
+    "generateLead": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["event", "schema_version", "cta_id", "placement"],
+      "properties": {
+        "event": { "const": "generate_lead" },
+        "schema_version": { "const": 1 },
+        "cta_id": { "$ref": "#/$defs/stableId" },
+        "placement": { "$ref": "#/$defs/stableId" },
+        "item_id": { "$ref": "#/$defs/stableId" },
+        "item_category": { "enum": ["cabin", "drink_package"] }
       }
     }
   }

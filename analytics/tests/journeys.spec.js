@@ -145,3 +145,21 @@ test('CTA dinâmico do modal carrega contexto do item sem copiar o href', async 
   assertSchema(payload);
   assertNoPii(payload);
 });
+
+test('CTA de reserva emite generate_lead (conversão) além de kob_whatsapp_click', async ({ page }) => {
+  await page.locator('[data-analytics-cta-id="hero_reserve"]').click();
+
+  const [lead] = await getBusinessEvents(page, 'generate_lead');
+  expect(lead).toMatchObject({ cta_id: 'hero_reserve', placement: 'hero' });
+  expect(lead).not.toHaveProperty('value');
+  expect(lead).not.toHaveProperty('intent');
+  assertSchema(lead);
+  assertNoPii(lead);
+});
+
+test('CTA de suporte (intent≠reservation) NÃO emite generate_lead', async ({ page }) => {
+  await page.locator('[data-analytics-cta-id="faq_support"]').click();
+
+  expect(await getBusinessEvents(page, 'kob_whatsapp_click')).toHaveLength(1);
+  expect(await getBusinessEvents(page, 'generate_lead')).toHaveLength(0);
+});
