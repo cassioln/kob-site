@@ -1,6 +1,6 @@
 {
   "exportFormatVersion": 2,
-  "exportTime": "2026-07-15 14:45:00",
+  "exportTime": "2026-07-15 16:40:00",
   "containerVersion": {
     "path": "accounts/0/containers/0/versions/0",
     "accountId": "0",
@@ -29,30 +29,30 @@
             "value": "false"
           },
           {
-            "type": "TEMPLATE",
-            "key": "eventName",
-            "value": "kob_section_view"
-          },
-          {
             "type": "LIST",
-            "key": "eventParameters",
+            "key": "eventSettingsTable",
             "list": [
               {
                 "type": "MAP",
                 "map": [
                   {
                     "type": "TEMPLATE",
-                    "key": "name",
+                    "key": "parameter",
                     "value": "section_id"
                   },
                   {
                     "type": "TEMPLATE",
-                    "key": "value",
+                    "key": "parameterValue",
                     "value": "{{DLV - section_id}}"
                   }
                 ]
               }
             ]
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "eventName",
+            "value": "kob_section_view"
           },
           {
             "type": "TEMPLATE",
@@ -64,19 +64,7 @@
         "firingTriggerId": [
           "201"
         ],
-        "tagFiringOption": "ONCE_PER_EVENT",
-        "consentSettings": {
-          "consentStatus": "NEEDED",
-          "consentType": {
-            "type": "LIST",
-            "list": [
-              {
-                "type": "TEMPLATE",
-                "value": "analytics_storage"
-              }
-            ]
-          }
-        }
+        "tagFiringOption": "ONCE_PER_EVENT"
       },
       {
         "accountId": "0",
@@ -91,25 +79,20 @@
             "value": "false"
           },
           {
-            "type": "TEMPLATE",
-            "key": "eventName",
-            "value": "kob_whatsapp_click"
-          },
-          {
             "type": "LIST",
-            "key": "eventParameters",
+            "key": "eventSettingsTable",
             "list": [
               {
                 "type": "MAP",
                 "map": [
                   {
                     "type": "TEMPLATE",
-                    "key": "name",
+                    "key": "parameter",
                     "value": "cta_id"
                   },
                   {
                     "type": "TEMPLATE",
-                    "key": "value",
+                    "key": "parameterValue",
                     "value": "{{DLV - cta_id}}"
                   }
                 ]
@@ -119,12 +102,12 @@
                 "map": [
                   {
                     "type": "TEMPLATE",
-                    "key": "name",
+                    "key": "parameter",
                     "value": "placement"
                   },
                   {
                     "type": "TEMPLATE",
-                    "key": "value",
+                    "key": "parameterValue",
                     "value": "{{DLV - placement}}"
                   }
                 ]
@@ -134,12 +117,12 @@
                 "map": [
                   {
                     "type": "TEMPLATE",
-                    "key": "name",
+                    "key": "parameter",
                     "value": "intent"
                   },
                   {
                     "type": "TEMPLATE",
-                    "key": "value",
+                    "key": "parameterValue",
                     "value": "{{DLV - intent}}"
                   }
                 ]
@@ -149,17 +132,22 @@
                 "map": [
                   {
                     "type": "TEMPLATE",
-                    "key": "name",
+                    "key": "parameter",
                     "value": "item_id"
                   },
                   {
                     "type": "TEMPLATE",
-                    "key": "value",
+                    "key": "parameterValue",
                     "value": "{{DLV - item_id}}"
                   }
                 ]
               }
             ]
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "eventName",
+            "value": "kob_whatsapp_click"
           },
           {
             "type": "TEMPLATE",
@@ -171,19 +159,7 @@
         "firingTriggerId": [
           "202"
         ],
-        "tagFiringOption": "ONCE_PER_EVENT",
-        "consentSettings": {
-          "consentStatus": "NEEDED",
-          "consentType": {
-            "type": "LIST",
-            "list": [
-              {
-                "type": "TEMPLATE",
-                "value": "analytics_storage"
-              }
-            ]
-          }
-        }
+        "tagFiringOption": "ONCE_PER_EVENT"
       },
       {
         "accountId": "0",
@@ -198,25 +174,20 @@
             "value": "false"
           },
           {
-            "type": "TEMPLATE",
-            "key": "eventName",
-            "value": "view_item_list"
-          },
-          {
             "type": "LIST",
-            "key": "eventParameters",
+            "key": "eventSettingsTable",
             "list": [
               {
                 "type": "MAP",
                 "map": [
                   {
                     "type": "TEMPLATE",
-                    "key": "name",
+                    "key": "parameter",
                     "value": "item_list_id"
                   },
                   {
                     "type": "TEMPLATE",
-                    "key": "value",
+                    "key": "parameterValue",
                     "value": "{{DLV - item_list_id}}"
                   }
                 ]
@@ -226,17 +197,22 @@
                 "map": [
                   {
                     "type": "TEMPLATE",
-                    "key": "name",
+                    "key": "parameter",
                     "value": "item_list_name"
                   },
                   {
                     "type": "TEMPLATE",
-                    "key": "value",
+                    "key": "parameterValue",
                     "value": "{{DLV - item_list_name}}"
                   }
                 ]
               }
             ]
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "eventName",
+            "value": "view_item_list"
           },
           {
             "type": "TEMPLATE",
@@ -248,19 +224,7 @@
         "firingTriggerId": [
           "203"
         ],
-        "tagFiringOption": "ONCE_PER_EVENT",
-        "consentSettings": {
-          "consentStatus": "NEEDED",
-          "consentType": {
-            "type": "LIST",
-            "list": [
-              {
-                "type": "TEMPLATE",
-                "value": "analytics_storage"
-              }
-            ]
-          }
-        }
+        "tagFiringOption": "ONCE_PER_EVENT"
       },
       {
         "accountId": "0",
@@ -275,25 +239,20 @@
             "value": "false"
           },
           {
-            "type": "TEMPLATE",
-            "key": "eventName",
-            "value": "select_item"
-          },
-          {
             "type": "LIST",
-            "key": "eventParameters",
+            "key": "eventSettingsTable",
             "list": [
               {
                 "type": "MAP",
                 "map": [
                   {
                     "type": "TEMPLATE",
-                    "key": "name",
+                    "key": "parameter",
                     "value": "item_list_id"
                   },
                   {
                     "type": "TEMPLATE",
-                    "key": "value",
+                    "key": "parameterValue",
                     "value": "{{DLV - item_list_id}}"
                   }
                 ]
@@ -303,17 +262,22 @@
                 "map": [
                   {
                     "type": "TEMPLATE",
-                    "key": "name",
+                    "key": "parameter",
                     "value": "item_list_name"
                   },
                   {
                     "type": "TEMPLATE",
-                    "key": "value",
+                    "key": "parameterValue",
                     "value": "{{DLV - item_list_name}}"
                   }
                 ]
               }
             ]
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "eventName",
+            "value": "select_item"
           },
           {
             "type": "TEMPLATE",
@@ -325,19 +289,7 @@
         "firingTriggerId": [
           "204"
         ],
-        "tagFiringOption": "ONCE_PER_EVENT",
-        "consentSettings": {
-          "consentStatus": "NEEDED",
-          "consentType": {
-            "type": "LIST",
-            "list": [
-              {
-                "type": "TEMPLATE",
-                "value": "analytics_storage"
-              }
-            ]
-          }
-        }
+        "tagFiringOption": "ONCE_PER_EVENT"
       },
       {
         "accountId": "0",
@@ -366,19 +318,7 @@
         "firingTriggerId": [
           "205"
         ],
-        "tagFiringOption": "ONCE_PER_EVENT",
-        "consentSettings": {
-          "consentStatus": "NEEDED",
-          "consentType": {
-            "type": "LIST",
-            "list": [
-              {
-                "type": "TEMPLATE",
-                "value": "analytics_storage"
-              }
-            ]
-          }
-        }
+        "tagFiringOption": "ONCE_PER_EVENT"
       }
     ],
     "trigger": [
@@ -404,7 +344,9 @@
               }
             ]
           }
-        ]
+        ],
+        "filter": [],
+        "autoEventFilter": []
       },
       {
         "accountId": "0",
@@ -428,7 +370,9 @@
               }
             ]
           }
-        ]
+        ],
+        "filter": [],
+        "autoEventFilter": []
       },
       {
         "accountId": "0",
@@ -452,7 +396,9 @@
               }
             ]
           }
-        ]
+        ],
+        "filter": [],
+        "autoEventFilter": []
       },
       {
         "accountId": "0",
@@ -476,7 +422,9 @@
               }
             ]
           }
-        ]
+        ],
+        "filter": [],
+        "autoEventFilter": []
       },
       {
         "accountId": "0",
@@ -500,7 +448,9 @@
               }
             ]
           }
-        ]
+        ],
+        "filter": [],
+        "autoEventFilter": []
       }
     ],
     "variable": [
