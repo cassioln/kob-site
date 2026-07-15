@@ -1,7 +1,7 @@
 {
   "snapshot_type": "canonical_ui_audit",
-  "observed_at_utc": "2026-07-15T13:30:00Z",
-  "observation_source": "Estado publicado reportado pelo operador do GTM (Preview + Tag Assistant) + validação de comportamento ao vivo via Chrome DevTools (não é export raw da API GTM).",
+  "observed_at_utc": "2026-07-15T14:05:00Z",
+  "observation_source": "Versão 5 publicada pelo operador e VERIFICADA AO VIVO via Chrome DevTools (read-only) em 2026-07-15: gtm.js live reporta version=5 contendo os 3 eventos P1; disparo real de FAQ/galeria/tour gerou collects GA4 en=kob_faq_open (faq_id=comida_01, faq_category=comida), en=kob_content_expand (content_type=gallery, content_id=edition_2025_gallery) e en=kob_virtual_tour_open (tour_type=ship, tour_id=msc_musica), todos com gcs=G101 e sem PII. Não é export raw da API GTM.",
   "account_id": "6365663008",
   "container_id": "258081200",
   "public_id": "GTM-TK5L6TJF",
