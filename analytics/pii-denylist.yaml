@@ -48,6 +48,8 @@ allowed_business_fields:
   - has_results
   - faq_id
   - faq_category
+  - content_type
+  - content_id
 test_cases:
   prohibited_values:
     - { pattern: email, value: lead@example.com }

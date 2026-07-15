@@ -138,6 +138,22 @@ events:
         type: string
         allowed_values: [embarque, bordo, comida, regras]
     automated_test: analytics/tests/events.spec.js
+  - name: kob_content_expand
+    priority: P1
+    ga4_event: kob_content_expand
+    forwarding_status: deferred_not_in_phase_1_allowlist
+    purpose: Medir a expansão de blocos de conteúdo aprofundado (galeria e depoimentos) sem coletar texto.
+    firing_rule: Ao expandir o bloco (aria-expanded passa a true), uma vez por content_id por page view.
+    deduplication: content_id_once_per_page_view
+    consent: queue_on_site_and_forward_only_when_analytics_granted
+    prohibited_parameters: [inner_text, content_text]
+    required_parameters:
+      content_type:
+        type: string
+        allowed_values: [gallery, testimonials]
+      content_id:
+        type: string
+    automated_test: analytics/tests/events.spec.js
 item_catalogs:
   cabins_2026:
     name: Cabines 2026
@@ -156,7 +172,6 @@ deferred_events:
   - video_progress
   - video_complete
   - kob_virtual_tour_open
-  - kob_content_expand
 excluded_from_phase_1:
   - generate_lead
   - purchase

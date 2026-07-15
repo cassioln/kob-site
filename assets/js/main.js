@@ -37,6 +37,15 @@ document.documentElement.classList.add('js');
 
   window.KOBAnalytics = Object.freeze({ track: trackAnalytics });
 
+  // Expansão de blocos de conteúdo aprofundado (galeria, depoimentos):
+  // emite uma vez por content_id por page view, apenas ao expandir.
+  var expandedContentIds = {};
+  function trackContentExpand(contentType, contentId) {
+    if (expandedContentIds[contentId]) return;
+    expandedContentIds[contentId] = true;
+    trackAnalytics('kob_content_expand', { content_type: contentType, content_id: contentId });
+  }
+
   // O Enhanced Measurement captura o href do elemento clicado como link_url.
   // Mantemos telefone/mensagem fora do href e usamos o destino completo somente
   // para navegação, sem adicioná-lo ao payload de analytics.
@@ -408,6 +417,7 @@ document.documentElement.classList.add('js');
       });
       galleryExpand.setAttribute('aria-expanded', nextState ? 'true' : 'false');
       track.dataset.expanded = nextState ? 'true' : 'false';
+      if (nextState) trackContentExpand('gallery', 'edition_2025_gallery');
       if (galleryExpandLabel) {
         galleryExpandLabel.textContent = nextState ? 'Recolher galeria' : totalLabel;
       }
@@ -455,6 +465,7 @@ document.documentElement.classList.add('js');
       setVoicesVisibility(nextState);
       voicesExpand.setAttribute('aria-expanded', nextState ? 'true' : 'false');
       voicesDeck.dataset.expanded = nextState ? 'true' : 'false';
+      if (nextState) trackContentExpand('testimonials', 'participant_voices');
       if (voicesExpandLabel) {
         voicesExpandLabel.textContent = nextState ? 'Recolher depoimentos' : 'Ver mais';
       }

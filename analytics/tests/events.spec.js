@@ -102,3 +102,36 @@ test('fechar uma dúvida não emite kob_faq_open e cada dúvida tem id próprio'
   await page.waitForTimeout(150);
   expect((await getBusinessEvents(page, 'kob_faq_open'))).toHaveLength(2);
 });
+
+test('expandir galeria e depoimentos emite kob_content_expand uma vez cada, sem recolher', async ({ page }) => {
+  const galleryBtn = page.locator('#galleryExpand');
+  await galleryBtn.scrollIntoViewIfNeeded();
+  await galleryBtn.click();
+  await expect(galleryBtn).toHaveAttribute('aria-expanded', 'true');
+
+  await expect.poll(async () => (await getBusinessEvents(page, 'kob_content_expand')).length).toBe(1);
+  const [gallery] = await getBusinessEvents(page, 'kob_content_expand');
+  expect(gallery).toMatchObject({ content_type: 'gallery', content_id: 'edition_2025_gallery' });
+  assertSchema(gallery);
+  assertNoPii(gallery);
+
+  // Recolher não emite; reexpandir não duplica (exact-once por content_id).
+  await galleryBtn.click();
+  await expect(galleryBtn).toHaveAttribute('aria-expanded', 'false');
+  await galleryBtn.click();
+  await page.waitForTimeout(150);
+  expect((await getBusinessEvents(page, 'kob_content_expand'))
+    .filter((e) => e.content_id === 'edition_2025_gallery')).toHaveLength(1);
+
+  const voicesBtn = page.locator('#voicesExpand');
+  await voicesBtn.scrollIntoViewIfNeeded();
+  await voicesBtn.click();
+  await expect(voicesBtn).toHaveAttribute('aria-expanded', 'true');
+  await expect.poll(async () => (await getBusinessEvents(page, 'kob_content_expand')).length).toBe(2);
+
+  const voices = (await getBusinessEvents(page, 'kob_content_expand'))
+    .find((e) => e.content_type === 'testimonials');
+  expect(voices).toMatchObject({ content_type: 'testimonials', content_id: 'participant_voices' });
+  assertSchema(voices);
+  assertNoPii(voices);
+});

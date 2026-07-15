@@ -9,7 +9,8 @@
     { "$ref": "#/$defs/viewItem" },
     { "$ref": "#/$defs/whatsappClick" },
     { "$ref": "#/$defs/faqSearch" },
-    { "$ref": "#/$defs/faqOpen" }
+    { "$ref": "#/$defs/faqOpen" },
+    { "$ref": "#/$defs/contentExpand" }
   ],
   "$defs": {
     "eventName": {
@@ -124,6 +125,17 @@
         "schema_version": { "const": 1 },
         "faq_id": { "$ref": "#/$defs/stableId" },
         "faq_category": { "enum": ["embarque", "bordo", "comida", "regras"] }
+      }
+    },
+    "contentExpand": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["event", "schema_version", "content_type", "content_id"],
+      "properties": {
+        "event": { "const": "kob_content_expand" },
+        "schema_version": { "const": 1 },
+        "content_type": { "enum": ["gallery", "testimonials"] },
+        "content_id": { "$ref": "#/$defs/stableId" }
       }
     }
   }
