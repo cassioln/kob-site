@@ -1598,6 +1598,8 @@ document.documentElement.classList.add('js');
       var tourClose = document.getElementById('tour360Close');
       var tourMax = document.getElementById('tour360Maximize');
       var tourFocus = null;
+      // Cabine (chave do DATA) -> item_id estável do catálogo de analytics.
+      var CABIN_TOUR_IDS = { interna: 'cabin_internal', janela: 'cabin_ocean_view', varanda: 'cabin_balcony' };
 
       function showSpinner() {
         if (stage) stage.classList.add('is-loading');
@@ -1629,6 +1631,7 @@ document.documentElement.classList.add('js');
         showSpinner();
         frame.src = d.tour;
         tour.showModal();
+        trackAnalytics('kob_virtual_tour_open', { tour_type: 'cabin', tour_id: CABIN_TOUR_IDS[currentKey] });
       }
 
       function closeTour() {
@@ -1841,6 +1844,7 @@ document.documentElement.classList.add('js');
       if (!current) select(items[0].scene, items[0].name);
       dialog.showModal();
       if (bgVideo) bgVideo.pause();
+      trackAnalytics('kob_virtual_tour_open', { tour_type: 'ship', tour_id: 'msc_musica' });
     }
 
     function close() {

@@ -10,7 +10,8 @@
     { "$ref": "#/$defs/whatsappClick" },
     { "$ref": "#/$defs/faqSearch" },
     { "$ref": "#/$defs/faqOpen" },
-    { "$ref": "#/$defs/contentExpand" }
+    { "$ref": "#/$defs/contentExpand" },
+    { "$ref": "#/$defs/virtualTourOpen" }
   ],
   "$defs": {
     "eventName": {
@@ -136,6 +137,17 @@
         "schema_version": { "const": 1 },
         "content_type": { "enum": ["gallery", "testimonials"] },
         "content_id": { "$ref": "#/$defs/stableId" }
+      }
+    },
+    "virtualTourOpen": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["event", "schema_version", "tour_type", "tour_id"],
+      "properties": {
+        "event": { "const": "kob_virtual_tour_open" },
+        "schema_version": { "const": 1 },
+        "tour_type": { "enum": ["ship", "cabin"] },
+        "tour_id": { "$ref": "#/$defs/stableId" }
       }
     }
   }

@@ -154,6 +154,22 @@ events:
       content_id:
         type: string
     automated_test: analytics/tests/events.spec.js
+  - name: kob_virtual_tour_open
+    priority: P1
+    ga4_event: kob_virtual_tour_open
+    forwarding_status: deferred_not_in_phase_1_allowlist
+    purpose: Medir a abertura dos tours virtuais (navio e cabines) sem coletar URL nem rótulo.
+    firing_rule: Em cada abertura real de um modal de tour virtual, por ação do usuário.
+    deduplication: none_user_action
+    consent: queue_on_site_and_forward_only_when_analytics_granted
+    prohibited_parameters: [tour_url, label, inner_text]
+    required_parameters:
+      tour_type:
+        type: string
+        allowed_values: [ship, cabin]
+      tour_id:
+        type: string
+    automated_test: analytics/tests/events.spec.js
 item_catalogs:
   cabins_2026:
     name: Cabines 2026
@@ -171,7 +187,6 @@ deferred_events:
   - video_start
   - video_progress
   - video_complete
-  - kob_virtual_tour_open
 excluded_from_phase_1:
   - generate_lead
   - purchase

@@ -50,6 +50,8 @@ allowed_business_fields:
   - faq_category
   - content_type
   - content_id
+  - tour_type
+  - tour_id
 test_cases:
   prohibited_values:
     - { pattern: email, value: lead@example.com }

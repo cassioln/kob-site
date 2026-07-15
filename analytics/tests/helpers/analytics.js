@@ -25,7 +25,8 @@ export const businessEventNames = [
   'kob_whatsapp_click',
   'kob_faq_search',
   'kob_faq_open',
-  'kob_content_expand'
+  'kob_content_expand',
+  'kob_virtual_tour_open'
 ];
 
 export async function blockAnalyticsNetwork(page) {

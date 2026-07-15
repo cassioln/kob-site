@@ -135,3 +135,26 @@ test('expandir galeria e depoimentos emite kob_content_expand uma vez cada, sem 
   assertSchema(voices);
   assertNoPii(voices);
 });
+
+test('abrir o tour do navio emite kob_virtual_tour_open (ship) sem coletar URL nem rótulo', async ({ page }) => {
+  const shipTour = page.locator('#shipTourOpen');
+  await shipTour.click({ force: true });
+
+  await expect.poll(async () => (await getBusinessEvents(page, 'kob_virtual_tour_open')).length).toBe(1);
+  const [ship] = await getBusinessEvents(page, 'kob_virtual_tour_open');
+  expect(ship).toMatchObject({ tour_type: 'ship', tour_id: 'msc_musica' });
+  assertSchema(ship);
+  assertNoPii(ship);
+});
+
+test('abrir o tour 360 da cabine emite kob_virtual_tour_open (cabin) por ação do usuário', async ({ page }) => {
+  await page.getByRole('tab', { name: 'Cabines' }).click();
+  await page.getByRole('button', { name: 'VER DETALHES' }).first().click();
+  await page.locator('#cabinModalTour').click();
+
+  await expect.poll(async () => (await getBusinessEvents(page, 'kob_virtual_tour_open')).length).toBe(1);
+  const [cabin] = await getBusinessEvents(page, 'kob_virtual_tour_open');
+  expect(cabin).toMatchObject({ tour_type: 'cabin', tour_id: 'cabin_internal' });
+  assertSchema(cabin);
+  assertNoPii(cabin);
+});
