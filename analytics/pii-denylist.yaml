@@ -46,6 +46,8 @@ allowed_business_fields:
   - intent
   - result_count
   - has_results
+  - faq_id
+  - faq_category
 test_cases:
   prohibited_values:
     - { pattern: email, value: lead@example.com }

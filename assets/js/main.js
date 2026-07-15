@@ -2347,6 +2347,32 @@ document.documentElement.classList.add('js');
       }
     });
 
+    // FAQ: mede quais dúvidas são abertas (não o texto). IDs estáveis derivam
+    // da categoria do painel + posição, nunca da copy da pergunta.
+    (function faqOpenAnalytics() {
+      var FAQ_CATEGORIES = { 'faq-embarque': 'embarque', 'faq-bordo': 'bordo', 'faq-comida': 'comida', 'faq-regras': 'regras' };
+      var openedFaqIds = {};
+      Object.keys(FAQ_CATEGORIES).forEach(function (panelId) {
+        var panel = document.getElementById(panelId);
+        if (!panel) return;
+        var category = FAQ_CATEGORIES[panelId];
+        var items = Array.prototype.slice.call(panel.querySelectorAll('details'));
+        items.forEach(function (item, index) {
+          if (!item.dataset.faqId) {
+            item.dataset.faqId = category + '_' + ('0' + (index + 1)).slice(-2);
+            item.dataset.faqCategory = category;
+          }
+          item.addEventListener('toggle', function () {
+            if (!item.open) return;
+            var faqId = item.dataset.faqId;
+            if (openedFaqIds[faqId]) return;
+            openedFaqIds[faqId] = true;
+            trackAnalytics('kob_faq_open', { faq_id: faqId, faq_category: item.dataset.faqCategory });
+          });
+        });
+      });
+    })();
+
   })();
 
   // Carta náutica de #hospedagem: parallax de profundidade das camadas decorativas.

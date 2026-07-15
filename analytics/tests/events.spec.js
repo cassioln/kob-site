@@ -56,3 +56,49 @@ test('busca do FAQ permanece local e não emite o evento adiado', async ({ page 
     .filter((entry) => entry?.event === 'kob_faq_search'));
   expect(faqEvents).toEqual([]);
 });
+
+test('abrir uma dúvida emite kob_faq_open uma vez, sem texto e com id estável', async ({ page }) => {
+  const details = page.locator('#faq-comida details').first();
+  await details.locator('summary').click();
+  await expect(details).toHaveJSProperty('open', true);
+
+  await expect.poll(async () => (await getBusinessEvents(page, 'kob_faq_open')).length).toBe(1);
+  const [payload] = await getBusinessEvents(page, 'kob_faq_open');
+  expect(payload).toMatchObject({ faq_category: 'comida' });
+  expect(payload.faq_id).toMatch(/^comida_\d{2}$/);
+  assertSchema(payload);
+  assertNoPii(payload);
+  // O texto da pergunta nunca deve viajar no payload.
+  const summaryText = await details.locator('summary').innerText();
+  expect(JSON.stringify(payload)).not.toContain(summaryText.trim());
+
+  // Fechar e reabrir a mesma dúvida não deve duplicar (exact-once por page view).
+  await details.locator('summary').click();
+  await expect(details).toHaveJSProperty('open', false);
+  await details.locator('summary').click();
+  await expect(details).toHaveJSProperty('open', true);
+  await page.waitForTimeout(150);
+  expect((await getBusinessEvents(page, 'kob_faq_open')).filter((e) => e.faq_id === payload.faq_id)).toHaveLength(1);
+});
+
+test('fechar uma dúvida não emite kob_faq_open e cada dúvida tem id próprio', async ({ page }) => {
+  const first = page.locator('#faq-embarque details').first();
+  const second = page.locator('#faq-embarque details').nth(1);
+  await first.locator('summary').click();
+  await second.locator('summary').click();
+  await expect.poll(async () => (await getBusinessEvents(page, 'kob_faq_open')).length).toBe(2);
+
+  const events = await getBusinessEvents(page, 'kob_faq_open');
+  const ids = events.map((e) => e.faq_id);
+  expect(new Set(ids).size).toBe(2);
+  events.forEach((payload) => {
+    expect(payload.faq_category).toBe('embarque');
+    assertSchema(payload);
+    assertNoPii(payload);
+  });
+
+  // Fechar não deve gerar novo evento.
+  await first.locator('summary').click();
+  await page.waitForTimeout(150);
+  expect((await getBusinessEvents(page, 'kob_faq_open'))).toHaveLength(2);
+});

@@ -8,7 +8,8 @@
     { "$ref": "#/$defs/selectItem" },
     { "$ref": "#/$defs/viewItem" },
     { "$ref": "#/$defs/whatsappClick" },
-    { "$ref": "#/$defs/faqSearch" }
+    { "$ref": "#/$defs/faqSearch" },
+    { "$ref": "#/$defs/faqOpen" }
   ],
   "$defs": {
     "eventName": {
@@ -112,6 +113,17 @@
         "schema_version": { "const": 1 },
         "result_count": { "type": "integer", "minimum": 0, "maximum": 1000 },
         "has_results": { "type": "boolean" }
+      }
+    },
+    "faqOpen": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["event", "schema_version", "faq_id", "faq_category"],
+      "properties": {
+        "event": { "const": "kob_faq_open" },
+        "schema_version": { "const": 1 },
+        "faq_id": { "$ref": "#/$defs/stableId" },
+        "faq_category": { "enum": ["embarque", "bordo", "comida", "regras"] }
       }
     }
   }
