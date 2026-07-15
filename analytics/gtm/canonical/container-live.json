@@ -1,17 +1,20 @@
 {
   "snapshot_type": "canonical_ui_audit",
-  "observed_at_utc": "2026-07-15T14:05:00Z",
-  "observation_source": "Versão 5 publicada pelo operador e VERIFICADA AO VIVO via Chrome DevTools (read-only) em 2026-07-15: gtm.js live reporta version=5 contendo os 3 eventos P1; disparo real de FAQ/galeria/tour gerou collects GA4 en=kob_faq_open (faq_id=comida_01, faq_category=comida), en=kob_content_expand (content_type=gallery, content_id=edition_2025_gallery) e en=kob_virtual_tour_open (tour_type=ship, tour_id=msc_musica), todos com gcs=G101 e sem PII. Não é export raw da API GTM.",
+  "observed_at_utc": "2026-07-15T17:45:00Z",
+  "observation_source": "Versão 6 publicada com aprovação do operador e VERIFICADA AO VIVO: (a) gtm.js live reporta version=6 contendo os 5 eventos P0 (kob_section_view, kob_whatsapp_click, view_item, view_item_list, select_item) além dos 3 P1 pré-existentes; (b) Tag Assistant confirmou as 5 tags P0 disparando no preview do workspace; (c) GA4 Realtime (property Kriativos On Board) registrou, a partir de tráfego real de celular 4G com consentimento aceito, os eventos kob_section_view=9, view_item_list=3 e kob_whatsapp_click=2, todos com gcs=G101 e sem PII. Não é export raw da API GTM.",
   "account_id": "6365663008",
   "container_id": "258081200",
   "public_id": "GTM-TK5L6TJF",
-  "workspace_id": "4",
+  "ga4_property": {
+    "account": "Kriativos On Board",
+    "measurement_id": "G-8SYDL3EXVM"
+  },
   "live_version": {
-    "id": "5",
-    "tags_count": 6,
-    "triggers_count": 5,
-    "user_defined_variables_count": 6,
-    "note": "Versão publicada em 2026-07-15 encaminhando os eventos P1 (kob_faq_open, kob_content_expand, kob_virtual_tour_open) ao GA4 via tags GA4 Event dedicadas, com Data Layer Variables e trigger de evento personalizado por evento. Consent Mode inalterado."
+    "id": "6",
+    "tags_count": 11,
+    "triggers_count": 13,
+    "user_defined_variables_count": 13,
+    "note": "Versão publicada em 2026-07-15 (aprovada por Cassio) encaminhando os 5 eventos P0 (kob_section_view, kob_whatsapp_click, view_item, view_item_list, select_item) ao GA4 via tags GA4 Event dedicadas, somando-se aos 3 P1 (kob_faq_open, kob_content_expand, kob_virtual_tour_open) já publicados na v5. Cada tag GA4 Event usa eventSettingsTable (formato nativo) e um trigger de evento personalizado. Consent Mode inalterado. Causa raiz do não-encaminhamento inicial dos P0 (campo negate ausente no customEventFilter dos triggers importados) corrigida antes da publicação."
   },
   "tags": [
     {
@@ -53,6 +56,46 @@
       "event_parameters": ["tour_id", "tour_type"],
       "consent": "requires_analytics_storage",
       "triggers": ["Evento - Virtual Tour Open"]
+    },
+    {
+      "name": "GA4 - Section View",
+      "type": "ga4_event",
+      "event_name": "kob_section_view",
+      "event_parameters": ["section_id"],
+      "consent": "no_additional_consent_required",
+      "triggers": ["Evento - Section View"]
+    },
+    {
+      "name": "GA4 - WhatsApp Click",
+      "type": "ga4_event",
+      "event_name": "kob_whatsapp_click",
+      "event_parameters": ["cta_id", "placement", "intent", "item_id"],
+      "consent": "no_additional_consent_required",
+      "triggers": ["Evento - WhatsApp Click"]
+    },
+    {
+      "name": "GA4 - View Item List",
+      "type": "ga4_event",
+      "event_name": "view_item_list",
+      "event_parameters": ["item_list_id", "item_list_name"],
+      "consent": "no_additional_consent_required",
+      "triggers": ["Evento - View Item List"]
+    },
+    {
+      "name": "GA4 - Select Item",
+      "type": "ga4_event",
+      "event_name": "select_item",
+      "event_parameters": ["item_list_id", "item_list_name"],
+      "consent": "no_additional_consent_required",
+      "triggers": ["Evento - Select Item"]
+    },
+    {
+      "name": "GA4 - View Item",
+      "type": "ga4_event",
+      "event_name": "view_item",
+      "event_parameters": [],
+      "consent": "no_additional_consent_required",
+      "triggers": ["Evento - View Item"]
     }
   ],
   "custom_triggers": [
@@ -80,6 +123,31 @@
       "name": "Evento - Virtual Tour Open",
       "type": "custom_event",
       "event_name": "kob_virtual_tour_open"
+    },
+    {
+      "name": "Evento - Section View",
+      "type": "custom_event",
+      "event_name": "kob_section_view"
+    },
+    {
+      "name": "Evento - WhatsApp Click",
+      "type": "custom_event",
+      "event_name": "kob_whatsapp_click"
+    },
+    {
+      "name": "Evento - View Item List",
+      "type": "custom_event",
+      "event_name": "view_item_list"
+    },
+    {
+      "name": "Evento - Select Item",
+      "type": "custom_event",
+      "event_name": "select_item"
+    },
+    {
+      "name": "Evento - View Item",
+      "type": "custom_event",
+      "event_name": "view_item"
     }
   ],
   "user_defined_variables": [
@@ -88,7 +156,14 @@
     { "name": "DLV - content_id", "type": "data_layer_variable", "data_layer_key": "content_id" },
     { "name": "DLV - content_type", "type": "data_layer_variable", "data_layer_key": "content_type" },
     { "name": "DLV - tour_id", "type": "data_layer_variable", "data_layer_key": "tour_id" },
-    { "name": "DLV - tour_type", "type": "data_layer_variable", "data_layer_key": "tour_type" }
+    { "name": "DLV - tour_type", "type": "data_layer_variable", "data_layer_key": "tour_type" },
+    { "name": "DLV - section_id", "type": "data_layer_variable", "data_layer_key": "section_id" },
+    { "name": "DLV - cta_id", "type": "data_layer_variable", "data_layer_key": "cta_id" },
+    { "name": "DLV - placement", "type": "data_layer_variable", "data_layer_key": "placement" },
+    { "name": "DLV - intent", "type": "data_layer_variable", "data_layer_key": "intent" },
+    { "name": "DLV - item_id", "type": "data_layer_variable", "data_layer_key": "item_id" },
+    { "name": "DLV - item_list_id", "type": "data_layer_variable", "data_layer_key": "item_list_id" },
+    { "name": "DLV - item_list_name", "type": "data_layer_variable", "data_layer_key": "item_list_name" }
   ],
   "resolved_risks": [
     {
@@ -109,12 +184,18 @@
     {
       "risk": "custom_html_gtag_consent_warning",
       "resolved_at_utc": "2026-07-15T14:30:00Z",
-      "resolution": "Revisão técnica (Housekeeping 2) via inspeção do gtm.js publicado (v5). As 2 Custom HTML (tag_id 5 e 7) são o único mecanismo do Consent Mode v2: tag 5 = consent default (analytics_storage=denied, wait_for_update=500) na inicialização antes da Google Tag; tag 7 = consent update (analytics_storage=granted) em cookie_consent_accepted e cookie_consent_restored. A Google Tag (__googtag) não emite consent default próprio (sem duplicidade). O aviso do GTM é genérico para qualquer gtag() em Custom HTML, não indica conflito. Comportamento confirmado ao vivo (G100→G101). Classificação: NECESSÁRIA. Decisão: MANTER e documentar."
+      "resolution": "Revisão técnica (Housekeeping 2) via inspeção do gtm.js publicado. As 2 Custom HTML são o único mecanismo do Consent Mode v2: consent default (analytics_storage=denied, wait_for_update=500) na inicialização antes da Google Tag; consent update (analytics_storage=granted) em cookie_consent_accepted e cookie_consent_restored. A Google Tag (__googtag) não emite consent default próprio (sem duplicidade). O aviso do GTM é genérico para qualquer gtag() em Custom HTML, não indica conflito. Comportamento confirmado ao vivo (G100->G101). Classificação: NECESSÁRIA. Decisão: MANTER e documentar."
+    },
+    {
+      "risk": "p0_events_not_forwarded_to_ga4",
+      "resolved_at_utc": "2026-07-15T17:45:00Z",
+      "resolution": "Os 5 eventos P0 (kob_section_view, kob_whatsapp_click, view_item, view_item_list, select_item) eram emitidos no dataLayer mas não tinham tags GA4 no container (v5 continha apenas os 3 P1). Criadas 5 tags GA4 Event + 5 triggers de evento personalizado + DLVs correspondentes e publicadas na v6. Causa raiz de não-disparo inicial após import: campo 'negate' ausente no customEventFilter dos triggers importados via JSON; corrigido (reescrita do filtro via UI e via API interna) antes da publicação. Verificado no GA4 Realtime com tráfego real (gcs=G101, sem PII)."
     }
   ],
   "confirmed_risks": [],
   "limitations": [
-    "This is a normalized snapshot derived from authenticated UI inspection, not a raw GTM API export.",
+    "This is a normalized snapshot derived from authenticated UI/API inspection, not a raw GTM API export.",
+    "Contagens em live_version (11 tags / 13 triggers / 13 variáveis user-defined) referem-se ao container publicado v6. As 13 variáveis user-defined = 6 DLVs dos P1 + 7 DLVs dos P0.",
     "custom_html_gtag_consent_warning encerrado em 2026-07-15: revisado e classificado como NECESSÁRIO (único mecanismo de Consent Mode v2, sem duplicidade com a Google Tag). Decisão registrada em resolved_risks e em analytics/gtm/policies.yaml. A tag é mantida por design."
   ]
 }
