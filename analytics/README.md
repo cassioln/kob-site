@@ -53,6 +53,6 @@ npm run test:analytics:live
 
 `npm test` inclui o gate de PII com o GTM público real: primeiro comprova que o interceptor observa um `collect` seguro e depois falha se qualquer request contiver telefone, mensagem ou e-mail. Nenhum hit chega ao GA4/DoubleClick, pois todas as tentativas de coleta são abortadas no navegador.
 
-A suíte live completa acrescenta os gates de conta. Enquanto o GTM não tratar `cookie_consent_restored`, `npm run test:analytics:live` deve falhar porque o page view restaurado usa `G100` em vez de `G101`; essa falha bloqueia publicação.
+A suíte live completa acrescenta os gates de conta, incluindo a restauração de consentimento. O container GTM já trata `cookie_consent_restored` (acionador dedicado reemitindo `consent update` com `analytics_storage: granted` quando o boolean de analytics é verdadeiro), então o page view restaurado usa `G101`. Validado ao vivo em 2026-07-15 via Chrome DevTools (primeira visita `G100` → aceite `G101` → reload restaurado `G101` no primeiro `collect`, sem reload adicional; `ad_storage`/`ad_user_data`/`ad_personalization` permanecem `denied`). Uma regressão futura que volte o restaurado a `G100` reprova `npm run test:analytics:live` e bloqueia publicação.
 
 A propriedade principal do GA4 será usada em Preview/DebugView. Isso não autoriza publicar o container GTM sem revisão humana.
