@@ -9,11 +9,28 @@ bkp/
 
 # Sistema
 .DS_Store
+*.log
 
 # Dependências e artefatos de testes locais
 node_modules/
+**/node_modules/
+.npm/
+.pnp.*
 test-results/
 playwright-report/
+blob-report/
+.cache/
+.playwright/
+playwright/.cache/
+
+# Scripts temporários de automação (CDP/Playwright ad-hoc na raiz)
+# NÃO ignora playwright.config.mjs / playwright.live.config.mjs (versionados).
+/gtm-*.mjs
+/ga4-*.mjs
+/ta-*.mjs
+/prod-*.mjs
+/realtime-*.mjs
+/final-*.mjs
 
 # Loop finder
 loop_finder/*
