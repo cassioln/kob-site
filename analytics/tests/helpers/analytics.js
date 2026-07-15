@@ -3,11 +3,19 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import Ajv2020 from 'ajv/dist/2020.js';
 import { expect } from '@playwright/test';
+import { parse } from 'yaml';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const schema = JSON.parse(fs.readFileSync(path.resolve(here, '../../data-layer.schema.json'), 'utf8'));
+const piiPolicy = parse(fs.readFileSync(path.resolve(here, '../../pii-denylist.yaml'), 'utf8'));
 const ajv = new Ajv2020({ allErrors: true, strict: false });
 const validate = ajv.compile(schema);
+const forbiddenKeys = new Set(piiPolicy.prohibited_keys.map((key) => key.toLowerCase()));
+export const collectTransportValueExemptions = piiPolicy.collect_transport_value_exemptions;
+const forbiddenPatterns = piiPolicy.prohibited_value_patterns.map(({ name, regex }) => ({
+  name,
+  pattern: new RegExp(regex, 'i')
+}));
 
 export const businessEventNames = [
   'kob_section_view',
@@ -45,6 +53,11 @@ export async function acceptAnalytics(page) {
 
 export async function preventExternalNavigation(page) {
   await page.evaluate(() => {
+    window.__kobExternalNavigations = [];
+    window.open = (url) => {
+      window.__kobExternalNavigations.push(String(url));
+      return null;
+    };
     document.addEventListener('click', (event) => {
       const link = event.target.closest('a[target="_blank"]');
       if (link) event.preventDefault();
@@ -78,23 +91,107 @@ export async function getConsentCommands(page) {
   });
 }
 
+export function parseCollectRequests(entries) {
+  return entries.flatMap((entry, requestIndex) => {
+    const queryPairs = [...new URL(entry.url).searchParams.entries()];
+    const bodyRecords = entry.body
+      ? entry.body.split(/\r?\n/).filter((record) => record.length > 0)
+      : [''];
+
+    return bodyRecords.map((bodyRecord, recordIndex) => ({
+      requestIndex,
+      recordIndex,
+      pairs: [...queryPairs, ...new URLSearchParams(bodyRecord).entries()]
+    }));
+  });
+}
+
+export function collectRecordParam(record, key) {
+  return record.pairs.find(([parameter]) => parameter === key)?.[1] || null;
+}
+
+export function findCollectPiiViolations(entries, options = {}) {
+  const violations = new Set();
+
+  parseCollectRequests(entries).forEach((record) => {
+    record.pairs.forEach(([key, rawValue], pairIndex) => {
+      const candidates = [rawValue];
+      let decoded = rawValue;
+      for (let attempt = 0; attempt < 3; attempt += 1) {
+        try {
+          const next = decodeURIComponent(decoded);
+          if (next === decoded) break;
+          candidates.push(next);
+          decoded = next;
+        } catch {
+          break;
+        }
+      }
+
+      candidates.forEach((value) => {
+        findPiiViolations({ [key]: value }, options).forEach((violation) => {
+          violations.add(
+            `request[${record.requestIndex}].record[${record.recordIndex}].pair[${pairIndex}]:${violation}`
+          );
+        });
+      });
+    });
+  });
+
+  return [...violations].sort();
+}
+
 export function assertSchema(payload) {
   const valid = validate(payload);
   expect(valid, JSON.stringify(validate.errors, null, 2)).toBe(true);
 }
 
-export function assertNoPii(payload) {
-  const forbiddenKey = /^(?:e_?mail|phone|telefone|whatsapp_(?:url|message)|message|href|full_url|inner_text|search_term|user_name)$/i;
-  const forbiddenValue = /(?:[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}|api\.whatsapp\.com|wa\.me|whatsapp:\/\/|(?:^|[?&])(?:phone|text)=|(?:\+?55\s*)?(?:\(?\d{2}\)?[\s.-]*)?9?\d{4}[\s.-]?\d{4})/i;
+export function findPiiViolations(payload, {
+  allowedKeys = [],
+  exemptPatternKeys = {}
+} = {}) {
+  const violations = new Set();
+  const normalizedAllowedKeys = new Set(allowedKeys.map((key) => key.toLowerCase()));
+  const normalizedExemptPatternKeys = new Map(Object.entries(exemptPatternKeys).map(([name, keys]) => {
+    return [name, new Set(keys.map((key) => key.toLowerCase()))];
+  }));
 
-  function visit(value, key) {
-    if (key) expect(key).not.toMatch(forbiddenKey);
-    if (typeof value === 'string') expect(value).not.toMatch(forbiddenValue);
-    if (Array.isArray(value)) value.forEach((item) => visit(item));
-    else if (value && typeof value === 'object') {
-      Object.entries(value).forEach(([childKey, childValue]) => visit(childValue, childKey));
+  function visit(value, key, path) {
+    if (key) {
+      const normalizedKey = key.toLowerCase();
+      const unprefixedKey = normalizedKey.split('.').at(-1);
+      const keyIsAllowed = normalizedAllowedKeys.has(normalizedKey)
+        || normalizedAllowedKeys.has(unprefixedKey);
+      if (!keyIsAllowed && (forbiddenKeys.has(normalizedKey) || forbiddenKeys.has(unprefixedKey))) {
+        violations.add(`key:${path}`);
+      }
+    }
+    if (typeof value === 'string') {
+      forbiddenPatterns.forEach(({ name, pattern }) => {
+        const exemptKeys = normalizedExemptPatternKeys.get(name);
+        const normalizedKey = key?.toLowerCase();
+        const unprefixedKey = normalizedKey?.split('.').at(-1);
+        const keyIsExempt = exemptKeys?.has(normalizedKey)
+          || exemptKeys?.has(unprefixedKey);
+        if (!keyIsExempt && pattern.test(value)) {
+          violations.add(`value:${name}@${path || '$'}`);
+        }
+      });
+    }
+    if (Array.isArray(value)) {
+      value.forEach((item, index) => visit(item, null, `${path || '$'}[${index}]`));
+    } else if (value && typeof value === 'object') {
+      Object.entries(value).forEach(([childKey, childValue]) => {
+        const childPath = path ? `${path}.${childKey}` : childKey;
+        visit(childValue, childKey, childPath);
+      });
     }
   }
 
-  visit(payload);
+  visit(payload, null, '');
+  return [...violations].sort();
+}
+
+export function assertNoPii(payload) {
+  expect(findPiiViolations(payload)).toEqual([]);
 }

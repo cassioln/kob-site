@@ -28,7 +28,7 @@ pii_policy:
 baseline_matrix:
   kob_section_view: keep_and_enrich
   kob_whatsapp_click: keep_and_enrich
-  kob_faq_search: keep_and_enrich_without_search_term
+  kob_faq_search: deferred_to_phase_1_backlog
   kob_scroll_depth: remove_after_enhanced_measurement_audit
 control_events:
   - cookie_consent_accepted
@@ -72,7 +72,9 @@ events:
     deduplication: none_user_action
     consent: queue_on_site_and_forward_only_when_analytics_granted
     required_parameters:
-      item_list_id: { type: string }
+      item_list_id:
+        type: string
+        allowed_values: [cabins_2026, drink_packages_2026]
       item_list_name: { type: string }
       items: { type: array, min_items: 1, max_items: 1 }
     automated_test: analytics/tests/journeys.spec.js
@@ -108,8 +110,9 @@ events:
     automated_test: analytics/tests/journeys.spec.js
   - name: kob_faq_search
     priority: P1
-    status: legacy_retained_in_v1
+    status: deferred_not_emitted
     ga4_event: kob_faq_search
+    forwarding_status: deferred_not_in_phase_1_allowlist
     purpose: Medir uso e utilidade da busca interna do FAQ sem coletar o termo digitado.
     firing_rule: Após 600 ms sem digitação, para consultas com pelo menos dois caracteres.
     deduplication: none_each_debounced_search

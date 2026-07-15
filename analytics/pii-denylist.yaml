@@ -9,19 +9,28 @@ prohibited_keys:
   - whatsapp_message
   - message
   - href
+  - link_url
+  - link_text
   - full_url
   - inner_text
   - search_term
   - user_name
 prohibited_value_patterns:
   - name: email
-    regex: '[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}'
+    regex: '[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}'
   - name: whatsapp_url
-    regex: '(api\\.whatsapp\\.com|wa\\.me|whatsapp://)'
+    regex: '(api\.whatsapp\.com|wa\.me|whatsapp://)'
   - name: whatsapp_query
     regex: '(^|[?&])(phone|text)='
   - name: brazil_phone
-    regex: '(?:\\+?55\\s*)?(?:\\(?\\d{2}\\)?[\\s.-]*)?9?\\d{4}[\\s.-]?\\d{4}'
+    regex: '(?:\+?55\s*)?(?:\(?\d{2}\)?[\s.-]*)?9?\d{4}[\s.-]?\d{4}'
+collect_transport_value_exemptions:
+  brazil_phone:
+    - _p
+    - cid
+    - gtm
+    - sid
+    - tag_exp
 allowed_business_fields:
   - event
   - schema_version
@@ -35,7 +44,21 @@ allowed_business_fields:
   - cta_id
   - placement
   - intent
+  - result_count
+  - has_results
+test_cases:
+  prohibited_values:
+    - { pattern: email, value: lead@example.com }
+    - { pattern: whatsapp_url, value: 'https://api.whatsapp.com/send' }
+    - { pattern: whatsapp_query, value: '?phone=5511900000000&text=Oi' }
+    - { pattern: brazil_phone, value: '+55 11 90000-0000' }
+  allowed_values:
+    - cabin_ocean_view
+    - Cabine Janela
+    - values_drinks
+    - reservation
 notes:
   - Termos digitados na busca do FAQ nunca são enviados.
   - URL, telefone e mensagem predefinida do WhatsApp nunca são enviados.
+  - As isenções de IDs de transporte GA valem só para o padrão de telefone; os demais parâmetros continuam varridos.
   - Um clique no WhatsApp é intenção de contato, não lead confirmado.

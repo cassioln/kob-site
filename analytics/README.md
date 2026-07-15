@@ -39,13 +39,20 @@ O site não chama `gtag('event', ...)`. O componente de consentimento pode usar 
 - `gtm/canonical/`: baseline normalizado e diffs candidatos.
 - `gtm/raw/`: reservado para exports reais da API; nunca contém dados inventados.
 - `tests/`: testes Playwright do contrato e jornadas.
+- `tests/live-pipeline.spec.js`: gate com GTM público real e endpoints de coleta abortados.
 
 ## Validação local
 
 ```bash
 npm test
 npm run test:analytics
+npm run test:analytics:pii
 npm run validate:analytics
+npm run test:analytics:live
 ```
+
+`npm test` inclui o gate de PII com o GTM público real: primeiro comprova que o interceptor observa um `collect` seguro e depois falha se qualquer request contiver telefone, mensagem ou e-mail. Nenhum hit chega ao GA4/DoubleClick, pois todas as tentativas de coleta são abortadas no navegador.
+
+A suíte live completa acrescenta os gates de conta. Enquanto o GTM não tratar `cookie_consent_restored`, `npm run test:analytics:live` deve falhar porque o page view restaurado usa `G100` em vez de `G101`; essa falha bloqueia publicação.
 
 A propriedade principal do GA4 será usada em Preview/DebugView. Isso não autoriza publicar o container GTM sem revisão humana.

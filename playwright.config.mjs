@@ -2,6 +2,7 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './analytics/tests',
+  testIgnore: 'live-pipeline.spec.js',
   fullyParallel: false,
   workers: 1,
   forbidOnly: Boolean(process.env.CI),

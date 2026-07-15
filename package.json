@@ -4,8 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "npm run test:analytics",
+    "test": "npm run test:analytics && npm run test:analytics:pii",
     "test:analytics": "playwright test",
+    "test:analytics:pii": "playwright test --config=playwright.live.config.mjs --grep @code",
+    "test:analytics:live": "playwright test --config=playwright.live.config.mjs",
     "test:analytics:headed": "playwright test --headed",
     "validate:analytics": "node analytics/scripts/validate-config.mjs"
   },

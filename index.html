@@ -5,6 +5,41 @@
 <head>
   <meta charset="UTF-8">
   <script>document.documentElement.classList.replace('no-js', 'js');</script>
+  <script>
+    (function (d) {
+      function safeHref(link) {
+        var ctaId = link.dataset.analyticsCtaId;
+        if (!ctaId) return '#reserve';
+        var href = '/whatsapp.html?cta=' + encodeURIComponent(ctaId);
+        var itemId = link.dataset.analyticsItemId;
+        if (itemId) href += '&item=' + encodeURIComponent(itemId);
+        return href;
+      }
+      function bind(link) {
+        if (link.dataset.kobWhatsappBound || link.getAttribute('href') === '#') return;
+        var destination = link.href;
+        if (!destination) return;
+        link.href = safeHref(link);
+        link.dataset.kobWhatsappBound = 'inline';
+        link.addEventListener('click', function (event) {
+          event.preventDefault();
+          window.open(destination, '_blank', 'noopener');
+        });
+      }
+      function scan(root) {
+        if (root.matches && root.matches('a[data-analytics-channel="whatsapp"]')) bind(root);
+        if (root.querySelectorAll) root.querySelectorAll('a[data-analytics-channel="whatsapp"]').forEach(bind);
+      }
+      var observer = new MutationObserver(function (records) {
+        records.forEach(function (record) { record.addedNodes.forEach(scan); });
+      });
+      observer.observe(d.documentElement, { childList: true, subtree: true });
+      d.addEventListener('DOMContentLoaded', function () {
+        scan(d);
+        observer.disconnect();
+      }, { once: true });
+    })(document);
+  </script>
   <!-- Google Tag Manager: sai do caminho crítico e hidrata na primeira interação. -->
   <script>
     (function (w, d, s, l, i) {
@@ -2730,7 +2765,7 @@
     </svg>
   </a>
 
-  <script src="assets/js/main.js?v=20260714-analytics-v1"></script>
+  <script src="assets/js/main.js?v=20260714-analytics-v1-pii-hotfix"></script>
 
 
 

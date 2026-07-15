@@ -33,13 +33,17 @@ workspace:
   preferred_name: analytics/tracking-v1
   create_only_after_site_tests_pass: true
   publish: false
+live_gate:
+  command: npm run test:analytics:live
+  collection_requests: intercepted_and_aborted
+  publication_requires_exit_zero: true
 known_live_risks:
   - id: consent_restored_not_triggered
     severity: high
-    status: confirmed
+    status: confirmed_gcs_g100_expected_g101
   - id: google_tag_two_page_triggers
     severity: high
-    status: confirmed_risk_runtime_duplicate_not_yet_proven
+    status: ui_risk_runtime_single_page_view_verified_on_acceptance_path
   - id: custom_html_gtag_consent_warning
     severity: medium
     status: confirmed_ui_warning

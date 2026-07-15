@@ -37,6 +37,25 @@ document.documentElement.classList.add('js');
 
   window.KOBAnalytics = Object.freeze({ track: trackAnalytics });
 
+  // O Enhanced Measurement captura o href do elemento clicado como link_url.
+  // Mantemos telefone/mensagem fora do href e usamos o destino completo somente
+  // para navegação, sem adicioná-lo ao payload de analytics.
+  function whatsappSafeHref(link) {
+    var ctaId = link.dataset.analyticsCtaId;
+    if (!ctaId) return '#reserve';
+    var href = '/whatsapp.html?cta=' + encodeURIComponent(ctaId);
+    var itemId = link.dataset.analyticsItemId;
+    if (itemId) href += '&item=' + encodeURIComponent(itemId);
+    return href;
+  }
+  var whatsappDestinations = new WeakMap();
+  document.querySelectorAll('a[data-analytics-channel="whatsapp"]').forEach(function (link) {
+    if (link.dataset.kobWhatsappBound || !link.href || link.getAttribute('href') === '#') return;
+    whatsappDestinations.set(link, link.href);
+    link.href = whatsappSafeHref(link);
+    link.dataset.kobWhatsappBound = 'main';
+  });
+
   var VALUE_LISTS = {
     'panel-cabines': {
       item_list_id: 'cabins_2026',
@@ -1499,7 +1518,13 @@ document.documentElement.classList.add('js');
       if (elCta) {
         var isDrink = !!DRINK_KEYS[key];
         elCta.hidden = isDrink;
-        elCta.href = isDrink ? '#' : d.wa;
+        if (isDrink) {
+          whatsappDestinations.delete(elCta);
+          delete elCta.dataset.kobWhatsappBound;
+        } else {
+          whatsappDestinations.set(elCta, d.wa);
+          elCta.dataset.kobWhatsappBound = 'main';
+        }
         if (isDrink || !analyticsSelection) {
           delete elCta.dataset.analyticsItemId;
           delete elCta.dataset.analyticsItemCategory;
@@ -1511,6 +1536,7 @@ document.documentElement.classList.add('js');
           elCta.dataset.analyticsItemId = analyticsSelection.item.item_id;
           elCta.dataset.analyticsItemCategory = analyticsSelection.item.item_category;
         }
+        elCta.href = isDrink ? '#' : whatsappSafeHref(elCta);
       }
       modal.showModal();
       if (analyticsSelection) {
@@ -2266,7 +2292,7 @@ document.documentElement.classList.add('js');
     var floating = document.querySelector('.wa-float');
     if (!floating || !('IntersectionObserver' in window)) return;
     var blockers = Array.prototype.slice.call(document.querySelectorAll(
-      '#navio, #valores, #edicao2025, #faq, #reserve, footer, a[href*="api.whatsapp.com"]:not(.wa-float)'
+      '#navio, #valores, #edicao2025, #faq, #reserve, footer, a[data-analytics-channel="whatsapp"]:not(.wa-float)'
     ));
     var visible = new Set();
     function sync() {
@@ -2307,6 +2333,7 @@ document.documentElement.classList.add('js');
     document.addEventListener('click', function (event) {
       var link = event.target.closest('a[data-analytics-channel="whatsapp"]');
       if (!link) return;
+      event.preventDefault();
       trackAnalytics('kob_whatsapp_click', {
         cta_id: link.dataset.analyticsCtaId,
         placement: link.dataset.analyticsPlacement,
@@ -2314,21 +2341,12 @@ document.documentElement.classList.add('js');
         item_id: link.dataset.analyticsItemId,
         item_category: link.dataset.analyticsItemCategory
       });
+      if (link.dataset.kobWhatsappBound !== 'inline') {
+        var destination = whatsappDestinations.get(link);
+        if (destination) window.open(destination, '_blank', 'noopener');
+      }
     });
 
-    var faqSearch = document.getElementById('faq-search');
-    var faqTimer = null;
-    if (faqSearch) faqSearch.addEventListener('input', function () {
-      clearTimeout(faqTimer);
-      faqTimer = setTimeout(function () {
-        if (faqSearch.value.trim().length < 2) return;
-        var resultCount = document.querySelectorAll('#faq details:not([hidden])').length;
-        trackAnalytics('kob_faq_search', {
-          result_count: resultCount,
-          has_results: resultCount > 0
-        });
-      }, 600);
-    });
   })();
 
   // Carta náutica de #hospedagem: parallax de profundidade das camadas decorativas.

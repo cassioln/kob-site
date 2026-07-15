@@ -24,6 +24,11 @@ enhanced_measurement:
   form_interactions: true
   video_engagement: true
   file_downloads: true
+privacy_mitigations:
+  outbound_click_whatsapp:
+    status: verified_in_live_pipeline
+    strategy: sensitive_destination_kept_out_of_anchor_href
+    automated_test: analytics/tests/live-pipeline.spec.js
 google_signals:
   enabled: true
   regions_allowed: 307

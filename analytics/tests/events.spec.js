@@ -48,19 +48,11 @@ test('cabines e bebidas emitem listas uma vez e sem preços ambíguos', async ({
   });
 });
 
-test('busca do FAQ emite somente resultado agregado, sem o termo digitado', async ({ page }) => {
+test('busca do FAQ permanece local e não emite o evento adiado', async ({ page }) => {
   await page.locator('#faq-search').fill('documentos');
-  await expect.poll(async () => (await getBusinessEvents(page, 'kob_faq_search')).length).toBe(1);
+  await page.waitForTimeout(750);
 
-  const [payload] = await getBusinessEvents(page, 'kob_faq_search');
-  expect(Object.keys(payload).sort()).toEqual([
-    'event',
-    'has_results',
-    'result_count',
-    'schema_version'
-  ]);
-  expect(payload.result_count).toBeGreaterThanOrEqual(0);
-  expect(payload.has_results).toBe(payload.result_count > 0);
-  assertSchema(payload);
-  assertNoPii(payload);
+  const faqEvents = await page.evaluate(() => (window.dataLayer || [])
+    .filter((entry) => entry?.event === 'kob_faq_search'));
+  expect(faqEvents).toEqual([]);
 });
