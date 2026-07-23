@@ -488,8 +488,11 @@ document.documentElement.classList.add('js');
     var currentDisplay = show.querySelector('[data-ship-current]');
     var totalDisplay = show.querySelector('[data-ship-total]');
     var idx = 0, timer = null;
-    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var finePointer = window.matchMedia('(pointer: fine)').matches && !reduceMotion;
+    // Nome exclusivo: o hero declara outro `var reduceMotion` no mesmo IIFE.
+    // Com `var`, o nome compartilhado era sobrescrito por um MediaQueryList
+    // truthy e bloqueava permanentemente o autoplay deste carrossel.
+    var shipReduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var finePointer = window.matchMedia('(pointer: fine)').matches && !shipReduceMotion;
     var inView = true;
     var pointerFrame = null;
     var padIndex = function (i) { return String(i + 1).padStart(2, '0'); };
@@ -541,7 +544,7 @@ document.documentElement.classList.add('js');
     }
     function next() { goTo(idx + 1); }
     function start() {
-      if (!reduceMotion && inView && !document.hidden && !timer &&
+      if (!shipReduceMotion && inView && !document.hidden && !timer &&
         (!finePointer || !show.matches(':hover')) && !show.contains(document.activeElement)) {
         timer = setInterval(next, 5000);
         show.dataset.paused = 'false';
