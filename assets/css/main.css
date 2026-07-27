@@ -3016,77 +3016,74 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
   text-align: center;
 }
 
-.incl__clock {
+.incl__seal {
   position: relative;
-  width: clamp(164px, 15vw, 206px);
+  display: grid;
+  place-items: center;
+  width: clamp(172px, 15vw, 210px);
+  min-height: clamp(172px, 15vw, 210px);
+  padding: 22px 18px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.26);
+  border-radius: 24px;
+  background:
+    linear-gradient(145deg, rgba(41, 195, 245, 0.22), rgba(108, 74, 197, 0.34) 54%, rgba(243, 182, 62, 0.18)),
+    #082c4f;
+  box-shadow: 0 12px 0 rgba(1, 12, 27, 0.25), inset 0 0 0 7px rgba(255, 255, 255, 0.045);
+}
+
+.incl__seal::before,
+.incl__seal::after {
+  content: "";
+  position: absolute;
+  width: 118%;
   aspect-ratio: 1;
+  border: 1px solid rgba(255, 255, 255, 0.11);
   border-radius: 50%;
-  background: conic-gradient(from -24deg, var(--ocean-cyan), var(--kriativa-purple-light), var(--sunset-gold), var(--ocean-cyan));
-  box-shadow: 0 8px 0 rgba(1, 12, 27, 0.25);
 }
 
-.incl__clock::before {
-  content: "";
-  position: absolute;
-  inset: 11px;
-  border-radius: 50%;
-  background: #082c4f;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+.incl__seal::before {
+  top: -65%;
+  right: -50%;
 }
 
-.incl__clock::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  z-index: 3;
-  width: 11px;
-  height: 11px;
-  border-radius: 50%;
-  background: var(--sunset-gold);
-  transform: translate(-50%, -50%);
+.incl__seal::after {
+  bottom: -72%;
+  left: -47%;
 }
 
-.incl__clock span,
-.incl__clock em {
-  position: absolute;
-  left: 50%;
-  z-index: 2;
-  transform: translateX(-50%);
+.incl__seal svg,
+.incl__seal span,
+.incl__seal em {
+  position: relative;
+  z-index: 1;
 }
 
-.incl__clock span {
-  top: 27%;
+.incl__seal svg {
+  width: 38px;
+  height: 38px;
+  margin-bottom: 10px;
+  color: var(--sunset-gold);
+}
+
+.incl__seal span {
   color: var(--foam-white);
   font-family: var(--font-display);
-  font-size: clamp(3.3rem, 5.5vw, 4.5rem);
+  font-size: clamp(1.18rem, 1.8vw, 1.48rem);
   line-height: 1;
-  letter-spacing: -0.02em;
+  letter-spacing: 0.01em;
   text-transform: uppercase;
 }
 
-.incl__clock em {
-  bottom: 19%;
+.incl__seal em {
+  margin-top: 9px;
   color: var(--ocean-cyan);
   font-family: var(--font-body);
-  font-size: 0.68rem;
+  font-size: 0.65rem;
   font-style: normal;
   font-weight: 800;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-}
-
-.incl__clock i {
-  position: absolute;
-  top: calc(50% - 1px);
-  left: 50%;
-  z-index: 2;
-  width: 34%;
-  height: 2px;
-  border-radius: 2px;
-  background: var(--sunset-gold);
-  transform: rotate(-90deg);
-  transform-origin: left center;
 }
 
 .incl__playtime p {
@@ -3182,8 +3179,8 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
     animation: incl-check-draw 420ms var(--ease-expo) calc(120ms + var(--i, 0) * 90ms) both;
   }
 
-  .incl.is-in .incl__clock i {
-    animation: incl-clock-turn 920ms var(--ease-expo) 180ms both;
+  .incl.is-in .incl__seal {
+    animation: incl-seal-arrive 720ms var(--ease-expo) 180ms both;
   }
 }
 
@@ -3199,13 +3196,15 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
   }
 }
 
-@keyframes incl-clock-turn {
+@keyframes incl-seal-arrive {
   from {
-    transform: rotate(-90deg);
+    opacity: 0;
+    transform: translateY(18px) rotate(-3deg) scale(0.9);
   }
 
   to {
-    transform: rotate(270deg);
+    opacity: 1;
+    transform: translateY(0) rotate(0) scale(1);
   }
 }
 
@@ -3257,12 +3256,21 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
     grid-template-columns: 1fr;
   }
 
-  .incl__clock {
+  .incl__seal {
     width: 140px;
+    min-height: 140px;
+    padding: 16px 12px;
+    border-radius: 20px;
   }
 
-  .incl__clock span {
-    font-size: 3rem;
+  .incl__seal svg {
+    width: 32px;
+    height: 32px;
+    margin-bottom: 7px;
+  }
+
+  .incl__seal span {
+    font-size: 1.02rem;
   }
 }
 
