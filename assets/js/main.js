@@ -1432,7 +1432,7 @@ document.documentElement.classList.add('js');
         wa: WA + encodeURIComponent('Olá, Royal Trip! Vi a Cabine Varanda na seção de valores do Kriativos On Board 2026 e quero reservar essa opção no 2º lote.')
       },
       easy: {
-        cabin: 'Pacote Easy · R$ 768',
+        cabin: 'Pacote Easy · 12x R$ 64,00 por pessoa',
         img: 'assets/images/drinks/pacote-easy.webp',
         alt: 'Seleção de bebidas do Pacote Easy servidas a bordo do MSC Música',
         title: 'Um cruzeiro tranquilo, com bebida o dia inteiro',
@@ -1452,7 +1452,7 @@ document.documentElement.classList.add('js');
         wa: WA + encodeURIComponent('Olá, Royal Trip! Vi o Pacote de Bebidas Easy na seção de bebidas do Kriativos On Board 2026 e quero contratar essa opção.')
       },
       premium: {
-        cabin: 'Pacote Premium · R$ 1.344',
+        cabin: 'Pacote Premium · 12x R$ 112,00 por pessoa',
         img: 'assets/images/drinks/pacote-premium.webp',
         alt: 'Bebidas premium do Pacote Premium servidas a bordo do MSC Música',
         title: 'Bebidas de primeira qualidade em todo o navio',
@@ -1474,7 +1474,7 @@ document.documentElement.classList.add('js');
         wa: WA + encodeURIComponent('Olá, Royal Trip! Vi o Pacote de Bebidas Premium na seção de bebidas do Kriativos On Board 2026 e quero contratar essa opção.')
       },
       naoalcoolico: {
-        cabin: 'Não alcoólico · R$ 615',
+        cabin: 'Não alcoólico · 12x R$ 51,25 por pessoa',
         img: 'assets/images/drinks/pacote-nao-alcoolico.webp',
         alt: 'Bebidas sem álcool do Pacote Não Alcoólico servidas a bordo do MSC Música',
         title: 'Revigorante, sem álcool, para adultos',
