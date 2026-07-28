@@ -7944,11 +7944,11 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
   }
 
   #evento .event-step::before {
-    top: calc((var(--event-node) + 18px) * -1);
+    top: calc((var(--event-node) + 18px) * -0.9);
   }
 
   #evento .event-step--now .event-step__ring {
-    top: calc((var(--event-node) + 18px) * -1 - 4px);
+    top: calc((var(--event-node) + 18px) * -0.9 - 4px);
   }
 
   #evento .event-step__body span {
