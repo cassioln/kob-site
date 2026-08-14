@@ -10,6 +10,7 @@
   var primaryWhatsapp = document.getElementById('primary-whatsapp');
   var passengerCount = document.getElementById('passenger-count');
   var childrenCount = document.getElementById('children-count');
+  var childrenField = document.getElementById('children-field');
   var passengerFields = document.getElementById('passenger-fields');
   var total = document.getElementById('bus-total');
   var summaryCount = document.getElementById('bus-summary-count');
@@ -116,8 +117,18 @@
     updateSummary();
   }
 
+  // Cada criança viaja no colo de um responsável, então precisa de um pagante
+  // para si: crianças <= pagantes. Como pagantes = total - crianças, o limite
+  // resolve para floor(total / 2). Ex.: 2 pessoas -> 1 criança; 5 -> 2.
+  //
+  // Abaixo de 2 pessoas não existe colo disponível, então o campo é escondido
+  // em vez de ficar visível e travado em zero.
   function syncChildrenLimit(count) {
-    var maxChildren = Math.max(0, count - 1);
+    var maxChildren = Math.floor(count / 2);
+    var showField = count >= 2;
+
+    if (childrenField) childrenField.hidden = !showField;
+
     childrenCount.max = String(maxChildren);
     var current = Math.max(0, Math.floor(Number(childrenCount.value) || 0));
     var clamped = Math.min(current, maxChildren);
@@ -168,8 +179,8 @@
     var children = Number(childrenCount.value || 0);
     if (!Number.isInteger(count) || count < 1 || count > 100) return invalid('Informe entre 1 e 100 passageiros.', passengerCount);
     if (!Number.isInteger(children) || children < 0) return invalid('Quantidade de crianças inválida.', childrenCount);
-    if (children > count) return invalid('O número de crianças não pode ser maior que o total de passageiros.', childrenCount);
-    if (children >= count) return invalid('O grupo precisa ter pelo menos um passageiro pagante e responsável.', childrenCount);
+    // Cada criança viaja no colo de um responsável: crianças <= pagantes.
+    if (children > count - children) return invalid('Cada criança precisa de um passageiro pagante como responsável.', childrenCount);
 
     for (var position = 2; position <= count; position += 1) {
       var nameField = document.getElementById('passenger-' + position + '-name');

@@ -114,10 +114,48 @@ test('não cria cobrança para um grupo formado apenas por crianças', async () 
 
   await assert.rejects(
     () => createPixOrder({ payload, ...dependencies }),
-    /pelo menos um passageiro pagante/i
+    /precisa de um passageiro pagante/i
   );
   assert.equal(dependencies.calls.registration, null);
   assert.equal(dependencies.calls.payment, null);
+});
+
+test('recusa mais crianças que pagantes: cada colo precisa de um responsável', async () => {
+  // 3 pessoas com 2 crianças deixaria 1 adulto com 2 colos. Limite = floor(n/2).
+  const dependencies = fakeDependencies();
+  const payload = structuredClone(basePayload);
+  payload.passenger_count = 3;
+  payload.children_count = 2;
+  payload.passengers = [
+    { full_name: 'Maria de Souza', cpf: '52998224725' },
+    { full_name: 'Joao Souza', cpf: '11144477735' },
+    { full_name: 'Ana Souza', cpf: '15350946056' }
+  ];
+
+  await assert.rejects(
+    () => createPixOrder({ payload, ...dependencies }),
+    /precisa de um passageiro pagante/i
+  );
+  assert.equal(dependencies.calls.registration, null);
+});
+
+test('aceita crianças iguais aos pagantes: 4 pessoas com 2 crianças', async () => {
+  // Fronteira válida da regra: 2 crianças e 2 pagantes, um colo por adulto.
+  const dependencies = fakeDependencies();
+  const payload = structuredClone(basePayload);
+  payload.passenger_count = 4;
+  payload.children_count = 2;
+  payload.passengers = [
+    { full_name: 'Maria de Souza', cpf: '52998224725' },
+    { full_name: 'Joao Souza', cpf: '11144477735' },
+    { full_name: 'Ana Souza', cpf: '15350946056' },
+    { full_name: 'Lucas Souza', cpf: '01234567890' }
+  ];
+
+  const result = await createPixOrder({ payload, ...dependencies });
+  // Só os 2 pagantes entram no valor.
+  assert.equal(result.totalAmount, '240.00');
+  assert.notEqual(dependencies.calls.registration, null);
 });
 
 test('monta a order Pix com token, idempotência e valor server-side', async () => {

@@ -28,10 +28,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
   <link rel="preload" href="assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
   <link rel="stylesheet" href="assets/css/main.css?v=20260727-incluso-editorial-r2">
-  <link rel="stylesheet" href="assets/css/onibus.css?v=20260814-3-expiry">
+  <link rel="stylesheet" href="assets/css/onibus.css?v=20260814-4-flow">
   <link rel="stylesheet" href="assets/css/cookie-consent.css?v=20260713-5">
   <script defer src="assets/js/cookie-consent.js?v=20260713-5"></script>
-  <script defer src="assets/js/onibus.js?v=20260814-3-expiry"></script>
+  <script defer src="assets/js/onibus.js?v=20260814-4-flow"></script>
 </head>
 
 <body class="bus-page">
@@ -73,10 +73,39 @@
           <h2 id="how-title">Reserve o transporte em três passos.</h2>
           <p>O cadastro é individual porque precisamos enviar os dados de cada passageiro à empresa responsável pelo transporte.</p>
         </div>
-        <ol class="bus-steps">
-          <li><span>01</span><strong>Cadastre o grupo</strong><p>O contato principal organiza a reserva e informa os demais passageiros.</p></li>
-          <li><span>02</span><strong>Gere o Pix</strong><p>O valor é calculado pelo número de passageiros pagantes.</p></li>
-          <li><span>03</span><strong>Pague o Pix</strong><p>O pagamento é identificado automaticamente pelo Mercado Pago e a vaga é confirmada.</p></li>
+        <ol class="bus-flow">
+          <li class="bus-flow__step">
+            <span class="bus-flow__marker" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M19 8v6M22 11h-6"></path>
+              </svg>
+            </span>
+            <strong>Cadastro</strong>
+            <p>O contato principal organiza a reserva e informa os demais passageiros.</p>
+          </li>
+          <li class="bus-flow__step">
+            <span class="bus-flow__marker" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="5" width="20" height="14" rx="2.5"></rect>
+                <path d="M2 10h20"></path>
+                <path d="M6 15h4"></path>
+              </svg>
+            </span>
+            <strong>Pagamento</strong>
+            <p>Gere o Pix pelo valor exato dos passageiros pagantes e transfira pelo seu banco.</p>
+          </li>
+          <li class="bus-flow__step">
+            <span class="bus-flow__marker" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21.5 11.2V12a9.5 9.5 0 1 1-5.6-8.7"></path>
+                <path d="M8.5 11.8 12 15.3l9.2-9.2"></path>
+              </svg>
+            </span>
+            <strong>Confirmação</strong>
+            <p>O Mercado Pago identifica a transferência e a vaga é confirmada automaticamente.</p>
+          </li>
         </ol>
       </div>
     </section>
@@ -122,7 +151,7 @@
                   <input id="passenger-count" aria-label="Quantas pessoas vão com você, incluindo você?" name="passenger_count" type="number" inputmode="numeric" min="1" max="100" value="1" required>
                   <small class="bus-field__hint">O contato principal entra nessa quantidade.</small>
                 </div>
-                <div class="bus-field">
+                <div class="bus-field" id="children-field">
                   <label for="children-count">Crianças de até 5 anos</label>
                   <input id="children-count" aria-label="Crianças de até 5 anos" name="children_count" type="number" inputmode="numeric" min="0" max="0" value="0">
                   <small class="bus-field__hint">Viajam no colo de um responsável, sem assento individual.</small>

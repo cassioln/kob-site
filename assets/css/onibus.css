@@ -217,44 +217,66 @@
   color: var(--ink-soft);
 }
 
-.bus-steps {
+/* Fluxo Cadastro -> Pagamento -> Confirmação.
+   Substituiu os marcadores 01/02/03: aqui a ordem É a informação, então o
+   conector (a seta) carrega o sequenciamento em vez de um número decorativo.
+   A seta vive em ::after do próprio passo, some no último e vira vertical no
+   mobile, acompanhando a direção real da leitura. */
+.bus-flow {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1px;
+  gap: clamp(28px, 4vw, 56px);
   margin-top: 58px;
   padding: 0;
   list-style: none;
-  border-top: 1px solid var(--line-mid);
+  counter-reset: none;
 }
 
-.bus-steps li {
-  min-height: 210px;
-  padding: 26px 28px 28px 8px;
-  border-bottom: 1px solid var(--line-mid);
+.bus-flow__step {
+  position: relative;
 }
 
-.bus-steps li + li {
-  padding-left: 36px;
-  border-left: 1px solid var(--line-mid);
+/* Conector: seta desenhada em CSS, sem peso de asset. */
+.bus-flow__step::after {
+  content: "";
+  position: absolute;
+  top: 21px;
+  right: calc(clamp(28px, 4vw, 56px) / -2);
+  width: 9px;
+  height: 9px;
+  border-top: 1.5px solid var(--line-mid);
+  border-right: 1.5px solid var(--line-mid);
+  transform: translate(50%, -50%) rotate(45deg);
 }
 
-.bus-steps span {
-  display: block;
+.bus-flow__step:last-child::after {
+  content: none;
+}
+
+.bus-flow__marker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
   color: var(--action-ink);
-  font-family: var(--font-display);
-  font-size: 2.8rem;
-  line-height: 1;
+  border-bottom: 2px solid var(--action);
 }
 
-.bus-steps strong {
+.bus-flow__marker svg {
+  width: 23px;
+  height: 23px;
+}
+
+.bus-flow__step strong {
   display: block;
-  margin-top: 28px;
+  margin-top: 20px;
   color: var(--bus-ink);
   font-size: 1.05rem;
 }
 
-.bus-steps p {
-  max-width: 28ch;
+.bus-flow__step p {
+  max-width: 30ch;
   margin-top: 8px;
   color: var(--ink-faint);
   font-size: 0.9rem;
@@ -321,8 +343,44 @@
   gap: 20px;
 }
 
+/* Bloco 02: labels de tamanhos diferentes quebravam em 1 ou 2 linhas e
+   empurravam os inputs para alturas distintas (degrau de ~35px). O subgrid faz
+   label / input / hint compartilharem as MESMAS três linhas, então os campos
+   alinham independentemente do tamanho do texto. */
 .bus-form__grid--counts {
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  grid-template-rows: auto auto auto;
+}
+
+.bus-form__grid--counts .bus-field {
+  display: grid;
+  grid-row: 1 / span 3;
+  grid-template-rows: subgrid;
+}
+
+/* `display: grid` acima vence o atributo `hidden` (que só aplica display:none
+   via UA stylesheet, de especificidade menor). Sem isto o campo de crianças
+   continuava visível mesmo escondido pelo JS. */
+.bus-form__grid--counts .bus-field[hidden] {
+  display: none;
+}
+
+/* Fallback para navegadores sem subgrid: alinha pelo menos os inputs, jogando
+   o label para uma altura mínima de duas linhas. */
+@supports not (grid-template-rows: subgrid) {
+  .bus-form__grid--counts .bus-field {
+    display: block;
+  }
+
+  /* Mesmo motivo do bloco acima: `hidden` não pode perder para `display: block`. */
+  .bus-form__grid--counts .bus-field[hidden] {
+    display: none;
+  }
+
+  .bus-form__grid--counts .bus-field > label {
+    min-height: 2.6em;
+  }
 }
 
 .bus-field--wide {
@@ -795,22 +853,26 @@
     order: -1;
   }
 
-  .bus-steps {
+  /* Empilhado: a seta gira 90deg e passa a apontar para baixo, seguindo a
+     direção real da leitura. Sem isso o grid de 3 colunas vazava a viewport. */
+  .bus-flow {
     grid-template-columns: 1fr;
+    gap: 34px;
   }
 
-  .bus-steps li,
-  .bus-steps li + li {
-    min-height: auto;
-    padding: 24px 8px;
-    border-left: 0;
+  .bus-flow__step::after {
+    top: auto;
+    right: auto;
+    bottom: -22px;
+    left: 20px;
+    transform: translateX(-50%) rotate(135deg);
   }
 
-  .bus-steps strong {
+  .bus-flow__step strong {
     margin-top: 16px;
   }
 
-  .bus-steps p {
+  .bus-flow__step p {
     max-width: 52ch;
   }
 

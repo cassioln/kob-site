@@ -86,8 +86,11 @@ export function validateBusPayload(payload) {
   if (!Number.isInteger(passengerCount) || passengerCount < 1 || passengerCount > MAX_PASSENGERS) {
     throw new ValidationError(`Informe entre 1 e ${MAX_PASSENGERS} passageiros.`);
   }
-  if (!Number.isInteger(childrenCount) || childrenCount < 0 || childrenCount >= passengerCount) {
-    throw new ValidationError('O grupo precisa ter pelo menos um passageiro pagante e responsável.');
+  // Cada criança viaja no colo de um responsável, então precisa de um pagante
+  // para si: crianças <= pagantes (pagantes = total - crianças).
+  if (!Number.isInteger(childrenCount) || childrenCount < 0
+      || childrenCount > passengerCount - childrenCount) {
+    throw new ValidationError('Cada criança precisa de um passageiro pagante como responsável.');
   }
 
   const primaryName = normalizeText(contact.full_name, 'Nome completo do contato principal', 3);

@@ -79,7 +79,7 @@ CREATE TABLE IF NOT EXISTS bus_registrations (
   CONSTRAINT bus_registrations_passenger_count_chk
     CHECK (passenger_count BETWEEN 1 AND 100),
   CONSTRAINT bus_registrations_children_count_chk
-    CHECK (children_count >= 0 AND children_count <= passenger_count - 1),
+    CHECK (children_count >= 0 AND children_count <= passenger_count - children_count),
   CONSTRAINT bus_registrations_amount_cents_chk
     CHECK (amount_cents >= 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -161,7 +161,7 @@ CREATE TABLE IF NOT EXISTS bus_payment_proofs (
 --
 -- Regras cobertas:
 --   bus_registrations : passenger_count 1..100
---                       children_count 0..passenger_count-1
+--                       children_count 0..(passenger_count - children_count)
 --                       amount_cents >= 0
 --   bus_passengers    : position >= 1
 --   bus_payment_proofs: file_size 1..2097152
@@ -193,9 +193,9 @@ BEGIN
       SET MESSAGE_TEXT = 'bus_registrations: passenger_count deve estar entre 1 e 100';
   END IF;
 
-  IF NEW.children_count < 0 OR NEW.children_count > NEW.passenger_count - 1 THEN
+  IF NEW.children_count < 0 OR NEW.children_count > NEW.passenger_count - NEW.children_count THEN
     SIGNAL SQLSTATE '45000'
-      SET MESSAGE_TEXT = 'bus_registrations: children_count deve estar entre 0 e passenger_count - 1 (o grupo precisa de ao menos um pagante responsavel)';
+      SET MESSAGE_TEXT = 'bus_registrations: cada crianca precisa de um pagante responsavel (children_count <= passenger_count - children_count)';
   END IF;
 
   IF NEW.amount_cents < 0 THEN
@@ -219,9 +219,9 @@ BEGIN
       SET MESSAGE_TEXT = 'bus_registrations: passenger_count deve estar entre 1 e 100';
   END IF;
 
-  IF NEW.children_count < 0 OR NEW.children_count > NEW.passenger_count - 1 THEN
+  IF NEW.children_count < 0 OR NEW.children_count > NEW.passenger_count - NEW.children_count THEN
     SIGNAL SQLSTATE '45000'
-      SET MESSAGE_TEXT = 'bus_registrations: children_count deve estar entre 0 e passenger_count - 1 (o grupo precisa de ao menos um pagante responsavel)';
+      SET MESSAGE_TEXT = 'bus_registrations: cada crianca precisa de um pagante responsavel (children_count <= passenger_count - children_count)';
   END IF;
 
   IF NEW.amount_cents < 0 THEN

@@ -132,8 +132,10 @@ function validate_bus_payload(mixed $payload): array
     if ($passengerCount < 1 || $passengerCount > BUS_MAX_PASSENGERS) {
         throw new ValidationError('Informe entre 1 e ' . BUS_MAX_PASSENGERS . ' passageiros.');
     }
-    if ($childrenCount < 0 || $childrenCount >= $passengerCount) {
-        throw new ValidationError('O grupo precisa ter pelo menos um passageiro pagante e responsável.');
+    // Cada criança viaja no colo de um responsável, então precisa de um pagante
+    // para si: crianças <= pagantes (pagantes = total - crianças).
+    if ($childrenCount < 0 || $childrenCount > $passengerCount - $childrenCount) {
+        throw new ValidationError('Cada criança precisa de um passageiro pagante como responsável.');
     }
 
     $primaryName = normalize_text($contact['full_name'] ?? null, 'Nome completo do contato principal', 3);
