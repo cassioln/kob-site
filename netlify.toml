@@ -2,6 +2,10 @@
 [build]
   publish = "."
 
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
 [[headers]]
   for = "/*"
   [headers.values]
@@ -34,6 +38,30 @@
   for = "/assets/videos/*"
   [headers.values]
     Cache-Control = "public, max-age=2592000"
+
+[[redirects]]
+  from = "/api/create-pix-order"
+  to = "/.netlify/functions/create-pix-order"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/mercadopago-webhook"
+  to = "/.netlify/functions/mercadopago-webhook"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/bus-registration-status"
+  to = "/.netlify/functions/bus-registration-status"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/bus-payment-proof"
+  to = "/.netlify/functions/bus-payment-proof"
+  status = 200
+  force = true
 
 [[redirects]]
   from = "/*"

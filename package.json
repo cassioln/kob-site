@@ -4,7 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "npm run test:analytics && npm run test:analytics:pii",
+    "test": "npm run test:server && npm run test:analytics && npm run test:analytics:pii",
+    "test:server": "node --test server/tests/*.test.mjs",
     "test:analytics": "playwright test",
     "test:analytics:pii": "playwright test --config=playwright.live.config.mjs --grep @code",
     "test:analytics:live": "playwright test --config=playwright.live.config.mjs",
@@ -15,5 +16,8 @@
     "@playwright/test": "1.61.1",
     "ajv": "8.20.0",
     "yaml": "2.9.0"
+  },
+  "dependencies": {
+    "pg": "^8.16.3"
   }
 }
