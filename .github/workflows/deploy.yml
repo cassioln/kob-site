@@ -27,17 +27,32 @@ jobs:
             -x ^\.git/
             -x ^\.github/
             -x ^\.hermes/
+            -x ^\.hermes-tmp/
             -x ^\.worktrees/
             -x ^\.od-skills/
             -x ^\.playwright-mcp/
             -x ^bkp/
             -x ^assets/images/creators/
+            -x ^analytics/
+            -x ^server/
+            -x ^api/
+            -x ^netlify/
+            -x ^php/db/
+            -x ^loop_finder/
+            -x ^node_modules/
+            -x ^tests?/
             -x ^README\.md$
             -x ^PRODUCT\.md$
             -x ^DESIGN\.md$
+            -x ^ONIBUS-PAGAMENTO\.md$
+            -x ^ANALYTICS-PREREQUISITES\.md$
             -x ^preview\.sh$
             -x ^netlify\.toml$
             -x ^vercel\.json$
+            -x ^playwright.*\.mjs$
+            -x ^package\.json$
+            -x ^package-lock\.json$
+            -x ^\.env.*$
             -x ^\.gitignore$
             -x \.artifact\.json$
             -x \.DS_Store$

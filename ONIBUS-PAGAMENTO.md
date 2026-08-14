@@ -61,6 +61,11 @@ O webhook consulta a order no Mercado Pago antes de atualizar o banco. Assim, um
 
 ## Runtime: pendência bloqueante
 
+> **RESOLVIDO em 2026-08-14.** O roteamento `/api/*` foi implementado no
+> `.htaccess` e o deploy passou a excluir o código que não executa neste host.
+> Esta seção fica como registro do diagnóstico. Ver "Roteamento e proteção"
+> abaixo para o estado atual.
+
 A hospedagem atual **não executa este backend Node**. Verificado em 2026-08-14:
 `kriativosonboard.com.br` responde `Server: Apache` servindo HTML estático, e
 `.github/workflows/deploy.yml` publica por **FTP em `public_html` na Locaweb**.
@@ -81,6 +86,62 @@ O banco aceita conexão externa, então serve aos dois cenários. Opções:
 
 Enquanto isso não for decidido, a página coleta os dados mas `POST /api/create-pix-order`
 retorna 404 em produção. Não anuncie a página antes de resolver o runtime.
+
+## Roteamento e proteção (implementado em 2026-08-14)
+
+O frontend chama `/api/<endpoint>`; os arquivos reais são `php/mysql/*.php`.
+Sem reescrita as rotas retornavam 404, porque o host serve o repositório como
+conteúdo estático. O `.htaccess` passou a fazer essa ligação:
+
+```apache
+RewriteRule ^api/create-pix-order/?$ php/mysql/create-pix-order.php [QSA,L]
+```
+
+`QSA` é obrigatório: `bus-registration-status?id=UUID` depende da query string.
+
+Validado com **Apache 2.4.66 local**, servindo o `.htaccess` real e usando
+stubs CGI no lugar do PHP para ler `QUERY_STRING` e `REQUEST_METHOD`:
+
+| Verificação | Resultado |
+|---|---|
+| 4 rotas `/api/*` resolvem para o `.php` correto | 200 |
+| `id=UUID-PROVA-42` chega ao script | `QUERY_STRING=id=UUID-PROVA-42` |
+| `POST` sobrevive ao rewrite | `REQUEST_METHOD=POST` |
+| `php/lib/`, `php/mysql/lib/`, `php/db/`, `server/`, `netlify/`, `api/*.mjs` | 403 |
+| `php/*.php` (endpoints PostgreSQL, código morto aqui) | 403 |
+| `.env`, `.env.example`, `package.json` | 403 |
+| `/`, `index.html`, `onibus.html`, assets | 200 |
+
+Total: 25 asserções, 0 falhas.
+
+### Armadilha: `<DirectoryMatch>` é ilegal em `.htaccess`
+
+A primeira versão usava `<DirectoryMatch>` para negar os diretórios. Isso
+derruba **todas** as requisições com `HTTP 500` e
+`<DirectoryMatch not allowed here` no `error_log` — a diretiva só vale em
+configuração de servidor. Em `.htaccess`, proteção por caminho precisa de
+`mod_rewrite` (`[F,L]`); `<FilesMatch>`, ao contrário, é permitido.
+
+Bloquear os diretórios de apoio **não** quebra os endpoints: um `require` do
+PHP é resolvido no filesystem e não passa pelo controle de acesso do Apache.
+
+### Deploy
+
+O FTP publica a raiz do repositório, então tudo que não é preciso em produção
+foi excluído no workflow: `analytics/`, `server/`, `api/`, `netlify/`,
+`php/db/`, `node_modules/`, `package*.json`, `.env*` e os `.md` internos.
+Nenhum HTML referencia esses caminhos — verificado.
+
+O `.htaccess` continua bloqueando os mesmos caminhos, de propósito: se um
+arquivo chegar ao host por upload manual ou por mudança no workflow, a
+proteção não depende só da lista de exclusão.
+
+### Segredos: nada a configurar no GitHub
+
+Os secrets do Actions (`FTP_HOST`, `FTP_USER`, `FTP_PASSWORD`) servem apenas ao
+transporte. As credenciais de runtime são lidas de `~/kob-config/bus-secrets.php`,
+fora do document root — um secret de Actions **não** vira variável de ambiente
+na Locaweb. Por isso `DB_KOB_PASSWORD` não tinha efeito algum e foi removido.
 
 ## Runtime: decidido — PHP 8.0 + MySQL na Locaweb
 

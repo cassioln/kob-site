@@ -9,8 +9,70 @@ RewriteEngine On
 RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
 RewriteRule ^ https://%1%{REQUEST_URI} [L,R=301]
 
+# ---- API do onibus fretado ----
+# O frontend (assets/js/onibus.js) chama /api/<endpoint>. Os arquivos reais
+# ficam em php/mysql/. Sem estas regras as rotas retornam 404, porque o host
+# serve o repositorio como conteudo estatico.
+#
+# Runtime escolhido: PHP 8.0 + MySQL (Percona 5.7) na Locaweb. O PostgreSQL
+# do mesmo plano NAO serve aqui: exige scram-sha-256 e a libpq do host e 9.5,
+# que falha com "authentication method 10 not supported". Ver
+# ONIBUS-PAGAMENTO.md. Por isso apontamos para php/mysql/, nao para php/.
+#
+# QSA preserva a query string (bus-registration-status?id=UUID depende dela).
+# L encerra o processamento para a requisicao nao cair no 404 do final.
+RewriteRule ^api/create-pix-order/?$          php/mysql/create-pix-order.php [QSA,L]
+RewriteRule ^api/bus-registration-status/?$   php/mysql/bus-registration-status.php [QSA,L]
+RewriteRule ^api/bus-payment-proof/?$         php/mysql/bus-payment-proof.php [QSA,L]
+RewriteRule ^api/mercadopago-webhook/?$       php/mysql/mercadopago-webhook.php [QSA,L]
+
 DirectoryIndex index.html
 ErrorDocument 404 /index.html
+
+# ---- Proteger codigo server-side ----
+# O deploy por FTP publica a raiz do repositorio, entao estes diretorios
+# chegam ao document root. As credenciais em si NAO ficam aqui (moram em
+# ~/kob-config/bus-secrets.php, fora do document root), mas expor as libs,
+# o schema SQL e codigo que nunca executa neste host e superficie inutil.
+#
+# ATENCAO: <Directory> e <DirectoryMatch> sao ILEGAIS em .htaccess e causam
+# HTTP 500 em toda a requisicao ("<DirectoryMatch not allowed here").
+# Verificado com Apache 2.4.66 local. Em .htaccess a protecao por caminho
+# precisa ser feita via mod_rewrite.
+#
+# Os endpoints em php/mysql/*.php continuam acessiveis: sao eles que os
+# RewriteRule de /api/ atingem. Um require interno do PHP e resolvido no
+# filesystem e nao passa pelo controle de acesso do Apache, entao bloquear
+# os diretorios de apoio nao quebra os endpoints.
+RewriteRule ^php/lib/          - [F,L]
+RewriteRule ^php/mysql/lib/    - [F,L]
+RewriteRule ^php/db/           - [F,L]
+RewriteRule ^server/           - [F,L]
+RewriteRule ^netlify/          - [F,L]
+RewriteRule ^api/.*\.mjs$      - [F,L]
+
+# Os endpoints PostgreSQL em php/*.php sao codigo morto NESTE host: a libpq
+# da Locaweb e 9.5 e nao fala scram-sha-256, entao eles nunca funcionam aqui.
+# Ficam no repositorio para quem rodar em outro runtime, mas nao devem ser
+# alcancaveis pela web. Sao bloqueados um a um, porque um "^php/" generico
+# tambem barraria php/mysql/, que precisa continuar servindo a API.
+RewriteRule ^php/create-pix-order\.php$        - [F,L]
+RewriteRule ^php/bus-registration-status\.php$ - [F,L]
+RewriteRule ^php/bus-payment-proof\.php$      - [F,L]
+RewriteRule ^php/mercadopago-webhook\.php$    - [F,L]
+
+# Arquivos sensiveis que nunca devem ser servidos, caso cheguem ao host.
+# <FilesMatch> e permitido em .htaccess (diferente de <DirectoryMatch>).
+<FilesMatch "^(\.env.*|\.gitignore|package(-lock)?\.json|.*\.sql|.*\.mjs)$">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+  </IfModule>
+</FilesMatch>
+
 
 # ---- Tipos MIME ----
 # A hospedagem da Locaweb entrega extensões modernas como text/plain por
