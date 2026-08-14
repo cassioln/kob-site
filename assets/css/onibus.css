@@ -438,6 +438,30 @@
   font-weight: 700;
 }
 
+/* Validade do Pix. Informativo: o estado real da reserva vem do servidor. */
+.bus-payment-panel__expiry {
+  margin-top: 10px;
+  color: var(--bus-ink-soft, #4a5b70);
+  font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.bus-payment-panel__expiry strong {
+  color: var(--bus-ink, #0f2742);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Última hora: chama atenção sem alarmar. */
+.bus-payment-panel__expiry[data-state="soon"] strong {
+  color: var(--kriativa-magenta);
+}
+
+.bus-payment-panel__expiry[data-state="expired"] strong {
+  color: var(--kriativa-magenta);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
 .bus-form__submit {
   width: 100%;
   margin-top: 4px;

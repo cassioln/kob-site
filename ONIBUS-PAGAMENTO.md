@@ -90,6 +90,29 @@ O que foi **mantido de propósito**:
 - o CSS `.bus-proof-upload` em `assets/css/onibus.css`, órfão. Fica disponível
   caso o painel volte a ser usado para o caso manual.
 
+## Validade do Pix (timer, 2026-08-14)
+
+O QR **expira em 24h**. Medido na API: a validade vem em
+`transactions.payments[0].date_of_expiration` — não existe no nível da order
+nem em `payment_method`, onde seria intuitivo procurar.
+
+```text
+created_date        2026-08-14T22:23:00.834Z
+date_of_expiration  2026-08-15T22:23:01.202+00:00
+```
+
+O campo é repassado como `expiresAt` nos quatro backends e o painel mostra um
+countdown (`#pix-expiry`). Abaixo de 1h o número fica magenta; ao zerar, exibe
+"expirado".
+
+**O countdown é informativo e não decide nada.** Ele nunca confirma nem cancela
+a reserva: ao expirar, apenas dispara `pollPaymentStatus()` para o servidor
+dizer o que aconteceu de fato. A única fonte de verdade continua sendo
+`GET /api/bus-registration-status`, alimentado pelo webhook que consulta a order
+autenticada no Mercado Pago. Isso está coberto por teste: o Playwright expira um
+QR em 2s com o servidor respondendo `payment_pending` e assegura que o painel
+**não** vai para `confirmed`.
+
 ## Runtime: pendência bloqueante
 
 > **RESOLVIDO em 2026-08-14.** O roteamento `/api/*` foi implementado no

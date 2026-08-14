@@ -113,6 +113,52 @@ test('confirma a vaga automaticamente quando o pagamento é identificado', async
   await expect(page.locator('#payment-panel')).toHaveAttribute('data-payment-state', 'confirmed');
 });
 
+test('exibe validade do Pix e não confirma nada sozinho quando expira', async ({ page }) => {
+  // O countdown é informativo. A prova aqui é dupla: ele aparece e conta, mas
+  // o estado da reserva continua vindo exclusivamente do servidor.
+  let statusChecks = 0;
+  await page.route('**/api/create-pix-order', async (route) => {
+    await route.fulfill({
+      status: 201,
+      contentType: 'application/json',
+      // Expira em 2 segundos: o teste não precisa esperar 24h.
+      body: JSON.stringify({
+        ...fakePixResponse(),
+        expiresAt: new Date(Date.now() + 2000).toISOString()
+      })
+    });
+  });
+  await page.route('**/api/bus-registration-status**', async (route) => {
+    statusChecks += 1;
+    // O servidor insiste em "pendente", mesmo após o QR expirar.
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ status: 'payment_pending' })
+    });
+  });
+
+  await page.goto('/onibus.html');
+  await page.getByLabel('Nome completo (contato principal)').fill('Maria de Souza');
+  await page.getByLabel('CPF do contato principal').fill(primaryCpf);
+  await page.getByLabel('E-mail').fill('maria@example.com');
+  await page.getByLabel('WhatsApp').fill('11942554141');
+  await page.getByLabel(/Li e concordo com as condições/i).check();
+  await page.getByRole('button', { name: /continuar para o pagamento pix/i }).click();
+
+  // O aviso de validade aparece com um tempo restante.
+  await expect(page.locator('#pix-expiry')).toBeVisible();
+  await expect(page.locator('#pix-expiry-countdown')).toHaveText(/\d/);
+
+  // Ao zerar, marca como expirado e reconsulta o servidor.
+  await expect(page.locator('#pix-expiry-countdown')).toHaveText(/expirado/i, { timeout: 10000 });
+  await expect(page.locator('#pix-expiry')).toHaveAttribute('data-state', 'expired');
+
+  // O ponto central: expirar NÃO confirma nem cancela por conta própria.
+  await expect(page.locator('#payment-panel')).not.toHaveAttribute('data-payment-state', 'confirmed');
+  expect(statusChecks).toBeGreaterThan(0);
+});
+
 test('impede gerar pagamento sem preencher passageiros adicionais', async ({ page }) => {
   let requestCount = 0;
   await page.route('**/api/create-pix-order', async (route) => {

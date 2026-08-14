@@ -101,6 +101,7 @@ try {
         'qrCode' => $payment['qrCode'],
         'qrCodeBase64' => $payment['qrCodeBase64'],
         'ticketUrl' => $payment['ticketUrl'],
+        'expiresAt' => $payment['expiresAt'] ?? null,
     ]);
 } catch (ValidationError $error) {
     json_response(400, ['error' => $error->getMessage()]);

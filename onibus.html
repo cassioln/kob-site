@@ -28,10 +28,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
   <link rel="preload" href="assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
   <link rel="stylesheet" href="assets/css/main.css?v=20260727-incluso-editorial-r2">
-  <link rel="stylesheet" href="assets/css/onibus.css?v=20260814-1">
+  <link rel="stylesheet" href="assets/css/onibus.css?v=20260814-3-expiry">
   <link rel="stylesheet" href="assets/css/cookie-consent.css?v=20260713-5">
   <script defer src="assets/js/cookie-consent.js?v=20260713-5"></script>
-  <script defer src="assets/js/onibus.js?v=20260814-2-auto-confirm"></script>
+  <script defer src="assets/js/onibus.js?v=20260814-3-expiry"></script>
 </head>
 
 <body class="bus-page">
@@ -161,6 +161,7 @@
                 <textarea id="pix-copy-code" rows="5" readonly spellcheck="false"></textarea>
                 <button id="copy-pix" class="btn btn--ghost" type="button">Copiar código <span aria-hidden="true">⧉</span></button>
                 <a id="pix-ticket-link" class="bus-payment-panel__ticket" href="#" target="_blank" rel="noopener" hidden>Ou abrir instruções do Mercado Pago ↗</a>
+                <p id="pix-expiry" class="bus-payment-panel__expiry" role="timer" aria-live="off" hidden>Este código expira em <strong id="pix-expiry-countdown">—</strong>.</p>
                 <p id="payment-status" class="bus-payment-panel__status" role="status" aria-live="polite">Aguardando pagamento.</p>
               </div>
             </div>

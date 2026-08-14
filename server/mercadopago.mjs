@@ -30,7 +30,10 @@ function extractPixPayment(order) {
     statusDetail: payment.status_detail || order.status_detail || null,
     qrCode: String(paymentMethod.qr_code),
     qrCodeBase64: String(paymentMethod.qr_code_base64),
-    ticketUrl: paymentMethod.ticket_url ? String(paymentMethod.ticket_url) : null
+    ticketUrl: paymentMethod.ticket_url ? String(paymentMethod.ticket_url) : null,
+    // O Pix expira (medido: 24h após a criação). A validade vem no payment,
+    // não na order nem no payment_method.
+    expiresAt: payment.date_of_expiration ? String(payment.date_of_expiration) : null
   };
 }
 

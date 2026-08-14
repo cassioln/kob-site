@@ -22,9 +22,12 @@
   var copyPix = document.getElementById('copy-pix');
   var ticketLink = document.getElementById('pix-ticket-link');
   var paymentStatus = document.getElementById('payment-status');
+  var pixExpiry = document.getElementById('pix-expiry');
+  var pixExpiryCountdown = document.getElementById('pix-expiry-countdown');
   var priceCents = 12000;
   var savedPassengers = {};
   var statusTimer = null;
+  var expiryTimer = null;
   var activeRegistrationId = null;
 
   function digits(value) {
@@ -218,6 +221,55 @@
     return 'kob-' + Date.now() + '-' + Math.random().toString(16).slice(2);
   }
 
+  function stopExpiryCountdown() {
+    window.clearInterval(expiryTimer);
+    expiryTimer = null;
+  }
+
+  function formatRemaining(ms) {
+    var totalSeconds = Math.max(0, Math.floor(ms / 1000));
+    var hours = Math.floor(totalSeconds / 3600);
+    var minutes = Math.floor((totalSeconds % 3600) / 60);
+    var seconds = totalSeconds % 60;
+    function pad(value) { return value < 10 ? '0' + value : String(value); }
+    if (hours > 0) return hours + 'h ' + pad(minutes) + 'min';
+    if (minutes > 0) return minutes + 'min ' + pad(seconds) + 's';
+    return seconds + 's';
+  }
+
+  // O Pix do Mercado Pago expira (medido: 24h após a criação). Sem isso o
+  // usuário fica olhando um QR morto sem entender por que nada acontece.
+  //
+  // O countdown é apenas informativo: NUNCA confirma nem invalida a reserva por
+  // conta própria. Quem decide o estado é sempre o servidor, via polling em
+  // pollPaymentStatus(); aqui só exibimos tempo restante e, ao zerar, pedimos
+  // uma nova consulta para o servidor dizer o que aconteceu de fato.
+  function startExpiryCountdown(expiresAt, registrationId) {
+    stopExpiryCountdown();
+    if (!expiresAt) return;
+
+    var deadline = new Date(expiresAt).getTime();
+    if (!deadline || Number.isNaN(deadline)) return;
+
+    function render() {
+      var remaining = deadline - Date.now();
+      if (remaining <= 0) {
+        stopExpiryCountdown();
+        pixExpiryCountdown.textContent = 'expirado';
+        pixExpiry.dataset.state = 'expired';
+        // Não decidimos nada localmente: perguntamos ao servidor.
+        pollPaymentStatus(registrationId);
+        return;
+      }
+      pixExpiryCountdown.textContent = formatRemaining(remaining);
+      pixExpiry.dataset.state = remaining < 60 * 60 * 1000 ? 'soon' : 'ok';
+    }
+
+    pixExpiry.hidden = false;
+    render();
+    expiryTimer = window.setInterval(render, 1000);
+  }
+
   function pollPaymentStatus(registrationId) {
     if (!registrationId) return;
     window.clearTimeout(statusTimer);
@@ -232,11 +284,15 @@
       if (data.status === 'confirmed') {
         paymentStatus.textContent = 'Pagamento identificado! Sua vaga está confirmada.';
         paymentPanel.dataset.paymentState = 'confirmed';
+        // Pago: a validade do QR deixa de importar.
+        stopExpiryCountdown();
+        pixExpiry.hidden = true;
         return;
       }
       if (['cancelled', 'refunded', 'payment_failed'].includes(data.status)) {
         paymentStatus.textContent = 'Este pagamento não está ativo. Entre em contato com a organização para receber orientação.';
         paymentPanel.dataset.paymentState = data.status;
+        stopExpiryCountdown();
         return;
       }
       statusTimer = window.setTimeout(function () { pollPaymentStatus(registrationId); }, 5000);
@@ -256,6 +312,7 @@
       ticketLink.hidden = false;
     }
     paymentStatus.textContent = 'Aguardando pagamento. Não feche esta página até concluir a transferência.';
+    startExpiryCountdown(payment.expiresAt, payment.registrationId);
     pollPaymentStatus(payment.registrationId);
     paymentPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }

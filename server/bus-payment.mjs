@@ -199,6 +199,7 @@ export async function createPixOrder({
     totalAmount,
     qrCode: payment.qrCode,
     qrCodeBase64: payment.qrCodeBase64,
-    ticketUrl: payment.ticketUrl
+    ticketUrl: payment.ticketUrl,
+    expiresAt: payment.expiresAt ?? null
   };
 }

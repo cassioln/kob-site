@@ -129,6 +129,10 @@ function mp_create_pix_order(string $totalAmount, string $externalReference, str
         'qrCode' => (string) $method['qr_code'],
         'qrCodeBase64' => (string) $method['qr_code_base64'],
         'ticketUrl' => isset($method['ticket_url']) ? (string) $method['ticket_url'] : null,
+        // O Pix expira (medido: 24h após a criação). A validade vem no payment,
+        // não na order nem no payment_method. Sem repassar isso, o usuário fica
+        // olhando um QR morto sem saber.
+        'expiresAt' => isset($payment['date_of_expiration']) ? (string) $payment['date_of_expiration'] : null,
     ];
 }
 
