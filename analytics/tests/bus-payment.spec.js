@@ -73,9 +73,10 @@ test('cadastra o grupo, calcula o valor e exibe o Pix', async ({ page }) => {
   await expect(page.locator('#bus-form')).toBeHidden();
 });
 
-test('envia comprovante válido e exibe confirmação da vaga', async ({ page }) => {
-  let proofBody = null;
-  let proofUploaded = false;
+test('confirma a vaga automaticamente quando o pagamento é identificado', async ({ page }) => {
+  // O comprovante deixou de ser exigido: o webhook consulta a order na API do
+  // Mercado Pago e o polling da página reflete 'confirmed' sem upload nenhum.
+  let statusChecks = 0;
   await page.route('**/api/create-pix-order', async (route) => {
     await route.fulfill({
       status: 201,
@@ -84,19 +85,12 @@ test('envia comprovante válido e exibe confirmação da vaga', async ({ page })
     });
   });
   await page.route('**/api/bus-registration-status**', async (route) => {
+    statusChecks += 1;
+    // Primeira consulta ainda pendente; depois o pagamento é identificado.
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
-      body: JSON.stringify({ status: proofUploaded ? 'confirmed' : 'paid_awaiting_proof' })
-    });
-  });
-  await page.route('**/api/bus-payment-proof', async (route) => {
-    proofBody = route.request().postDataJSON();
-    proofUploaded = true;
-    await route.fulfill({
-      status: 201,
-      contentType: 'application/json',
-      body: JSON.stringify({ status: 'confirmed' })
+      body: JSON.stringify({ status: statusChecks > 1 ? 'confirmed' : 'payment_pending' })
     });
   });
 
@@ -108,19 +102,15 @@ test('envia comprovante válido e exibe confirmação da vaga', async ({ page })
   await page.getByLabel(/Li e concordo com as condições/i).check();
   await page.getByRole('button', { name: /continuar para o pagamento pix/i }).click();
 
-  await expect(page.locator('#proof-form')).toBeVisible();
-  await page.locator('#proof-file').setInputFiles({
-    name: 'comprovante.png',
-    mimeType: 'image/png',
-    buffer: Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])
-  });
-  await page.getByRole('button', { name: /enviar comprovante/i }).click();
+  await expect(page.locator('#payment-panel')).toBeVisible();
 
-  await expect(page.locator('#proof-status')).toContainText(/vaga confirmada/i);
-  expect(proofBody.registration_id).toBe('00000000-0000-4000-8000-000000000001');
-  expect(proofBody.mime_type).toBe('image/png');
-  expect(proofBody.content_base64).toBe('iVBORw0KGgo=');
-  expect(proofBody).not.toHaveProperty('cpf');
+  // Não deve existir mais nenhuma etapa de envio de comprovante.
+  await expect(page.locator('#proof-form')).toHaveCount(0);
+  await expect(page.locator('#proof-file')).toHaveCount(0);
+
+  // O polling avança sozinho até a confirmação.
+  await expect(page.locator('#payment-status')).toContainText(/vaga está confirmada/i, { timeout: 15000 });
+  await expect(page.locator('#payment-panel')).toHaveAttribute('data-payment-state', 'confirmed');
 });
 
 test('impede gerar pagamento sem preencher passageiros adicionais', async ({ page }) => {

@@ -22,10 +22,6 @@
   var copyPix = document.getElementById('copy-pix');
   var ticketLink = document.getElementById('pix-ticket-link');
   var paymentStatus = document.getElementById('payment-status');
-  var proofForm = document.getElementById('proof-form');
-  var proofFile = document.getElementById('proof-file');
-  var proofSubmit = document.getElementById('proof-submit');
-  var proofStatus = document.getElementById('proof-status');
   var priceCents = 12000;
   var savedPassengers = {};
   var statusTimer = null;
@@ -234,14 +230,8 @@
       return response.json();
     }).then(function (data) {
       if (data.status === 'confirmed') {
-        paymentStatus.textContent = 'Pagamento e comprovante confirmados! Sua solicitação de vaga está registrada.';
+        paymentStatus.textContent = 'Pagamento identificado! Sua vaga está confirmada.';
         paymentPanel.dataset.paymentState = 'confirmed';
-        return;
-      }
-      if (data.status === 'paid_awaiting_proof') {
-        paymentStatus.textContent = 'Pagamento identificado. Envie o comprovante abaixo para concluir a solicitação.';
-        paymentPanel.dataset.paymentState = 'paid_awaiting_proof';
-        statusTimer = window.setTimeout(function () { pollPaymentStatus(registrationId); }, 5000);
         return;
       }
       if (['cancelled', 'refunded', 'payment_failed'].includes(data.status)) {
@@ -268,62 +258,6 @@
     paymentStatus.textContent = 'Aguardando pagamento. Não feche esta página até concluir a transferência.';
     pollPaymentStatus(payment.registrationId);
     paymentPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-
-  function readFileAsBase64(file) {
-    return new Promise(function (resolve, reject) {
-      var reader = new FileReader();
-      reader.onload = function () {
-        var result = String(reader.result || '');
-        resolve(result.slice(result.indexOf(',') + 1));
-      };
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-  }
-
-  async function submitProof(event) {
-    event.preventDefault();
-    var file = proofFile.files[0];
-    var allowed = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
-    if (!activeRegistrationId) {
-      proofStatus.textContent = 'Gere o Pix antes de enviar um comprovante.';
-      return;
-    }
-    if (!file || !allowed.includes(file.type)) {
-      proofStatus.textContent = 'Escolha um arquivo JPG, PNG, WebP ou PDF.';
-      return;
-    }
-    if (file.size < 1 || file.size > 2 * 1024 * 1024) {
-      proofStatus.textContent = 'O comprovante precisa ter no máximo 2 MB.';
-      return;
-    }
-    proofSubmit.disabled = true;
-    proofStatus.textContent = 'Enviando comprovante…';
-    try {
-      var contentBase64 = await readFileAsBase64(file);
-      var response = await fetch('/api/bus-payment-proof', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify({
-          registration_id: activeRegistrationId,
-          file_name: file.name,
-          mime_type: file.type,
-          content_base64: contentBase64
-        })
-      });
-      var data = await response.json().catch(function () { return {}; });
-      if (!response.ok) throw new Error(data.error || 'Não foi possível enviar o comprovante.');
-      proofStatus.textContent = data.status === 'confirmed'
-        ? 'Comprovante recebido e vaga confirmada.'
-        : 'Comprovante recebido. Aguardando a confirmação do pagamento.';
-      proofFile.value = '';
-      pollPaymentStatus(activeRegistrationId);
-    } catch (error) {
-      proofStatus.textContent = error.message || 'Não foi possível enviar o comprovante.';
-    } finally {
-      proofSubmit.disabled = false;
-    }
   }
 
   async function submitForm(event) {
@@ -355,7 +289,6 @@
   passengerCount.addEventListener('input', renderPassengers);
   childrenCount.addEventListener('input', updateSummary);
   form.addEventListener('submit', submitForm);
-  proofForm.addEventListener('submit', submitProof);
   copyPix.addEventListener('click', async function () {
     try {
       await navigator.clipboard.writeText(pixCopyCode.value);

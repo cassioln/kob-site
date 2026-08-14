@@ -317,7 +317,7 @@ test('webhook do Mercado Pago não recebe CORS nem responde a preflight de naveg
     dependencies: webhookDependencies
   });
   assert.equal(posted.statusCode, 200);
-  assert.equal(posted.body.status, 'paid_awaiting_proof');
+  assert.equal(posted.body.status, 'confirmed');
   assert.equal(posted.headers, undefined);
 
   const preflight = await handleMercadoPagoWebhook({

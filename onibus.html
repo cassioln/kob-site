@@ -31,7 +31,7 @@
   <link rel="stylesheet" href="assets/css/onibus.css?v=20260814-1">
   <link rel="stylesheet" href="assets/css/cookie-consent.css?v=20260713-5">
   <script defer src="assets/js/cookie-consent.js?v=20260713-5"></script>
-  <script defer src="assets/js/onibus.js?v=20260814-1"></script>
+  <script defer src="assets/js/onibus.js?v=20260814-2-auto-confirm"></script>
 </head>
 
 <body class="bus-page">
@@ -76,7 +76,7 @@
         <ol class="bus-steps">
           <li><span>01</span><strong>Cadastre o grupo</strong><p>O contato principal organiza a reserva e informa os demais passageiros.</p></li>
           <li><span>02</span><strong>Gere o Pix</strong><p>O valor é calculado pelo número de passageiros pagantes.</p></li>
-          <li><span>03</span><strong>Pague e envie o comprovante</strong><p>O pagamento é identificado pelo Mercado Pago e o comprovante completa a solicitação.</p></li>
+          <li><span>03</span><strong>Pague o Pix</strong><p>O pagamento é identificado automaticamente pelo Mercado Pago e a vaga é confirmada.</p></li>
         </ol>
       </div>
     </section>
@@ -149,7 +149,7 @@
             <div class="bus-payment-panel__header">
               <p class="eyebrow">Cadastro recebido</p>
               <h2 id="payment-title">Agora falta o Pix.</h2>
-              <p>O pedido está <strong>aguardando pagamento</strong>. A vaga só é confirmada depois que o Mercado Pago identifica a transferência e o comprovante é recebido.</p>
+              <p>O pedido está <strong>aguardando pagamento</strong>. A vaga é confirmada automaticamente assim que o Mercado Pago identifica a transferência.</p>
             </div>
             <div class="bus-payment-panel__body">
               <div class="bus-payment-panel__qr-wrap">
@@ -163,16 +163,6 @@
                 <a id="pix-ticket-link" class="bus-payment-panel__ticket" href="#" target="_blank" rel="noopener" hidden>Ou abrir instruções do Mercado Pago ↗</a>
                 <p id="payment-status" class="bus-payment-panel__status" role="status" aria-live="polite">Aguardando pagamento.</p>
               </div>
-            </div>
-            <div class="bus-proof-upload">
-              <h3>Envie o comprovante</h3>
-              <p>Depois de pagar, anexe o comprovante para completar a solicitação. Ele será vinculado ao seu cadastro.</p>
-              <form id="proof-form" novalidate>
-                <label for="proof-file">Comprovante (JPG, PNG, WebP ou PDF · até 2 MB)</label>
-                <input id="proof-file" type="file" accept="image/jpeg,image/png,image/webp,application/pdf" required>
-                <button id="proof-submit" class="btn btn--ghost" type="submit">Enviar comprovante</button>
-                <p id="proof-status" class="bus-proof-upload__status" role="status" aria-live="polite"></p>
-              </form>
             </div>
             <p class="bus-payment-panel__footnote">A confirmação automática depende do Mercado Pago. Se precisar de ajuda, fale com a organização pelo WhatsApp do evento.</p>
           </section>

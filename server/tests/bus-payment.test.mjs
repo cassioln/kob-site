@@ -182,7 +182,7 @@ test('adaptador HTTP retorna apenas o contrato público do Pix', async () => {
   assert.equal(Object.hasOwn(result.body, 'email'), false);
 });
 
-test('webhook consulta a order e transforma pagamento processado em pago', async () => {
+test('webhook consulta a order e confirma a vaga direto no pagamento aprovado', async () => {
   const updates = [];
   const result = await handleMercadoPagoWebhook({
     method: 'POST',
@@ -215,9 +215,9 @@ test('webhook consulta a order e transforma pagamento processado em pago', async
   });
 
   assert.equal(result.statusCode, 200);
-  assert.equal(result.body.status, 'paid_awaiting_proof');
+  assert.equal(result.body.status, 'confirmed');
   assert.equal(updates[0].id, 'registration-1');
-  assert.equal(updates[0].update.status, 'paid_awaiting_proof');
+  assert.equal(updates[0].update.status, 'confirmed');
   assert.equal(updates[0].update.mercadopagoPaymentId, 'PAY01TESTBUS2026');
 });
 

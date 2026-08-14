@@ -109,11 +109,16 @@ export async function handleCreatePixRequest({
   }
 }
 
+// Antes o pagamento era declarado manualmente pelo usuário (Google Forms) e
+// um comprovante era a única evidência disponível, então "pago" não bastava
+// para confirmar vaga. Agora o webhook consulta a order diretamente na API
+// do Mercado Pago — fonte mais confiável que um arquivo enviado pelo
+// cliente — então o pagamento aprovado confirma a vaga sem exigir upload.
 function mapProviderStatus(order) {
   const paymentStatus = String(order.paymentStatus || '').toLowerCase();
   const orderStatus = String(order.orderStatus || '').toLowerCase();
   if (['approved', 'processed', 'paid'].includes(paymentStatus) || orderStatus === 'processed') {
-    return 'paid_awaiting_proof';
+    return 'confirmed';
   }
   if (['cancelled', 'canceled', 'expired', 'refunded'].includes(paymentStatus)
       || ['cancelled', 'canceled', 'expired', 'refunded'].includes(orderStatus)) {
@@ -157,10 +162,6 @@ export async function handleMercadoPagoWebhook({
     if (!registration) return { statusCode: 200, body: { received: true } };
 
     let status = mapProviderStatus(order);
-    if (status === 'paid_awaiting_proof' && typeof db.hasPaymentProof === 'function'
-        && await db.hasPaymentProof(registration.id)) {
-      status = 'confirmed';
-    }
     await db.updateRegistration(registration.id, {
       status,
       statusDetail: order.paymentStatusDetail || order.orderStatusDetail || null,

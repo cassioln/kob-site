@@ -38,15 +38,6 @@ try {
 
     $status = map_provider_status($order);
 
-    // Pagamento aprovado + comprovante já enviado => vaga confirmada.
-    if ($status === 'paid_awaiting_proof') {
-        $hasProof = $pdo->prepare('SELECT 1 FROM bus_payment_proofs WHERE registration_id = :id LIMIT 1');
-        $hasProof->execute([':id' => $registration['id']]);
-        if ($hasProof->fetchColumn() !== false) {
-            $status = 'confirmed';
-        }
-    }
-
     $paidAt = in_array($status, ['paid_awaiting_proof', 'confirmed'], true) ? date('c') : null;
     $update = $pdo->prepare(
         'UPDATE bus_registrations

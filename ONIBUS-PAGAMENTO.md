@@ -57,7 +57,38 @@ https://SEU-DOMINIO/api/mercadopago-webhook
 
 O webhook consulta a order no Mercado Pago antes de atualizar o banco. Assim, uma notificação forjada não confirma a vaga sozinha. Os estados internos são `payment_pending`, `paid_awaiting_proof`, `confirmed`, `payment_failed`, `cancelled` e `refunded`.
 
-`GET /api/bus-registration-status?id=UUID` expõe somente o status operacional para o polling da página. `POST /api/bus-payment-proof` recebe o comprovante em base64, valida MIME, assinatura binária, tamanho e calcula SHA-256 antes de gravar em PostgreSQL. O upload só muda `paid_awaiting_proof` para `confirmed` quando o pagamento já foi identificado; enviar um arquivo não aprova o Pix.
+`GET /api/bus-registration-status?id=UUID` expõe somente o status operacional para o polling da página. `POST /api/bus-payment-proof` recebe o comprovante em base64, valida MIME, assinatura binária, tamanho e calcula SHA-256 antes de gravar em PostgreSQL.
+
+## Confirmação automática (mudou em 2026-08-14)
+
+O fluxo **não exige mais comprovante**. Pagamento aprovado vira `confirmed` direto.
+
+Antes, o pagamento era feito por fora (Google Forms) e declarado pelo usuário: o
+comprovante era a única evidência disponível, então `map_provider_status()`
+devolvia `paid_awaiting_proof` e a vaga só fechava depois do upload.
+
+Hoje o webhook consulta a order autenticada na API do Mercado Pago. Essa é uma
+fonte mais confiável que um arquivo enviado pelo cliente, então exigir o
+comprovante virava atrito sem ganho de segurança.
+
+O que foi removido:
+
+- o `<div class="bus-proof-upload">` de `onibus.html`;
+- `submitProof()`, `readFileAsBase64()` e o estado `paid_awaiting_proof` do
+  polling em `assets/js/onibus.js`;
+- a checagem `hasPaymentProof` nos dois webhooks PHP e no `server/http.mjs`.
+
+O que foi **mantido de propósito**:
+
+- `POST /api/bus-payment-proof` e a tabela `bus_payment_proofs` continuam
+  existindo, sem uso na interface. Servem para anexar um comprovante manualmente
+  em caso excepcional (contestação, pagamento fora do fluxo) sem precisar de
+  migração de banco;
+- o estado `paid_awaiting_proof` permanece no ENUM e nas listas de status. Ele
+  não é mais produzido pelo fluxo normal, mas cadastros antigos podem tê-lo
+  gravado e o código precisa continuar lendo esses registros;
+- o CSS `.bus-proof-upload` em `assets/css/onibus.css`, órfão. Fica disponível
+  caso o painel volte a ser usado para o caso manual.
 
 ## Runtime: pendência bloqueante
 

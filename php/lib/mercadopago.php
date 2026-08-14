@@ -153,7 +153,12 @@ function mp_get_order(string $orderId): array
 
 /**
  * Traduz o estado do provedor para o estado interno da reserva.
- * "pago" nunca implica vaga confirmada: o comprovante ainda é exigido.
+ *
+ * Antes o pagamento era declarado manualmente pelo usuário (Google Forms) e
+ * um comprovante era a única evidência disponível, então "pago" não bastava
+ * para confirmar vaga. Agora o webhook consulta a order diretamente na API
+ * do Mercado Pago — fonte mais confiável que um arquivo enviado pelo
+ * cliente — então o pagamento aprovado confirma a vaga sem exigir upload.
  */
 function map_provider_status(array $order): string
 {
@@ -161,7 +166,7 @@ function map_provider_status(array $order): string
     $orderStatus = strtolower((string) ($order['orderStatus'] ?? ''));
 
     if (in_array($payment, ['approved', 'processed', 'paid'], true) || $orderStatus === 'processed') {
-        return 'paid_awaiting_proof';
+        return 'confirmed';
     }
     $encerrados = ['cancelled', 'canceled', 'expired', 'refunded'];
     if (in_array($payment, $encerrados, true) || in_array($orderStatus, $encerrados, true)) {
