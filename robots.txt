@@ -1,4 +1,9 @@
 User-agent: *
 Allow: /
 
+# EM VALIDACAO: a pagina do onibus fretado roda com token de TESTE do Mercado
+# Pago e nao aceita pagamento real. Bloqueada aqui alem do noindex do proprio
+# HTML. Remover esta regra na troca para o token de producao.
+Disallow: /onibus.html
+
 Sitemap: https://kriativosonboard.com.br/sitemap.xml

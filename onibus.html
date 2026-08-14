@@ -1,0 +1,240 @@
+<!doctype html>
+<!--
+  THESIS: Reserve o assento como quem prepara a primeira jogada: com clareza, sem surpresa.
+  OWN-WORLD: oceano profundo, papel claro, roxo de ação e sinais dourados de embarque.
+  STORY: a pessoa entende o trajeto, cadastra o grupo e chega ao Pix sabendo o que acontece.
+  FIRST VIEWPORT: título + rota à esquerda; valor e começo do cadastro à direita.
+  FORM: formulário em etapas, hierarquia editorial, estados de erro e espera visíveis.
+-->
+<html lang="pt-BR" class="no-js">
+
+<head>
+  <meta charset="UTF-8">
+  <script>document.documentElement.classList.replace('no-js', 'js');</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Ônibus fretado — Kriativos OnBoard 2026</title>
+  <meta name="description" content="Cadastre seu grupo para o ônibus fretado do Kriativos OnBoard 2026, de São Paulo ao Porto de Santos, com Pix seguro.">
+  <!-- EM VALIDACAO: a integracao Pix esta rodando com token de TESTE do Mercado
+       Pago, entao nenhum pagamento aqui e real. Mantenha noindex/nofollow ate
+       trocar para o token de producao, para a pagina nao ser indexada nem
+       aparecer em busca enquanto nao aceita pagamento de verdade. -->
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#041d3a">
+  <link rel="canonical" href="https://kriativosonboard.com.br/onibus.html">
+  <link rel="icon" href="assets/images/brand/favicon-32.png" sizes="32x32">
+  <link rel="apple-touch-icon" href="assets/images/brand/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+  <link rel="preload" href="assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
+  <link rel="stylesheet" href="assets/css/main.css?v=20260727-incluso-editorial-r2">
+  <link rel="stylesheet" href="assets/css/onibus.css?v=20260814-1">
+  <link rel="stylesheet" href="assets/css/cookie-consent.css?v=20260713-5">
+  <script defer src="assets/js/cookie-consent.js?v=20260713-5"></script>
+  <script defer src="assets/js/onibus.js?v=20260814-1"></script>
+</head>
+
+<body class="bus-page">
+  <a class="skip-link" href="#main">Pular para o conteúdo</a>
+
+  <header class="bus-header">
+    <a href="index.html" class="bus-header__brand" aria-label="Kriativos On Board — página inicial">
+      <img src="assets/images/brand/kriativos-on-board-logo.webp" alt="Kriativos On Board" width="2930" height="1796">
+    </a>
+    <a class="bus-header__back" href="index.html">Voltar ao evento <span aria-hidden="true">↗</span></a>
+  </header>
+
+  <main id="main">
+    <section class="bus-hero" aria-labelledby="page-title">
+      <div class="container bus-hero__inner">
+        <div class="bus-hero__copy">
+          <h1 id="page-title">Ônibus fretado para o <span>Kriativos OnBoard 2026</span></h1>
+          <p class="bus-hero__lead">Saia de São Paulo com a turma, chegue ao Porto de Santos sem preocupação e volte com a gente depois do cruzeiro.</p>
+          <div class="bus-route" aria-label="Rota de ida e volta">
+            <div class="bus-route__stop"><span class="bus-route__dot bus-route__dot--start" aria-hidden="true"></span><span><small>Embarque</small><strong>Barra Funda · São Paulo</strong></span></div>
+            <span class="bus-route__line" aria-hidden="true"></span>
+            <div class="bus-route__stop"><span class="bus-route__dot bus-route__dot--end" aria-hidden="true"></span><span><small>Destino</small><strong>Porto de Santos</strong></span></div>
+          </div>
+        </div>
+        <aside class="bus-hero__ticket" aria-label="Resumo do transporte">
+          <span class="bus-hero__ticket-label">Ida e volta</span>
+          <strong>R$ 120,00</strong>
+          <span>por pessoa pagante</span>
+          <div class="bus-hero__ticket-rule"></div>
+          <p>Crianças de até 5 anos não pagam e viajam no colo de um responsável.</p>
+        </aside>
+      </div>
+    </section>
+
+    <section class="bus-intro" aria-labelledby="how-title">
+      <div class="container">
+        <div class="bus-section-heading">
+          <p class="eyebrow">Antes de começar</p>
+          <h2 id="how-title">Reserve o transporte em três passos.</h2>
+          <p>O cadastro é individual porque precisamos enviar os dados de cada passageiro à empresa responsável pelo transporte.</p>
+        </div>
+        <ol class="bus-steps">
+          <li><span>01</span><strong>Cadastre o grupo</strong><p>O contato principal organiza a reserva e informa os demais passageiros.</p></li>
+          <li><span>02</span><strong>Gere o Pix</strong><p>O valor é calculado pelo número de passageiros pagantes.</p></li>
+          <li><span>03</span><strong>Pague e envie o comprovante</strong><p>O pagamento é identificado pelo Mercado Pago e o comprovante completa a solicitação.</p></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="bus-checkout" aria-labelledby="form-title">
+      <div class="container bus-checkout__grid">
+        <div class="bus-form-column">
+          <div class="bus-section-heading bus-section-heading--form">
+            <p class="eyebrow">Cadastro dos passageiros</p>
+            <h2 id="form-title">Quem vai embarcar com você?</h2>
+            <p>Comece pelo contato principal. Depois, informe o nome completo e o CPF de cada pessoa do grupo, incluindo você.</p>
+          </div>
+
+          <form id="bus-form" class="bus-form" novalidate>
+            <fieldset class="bus-fieldset">
+              <legend><span>01</span> Contato principal</legend>
+              <p class="bus-fieldset__note">Esta pessoa será o contato do grupo com a organização.</p>
+              <div class="bus-form__grid">
+                <div class="bus-field bus-field--wide">
+                  <label for="primary-name">Nome completo (contato principal) <b aria-hidden="true">*</b></label>
+                  <input id="primary-name" aria-label="Nome completo (contato principal)" name="primary_name" type="text" autocomplete="name" minlength="3" required>
+                </div>
+                <div class="bus-field">
+                  <label for="primary-cpf">CPF <b aria-hidden="true">*</b></label>
+                  <input id="primary-cpf" aria-label="CPF do contato principal" name="primary_cpf" type="text" inputmode="numeric" autocomplete="off" maxlength="14" placeholder="000.000.000-00" required>
+                </div>
+                <div class="bus-field">
+                  <label for="primary-email">E-mail <b aria-hidden="true">*</b></label>
+                  <input id="primary-email" aria-label="E-mail" name="email" type="email" autocomplete="email" required>
+                </div>
+                <div class="bus-field">
+                  <label for="primary-whatsapp">WhatsApp <b aria-hidden="true">*</b></label>
+                  <input id="primary-whatsapp" aria-label="WhatsApp" name="whatsapp" type="tel" inputmode="tel" autocomplete="tel" maxlength="15" placeholder="(11) 90000-0000" required>
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset class="bus-fieldset">
+              <legend><span>02</span> Tamanho do grupo</legend>
+              <div class="bus-form__grid bus-form__grid--counts">
+                <div class="bus-field">
+                  <label for="passenger-count">Quantas pessoas vão com você, incluindo você? <b aria-hidden="true">*</b></label>
+                  <input id="passenger-count" aria-label="Quantas pessoas vão com você, incluindo você?" name="passenger_count" type="number" inputmode="numeric" min="1" max="100" value="1" required>
+                  <small class="bus-field__hint">O contato principal entra nessa quantidade.</small>
+                </div>
+                <div class="bus-field">
+                  <label for="children-count">Crianças de até 5 anos</label>
+                  <input id="children-count" aria-label="Crianças de até 5 anos" name="children_count" type="number" inputmode="numeric" min="0" max="0" value="0">
+                  <small class="bus-field__hint">Viajam no colo de um responsável, sem assento individual.</small>
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset class="bus-fieldset bus-fieldset--passengers">
+              <legend><span>03</span> Dados dos passageiros</legend>
+              <p class="bus-fieldset__note">O passageiro 1 é o contato principal. Preencha os demais campos abaixo.</p>
+              <div id="passenger-fields" class="bus-passengers" aria-live="polite"></div>
+            </fieldset>
+
+            <label class="bus-consent" for="bus-terms">
+              <input id="bus-terms" type="checkbox" required>
+              <span>Li e concordo com as condições do transporte, com o uso dos dados para o cadastro junto à empresa responsável e com a política de devolução caso o mínimo de passageiros não seja atingido.</span>
+            </label>
+
+            <p id="bus-form-status" class="bus-form__status" role="status" aria-live="polite"></p>
+            <button class="btn btn--primary btn--lg bus-form__submit" type="submit">Continuar para o pagamento Pix <span aria-hidden="true">→</span></button>
+          </form>
+
+          <section id="payment-panel" class="bus-payment-panel" hidden aria-labelledby="payment-title">
+            <div class="bus-payment-panel__header">
+              <p class="eyebrow">Cadastro recebido</p>
+              <h2 id="payment-title">Agora falta o Pix.</h2>
+              <p>O pedido está <strong>aguardando pagamento</strong>. A vaga só é confirmada depois que o Mercado Pago identifica a transferência e o comprovante é recebido.</p>
+            </div>
+            <div class="bus-payment-panel__body">
+              <div class="bus-payment-panel__qr-wrap">
+                <img id="pix-qr" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="QR Code para pagamento Pix" width="280" height="280">
+                <span>Abra o app do seu banco e escaneie o código.</span>
+              </div>
+              <div class="bus-payment-panel__copy">
+                <label for="pix-copy-code">Pix Copia e Cola</label>
+                <textarea id="pix-copy-code" rows="5" readonly spellcheck="false"></textarea>
+                <button id="copy-pix" class="btn btn--ghost" type="button">Copiar código <span aria-hidden="true">⧉</span></button>
+                <a id="pix-ticket-link" class="bus-payment-panel__ticket" href="#" target="_blank" rel="noopener" hidden>Ou abrir instruções do Mercado Pago ↗</a>
+                <p id="payment-status" class="bus-payment-panel__status" role="status" aria-live="polite">Aguardando pagamento.</p>
+              </div>
+            </div>
+            <div class="bus-proof-upload">
+              <h3>Envie o comprovante</h3>
+              <p>Depois de pagar, anexe o comprovante para completar a solicitação. Ele será vinculado ao seu cadastro.</p>
+              <form id="proof-form" novalidate>
+                <label for="proof-file">Comprovante (JPG, PNG, WebP ou PDF · até 2 MB)</label>
+                <input id="proof-file" type="file" accept="image/jpeg,image/png,image/webp,application/pdf" required>
+                <button id="proof-submit" class="btn btn--ghost" type="submit">Enviar comprovante</button>
+                <p id="proof-status" class="bus-proof-upload__status" role="status" aria-live="polite"></p>
+              </form>
+            </div>
+            <p class="bus-payment-panel__footnote">A confirmação automática depende do Mercado Pago. Se precisar de ajuda, fale com a organização pelo WhatsApp do evento.</p>
+          </section>
+        </div>
+
+        <aside class="bus-summary" aria-label="Resumo da reserva">
+          <div class="bus-summary__pin" aria-hidden="true"></div>
+          <h2>Transporte oficial</h2>
+          <dl>
+            <div><dt>Rota</dt><dd>Barra Funda ↔ Santos</dd></div>
+            <div><dt>Grupo</dt><dd id="bus-summary-count">1 passageiro</dd></div>
+            <div><dt>Pagantes</dt><dd id="bus-summary-paying">1 passageiro</dd></div>
+          </dl>
+          <div class="bus-summary__total"><span>Total do Pix</span><strong id="bus-total">R$ 120,00</strong></div>
+          <p class="bus-summary__warning"><span aria-hidden="true">!</span> O ônibus só será contratado se o número mínimo de passageiros for atingido. Caso contrário, o valor será devolvido integralmente.</p>
+        </aside>
+      </div>
+    </section>
+
+    <section class="bus-reassurance" aria-labelledby="conditions-title">
+      <div class="container bus-reassurance__grid">
+        <div>
+          <p class="eyebrow">Importante</p>
+          <h2 id="conditions-title">A contratação depende da turma.</h2>
+        </div>
+        <div class="bus-reassurance__copy">
+          <p>Precisamos atingir a quantidade mínima de passageiros para viabilizar pelo menos um ônibus. Se isso não acontecer, todo o valor pago será devolvido integralmente aos passageiros.</p>
+          <p>O preço de R$ 120,00 inclui o transporte de ida e volta entre a Barra Funda e o Porto de Santos.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="bus-footer">
+    <div class="container bus-footer__inner">
+      <a href="index.html" class="bus-footer__brand" aria-label="Voltar ao Kriativos On Board">
+        <img src="assets/images/brand/kriativos-on-board-logo.webp" alt="Kriativos On Board" width="2930" height="1796">
+      </a>
+      <p>Prepare-se para embarcar com a gente.</p>
+      <nav aria-label="Links do rodapé">
+        <a href="index.html">Conhecer o evento</a>
+        <a href="politica-de-cookies.html">Política de cookies</a>
+      </nav>
+    </div>
+  </footer>
+
+  <p id="cookie-consent-status" class="sr-only" role="status" aria-live="polite"></p>
+  <aside id="cookie-banner" class="cookie-consent" role="dialog" aria-modal="false" aria-labelledby="cookie-consent-title" aria-describedby="cookie-consent-description" aria-hidden="true" data-cookie-consent data-state="closed" hidden>
+    <div class="cookie-consent__surface">
+      <div class="cookie-consent__summary">
+        <div class="cookie-consent__copy">
+          <h2 id="cookie-consent-title" class="cookie-consent__title" tabindex="-1" data-cookie-title>Nós usamos cookies</h2>
+          <p id="cookie-consent-description" class="cookie-consent__description">Usamos apenas cookies necessários por padrão. Você decide se quer permitir análise de navegação.</p>
+          <a class="cookie-consent__policy" href="politica-de-cookies.html">Ler a política de cookies</a>
+        </div>
+        <div class="cookie-consent__actions" aria-label="Escolhas de cookies">
+          <button class="cookie-consent__button cookie-consent__button--essential" type="button" data-cookie-action="deny">Rejeitar</button>
+          <button class="cookie-consent__button cookie-consent__button--accept" type="button" data-cookie-action="accept">Aceitar</button>
+        </div>
+      </div>
+    </div>
+  </aside>
+</body>
+
+</html>

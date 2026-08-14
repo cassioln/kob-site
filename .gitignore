@@ -11,6 +11,11 @@ bkp/
 .DS_Store
 *.log
 
+# Credenciais server-side (mantenha apenas o modelo versionado)
+.env
+.env.*
+!.env.example
+
 # Dependências e artefatos de testes locais
 node_modules/
 **/node_modules/
@@ -34,3 +39,6 @@ playwright/.cache/
 
 # Loop finder
 loop_finder/*
+
+# Scripts temporários de operação/diagnóstico (caminhos e fluxos locais)
+.hermes-tmp/
