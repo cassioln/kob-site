@@ -29,6 +29,7 @@
   var confirmedCode = document.getElementById('confirmed-code');
   var confirmedPassengers = document.getElementById('confirmed-passengers');
   var confirmedChildren = document.getElementById('confirmed-children');
+  var confirmedIssued = document.getElementById('confirmed-issued');
   var stillHereDialog = document.getElementById('still-here-dialog');
   var stillHereContinue = document.getElementById('still-here-continue');
   var stillHereCancel = document.getElementById('still-here-cancel');
@@ -304,6 +305,14 @@
     confirmedCode.textContent = snap.registrationId
       ? String(snap.registrationId).split('-')[0].toUpperCase()
       : '—';
+
+    if (confirmedIssued) {
+      // Data de emissão do comprovante, no fuso do usuário.
+      confirmedIssued.textContent = new Date().toLocaleString('pt-BR', {
+        day: '2-digit', month: '2-digit', year: 'numeric',
+        hour: '2-digit', minute: '2-digit'
+      });
+    }
 
     confirmedPassengers.replaceChildren();
     (snap.passengers || []).forEach(function (name, index) {

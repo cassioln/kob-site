@@ -1033,10 +1033,16 @@
   line-height: 1.6;
 }
 
+/* Data de emissão: irrelevante na tela, obrigatória no documento. */
+.bus-confirmed__printonly {
+  display: none;
+}
+
 /* Fatos da reserva: linhas, não cards. Densidade de comprovante.
-   3 itens em 2 colunas deixavam a última linha pela metade e a borda inferior
-   virava um traço órfão (medido: terminava em 415px de 674px). A régua agora é
-   do container, não da célula, então acompanha a linha inteira. */
+   3 itens em 2 colunas deixam a última linha pela metade, então qualquer borda
+   por CÉLULA vira um traço órfão (medido: 50% da largura, x 0..258). A régua
+   é do container e o separador entre linhas usa um pseudo-elemento esticado
+   por todas as colunas. */
 .bus-confirmed__facts {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
@@ -1046,12 +1052,26 @@
 }
 
 .bus-confirmed__facts > div {
+  position: relative;
   padding: 18px 22px 18px 0;
 }
 
-/* Separador entre linhas, aplicado só quando existe uma linha acima. */
-.bus-confirmed__facts > div:nth-child(n + 3) {
+/* Separador de linha: só no primeiro item de cada linha a partir da segunda,
+   esticado até a borda direita do container. */
+.bus-confirmed__facts > div:nth-child(2n + 3)::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  max-width: 1000%;
   border-top: 1px solid var(--line-mid);
+  pointer-events: none;
+}
+
+/* Container esconde o excedente do separador. */
+.bus-confirmed__facts {
+  overflow: hidden;
 }
 
 .bus-confirmed__facts dt {
@@ -1152,8 +1172,17 @@
 .bus-confirmed__actions {
   display: flex;
   flex-wrap: wrap;
+  align-items: stretch;
   gap: 12px;
   margin-top: 34px;
+}
+
+/* Lado a lado, dividindo o espaço em partes iguais. Empilham só quando não
+   couberem sem apertar o rótulo. */
+.bus-confirmed__actions .btn {
+  flex: 1 1 220px;
+  justify-content: center;
+  text-align: center;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1165,20 +1194,257 @@
 }
 
 /* Comprovante impresso: só o essencial. */
+/* ============================================================================
+   Comprovante impresso — A4, preto e branco
+   O que vira PDF é um documento, não uma captura da página. Nada de roxo,
+   fundo tonal ou tipografia display: só preto sobre branco, com hierarquia por
+   tamanho, peso e régua. Cinzas de tela viram cinza de laser (chapado) na
+   maioria das impressoras, então as cores são forçadas.
+   ========================================================================== */
+@page {
+  size: A4 portrait;
+  margin: 18mm 16mm;
+}
+
 @media print {
+  /* Fora tudo que não é o comprovante. O seletor anterior supunha uma
+     hierarquia que não existe: o cabeçalho do formulário é
+     .bus-section-heading--form dentro de .bus-form-column. Auditado no
+     navegador em modo print, não por leitura do markup. */
   .bus-hero,
   .bus-intro,
+  .bus-section-heading,
+  .bus-section-heading--form,
   .bus-reassurance,
   .bus-summary,
   .bus-footer,
+  .bus-header,
+  .skip-link,
+  #bus-form,
+  #payment-panel,
+  #still-here-dialog,
   .bus-confirmed__actions,
-  .cookie-consent {
+  .bus-confirmed__seal,
+  .bus-confirmed .eyebrow,
+  .cookie-consent,
+  [class*="cookie-consent"] {
     display: none !important;
   }
 
-  .bus-confirmed {
-    border: 0;
+  html,
+  body {
+    margin: 0;
     padding: 0;
+    background: #fff !important;
+    color: #000 !important;
+    font-size: 10.5pt;
+  }
+
+  /* Monocromia à prova de herança: qualquer texto que sobre imprime preto.
+     A regra restrita a .bus-confirmed deixava passar o cabeçalho do
+     formulário em roxo. */
+  body,
+  body * {
+    color: #000 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    -webkit-print-color-adjust: economy;
+    print-color-adjust: economy;
+  }
+
+  /* Seletores de elemento NÃO alcançam pseudo-elementos: o `::before` do
+     contador do manifesto imprimia em roxo (medido: rgb(123,31,162) e 40
+     pixels cromáticos na página). */
+  body *::before,
+  body *::after {
+    color: #000 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .bus-page,
+  .bus-checkout,
+  .bus-container,
+  .bus-checkout__grid,
+  .bus-checkout__main {
+    display: block !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+  }
+
+  .bus-confirmed {
+    border: 0 !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Cabeçalho do documento: identifica o emissor antes do título. */
+  .bus-confirmed::before {
+    content: "KRIATIVOS ON BOARD 2026 — TRANSPORTE FRETADO";
+    display: block;
+    padding-bottom: 6pt;
+    border-bottom: 1.5pt solid #000;
+    font-size: 8.5pt;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+  }
+
+  .bus-confirmed h2 {
+    margin: 14pt 0 0;
+    font-family: inherit !important;
+    font-size: 17pt;
+    font-weight: 700;
+    letter-spacing: 0 !important;
+    line-height: 1.25;
+  }
+
+  /* O título de tela é uma saudação; no documento vale o nome do papel. */
+  .bus-confirmed h2 {
+    visibility: hidden;
+    position: relative;
+  }
+
+  .bus-confirmed h2::after {
+    content: "Comprovante de reserva";
+    visibility: visible;
+    position: absolute;
+    inset: 0;
+  }
+
+  .bus-confirmed__lead {
+    max-width: none;
+    margin-top: 8pt;
+    font-size: 10pt;
+    line-height: 1.5;
+  }
+
+  /* Tabela de dados: bordas completas, sem meia-régua. */
+  .bus-confirmed__facts {
+    display: table !important;
+    width: 100%;
+    margin-top: 14pt;
+    border: 0.75pt solid #000 !important;
+    border-collapse: collapse;
+    overflow: visible;
+  }
+
+  .bus-confirmed__facts > div,
+  .bus-confirmed__printonly {
+    display: table-row !important;
+    position: static;
+  }
+
+  .bus-confirmed__facts > div::before {
+    display: none !important;
+  }
+
+  .bus-confirmed__facts dt,
+  .bus-confirmed__facts dd {
+    display: table-cell !important;
+    padding: 5pt 7pt;
+    border: 0.75pt solid #000 !important;
+    vertical-align: top;
+  }
+
+  .bus-confirmed__facts dt {
+    width: 36%;
+    font-size: 8pt;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+  }
+
+  .bus-confirmed__facts dd {
+    margin: 0;
+    font-size: 10.5pt;
+    font-weight: 400;
+  }
+
+  .bus-confirmed__facts code {
+    font-family: "Courier New", monospace !important;
+    font-size: 11pt;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+  }
+
+  /* Manifesto de embarque: tabela com cabeçalho impresso. */
+  .bus-confirmed__manifest {
+    margin-top: 16pt;
+    /* Evita quebrar a lista entre páginas. */
+    break-inside: avoid;
+  }
+
+  .bus-confirmed h3 {
+    margin: 0 0 6pt;
+    font-family: inherit !important;
+    font-size: 9pt;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .bus-confirmed__list {
+    margin: 0;
+    border-top: 0.75pt solid #000;
+  }
+
+  .bus-confirmed__list li {
+    gap: 0;
+    padding: 5pt 0;
+    border-bottom: 0.5pt solid #000 !important;
+    font-size: 10pt;
+  }
+
+  .bus-confirmed__list li::before {
+    font-family: "Courier New", monospace !important;
+    font-size: 9.5pt;
+    min-width: 3ch;
+  }
+
+  .bus-confirmed__list li > small {
+    font-size: 8pt;
+    letter-spacing: 0.06em;
+  }
+
+  .bus-confirmed__children {
+    margin-top: 6pt;
+    font-size: 9pt;
+    font-style: italic;
+  }
+
+  /* Instruções: caixa com borda, sem barra colorida nem fundo. */
+  .bus-confirmed__next {
+    margin-top: 16pt;
+    padding: 8pt 10pt;
+    border: 0.75pt solid #000 !important;
+    border-left-width: 0.75pt !important;
+    break-inside: avoid;
+  }
+
+  .bus-confirmed__next ul {
+    margin-top: 5pt;
+    font-size: 9.5pt;
+    line-height: 1.5;
+  }
+
+  /* Rodapé com a natureza do documento e a via de contato.
+     Sem CPF no papel: o comprovante circula impresso e por foto no WhatsApp;
+     o código da reserva já identifica o grupo sem expor dado sensível. */
+  .bus-confirmed::after {
+    content: "Via do passageiro — página 1 de 1. Documento gerado automaticamente pelo site do evento; a confirmação do pagamento foi verificada junto ao Mercado Pago. Em caso de dúvida, procure a organização pelo WhatsApp informando o código da reserva.";
+    display: block;
+    margin-top: 18pt;
+    padding-top: 6pt;
+    border-top: 0.75pt solid #000;
+    font-size: 7.5pt;
+    line-height: 1.45;
+  }
+
+  /* Links não devem imprimir a URL nem parecer clicáveis. */
+  .bus-confirmed a {
+    text-decoration: none !important;
   }
 }
 

@@ -210,3 +210,91 @@ test('página de pagamento não inicia analytics nem expõe dados em dataLayer',
   await page.goto('/onibus.html');
   expect(await page.evaluate(() => Boolean(window.dataLayer || window.google_tag_manager))).toBe(false);
 });
+
+test('comprovante impresso sai em A4 monocromático, sem sobras da página', async ({ page }) => {
+  // O `@media print` já regrediu duas vezes: um seletor supunha uma hierarquia
+  // inexistente (o cabeçalho do formulário imprimia em roxo) e `body *` não
+  // alcança pseudo-elementos (o contador do manifesto imprimia em roxo).
+  // Este teste tranca as duas coisas.
+  await page.route('**/api/create-pix-order', async (route) => {
+    await route.fulfill({
+      status: 201,
+      contentType: 'application/json',
+      body: JSON.stringify(fakePixResponse())
+    });
+  });
+  await page.route('**/api/bus-registration-status**', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ status: 'confirmed' })
+    });
+  });
+
+  await page.goto('/onibus.html');
+  await page.getByLabel('Nome completo (contato principal)').fill('Maria de Souza');
+  await page.getByLabel('CPF do contato principal').fill(primaryCpf);
+  await page.getByLabel('E-mail').fill('maria@example.com');
+  await page.getByLabel('WhatsApp').fill('11942554141');
+  await page.getByLabel(/Li e concordo com as condições/i).check();
+  await page.getByRole('button', { name: /continuar para o pagamento pix/i }).click();
+  await expect(page.locator('#confirmation-panel')).toBeVisible({ timeout: 15000 });
+
+  // Botões lado a lado na tela (mesma linha, larguras equivalentes).
+  const acoes = await page.evaluate(() => {
+    const els = [...document.querySelectorAll('.bus-confirmed__actions .btn')];
+    return els.map((e) => {
+      const r = e.getBoundingClientRect();
+      return { top: Math.round(r.top), width: Math.round(r.width) };
+    });
+  });
+  expect(acoes).toHaveLength(2);
+  expect(Math.abs(acoes[0].top - acoes[1].top)).toBeLessThanOrEqual(2);
+  expect(Math.abs(acoes[0].width - acoes[1].width)).toBeLessThanOrEqual(2);
+
+  await page.emulateMedia({ media: 'print' });
+
+  // Nada da página fora do comprovante deve imprimir.
+  for (const sel of ['#bus-form', '#payment-panel', '.bus-confirmed__actions',
+                     '.bus-confirmed__seal', '.bus-section-heading--form']) {
+    await expect(page.locator(sel)).toBeHidden();
+  }
+  // A data de emissão só existe no documento.
+  await expect(page.locator('.bus-confirmed__printonly')).toBeVisible();
+  await expect(page.locator('#confirmed-issued')).not.toHaveText('—');
+
+  // Monocromia: elementos E pseudo-elementos.
+  const cores = await page.evaluate(() => {
+    const fora = [];
+    const nodes = document.querySelectorAll('#confirmation-panel, #confirmation-panel *');
+    nodes.forEach((el) => {
+      const alvos = [getComputedStyle(el)];
+      ['::before', '::after'].forEach((p) => {
+        const cs = getComputedStyle(el, p);
+        if (cs.content && cs.content !== 'none' && cs.content !== 'normal') alvos.push(cs);
+      });
+      alvos.forEach((cs) => {
+        const m = cs.color.match(/\d+/g);
+        if (!m) return;
+        const [r, g, b] = m.map(Number);
+        // Preto ou cinza puro passam; qualquer matiz reprova.
+        if (Math.max(r, g, b) - Math.min(r, g, b) > 8) fora.push(cs.color);
+      });
+    });
+    return fora;
+  });
+  expect(cores, `cores cromáticas no comprovante: ${cores.join(', ')}`).toEqual([]);
+
+  // A4 retrato: 210 x 297 mm.
+  const pdf = await page.pdf({ format: 'A4', printBackground: false });
+  const texto = pdf.toString('latin1');
+  const box = texto.match(/\/MediaBox\s*\[([^\]]+)\]/);
+  expect(box).not.toBeNull();
+  const [x1, y1, x2, y2] = box[1].trim().split(/\s+/).map(Number);
+  const mmW = ((x2 - x1) / 72) * 25.4;
+  const mmH = ((y2 - y1) / 72) * 25.4;
+  expect(Math.abs(mmW - 210)).toBeLessThan(1.5);
+  expect(Math.abs(mmH - 297)).toBeLessThan(1.5);
+  // Uma página só.
+  expect((texto.match(/\/Type\s*\/Page[^s]/g) || []).length).toBe(1);
+});
