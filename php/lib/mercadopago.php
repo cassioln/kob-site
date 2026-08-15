@@ -95,10 +95,86 @@ function mp_request(string $method, string $url, ?array $payload, array $extraHe
 }
 
 /**
- * Cria a order Pix e devolve os dados públicos do pagamento.
+ * Detecta se o token em uso é de TESTE.
+ *
+ * O prefixo não serve para isso: tanto o token de teste quanto o de produção
+ * começam com `APP_USR`. Quem diz a verdade é a tag `test_user` em
+ * GET /users/me. O resultado fica em cache no processo porque o webhook e a
+ * criação de order rodam em requisições separadas e curtas.
  */
-function mp_create_pix_order(string $totalAmount, string $externalReference, string $payerEmail, string $idempotencyKey): array
+function mp_is_sandbox(): bool
 {
+    static $cached = null;
+    if ($cached !== null) {
+        return $cached;
+    }
+
+    try {
+        $me = mp_request('GET', 'https://api.mercadopago.com/users/me', null);
+        $tags = $me['tags'] ?? [];
+        $cached = is_array($tags) && in_array('test_user', $tags, true);
+    } catch (Throwable $error) {
+        // Falha na detecção nunca deve virar comportamento de teste em produção.
+        $cached = false;
+    }
+
+    return $cached;
+}
+
+/**
+ * Cria a order Pix e devolve os dados públicos do pagamento.
+ *
+ * @param list<array{full_name: string}> $passengers Para montar items[].
+ */
+function mp_create_pix_order(
+    string $totalAmount,
+    string $externalReference,
+    string $payerEmail,
+    string $idempotencyKey,
+    array $payerData = [],
+    int $passengerCount = 1
+): array {
+    $unitPrice = number_format((float) $totalAmount / max(1, $passengerCount), 2, '.', '');
+
+    $payer = ['email' => $payerEmail];
+
+    // Nome e sobrenome separados: o Mercado Pago usa isso na análise de risco.
+    if (!empty($payerData['fullName'])) {
+        $parts = preg_split('/\s+/', trim($payerData['fullName']), 2);
+        $payer['first_name'] = $parts[0];
+        if (!empty($parts[1])) {
+            $payer['last_name'] = $parts[1];
+        }
+    }
+
+    if (!empty($payerData['cpf'])) {
+        $payer['identification'] = [
+            'type' => 'CPF',
+            'number' => $payerData['cpf'],
+        ];
+    }
+
+    if (!empty($payerData['whatsapp'])) {
+        // O Mercado Pago espera DDD e número separados.
+        $digits = preg_replace('/\D+/', '', $payerData['whatsapp']);
+        if (strlen($digits) >= 10) {
+            $payer['phone'] = [
+                'area_code' => substr($digits, 0, 2),
+                'number' => substr($digits, 2),
+            ];
+        }
+    }
+
+    // Em ambiente de teste o Pix NÃO pode ser pago: não há como escanear o QR
+    // com um app real. A documentação oficial resolve isso com um valor mágico
+    // em payer.first_name — `APRO` faz a order nascer em action_required e o
+    // pagamento virar aprovado sozinho, disparando o webhook de verdade.
+    // Em produção o nome real do pagador é preservado.
+    // https://www.mercadopago.com.br/developers/pt/docs/checkout-api-orders/integration-test/pix
+    if (mp_is_sandbox()) {
+        $payer['first_name'] = 'APRO';
+    }
+
     $order = mp_request('POST', MP_ORDERS_URL, [
         'type' => 'online',
         'total_amount' => $totalAmount,
@@ -113,7 +189,19 @@ function mp_create_pix_order(string $totalAmount, string $externalReference, str
                 ],
             ]],
         ],
-        'payer' => ['email' => $payerEmail],
+        'payer' => $payer,
+        // Identifica a compra na fatura e no app do Mercado Pago.
+        'items' => [[
+            'title' => 'Onibus fretado Kriativos On Board 2026',
+            'unit_price' => $unitPrice,
+            'quantity' => $passengerCount,
+            'external_code' => 'kob-bus-2026',
+            'category_id' => 'services',
+        ]],
+        // Sem statement_descriptor: a Orders API rejeita a propriedade com
+        // 400 unsupported_properties, tanto na raiz quanto dentro do payment
+        // (medido em produção). O "Nome para extratos" se define no painel do
+        // Mercado Pago, não no payload.
     ], ['X-Idempotency-Key: ' . $idempotencyKey]);
 
     $payment = $order['transactions']['payments'][0] ?? null;

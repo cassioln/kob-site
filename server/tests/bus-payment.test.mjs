@@ -317,3 +317,64 @@ test('não aceita arquivo que declara PNG mas não tem assinatura PNG', async ()
   assert.equal(result.statusCode, 400);
   assert.match(result.body.error, /não corresponde/i);
 });
+
+test('sandbox envia APRO em payer.first_name; produção preserva o nome real', async () => {
+  // Em teste o Pix não é pagável (o QR não abre em app real). `APRO` é o
+  // mecanismo oficial do Mercado Pago para o pagamento aprovar sozinho e
+  // disparar o webhook. Em produção isso NUNCA deve sobrescrever o nome.
+  const { createMercadoPagoOrder } = await import('../mercadopago.mjs');
+
+  async function capturar(isSandbox) {
+    let enviado = null;
+    const fetchImpl = async (_url, init) => {
+      enviado = JSON.parse(init.body);
+      return {
+        ok: true,
+        status: 201,
+        json: async () => ({
+          id: 'ORD1',
+          transactions: {
+            payments: [{
+              id: 'PAY1',
+              status: 'action_required',
+              payment_method: { qr_code: 'q', qr_code_base64: 'b' }
+            }]
+          }
+        })
+      };
+    };
+    await createMercadoPagoOrder({
+      accessToken: 'token-de-teste',
+      totalAmount: '360.00',
+      externalReference: 'ext_1',
+      payerEmail: 'maria@example.com',
+      idempotencyKey: 'idem-1',
+      payerData: { fullName: 'Maria de Souza', cpf: '52998224725', whatsapp: '11987654321' },
+      passengerCount: 3,
+      isSandbox,
+      fetchImpl
+    });
+    return enviado;
+  }
+
+  const teste = await capturar(true);
+  assert.equal(teste.payer.first_name, 'APRO');
+
+  const producao = await capturar(false);
+  assert.equal(producao.payer.first_name, 'Maria');
+  assert.equal(producao.payer.last_name, 'de Souza');
+
+  // Dados que o painel de qualidade exige, nos dois ambientes.
+  assert.equal(producao.payer.identification.type, 'CPF');
+  assert.equal(producao.payer.identification.number, '52998224725');
+  assert.equal(producao.payer.phone.area_code, '11');
+  assert.equal(producao.payer.phone.number, '987654321');
+  // A Orders API rejeita statement_descriptor (400 unsupported_properties,
+  // medido em produção): ele não deve ser enviado em nenhum nível.
+  assert.equal(producao.statement_descriptor, undefined);
+  assert.equal(producao.transactions.payments[0].statement_descriptor, undefined);
+  assert.equal(producao.items[0].quantity, 3);
+  // 360 / 3 passageiros = 120 por passagem.
+  assert.equal(producao.items[0].unit_price, '120.00');
+  assert.ok(producao.items[0].title);
+});

@@ -43,11 +43,39 @@ export async function createMercadoPagoOrder({
   externalReference,
   payerEmail,
   idempotencyKey,
+  payerData = {},
+  passengerCount = 1,
+  isSandbox = false,
   fetchImpl = globalThis.fetch,
   apiUrl = MERCADO_PAGO_ORDERS_URL
 }) {
   if (!accessToken) throw new MercadoPagoError('MERCADOPAGO_ACCESS_TOKEN não configurado.', 503);
   if (typeof fetchImpl !== 'function') throw new MercadoPagoError('Fetch não está disponível no servidor.', 503);
+
+  const payer = { email: payerEmail };
+
+  if (payerData.fullName) {
+    const [first, ...rest] = String(payerData.fullName).trim().split(/\s+/);
+    payer.first_name = first;
+    if (rest.length) payer.last_name = rest.join(' ');
+  }
+  if (payerData.cpf) {
+    payer.identification = { type: 'CPF', number: payerData.cpf };
+  }
+  if (payerData.whatsapp) {
+    const digits = String(payerData.whatsapp).replace(/\D+/g, '');
+    if (digits.length >= 10) {
+      payer.phone = { area_code: digits.slice(0, 2), number: digits.slice(2) };
+    }
+  }
+
+  // Em teste o Pix não pode ser pago de verdade: o QR não é escaneável por app
+  // real. `APRO` em payer.first_name é o mecanismo oficial que faz o pagamento
+  // aprovar sozinho e disparar o webhook. Em produção o nome real é mantido.
+  // https://www.mercadopago.com.br/developers/pt/docs/checkout-api-orders/integration-test/pix
+  if (isSandbox) payer.first_name = 'APRO';
+
+  const unitPrice = (Number(totalAmount) / Math.max(1, passengerCount)).toFixed(2);
 
   const response = await fetchImpl(apiUrl, {
     method: 'POST',
@@ -71,7 +99,16 @@ export async function createMercadoPagoOrder({
           }
         }]
       },
-      payer: { email: payerEmail }
+      payer,
+      items: [{
+        title: 'Onibus fretado Kriativos On Board 2026',
+        unit_price: unitPrice,
+        quantity: passengerCount,
+        external_code: 'kob-bus-2026',
+        category_id: 'services'
+      }]
+      // Sem statement_descriptor: a Orders API rejeita a propriedade
+      // (400 unsupported_properties). O nome na fatura vem do painel.
     })
   });
 

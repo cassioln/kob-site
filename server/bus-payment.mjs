@@ -178,7 +178,13 @@ export async function createPixOrder({
       totalAmount,
       externalReference,
       payerEmail: normalized.contact.email,
-      idempotencyKey
+      idempotencyKey,
+      payerData: {
+        fullName: normalized.contact.fullName,
+        cpf: normalized.contact.cpf,
+        whatsapp: normalized.contact.whatsapp
+      },
+      passengerCount: normalized.passengerCount
     });
   } catch (error) {
     try {

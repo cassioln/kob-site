@@ -68,7 +68,13 @@ try {
             $totalAmount,
             $externalReference,
             $data['contact']['email'],
-            $idempotencyKey
+            $idempotencyKey,
+            [
+                'fullName' => $data['contact']['fullName'],
+                'cpf' => $data['contact']['cpf'],
+                'whatsapp' => $data['contact']['whatsapp'],
+            ],
+            $data['passengerCount']
         );
     } catch (Throwable $error) {
         $fail = $pdo->prepare('UPDATE bus_registrations SET status = \'payment_failed\', updated_at = now() WHERE id = :id');
