@@ -10,7 +10,6 @@
   var primaryWhatsapp = document.getElementById('primary-whatsapp');
   var passengerCount = document.getElementById('passenger-count');
   var childrenCount = document.getElementById('children-count');
-  var childrenField = document.getElementById('children-field');
   var passengerFields = document.getElementById('passenger-fields');
   var total = document.getElementById('bus-total');
   var summaryCount = document.getElementById('bus-summary-count');
@@ -25,6 +24,15 @@
   var paymentStatus = document.getElementById('payment-status');
   var pixExpiry = document.getElementById('pix-expiry');
   var pixExpiryCountdown = document.getElementById('pix-expiry-countdown');
+  var confirmationPanel = document.getElementById('confirmation-panel');
+  var confirmedAmount = document.getElementById('confirmed-amount');
+  var confirmedCode = document.getElementById('confirmed-code');
+  var confirmedPassengers = document.getElementById('confirmed-passengers');
+  var confirmedChildren = document.getElementById('confirmed-children');
+  var stillHereDialog = document.getElementById('still-here-dialog');
+  var stillHereContinue = document.getElementById('still-here-continue');
+  var stillHereCancel = document.getElementById('still-here-cancel');
+  var printConfirmation = document.getElementById('print-confirmation');
   var priceCents = 12000;
   var savedPassengers = {};
   var statusTimer = null;
@@ -117,32 +125,28 @@
     updateSummary();
   }
 
-  // Cada criança viaja no colo de um responsável, então precisa de um pagante
-  // para si: crianças <= pagantes. Como pagantes = total - crianças, o limite
-  // resolve para floor(total / 2). Ex.: 2 pessoas -> 1 criança; 5 -> 2.
+  // Crianças de até 5 anos são ADICIONAIS ao grupo e não pagam: viajam no colo
+  // de um pagante. Cada uma precisa de um colo disponível, então
+  // `crianças <= pagantes`. Com 4 pagantes o máximo é 4 crianças (8 a bordo).
   //
-  // Abaixo de 2 pessoas não existe colo disponível, então o campo é escondido
-  // em vez de ficar visível e travado em zero.
+  // O campo fica sempre visível: com 1 pagante ainda cabe 1 criança no colo.
   function syncChildrenLimit(count) {
-    var maxChildren = Math.floor(count / 2);
-    var showField = count >= 2;
-
-    if (childrenField) childrenField.hidden = !showField;
-
+    var maxChildren = Math.max(0, count);
     childrenCount.max = String(maxChildren);
     var current = Math.max(0, Math.floor(Number(childrenCount.value) || 0));
     var clamped = Math.min(current, maxChildren);
     if (String(clamped) !== childrenCount.value) childrenCount.value = clamped;
-    childrenCount.disabled = maxChildren === 0;
+    childrenCount.disabled = false;
     return clamped;
   }
 
   function updateSummary() {
     var count = Math.max(1, Number(passengerCount.value) || 1);
     var children = syncChildrenLimit(count);
-    var paying = Math.max(0, count - children);
+    // Todo o grupo informado paga; as crianças entram sem assento e sem custo.
+    var paying = count;
     var amount = (paying * priceCents / 100).toFixed(2).replace('.', ',');
-    summaryCount.textContent = displayCount(count, 'passageiro', 'passageiros');
+    summaryCount.textContent = displayCount(count + children, 'passageiro', 'passageiros');
     summaryPaying.textContent = displayCount(paying, 'passageiro', 'passageiros');
     total.textContent = 'R$ ' + amount;
   }
@@ -179,8 +183,8 @@
     var children = Number(childrenCount.value || 0);
     if (!Number.isInteger(count) || count < 1 || count > 100) return invalid('Informe entre 1 e 100 passageiros.', passengerCount);
     if (!Number.isInteger(children) || children < 0) return invalid('Quantidade de crianças inválida.', childrenCount);
-    // Cada criança viaja no colo de um responsável: crianças <= pagantes.
-    if (children > count - children) return invalid('Cada criança precisa de um passageiro pagante como responsável.', childrenCount);
+    // Crianças não pagam e viajam no colo: cada uma precisa de um pagante.
+    if (children > count) return invalid('As crianças de até 5 anos não podem passar do número de passageiros pagantes.', childrenCount);
 
     for (var position = 2; position <= count; position += 1) {
       var nameField = document.getElementById('passenger-' + position + '-name');
@@ -239,41 +243,41 @@
 
   function formatRemaining(ms) {
     var totalSeconds = Math.max(0, Math.floor(ms / 1000));
-    var hours = Math.floor(totalSeconds / 3600);
-    var minutes = Math.floor((totalSeconds % 3600) / 60);
+    var minutes = Math.floor(totalSeconds / 60);
     var seconds = totalSeconds % 60;
     function pad(value) { return value < 10 ? '0' + value : String(value); }
-    if (hours > 0) return hours + 'h ' + pad(minutes) + 'min';
-    if (minutes > 0) return minutes + 'min ' + pad(seconds) + 's';
-    return seconds + 's';
+    return pad(minutes) + ':' + pad(seconds);
   }
 
-  // O Pix do Mercado Pago expira (medido: 24h após a criação). Sem isso o
-  // usuário fica olhando um QR morto sem entender por que nada acontece.
+  // Janela de atenção de 10 minutos, não a validade real do Pix.
   //
-  // O countdown é apenas informativo: NUNCA confirma nem invalida a reserva por
-  // conta própria. Quem decide o estado é sempre o servidor, via polling em
-  // pollPaymentStatus(); aqui só exibimos tempo restante e, ao zerar, pedimos
-  // uma nova consulta para o servidor dizer o que aconteceu de fato.
-  function startExpiryCountdown(expiresAt, registrationId) {
-    stopExpiryCountdown();
-    if (!expiresAt) return;
+  // O código do Mercado Pago vale 24h (medido), mas "expira em 23h 59min" não
+  // cria nenhum senso de urgência e o usuário abandona a aba com a vaga em
+  // aberto. Contamos 10 minutos e, ao zerar, perguntamos se ele ainda está aí.
+  //
+  // O contador NÃO invalida nada: quem decide o estado da reserva é sempre o
+  // servidor, via pollPaymentStatus(). Ao zerar, reconsultamos o servidor antes
+  // de mostrar o aviso, para não alarmar quem já pagou nos últimos segundos.
+  var ATTENTION_WINDOW_MS = 10 * 60 * 1000;
+  var attentionDeadline = 0;
 
-    var deadline = new Date(expiresAt).getTime();
-    if (!deadline || Number.isNaN(deadline)) return;
+  function startExpiryCountdown(registrationId) {
+    stopExpiryCountdown();
+    attentionDeadline = Date.now() + ATTENTION_WINDOW_MS;
 
     function render() {
-      var remaining = deadline - Date.now();
+      var remaining = attentionDeadline - Date.now();
       if (remaining <= 0) {
         stopExpiryCountdown();
-        pixExpiryCountdown.textContent = 'expirado';
+        pixExpiryCountdown.textContent = '00:00';
         pixExpiry.dataset.state = 'expired';
-        // Não decidimos nada localmente: perguntamos ao servidor.
-        pollPaymentStatus(registrationId);
+        // Pergunta ao servidor antes de alarmar: o pagamento pode ter caído
+        // nos últimos segundos.
+        pollPaymentStatus(registrationId, { onPending: openStillHereDialog });
         return;
       }
       pixExpiryCountdown.textContent = formatRemaining(remaining);
-      pixExpiry.dataset.state = remaining < 60 * 60 * 1000 ? 'soon' : 'ok';
+      pixExpiry.dataset.state = remaining < 2 * 60 * 1000 ? 'soon' : 'ok';
     }
 
     pixExpiry.hidden = false;
@@ -281,8 +285,74 @@
     expiryTimer = window.setInterval(render, 1000);
   }
 
-  function pollPaymentStatus(registrationId) {
+  // Nomes vêm do que o próprio usuário acabou de digitar nesta sessão, não de
+  // uma nova rota. Evita expor dados pessoais em GET /api/bus-registration-status,
+  // que é consultado só com o UUID e continua devolvendo apenas o status.
+  var confirmedSnapshot = null;
+
+  function showConfirmation(data) {
+    stopExpiryCountdown();
+    closeStillHereDialog();
+    window.clearTimeout(statusTimer);
+
+    paymentPanel.hidden = true;
+    confirmationPanel.hidden = false;
+
+    var snap = confirmedSnapshot || {};
+    confirmedAmount.textContent = snap.totalAmount ? 'R$ ' + String(snap.totalAmount).replace('.', ',') : '—';
+    // Código curto e legível: o UUID inteiro não serve para ler no WhatsApp.
+    confirmedCode.textContent = snap.registrationId
+      ? String(snap.registrationId).split('-')[0].toUpperCase()
+      : '—';
+
+    confirmedPassengers.replaceChildren();
+    (snap.passengers || []).forEach(function (name, index) {
+      var item = document.createElement('li');
+      var label = document.createElement('span');
+      label.textContent = name;
+      var tag = document.createElement('small');
+      tag.textContent = index === 0 ? 'Contato principal' : 'Passageiro ' + (index + 1);
+      item.append(label, tag);
+      confirmedPassengers.appendChild(item);
+    });
+
+    var kids = Number(snap.childrenCount || 0);
+    if (kids > 0) {
+      confirmedChildren.hidden = false;
+      confirmedChildren.textContent = kids === 1
+        ? '+ 1 criança de até 5 anos, no colo de um responsável (sem cobrança).'
+        : '+ ' + kids + ' crianças de até 5 anos, no colo de um responsável (sem cobrança).';
+    } else {
+      confirmedChildren.hidden = true;
+    }
+
+    confirmationPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // Move o foco para o título: leitores de tela anunciam a mudança de etapa.
+    confirmationPanel.querySelector('#confirmed-title').setAttribute('tabindex', '-1');
+    confirmationPanel.querySelector('#confirmed-title').focus({ preventScroll: true });
+  }
+
+  function openStillHereDialog() {
+    if (!stillHereDialog || stillHereDialog.open) return;
+    if (typeof stillHereDialog.showModal === 'function') {
+      stillHereDialog.showModal();
+    } else {
+      stillHereDialog.setAttribute('open', '');
+    }
+  }
+
+  function closeStillHereDialog() {
+    if (!stillHereDialog || !stillHereDialog.open) return;
+    if (typeof stillHereDialog.close === 'function') {
+      stillHereDialog.close();
+    } else {
+      stillHereDialog.removeAttribute('open');
+    }
+  }
+
+  function pollPaymentStatus(registrationId, options) {
     if (!registrationId) return;
+    var onPending = options && options.onPending;
     window.clearTimeout(statusTimer);
     fetch('/api/bus-registration-status?id=' + encodeURIComponent(registrationId), {
       method: 'GET',
@@ -293,17 +363,19 @@
       return response.json();
     }).then(function (data) {
       if (data.status === 'confirmed') {
-        paymentStatus.textContent = 'Pagamento identificado! Sua vaga está confirmada.';
-        paymentPanel.dataset.paymentState = 'confirmed';
-        // Pago: a validade do QR deixa de importar.
-        stopExpiryCountdown();
-        pixExpiry.hidden = true;
+        showConfirmation(data);
         return;
       }
       if (['cancelled', 'refunded', 'payment_failed'].includes(data.status)) {
         paymentStatus.textContent = 'Este pagamento não está ativo. Entre em contato com a organização para receber orientação.';
         paymentPanel.dataset.paymentState = data.status;
         stopExpiryCountdown();
+        return;
+      }
+      // Ainda pendente. Quando a janela de atenção zerou, é aqui que
+      // perguntamos se a pessoa continua na página.
+      if (onPending) {
+        onPending();
         return;
       }
       statusTimer = window.setTimeout(function () { pollPaymentStatus(registrationId); }, 5000);
@@ -314,6 +386,14 @@
 
   function showPayment(payment) {
     activeRegistrationId = payment.registrationId;
+    // Guarda os nomes digitados agora para montar a confirmação depois, sem
+    // precisar que o servidor devolva dados pessoais em uma consulta por UUID.
+    confirmedSnapshot = {
+      registrationId: payment.registrationId,
+      totalAmount: payment.totalAmount,
+      childrenCount: Number(childrenCount.value || 0),
+      passengers: getPayload().passengers.map(function (p) { return p.full_name; })
+    };
     form.hidden = true;
     paymentPanel.hidden = false;
     pixQr.src = 'data:image/png;base64,' + payment.qrCodeBase64;
@@ -323,7 +403,7 @@
       ticketLink.hidden = false;
     }
     paymentStatus.textContent = 'Aguardando pagamento. Não feche esta página até concluir a transferência.';
-    startExpiryCountdown(payment.expiresAt, payment.registrationId);
+    startExpiryCountdown(payment.registrationId);
     pollPaymentStatus(payment.registrationId);
     paymentPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
@@ -357,6 +437,43 @@
   passengerCount.addEventListener('input', renderPassengers);
   childrenCount.addEventListener('input', updateSummary);
   form.addEventListener('submit', submitForm);
+
+  // "Continuar pagamento": reabre a janela de 10 minutos e volta ao polling.
+  if (stillHereContinue) {
+    stillHereContinue.addEventListener('click', function () {
+      closeStillHereDialog();
+      startExpiryCountdown(activeRegistrationId);
+      pollPaymentStatus(activeRegistrationId);
+    });
+  }
+
+  // "Cancelar transação": só abandona a página. Não cancela nada no Mercado
+  // Pago nem no banco — quem decide isso é o servidor, e a cobrança pode
+  // continuar válida se a pessoa já tiver pagado.
+  if (stillHereCancel) {
+    stillHereCancel.addEventListener('click', function () {
+      closeStillHereDialog();
+      stopExpiryCountdown();
+      window.clearTimeout(statusTimer);
+      window.location.href = 'index.html';
+    });
+  }
+
+  // Esc fecha o dialog nativo: tratamos como "continuar" para não deixar a
+  // página parada sem contador nem polling.
+  if (stillHereDialog) {
+    stillHereDialog.addEventListener('close', function () {
+      if (confirmationPanel && !confirmationPanel.hidden) return;
+      if (!expiryTimer && activeRegistrationId) {
+        startExpiryCountdown(activeRegistrationId);
+        pollPaymentStatus(activeRegistrationId);
+      }
+    });
+  }
+
+  if (printConfirmation) {
+    printConfirmation.addEventListener('click', function () { window.print(); });
+  }
   copyPix.addEventListener('click', async function () {
     try {
       await navigator.clipboard.writeText(pixCopyCode.value);

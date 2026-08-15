@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS bus_registrations (
   email TEXT NOT NULL,
   whatsapp TEXT NOT NULL,
   passenger_count INTEGER NOT NULL CHECK (passenger_count BETWEEN 1 AND 100),
-  children_count INTEGER NOT NULL DEFAULT 0 CHECK (children_count >= 0 AND children_count <= passenger_count - children_count),
+  children_count INTEGER NOT NULL DEFAULT 0 CHECK (children_count >= 0 AND children_count <= passenger_count),
   amount_cents INTEGER NOT NULL CHECK (amount_cents >= 0),
   currency CHAR(3) NOT NULL DEFAULT 'BRL',
   status TEXT NOT NULL DEFAULT 'payment_pending'

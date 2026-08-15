@@ -28,10 +28,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
   <link rel="preload" href="assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
   <link rel="stylesheet" href="assets/css/main.css?v=20260727-incluso-editorial-r2">
-  <link rel="stylesheet" href="assets/css/onibus.css?v=20260814-4-flow">
+  <link rel="stylesheet" href="assets/css/onibus.css?v=20260815-5-confirm">
   <link rel="stylesheet" href="assets/css/cookie-consent.css?v=20260713-5">
   <script defer src="assets/js/cookie-consent.js?v=20260713-5"></script>
-  <script defer src="assets/js/onibus.js?v=20260814-4-flow"></script>
+  <script defer src="assets/js/onibus.js?v=20260815-5-confirm"></script>
 </head>
 
 <body class="bus-page">
@@ -151,9 +151,9 @@
                   <input id="passenger-count" aria-label="Quantas pessoas vão com você, incluindo você?" name="passenger_count" type="number" inputmode="numeric" min="1" max="100" value="1" required>
                   <small class="bus-field__hint">O contato principal entra nessa quantidade.</small>
                 </div>
-                <div class="bus-field" id="children-field">
+                <div class="bus-field">
                   <label for="children-count">Crianças de até 5 anos</label>
-                  <input id="children-count" aria-label="Crianças de até 5 anos" name="children_count" type="number" inputmode="numeric" min="0" max="0" value="0">
+                  <input id="children-count" aria-label="Crianças de até 5 anos" name="children_count" type="number" inputmode="numeric" min="0" max="1" value="0">
                   <small class="bus-field__hint">Viajam no colo de um responsável, sem assento individual.</small>
                 </div>
               </div>
@@ -190,12 +190,75 @@
                 <textarea id="pix-copy-code" rows="5" readonly spellcheck="false"></textarea>
                 <button id="copy-pix" class="btn btn--ghost" type="button">Copiar código <span aria-hidden="true">⧉</span></button>
                 <a id="pix-ticket-link" class="bus-payment-panel__ticket" href="#" target="_blank" rel="noopener" hidden>Ou abrir instruções do Mercado Pago ↗</a>
-                <p id="pix-expiry" class="bus-payment-panel__expiry" role="timer" aria-live="off" hidden>Este código expira em <strong id="pix-expiry-countdown">—</strong>.</p>
+                <p id="pix-expiry" class="bus-payment-panel__expiry" role="timer" aria-live="off" hidden>Tempo para concluir: <strong id="pix-expiry-countdown">10:00</strong></p>
                 <p id="payment-status" class="bus-payment-panel__status" role="status" aria-live="polite">Aguardando pagamento.</p>
               </div>
             </div>
             <p class="bus-payment-panel__footnote">A confirmação automática depende do Mercado Pago. Se precisar de ajuda, fale com a organização pelo WhatsApp do evento.</p>
           </section>
+
+          <!-- Substitui o painel de pagamento quando a vaga é confirmada. O
+               conteúdo é preenchido por assets/js/onibus.js a partir dos dados
+               que o servidor devolve; nada de CPF aqui. -->
+          <section id="confirmation-panel" class="bus-confirmed" hidden aria-labelledby="confirmed-title">
+            <div class="bus-confirmed__seal" aria-hidden="true">
+              <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                <path class="bus-confirmed__seal-ring" d="M24 3.5a20.5 20.5 0 1 1 0 41 20.5 20.5 0 0 1 0-41Z"></path>
+                <path class="bus-confirmed__seal-tick" d="M14.5 24.8 21.4 31.7 34 19.1"></path>
+              </svg>
+            </div>
+
+            <p class="eyebrow">Vaga garantida</p>
+            <h2 id="confirmed-title">Prontinho. Você vai com a gente.</h2>
+            <p class="bus-confirmed__lead">Recebemos seu pagamento e sua vaga no ônibus fretado está <strong>confirmada</strong>. Obrigado por embarcar nessa com a gente — nos vemos no porto.</p>
+
+            <dl class="bus-confirmed__facts">
+              <div>
+                <dt>Rota</dt>
+                <dd>Barra Funda <span aria-hidden="true">↔</span> Porto de Santos</dd>
+              </div>
+              <div>
+                <dt>Valor pago</dt>
+                <dd id="confirmed-amount">—</dd>
+              </div>
+              <div>
+                <dt>Código da reserva</dt>
+                <dd><code id="confirmed-code">—</code></dd>
+              </div>
+            </dl>
+
+            <div class="bus-confirmed__manifest">
+              <h3 id="confirmed-manifest-title">Quem embarca</h3>
+              <ol id="confirmed-passengers" class="bus-confirmed__list" aria-labelledby="confirmed-manifest-title"></ol>
+              <p id="confirmed-children" class="bus-confirmed__children" hidden></p>
+            </div>
+
+            <div class="bus-confirmed__next">
+              <h3>O que acontece agora</h3>
+              <ul>
+                <li>A organização envia os detalhes de embarque pelo WhatsApp do contato principal.</li>
+                <li>Guarde o código da reserva: é ele que identifica seu grupo.</li>
+                <li>Chegue ao ponto de encontro com 30 minutos de antecedência.</li>
+              </ul>
+            </div>
+
+            <div class="bus-confirmed__actions">
+              <a class="btn btn--primary" href="index.html">Voltar para o evento</a>
+              <button id="print-confirmation" class="btn btn--ghost" type="button">Salvar comprovante <span aria-hidden="true">↓</span></button>
+            </div>
+          </section>
+
+          <!-- Perguntado quando a janela de 10 minutos zera e o pagamento
+               continua pendente. <dialog> nativo: foco preso e Esc de graça. -->
+          <dialog id="still-here-dialog" class="bus-dialog" aria-labelledby="still-here-title">
+            <h2 id="still-here-title">Você ainda está aí?</h2>
+            <p>Ainda <strong>não identificamos seu pagamento</strong> e a vaga não está garantida até a transferência ser confirmada.</p>
+            <p class="bus-dialog__hint">Se você já pagou, aguarde alguns instantes: a confirmação chega automaticamente.</p>
+            <div class="bus-dialog__actions">
+              <button id="still-here-continue" class="btn btn--primary" type="button" autofocus>Continuar pagamento</button>
+              <button id="still-here-cancel" class="btn btn--ghost" type="button">Cancelar transação</button>
+            </div>
+          </dialog>
         </div>
 
         <aside class="bus-summary" aria-label="Resumo da reserva">

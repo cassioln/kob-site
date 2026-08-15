@@ -90,28 +90,70 @@ O que foi **mantido de propósito**:
 - o CSS `.bus-proof-upload` em `assets/css/onibus.css`, órfão. Fica disponível
   caso o painel volte a ser usado para o caso manual.
 
-## Validade do Pix (timer, 2026-08-14)
+## Regra das crianças (corrigida em 2026-08-14)
 
-O QR **expira em 24h**. Medido na API: a validade vem em
-`transactions.payments[0].date_of_expiration` — não existe no nível da order
-nem em `payment_method`, onde seria intuitivo procurar.
+Crianças de até 5 anos são **adicionais ao grupo e não pagam**: viajam no colo de
+um pagante. Logo cada criança precisa de um colo disponível:
 
-```text
-created_date        2026-08-14T22:23:00.834Z
-date_of_expiration  2026-08-15T22:23:01.202+00:00
-```
+    criancas <= pagantes
 
-O campo é repassado como `expiresAt` nos quatro backends e o painel mostra um
-countdown (`#pix-expiry`). Abaixo de 1h o número fica magenta; ao zerar, exibe
-"expirado".
+`passenger_count` conta só os **pagantes**. O valor cobre `passenger_count`
+integral; as crianças entram sem assento e sem custo.
 
-**O countdown é informativo e não decide nada.** Ele nunca confirma nem cancela
-a reserva: ao expirar, apenas dispara `pollPaymentStatus()` para o servidor
-dizer o que aconteceu de fato. A única fonte de verdade continua sendo
-`GET /api/bus-registration-status`, alimentado pelo webhook que consulta a order
-autenticada no Mercado Pago. Isso está coberto por teste: o Playwright expira um
-QR em 2s com o servidor respondendo `payment_pending` e assegura que o painel
-**não** vai para `confirmed`.
+| Pagantes | Máx. crianças | A bordo | Cobrado |
+|---|---|---|---|
+| 1 | 1 | 2 | R$ 120 |
+| 4 | 4 | 8 | R$ 480 |
+| 7 | 7 | 14 | R$ 840 |
+
+Interpretações erradas já cometidas aqui, para não repetir:
+
+- `passenger_count - 1` permitia 3 crianças com 1 adulto (3 colos por pessoa);
+- `floor(total / 2)` tratava crianças como subconjunto do total e cobrava a
+  menos (4 pessoas com 2 crianças cobrava 2 passagens em vez de 4).
+
+Aplicada em cinco camadas, nunca só no navegador: `assets/js/onibus.js`,
+`php/lib/validation.php`, `server/bus-payment.mjs`, as triggers de
+`php/db/001_bus_registrations_mysql.sql` e o CHECK de
+`server/db/001_bus_registrations.sql`.
+
+O campo fica **sempre visível**: com 1 pagante ainda cabe 1 criança no colo.
+
+## Janela de atenção de 10 minutos (2026-08-14)
+
+O Pix do Mercado Pago vale **24h** (medido: `date_of_expiration` em
+`transactions.payments[0]`, não na order nem em `payment_method`). Mas exibir
+"expira em 23h 59min" não cria urgência nenhuma e a pessoa abandona a aba com a
+vaga em aberto.
+
+O painel mostra um contador de **10 minutos em mm:ss**. Ao zerar, o código
+reconsulta o servidor e só então abre o `<dialog>` "Você ainda está aí?":
+
+- **Continuar pagamento** → devolve outros 10 minutos e retoma o polling;
+- **Cancelar transação** → apenas volta para `index.html`. Não cancela nada no
+  Mercado Pago nem no banco: a cobrança pode seguir válida se a pessoa já pagou.
+
+O contador **não decide nada**. A reconsulta antes de abrir o aviso evita alarme
+falso em quem pagou nos últimos segundos — coberto por teste.
+
+## Confirmação da vaga (2026-08-14)
+
+Quando o pagamento é identificado, `#confirmation-panel` **substitui** o painel
+de pagamento (`#payment-panel` vai para `hidden`).
+
+Antes a confirmação era uma linha de texto no rodapé de uma coluna, com o mesmo
+peso visual de um link, enquanto um QR gigante e o título "Agora falta o Pix"
+continuavam no ar. A hierarquia dizia o oposto do estado real e convidava a
+pagar de novo.
+
+A seção traz selo animado, título display, valor pago, código curto da reserva
+(primeiro bloco do UUID), manifesto numerado com os nomes, aviso das crianças,
+próximos passos e um botão de imprimir com `@media print`.
+
+**Os nomes vêm do que o usuário digitou nesta sessão**, guardados em
+`confirmedSnapshot` quando o Pix é gerado. `GET /api/bus-registration-status`
+continua devolvendo **apenas** `status` e `statusDetail`: é consultado só com o
+UUID e não deve expor nome, CPF, e-mail ou WhatsApp.
 
 ## Runtime: pendência bloqueante
 

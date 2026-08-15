@@ -86,11 +86,11 @@ export function validateBusPayload(payload) {
   if (!Number.isInteger(passengerCount) || passengerCount < 1 || passengerCount > MAX_PASSENGERS) {
     throw new ValidationError(`Informe entre 1 e ${MAX_PASSENGERS} passageiros.`);
   }
-  // Cada criança viaja no colo de um responsável, então precisa de um pagante
-  // para si: crianças <= pagantes (pagantes = total - crianças).
+  // Crianças de até 5 anos são ADICIONAIS e não pagam: viajam no colo de um
+  // pagante, então cada uma precisa de um colo: crianças <= pagantes.
   if (!Number.isInteger(childrenCount) || childrenCount < 0
-      || childrenCount > passengerCount - childrenCount) {
-    throw new ValidationError('Cada criança precisa de um passageiro pagante como responsável.');
+      || childrenCount > passengerCount) {
+    throw new ValidationError('As crianças de até 5 anos não podem passar do número de passageiros pagantes.');
   }
 
   const primaryName = normalizeText(contact.full_name, 'Nome completo do contato principal', 3);
@@ -154,7 +154,9 @@ export async function createPixOrder({
   const normalized = validateBusPayload(payload);
   const id = randomUUID();
   const externalReference = `kob_bus_2026_${id}`;
-  const amountCents = (normalized.passengerCount - normalized.childrenCount) * BUS_PRICE_CENTS;
+  // Criancas de ate 5 anos sao adicionais e NAO pagam: o valor cobre
+  // exatamente o grupo informado em passengerCount.
+  const amountCents = normalized.passengerCount * BUS_PRICE_CENTS;
   const totalAmount = (amountCents / 100).toFixed(2);
 
   await db.createRegistration({

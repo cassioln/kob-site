@@ -359,23 +359,11 @@
   grid-template-rows: subgrid;
 }
 
-/* `display: grid` acima vence o atributo `hidden` (que só aplica display:none
-   via UA stylesheet, de especificidade menor). Sem isto o campo de crianças
-   continuava visível mesmo escondido pelo JS. */
-.bus-form__grid--counts .bus-field[hidden] {
-  display: none;
-}
-
 /* Fallback para navegadores sem subgrid: alinha pelo menos os inputs, jogando
    o label para uma altura mínima de duas linhas. */
 @supports not (grid-template-rows: subgrid) {
   .bus-form__grid--counts .bus-field {
     display: block;
-  }
-
-  /* Mesmo motivo do bloco acima: `hidden` não pode perder para `display: block`. */
-  .bus-form__grid--counts .bus-field[hidden] {
-    display: none;
   }
 
   .bus-form__grid--counts .bus-field > label {
@@ -978,4 +966,285 @@
   .bus-payment-panel__copy textarea {
     transition: none;
   }
+}
+
+/* ============================================================================
+   Confirmação da vaga
+   Substitui o painel de pagamento quando o Mercado Pago identifica o Pix.
+   Antes a confirmação era uma linha de texto no rodapé de uma coluna, competindo
+   com um QR gigante e um título "Agora falta o Pix" — a hierarquia dizia o
+   oposto do estado real. Aqui o sucesso é a página inteira.
+   ========================================================================== */
+.bus-confirmed {
+  padding: clamp(30px, 4vw, 52px);
+  border: 1px solid var(--line-mid);
+  border-radius: var(--r-lg);
+  background: #fff;
+}
+
+.bus-confirmed__seal {
+  width: 60px;
+  height: 60px;
+  color: var(--action);
+}
+
+.bus-confirmed__seal svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* O selo se desenha uma vez: marca o momento sem virar enfeite permanente. */
+.bus-confirmed__seal-ring,
+.bus-confirmed__seal-tick {
+  stroke-dasharray: var(--dash, 160);
+  stroke-dashoffset: var(--dash, 160);
+  animation: bus-seal-draw 620ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.bus-confirmed__seal-ring { --dash: 132; }
+.bus-confirmed__seal-tick { --dash: 40; animation-delay: 260ms; }
+
+@keyframes bus-seal-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+.bus-confirmed .eyebrow {
+  margin-top: 22px;
+}
+
+.bus-confirmed h2 {
+  margin-top: 10px;
+  color: var(--bus-ink);
+  font-size: clamp(2.1rem, 4.2vw, 3.5rem);
+  letter-spacing: -0.018em;
+  text-wrap: balance;
+}
+
+.bus-confirmed h2:focus-visible {
+  outline: 2px solid var(--action);
+  outline-offset: 6px;
+}
+
+.bus-confirmed__lead {
+  max-width: 56ch;
+  margin-top: 14px;
+  color: var(--ink-soft);
+  font-size: 1.02rem;
+  line-height: 1.6;
+}
+
+/* Fatos da reserva: linhas, não cards. Densidade de comprovante.
+   3 itens em 2 colunas deixavam a última linha pela metade e a borda inferior
+   virava um traço órfão (medido: terminava em 415px de 674px). A régua agora é
+   do container, não da célula, então acompanha a linha inteira. */
+.bus-confirmed__facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  margin-top: 34px;
+  border-top: 1px solid var(--line-mid);
+  border-bottom: 1px solid var(--line-mid);
+}
+
+.bus-confirmed__facts > div {
+  padding: 18px 22px 18px 0;
+}
+
+/* Separador entre linhas, aplicado só quando existe uma linha acima. */
+.bus-confirmed__facts > div:nth-child(n + 3) {
+  border-top: 1px solid var(--line-mid);
+}
+
+.bus-confirmed__facts dt {
+  color: var(--ink-faint);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.bus-confirmed__facts dd {
+  margin-top: 7px;
+  color: var(--bus-ink);
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.bus-confirmed__facts code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 1.05rem;
+  letter-spacing: 0.06em;
+}
+
+.bus-confirmed__manifest {
+  margin-top: 36px;
+}
+
+.bus-confirmed h3 {
+  color: var(--bus-ink);
+  font-size: 1.05rem;
+}
+
+.bus-confirmed__list {
+  margin-top: 14px;
+  padding: 0;
+  list-style: none;
+  counter-reset: manifest;
+}
+
+.bus-confirmed__list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--line-mid);
+  counter-increment: manifest;
+}
+
+/* Numeração aqui é legítima: é um manifesto de embarque ordenado. */
+.bus-confirmed__list li::before {
+  content: counter(manifest, decimal-leading-zero);
+  color: var(--action-ink);
+  font-family: var(--font-display);
+  font-size: 1.02rem;
+  min-width: 2ch;
+}
+
+.bus-confirmed__list li > span {
+  color: var(--bus-ink);
+  font-weight: 700;
+}
+
+.bus-confirmed__list li > small {
+  margin-left: auto;
+  color: var(--ink-faint);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.bus-confirmed__children {
+  margin-top: 12px;
+  color: var(--ink-faint);
+  font-size: 0.88rem;
+}
+
+.bus-confirmed__next {
+  margin-top: 34px;
+  padding: 22px 24px;
+  border-left: 2px solid var(--action);
+  background: var(--bus-paper);
+}
+
+.bus-confirmed__next ul {
+  margin: 12px 0 0;
+  padding-left: 18px;
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+  line-height: 1.65;
+}
+
+.bus-confirmed__next li + li {
+  margin-top: 6px;
+}
+
+.bus-confirmed__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 34px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bus-confirmed__seal-ring,
+  .bus-confirmed__seal-tick {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Comprovante impresso: só o essencial. */
+@media print {
+  .bus-hero,
+  .bus-intro,
+  .bus-reassurance,
+  .bus-summary,
+  .bus-footer,
+  .bus-confirmed__actions,
+  .cookie-consent {
+    display: none !important;
+  }
+
+  .bus-confirmed {
+    border: 0;
+    padding: 0;
+  }
+}
+
+/* ============================================================================
+   Diálogo "você ainda está aí?"
+   ========================================================================== */
+.bus-dialog {
+  max-width: 460px;
+  padding: clamp(26px, 3vw, 36px);
+  border: 1px solid var(--line-mid);
+  border-radius: var(--r-lg);
+  background: #fff;
+  color: var(--bus-ink);
+}
+
+.bus-dialog::backdrop {
+  background: rgba(8, 24, 46, 0.62);
+}
+
+.bus-dialog h2 {
+  color: var(--bus-ink);
+  font-size: clamp(1.6rem, 3vw, 2.1rem);
+  letter-spacing: -0.015em;
+}
+
+.bus-dialog p {
+  margin-top: 12px;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.bus-dialog__hint {
+  color: var(--ink-faint);
+  font-size: 0.86rem;
+}
+
+.bus-dialog__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 18px;
+  margin-top: 26px;
+}
+
+/* Só o primário ocupa a linha. "Cancelar transação" é a ação destrutiva:
+   fica como link discreto para não competir com o alvo desejado nem virar
+   toque acidental no mobile. */
+.bus-dialog__actions .btn--primary {
+  flex: 1 1 auto;
+}
+
+#still-here-cancel {
+  padding: 6px 2px;
+  border: 0;
+  background: none;
+  color: var(--ink-faint);
+  font-size: 0.86rem;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  box-shadow: none;
+}
+
+#still-here-cancel:hover,
+#still-here-cancel:focus-visible {
+  color: var(--kriativa-magenta);
+  transform: none;
 }

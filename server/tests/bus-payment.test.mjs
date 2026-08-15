@@ -62,12 +62,13 @@ test('calcula o total no servidor e salva o cadastro antes de criar o Pix', asyn
     ...dependencies
   });
 
-  assert.equal(dependencies.calls.registration.amountCents, 24000);
+  // 3 pagantes x R$ 120. As crianças do basePayload são adicionais e não pagam.
+  assert.equal(dependencies.calls.registration.amountCents, 36000);
   assert.equal(dependencies.calls.registration.passengers.length, 3);
-  assert.equal(dependencies.calls.payment.totalAmount, '240.00');
+  assert.equal(dependencies.calls.payment.totalAmount, '360.00');
   assert.equal(dependencies.calls.payment.payerEmail, 'maria@example.com');
   assert.equal(dependencies.calls.payment.externalReference, dependencies.calls.registration.externalReference);
-  assert.equal(result.totalAmount, '240.00');
+  assert.equal(result.totalAmount, '360.00');
   assert.equal(result.orderId, 'ORD01TESTBUS2026');
   assert.equal(result.registrationId, dependencies.calls.registration.id);
   assert.ok(!Object.hasOwn(result, 'cpf'));
@@ -105,46 +106,42 @@ test('marca o cadastro como erro se o Mercado Pago falhar', async () => {
   assert.equal(dependencies.calls.updates.at(-1).update.status, 'payment_failed');
 });
 
-test('não cria cobrança para um grupo formado apenas por crianças', async () => {
+test('aceita 1 pagante com 1 criança no colo', async () => {
+  // Crianças são adicionais e não pagam. Com 1 pagante cabe 1 colo, então
+  // este é um cadastro válido: cobra 1 passagem e leva 2 pessoas a bordo.
   const dependencies = fakeDependencies();
   const payload = structuredClone(basePayload);
   payload.passenger_count = 1;
   payload.children_count = 1;
   payload.passengers = [payload.passengers[0]];
 
+  const result = await createPixOrder({ payload, ...dependencies });
+  assert.equal(result.totalAmount, '120.00');
+  assert.notEqual(dependencies.calls.registration, null);
+});
+
+test('recusa mais crianças que pagantes: cada criança precisa de um colo', async () => {
+  // 3 pagantes com 4 crianças deixaria uma criança sem colo disponível.
+  const dependencies = fakeDependencies();
+  const payload = structuredClone(basePayload);
+  payload.passenger_count = 3;
+  payload.children_count = 4;
+
   await assert.rejects(
     () => createPixOrder({ payload, ...dependencies }),
-    /precisa de um passageiro pagante/i
+    /não podem passar do número de passageiros pagantes/i
   );
   assert.equal(dependencies.calls.registration, null);
   assert.equal(dependencies.calls.payment, null);
 });
 
-test('recusa mais crianças que pagantes: cada colo precisa de um responsável', async () => {
-  // 3 pessoas com 2 crianças deixaria 1 adulto com 2 colos. Limite = floor(n/2).
-  const dependencies = fakeDependencies();
-  const payload = structuredClone(basePayload);
-  payload.passenger_count = 3;
-  payload.children_count = 2;
-  payload.passengers = [
-    { full_name: 'Maria de Souza', cpf: '52998224725' },
-    { full_name: 'Joao Souza', cpf: '11144477735' },
-    { full_name: 'Ana Souza', cpf: '15350946056' }
-  ];
-
-  await assert.rejects(
-    () => createPixOrder({ payload, ...dependencies }),
-    /precisa de um passageiro pagante/i
-  );
-  assert.equal(dependencies.calls.registration, null);
-});
-
-test('aceita crianças iguais aos pagantes: 4 pessoas com 2 crianças', async () => {
-  // Fronteira válida da regra: 2 crianças e 2 pagantes, um colo por adulto.
+test('aceita crianças iguais aos pagantes e cobra só os pagantes', async () => {
+  // Fronteira válida: 4 pagantes e 4 crianças, um colo por pagante.
+  // 8 pessoas a bordo, mas o valor cobre apenas as 4 passagens.
   const dependencies = fakeDependencies();
   const payload = structuredClone(basePayload);
   payload.passenger_count = 4;
-  payload.children_count = 2;
+  payload.children_count = 4;
   payload.passengers = [
     { full_name: 'Maria de Souza', cpf: '52998224725' },
     { full_name: 'Joao Souza', cpf: '11144477735' },
@@ -153,8 +150,7 @@ test('aceita crianças iguais aos pagantes: 4 pessoas com 2 crianças', async ()
   ];
 
   const result = await createPixOrder({ payload, ...dependencies });
-  // Só os 2 pagantes entram no valor.
-  assert.equal(result.totalAmount, '240.00');
+  assert.equal(result.totalAmount, '480.00');
   assert.notEqual(dependencies.calls.registration, null);
 });
 
@@ -162,7 +158,7 @@ test('monta a order Pix com token, idempotência e valor server-side', async () 
   let request = null;
   const response = await createMercadoPagoOrder({
     accessToken: 'APP_USR_TEST_ONLY',
-    totalAmount: '240.00',
+    totalAmount: '360.00',
     externalReference: 'kob_bus_2026_registration',
     payerEmail: 'maria@example.com',
     idempotencyKey: '00000000-0000-4000-8000-000000000003',
@@ -196,7 +192,7 @@ test('monta a order Pix com token, idempotência e valor server-side', async () 
   assert.equal(request.options.headers.Authorization, 'Bearer APP_USR_TEST_ONLY');
   assert.equal(request.options.headers['X-Idempotency-Key'], '00000000-0000-4000-8000-000000000003');
   const body = JSON.parse(request.options.body);
-  assert.equal(body.total_amount, '240.00');
+  assert.equal(body.total_amount, '360.00');
   assert.equal(body.external_reference, 'kob_bus_2026_registration');
   assert.equal(body.payer.email, 'maria@example.com');
   assert.equal(body.transactions.payments[0].payment_method.id, 'pix');
@@ -214,7 +210,7 @@ test('adaptador HTTP retorna apenas o contrato público do Pix', async () => {
   });
 
   assert.equal(result.statusCode, 201);
-  assert.equal(result.body.totalAmount, '240.00');
+  assert.equal(result.body.totalAmount, '360.00');
   assert.equal(result.body.qrCode, '00020126580014br.gov.bcb.pix0136test-code');
   assert.equal(Object.hasOwn(result.body, 'cpf'), false);
   assert.equal(Object.hasOwn(result.body, 'email'), false);

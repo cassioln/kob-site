@@ -132,10 +132,10 @@ function validate_bus_payload(mixed $payload): array
     if ($passengerCount < 1 || $passengerCount > BUS_MAX_PASSENGERS) {
         throw new ValidationError('Informe entre 1 e ' . BUS_MAX_PASSENGERS . ' passageiros.');
     }
-    // Cada criança viaja no colo de um responsável, então precisa de um pagante
-    // para si: crianças <= pagantes (pagantes = total - crianças).
-    if ($childrenCount < 0 || $childrenCount > $passengerCount - $childrenCount) {
-        throw new ValidationError('Cada criança precisa de um passageiro pagante como responsável.');
+    // Crianças de até 5 anos são ADICIONAIS e não pagam: viajam no colo de um
+    // pagante, então cada uma precisa de um colo: crianças <= pagantes.
+    if ($childrenCount < 0 || $childrenCount > $passengerCount) {
+        throw new ValidationError('As crianças de até 5 anos não podem passar do número de passageiros pagantes.');
     }
 
     $primaryName = normalize_text($contact['full_name'] ?? null, 'Nome completo do contato principal', 3);
@@ -185,7 +185,9 @@ function validate_bus_payload(mixed $payload): array
         'passengerCount' => $passengerCount,
         'childrenCount' => $childrenCount,
         'passengers' => $passengers,
-        'amountCents' => ($passengerCount - $childrenCount) * BUS_PRICE_CENTS,
+        // Criancas de ate 5 anos sao adicionais e NAO pagam: o valor cobre
+        // exatamente o grupo informado em passenger_count.
+        'amountCents' => $passengerCount * BUS_PRICE_CENTS,
     ];
 }
 
