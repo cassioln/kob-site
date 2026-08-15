@@ -22,7 +22,19 @@ try {
 
     // A notificação é apenas um gatilho. A verdade vem da consulta autenticada,
     // então um webhook forjado não confirma vaga nenhuma.
-    $order = mp_get_order((string) $orderId);
+    //
+    // O painel do Mercado Pago valida a URL enviando uma notificação de teste
+    // com um id que não existe. Se respondermos erro, ele recusa o cadastro do
+    // webhook. Por isso a consulta falha em 200: nada foi alterado, e não há o
+    // que reenviar quando a order simplesmente não existe.
+    try {
+        $order = mp_get_order((string) $orderId);
+    } catch (Throwable $lookupError) {
+        log_failure('mercadopago-webhook/lookup', $lookupError);
+        json_response(200, ['received' => true, 'ignored' => 'order_not_found']);
+        exit;
+    }
+
     if (empty($order['externalReference'])) {
         json_response(200, ['received' => true]);
         exit;
