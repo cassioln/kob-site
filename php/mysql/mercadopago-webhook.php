@@ -16,7 +16,10 @@ try {
     $payload = read_json_body();
     $orderId = $payload['data']['id'] ?? $payload['id'] ?? null;
     if (!is_string($orderId) && !is_int($orderId)) {
-        json_response(400, ['error' => 'Identificador da order ausente.']);
+        // Probe de alcance do painel (POST sem corpo) não é erro do integrador:
+        // responder 400 faz a URL parecer inválida na validação. Nada foi
+        // alterado, então 200 é a resposta honesta.
+        json_response(200, ['received' => true, 'ignored' => 'missing_order_id']);
         exit;
     }
 
