@@ -90,6 +90,61 @@ O que foi **mantido de propósito**:
 - o CSS `.bus-proof-upload` em `assets/css/onibus.css`, órfão. Fica disponível
   caso o painel volte a ser usado para o caso manual.
 
+## Assinatura das notificações (x-signature)
+
+O painel gera uma **chave secreta por ambiente** (uma na aba Modo de teste,
+outra em Modo de produção). Ela vai em `~/kob-config/bus-secrets.php`, fora do
+document root, nunca no repositório:
+
+```php
+'mp_webhook_secret_test' => '...',  // aba Modo de teste
+'mp_webhook_secret'      => '...',  // aba Modo de produção
+```
+
+`php/lib/mp-signature.php` implementa a verificação e o webhook escolhe a chave
+por `mp_is_sandbox()` (tag `test_user` da conta), o mesmo critério do `APRO`.
+
+Fórmula, conforme a documentação:
+
+    manifesto = id:<data.id em minúsculas>;request-id:<x-request-id>;ts:<ts>;
+    v1 = HMAC-SHA256(manifesto, chave_secreta)   // hex
+
+Detalhes que invalidam a assinatura se ignorados:
+
+- `data.id` chega como `ORD...` MAIÚSCULO e precisa virar minúsculo;
+- campo ausente sai do manifesto (nunca `id:;`);
+- `ts` vem em MILISSEGUNDOS (a tolerância de replay divide por 1000);
+- comparação com `hash_equals`, não `==`.
+
+**Fail-open sem chave, fail-closed com chave.** Sem chave configurada o webhook
+segue aceitando: a reconsulta autenticada da order já impede que notificação
+forjada aprove vaga, e derrubar o webhook por falta de config deixaria reservas
+pendentes sem motivo. Com chave, assinatura inválida recebe 401.
+
+Paridade verificada: o HMAC do PHP em produção e o da referência em JS
+(`server/tests/mp-signature.test.mjs`) são idênticos para o vetor da
+documentação — `35157ff4...c384`.
+
+## Reconciliação: o webhook não é garantido
+
+Em sandbox o Mercado Pago aprova a order mas **não entrega** a notificação
+(medido: order `accredited` no provedor com o banco pendente indefinidamente).
+Em produção o webhook pode falhar, e a própria documentação recomenda um
+fallback por consulta.
+
+Por isso `bus-registration-status` reconsulta a order quando o cadastro está
+pendente. Como a página já faz polling desse endpoint, a confirmação é autônoma.
+
+Guardas: só pendentes com order vinculada, carência de 20s (o webhook tem a
+primeira chance), intervalo mínimo de 25s entre consultas, e `reconciled_at`
+marcado ANTES da chamada para que timeout também respeite o intervalo.
+
+**Fuso é armadilha aqui.** A sessão do MySQL roda em UTC-3
+(`@@session.time_zone = SYSTEM`, offset medido -10800s) e o PHP grava em UTC.
+Comparar `created_at` com `NOW()` dava idade de -10698s: a carência nunca era
+satisfeita e a reconciliação nunca rodava — e o rate limit também ficava inútil.
+Todo o app MySQL usa `UTC_TIMESTAMP()` no SQL e `gmdate()` no PHP.
+
 ## Regra das crianças (corrigida em 2026-08-14)
 
 Crianças de até 5 anos são **adicionais ao grupo e não pagam**: viajam no colo de
