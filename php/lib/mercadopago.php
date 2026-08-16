@@ -186,6 +186,13 @@ function mp_create_pix_order(
                 'payment_method' => [
                     'id' => 'pix',
                     'type' => 'bank_transfer',
+                    // Texto que identifica a compra no extrato do pagador.
+                    // O lugar é AQUI, dentro de payment_method: na raiz da order
+                    // e no nível do payment a API responde 400
+                    // unsupported_properties (medido). A referência oficial
+                    // documenta como transactions.payments.payment_method
+                    // .statement_descriptor, até 50 caracteres.
+                    'statement_descriptor' => 'KRIATIVOSONBOARD',
                 ],
             ]],
         ],
@@ -198,10 +205,6 @@ function mp_create_pix_order(
             'external_code' => 'kob-bus-2026',
             'category_id' => 'services',
         ]],
-        // Sem statement_descriptor: a Orders API rejeita a propriedade com
-        // 400 unsupported_properties, tanto na raiz quanto dentro do payment
-        // (medido em produção). O "Nome para extratos" se define no painel do
-        // Mercado Pago, não no payload.
     ], ['X-Idempotency-Key: ' . $idempotencyKey]);
 
     $payment = $order['transactions']['payments'][0] ?? null;

@@ -95,7 +95,11 @@ export async function createMercadoPagoOrder({
           amount: totalAmount,
           payment_method: {
             id: 'pix',
-            type: 'bank_transfer'
+            type: 'bank_transfer',
+            // Extrato do pagador. O lugar e AQUI, dentro de payment_method:
+            // na raiz e no nivel do payment a API responde 400
+            // unsupported_properties (medido em producao).
+            statement_descriptor: 'KRIATIVOSONBOARD'
           }
         }]
       },
