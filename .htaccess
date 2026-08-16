@@ -1,6 +1,21 @@
+##### LOCAWEB - NAO REMOVER #####
+AddHandler php80-script .php
+suPHP_ConfigPath /home/kriativosonboard2/
+##### LOCAWEB - NAO REMOVER #####
+
 # ==========================================================================
 # Kriativos On Board - Landing page estatica | Configuracao Apache
 # Basta subir todo o conteudo da raiz do repositorio para o document root do host.
+#
+# ATENCAO ao bloco LOCAWEB acima: e ele que define a versao do PHP no host.
+# O painel da Locaweb grava esse AddHandler no .htaccess do servidor; como o
+# nosso deploy sobrescreve o arquivo inteiro, sem essas linhas o host volta ao
+# PHP 5.2.17 padrao e TODOS os endpoints passam a devolver HTTP 500 (o parser
+# antigo rejeita `declare(strict_types=1)`, tipos em assinatura e `??`).
+#
+# Ja aconteceu duas vezes. Se trocar a versao pelo painel, atualize aqui
+# tambem (ex.: php81-script), senao o proximo deploy desfaz a mudanca.
+# Documentacao: https://www.locaweb.com.br/ajuda/wiki/como-alterar-a-versao-do-php-hospedagem-de-sites-ajuda-locaweb/
 # ==========================================================================
 
 RewriteEngine On
