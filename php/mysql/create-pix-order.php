@@ -81,14 +81,14 @@ try {
         );
     } catch (Throwable $error) {
         // Mercado Pago falhou => o cadastro fica marcado como payment_failed.
-        $fail = $pdo->prepare('UPDATE bus_registrations SET status = \'payment_failed\', updated_at = NOW() WHERE id = :id');
+        $fail = $pdo->prepare('UPDATE bus_registrations SET status = \'payment_failed\', updated_at = UTC_TIMESTAMP() WHERE id = :id');
         $fail->execute([':id' => $id]);
         throw $error;
     }
 
     $update = $pdo->prepare(
         'UPDATE bus_registrations
-            SET mercadopago_order_id = :order, mercadopago_payment_id = :payment, updated_at = NOW()
+            SET mercadopago_order_id = :order, mercadopago_payment_id = :payment, updated_at = UTC_TIMESTAMP()
           WHERE id = :id'
     );
     $update->execute([

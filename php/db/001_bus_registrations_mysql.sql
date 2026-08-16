@@ -59,6 +59,10 @@ CREATE TABLE IF NOT EXISTS bus_registrations (
   mercadopago_order_id   VARCHAR(191)    NULL,
   mercadopago_payment_id VARCHAR(191)    NULL,
   paid_at                DATETIME        NULL COMMENT 'UTC',
+  -- Ultima vez que consultamos o Mercado Pago para reconciliar este cadastro.
+  -- Existe para limitar a frequencia: a pagina faz polling a cada 5s e sem
+  -- isso cada consulta viraria uma chamada ao provedor.
+  reconciled_at          DATETIME        NULL COMMENT 'UTC',
   created_at             DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'UTC',
   updated_at             DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'UTC',
 

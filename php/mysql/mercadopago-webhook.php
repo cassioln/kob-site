@@ -55,7 +55,7 @@ try {
     $status = map_provider_status($order);
 
     // MySQL não aceita ISO-8601 com offset em DATETIME: usamos 'Y-m-d H:i:s'.
-    $paidAt = in_array($status, ['paid_awaiting_proof', 'confirmed'], true) ? date('Y-m-d H:i:s') : null;
+    $paidAt = in_array($status, ['paid_awaiting_proof', 'confirmed'], true) ? gmdate('Y-m-d H:i:s') : null;
     $update = $pdo->prepare(
         'UPDATE bus_registrations
             SET status = :status,
@@ -63,7 +63,7 @@ try {
                 mercadopago_order_id = COALESCE(:order, mercadopago_order_id),
                 mercadopago_payment_id = COALESCE(:payment, mercadopago_payment_id),
                 paid_at = COALESCE(:paid, paid_at),
-                updated_at = NOW()
+                updated_at = UTC_TIMESTAMP()
           WHERE id = :id'
     );
     $update->execute([

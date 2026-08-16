@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS bus_registrations (
   mercadopago_order_id TEXT UNIQUE,
   mercadopago_payment_id TEXT UNIQUE,
   paid_at TIMESTAMPTZ,
+  reconciled_at          TIMESTAMPTZ,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );

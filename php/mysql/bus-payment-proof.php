@@ -107,7 +107,7 @@ try {
             file_size = VALUES(file_size),
             sha256 = VALUES(sha256),
             file_data = VALUES(file_data),
-            uploaded_at = NOW()'
+            uploaded_at = UTC_TIMESTAMP()'
     );
     $save->bindValue(':id', uuid_v4());
     $save->bindValue(':rid', $registrationId);
@@ -126,7 +126,7 @@ try {
     $promote = $pdo->prepare(
         'UPDATE bus_registrations
             SET status = CASE WHEN status = \'paid_awaiting_proof\' THEN \'confirmed\' ELSE status END,
-                updated_at = NOW()
+                updated_at = UTC_TIMESTAMP()
           WHERE id = :id'
     );
     $promote->execute([':id' => $registrationId]);
