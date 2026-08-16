@@ -48,6 +48,10 @@ function mp_parse_signature_header(string $header): array
 /**
  * Monta o manifesto assinado.
  *
+ * Segue o exemplo oficial: `implode(';', $parts) . ';'`. Na prática o resultado
+ * é idêntico a concatenar `';'` em cada campo (verificado), então esta forma foi
+ * adotada por fidelidade à documentação, não por corrigir um bug.
+ *
  * Campos ausentes são OMITIDOS (não viram `id:;`), conforme a documentação:
  * "If any of the values are not present, you must remove them from the manifest".
  */
@@ -56,14 +60,14 @@ function mp_signature_manifest(?string $dataId, ?string $requestId, string $ts):
     $partes = [];
     if ($dataId !== null && $dataId !== '') {
         // A doc exige minúsculas: ORD01... deve ser usado como ord01...
-        $partes[] = 'id:' . strtolower($dataId) . ';';
+        $partes[] = 'id:' . strtolower($dataId);
     }
     if ($requestId !== null && $requestId !== '') {
-        $partes[] = 'request-id:' . $requestId . ';';
+        $partes[] = 'request-id:' . $requestId;
     }
-    $partes[] = 'ts:' . $ts . ';';
+    $partes[] = 'ts:' . $ts;
 
-    return implode('', $partes);
+    return implode(';', $partes) . ';';
 }
 
 /**
@@ -134,14 +138,22 @@ function mp_webhook_origin_check(array $server, array $query, ?string $secret, ?
 
     $requestId = isset($server['HTTP_X_REQUEST_ID']) ? (string) $server['HTTP_X_REQUEST_ID'] : null;
 
-    // A doc manda usar o data.id da QUERY STRING; o corpo é fallback para
-    // simulações do painel que não anexam query params.
+    // O PHP converte pontos em nomes de query param para underscore, então
+    // `?data.id=X` chega em $_GET como `data_id`. O exemplo oficial em PHP lê
+    // exatamente `$_GET['data_id']` — ler `$_GET['data.id']` nunca encontra
+    // nada e o manifesto sai sem o id, invalidando toda assinatura.
+    //
+    // As notificações reais chegam SEM query string (medido: query vazia em
+    // 5 entregas do `MercadoPago WebHook v1.0`), com o id apenas no corpo.
+    // Por isso o corpo é fallback legítimo, não um atalho.
     $dataId = null;
-    if (isset($query['data.id'])) {
-        $dataId = (string) $query['data.id'];
-    } elseif (isset($query['data_id'])) {
-        $dataId = (string) $query['data_id'];
-    } elseif ($bodyDataId !== null && $bodyDataId !== '') {
+    foreach (['data_id', 'data.id', 'id'] as $chave) {
+        if (isset($query[$chave]) && $query[$chave] !== '') {
+            $dataId = (string) $query[$chave];
+            break;
+        }
+    }
+    if ($dataId === null && $bodyDataId !== null && $bodyDataId !== '') {
         $dataId = $bodyDataId;
     }
 
