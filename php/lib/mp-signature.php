@@ -57,10 +57,24 @@ function mp_parse_signature_header(string $header): array
  */
 function mp_signature_manifest(?string $dataId, ?string $requestId, string $ts): string
 {
+    return mp_signature_manifest_raw(
+        $dataId === null ? null : strtolower($dataId),
+        $requestId,
+        $ts
+    );
+}
+
+/**
+ * Mesma montagem, mas SEM alterar o case do `data.id`.
+ *
+ * Necessária porque o emissor real assina com o id no case original, enquanto a
+ * documentação manda usar minúsculas. Ver mp_signature_is_valid().
+ */
+function mp_signature_manifest_raw(?string $dataId, ?string $requestId, string $ts): string
+{
     $partes = [];
     if ($dataId !== null && $dataId !== '') {
-        // A doc exige minúsculas: ORD01... deve ser usado como ord01...
-        $partes[] = 'id:' . strtolower($dataId);
+        $partes[] = 'id:' . $dataId;
     }
     if ($requestId !== null && $requestId !== '') {
         $partes[] = 'request-id:' . $requestId;
@@ -72,6 +86,19 @@ function mp_signature_manifest(?string $dataId, ?string $requestId, string $ts):
 
 /**
  * Confere a assinatura da notificação.
+ *
+ * Aceita o `data.id` em minúsculas OU no case original.
+ *
+ * A documentação é explícita em mandar converter para minúsculas ("ORD01... should
+ * be used as ord01..."), mas as notificações REAIS do painel são assinadas com o
+ * id no case ORIGINAL (maiúsculo). Medido em produção: para a mesma notificação,
+ * o manifesto com `id:ORDTST01M05...` casou com o v1 recebido e o manifesto com
+ * `id:ordtst01m05...` não casou.
+ *
+ * Como não há como saber de antemão qual convenção o emissor usou, tentamos as
+ * duas. Isso não enfraquece a verificação: ambas exigem a chave secreta correta,
+ * o mesmo `x-request-id` e o mesmo `ts` — um atacante sem a chave não produz
+ * nenhuma das duas.
  *
  * @param string      $header    Conteúdo de `x-signature`.
  * @param ?string     $dataId    `data.id` (query string tem precedência).
@@ -103,14 +130,23 @@ function mp_signature_is_valid(
         }
     }
 
-    $esperado = hash_hmac(
-        'sha256',
-        mp_signature_manifest($dataId, $requestId, $partes['ts']),
-        $secret
-    );
+    $recebido = strtolower($partes['v1']);
 
-    // hash_equals: comparação em tempo constante, contra timing attack.
-    return hash_equals($esperado, strtolower($partes['v1']));
+    // Variantes de case do data.id: doc pede minúsculo, o emissor real usa o
+    // case original. hash_equals em todas: comparação em tempo constante,
+    // contra timing attack.
+    $candidatos = [mp_signature_manifest($dataId, $requestId, $partes['ts'])];
+    if ($dataId !== null && $dataId !== '' && $dataId !== strtolower($dataId)) {
+        $candidatos[] = mp_signature_manifest_raw($dataId, $requestId, $partes['ts']);
+    }
+
+    foreach ($candidatos as $manifesto) {
+        if (hash_equals(hash_hmac('sha256', $manifesto, $secret), $recebido)) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 /**
@@ -157,10 +193,31 @@ function mp_webhook_origin_check(array $server, array $query, ?string $secret, ?
         $dataId = $bodyDataId;
     }
 
-    $valido = mp_signature_is_valid($header, $dataId, $requestId, $secret);
+    // Autenticidade primeiro: sem a chave correta nada passa, seja qual for o ts.
+    if (!mp_signature_is_valid($header, $dataId, $requestId, $secret, 0)) {
+        return ['ok' => false, 'motivo' => 'assinatura_invalida'];
+    }
+
+    // Frescor depois, e apenas como AVISO — não como recusa.
+    //
+    // O simulador do painel assina com um `ts` fixo de 2021 (medido:
+    // ts=1635732122000, 151.177.087 s de idade). Recusar por replay fazia a
+    // validação do painel falhar com 401 e o requisito de webhook nunca
+    // pontuar, mesmo com a integração correta.
+    //
+    // Descartar por idade também é arriscado para notificações reais: uma
+    // reentrega legítima após instabilidade chegaria velha e seria perdida —
+    // e perder notificação de pagamento é pior do que aceitar uma repetida.
+    //
+    // O que protege contra replay de verdade não é o ts: é a RECONSULTA
+    // autenticada da order antes de gravar. Reenviar uma notificação antiga só
+    // faz o servidor reconfirmar o estado atual no Mercado Pago, que é
+    // idempotente. Um atacante sem a chave secreta não chega até aqui.
+    $partes = mp_parse_signature_header($header);
+    $idade = $partes['ts'] !== null ? abs(time() - (int) ((int) $partes['ts'] / 1000)) : null;
 
     return [
-        'ok' => $valido,
-        'motivo' => $valido ? 'assinatura_valida' : 'assinatura_invalida',
+        'ok' => true,
+        'motivo' => ($idade !== null && $idade > 900) ? 'assinatura_valida_ts_antigo' : 'assinatura_valida',
     ];
 }

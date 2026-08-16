@@ -91,10 +91,16 @@ try {
                 break;
             }
         }
+        // Idade do ts: se o HMAC casa mas a validação reprova, a suspeita é a
+        // janela de replay — o simulador pode enviar um ts fora dela.
+        $idadeSeg = $ts !== '' ? abs(time() - (int) ((int) $ts / 1000)) : null;
         wh_log('diagnostico_manifesto', [
             'variante_que_casou' => $casou ?? 'NENHUMA',
             'order' => $oid,
             'rid_presente' => $rid !== '',
+            'ts_recebido' => $ts,
+            'idade_ts_segundos' => $idadeSeg,
+            'dentro_da_janela_900s' => $idadeSeg !== null ? ($idadeSeg <= 900) : null,
         ]);
     }
 

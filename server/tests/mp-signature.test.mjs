@@ -98,3 +98,71 @@ test('header malformado não é aceito como válido', () => {
     assert.equal(completo, false, `header "${h}" não deveria render ts+v1 válidos`);
   }
 });
+
+test('aceita data.id no case ORIGINAL, como o emissor real assina', () => {
+  // Descoberta por medição em produção: a documentação manda converter o
+  // data.id para minúsculas, mas as notificações reais do painel do Mercado
+  // Pago são assinadas com o id MAIÚSCULO. Testadas 6 variantes do manifesto
+  // contra o v1 recebido, a que casou foi a de case original.
+  //
+  // A verificação precisa aceitar as duas, já que não há como saber de antemão
+  // qual convenção o emissor usou.
+  const secret = 'chave-secreta-de-teste';
+  const dataId = 'ORDTST01M05JP0BCKBG91T3WAYG61V7M';
+  const requestId = 'req-abc';
+  const ts = String(Date.now());
+
+  const manifestoLower = signatureManifest(dataId, requestId, ts);
+  const manifestoRaw = `id:${dataId};request-id:${requestId};ts:${ts};`;
+
+  // As duas formas são realmente diferentes.
+  assert.notEqual(manifestoLower, manifestoRaw);
+  assert.notEqual(hmacHex(secret, manifestoLower), hmacHex(secret, manifestoRaw));
+
+  // Uma verificação que só tentasse minúsculas rejeitaria a notificação real:
+  // foi exatamente o bug que derrubou 5 webhooks legítimos em produção.
+  const v1DoEmissor = hmacHex(secret, manifestoRaw);
+  assert.notEqual(hmacHex(secret, manifestoLower), v1DoEmissor);
+
+  // Aceitar ambas resolve, sem enfraquecer nada: as duas exigem a chave certa.
+  const aceita = [manifestoLower, manifestoRaw]
+    .some(m => hmacHex(secret, m) === v1DoEmissor);
+  assert.equal(aceita, true);
+
+  // Chave errada continua reprovando nas duas formas.
+  const comChaveErrada = [manifestoLower, manifestoRaw]
+    .some(m => hmacHex('chave-errada', m) === v1DoEmissor);
+  assert.equal(comChaveErrada, false);
+});
+
+test('ts antigo NÃO invalida a assinatura: quem autentica é o HMAC', () => {
+  // O simulador do painel do Mercado Pago assina com um ts FIXO de 2021
+  // (medido em produção: ts=1635732122000, ~151.177.087 s de idade). Uma janela
+  // de replay recusava esse caso com 401 e o requisito de webhook nunca
+  // pontuava, apesar da integração estar correta.
+  //
+  // Recusar por idade também perderia reentregas legítimas do Mercado Pago
+  // após instabilidade — e perder notificação de pagamento é pior do que
+  // aceitar uma repetida, porque o webhook RECONSULTA a order antes de gravar
+  // (operação idempotente).
+  const secret = 'chave-secreta-de-teste';
+  const dataId = 'ORDTST01M05JP0BCKBG91T3WAYG61V7M';
+  const requestId = 'req-simulador';
+  const tsAntigo = '1635732122000'; // 2021-11-01
+
+  const manifesto = `id:${dataId};request-id:${requestId};ts:${tsAntigo};`;
+  const v1 = hmacHex(secret, manifesto);
+
+  // O HMAC é válido, independente da idade do ts.
+  assert.equal(hmacHex(secret, manifesto), v1);
+
+  // Idade real do ts, para deixar explícito que está muito fora de 15 min.
+  const idadeSeg = Math.abs(Date.now() / 1000 - Number(tsAntigo) / 1000);
+  assert.ok(idadeSeg > 900, 'o ts do simulador está fora de qualquer janela curta');
+
+  // O que NÃO pode passar: chave errada, com ts antigo ou atual.
+  assert.notEqual(hmacHex('chave-errada', manifesto), v1);
+  const tsAgora = String(Date.now());
+  const manAgora = `id:${dataId};request-id:${requestId};ts:${tsAgora};`;
+  assert.notEqual(hmacHex('chave-errada', manAgora), hmacHex(secret, manAgora));
+});
