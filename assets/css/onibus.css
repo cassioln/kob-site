@@ -1369,6 +1369,14 @@
     letter-spacing: 0.1em;
   }
 
+  /* O Order ID do Mercado Pago tem ~32 caracteres e estouraria a célula com o
+     tracking do código da reserva. Menor, sem tracking e com quebra permitida. */
+  #confirmed-order {
+    font-size: 8.5pt;
+    letter-spacing: 0 !important;
+    word-break: break-all;
+  }
+
   /* Manifesto de embarque: tabela com cabeçalho impresso. */
   .bus-confirmed__manifest {
     margin-top: 16pt;

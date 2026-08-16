@@ -259,9 +259,20 @@ test('comprovante impresso sai em A4 monocromático, sem sobras da página', asy
                      '.bus-confirmed__seal', '.bus-section-heading--form']) {
     await expect(page.locator(sel)).toBeHidden();
   }
-  // A data de emissão só existe no documento.
-  await expect(page.locator('.bus-confirmed__printonly')).toBeVisible();
+  // Data de emissão e transação do provedor só existem no documento.
+  await expect(page.locator('.bus-confirmed__printonly').first()).toBeVisible();
   await expect(page.locator('#confirmed-issued')).not.toHaveText('—');
+
+  // O Order ID do Mercado Pago entra no comprovante (a organização usa ele
+  // para conferir o pagamento no painel do provedor) e NÃO pode estourar a
+  // célula: tem ~32 caracteres em monoespaçada.
+  await expect(page.locator('#confirmed-order')).toHaveText(/^ORD[A-Z0-9]+$/);
+  const cabe = await page.evaluate(() => {
+    const el = document.getElementById('confirmed-order');
+    const cell = el.closest('dd').getBoundingClientRect();
+    return el.getBoundingClientRect().width <= cell.width + 1;
+  });
+  expect(cabe, 'order id não deve estourar a célula do comprovante').toBe(true);
 
   // Monocromia: elementos E pseudo-elementos.
   const cores = await page.evaluate(() => {

@@ -28,10 +28,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
   <link rel="preload" href="assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
   <link rel="stylesheet" href="assets/css/main.css?v=20260727-incluso-editorial-r2">
-  <link rel="stylesheet" href="assets/css/onibus.css?v=20260815-6-comprovante">
+  <link rel="stylesheet" href="assets/css/onibus.css?v=20260816-7-orderid">
   <link rel="stylesheet" href="assets/css/cookie-consent.css?v=20260713-5">
   <script defer src="assets/js/cookie-consent.js?v=20260713-5"></script>
-  <script defer src="assets/js/onibus.js?v=20260815-6-comprovante"></script>
+  <script defer src="assets/js/onibus.js?v=20260816-7-orderid"></script>
 </head>
 
 <body class="bus-page">
@@ -229,6 +229,14 @@
               <div class="bus-confirmed__printonly">
                 <dt>Emitido em</dt>
                 <dd id="confirmed-issued">—</dd>
+              </div>
+              <!-- Identificador da transação no Mercado Pago. Serve para a
+                   organização conferir o pagamento no painel do provedor, e
+                   é o que o suporte deles pede. Só no impresso: na tela ele
+                   competiria com o código curto da reserva. -->
+              <div class="bus-confirmed__printonly">
+                <dt>Transação (Mercado Pago)</dt>
+                <dd><code id="confirmed-order">—</code></dd>
               </div>
             </dl>
 

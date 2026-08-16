@@ -30,6 +30,7 @@
   var confirmedPassengers = document.getElementById('confirmed-passengers');
   var confirmedChildren = document.getElementById('confirmed-children');
   var confirmedIssued = document.getElementById('confirmed-issued');
+  var confirmedOrder = document.getElementById('confirmed-order');
   var stillHereDialog = document.getElementById('still-here-dialog');
   var stillHereContinue = document.getElementById('still-here-continue');
   var stillHereCancel = document.getElementById('still-here-cancel');
@@ -306,6 +307,11 @@
       ? String(snap.registrationId).split('-')[0].toUpperCase()
       : '—';
 
+    if (confirmedOrder) {
+      // Identificador da transação no provedor, para conferência no painel.
+      confirmedOrder.textContent = snap.orderId || '—';
+    }
+
     if (confirmedIssued) {
       // Data de emissão do comprovante, no fuso do usuário.
       confirmedIssued.textContent = new Date().toLocaleString('pt-BR', {
@@ -399,6 +405,7 @@
     // precisar que o servidor devolva dados pessoais em uma consulta por UUID.
     confirmedSnapshot = {
       registrationId: payment.registrationId,
+      orderId: payment.orderId,
       totalAmount: payment.totalAmount,
       childrenCount: Number(childrenCount.value || 0),
       passengers: getPayload().passengers.map(function (p) { return p.full_name; })
