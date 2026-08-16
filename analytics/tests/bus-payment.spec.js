@@ -309,3 +309,60 @@ test('comprovante impresso sai em A4 monocromático, sem sobras da página', asy
   // Uma página só.
   expect((texto.match(/\/Type\s*\/Page[^s]/g) || []).length).toBe(1);
 });
+
+test('cabeçalho acompanha a etapa e o bloco 03 some com 1 passageiro', async ({ page }) => {
+  // O cabeçalho era fixo em "Quem vai embarcar com você?", texto que continuava
+  // pedindo dados de passageiro mesmo na tela de pagamento e na confirmação.
+  await page.route('**/api/create-pix-order', route => route.fulfill({
+    status: 201, contentType: 'application/json', body: JSON.stringify(fakePixResponse())
+  }));
+  let confirmado = false;
+  await page.route('**/api/bus-registration-status**', route => route.fulfill({
+    status: 200,
+    contentType: 'application/json',
+    body: JSON.stringify(confirmado
+      ? { status: 'confirmed', statusDetail: 'accredited' }
+      : { status: 'payment_pending', statusDetail: null })
+  }));
+
+  await page.goto('/onibus.html');
+
+  // Etapa 1.
+  await expect(page.locator('#step-heading')).toHaveAttribute('data-step', 'cadastro');
+  await expect(page.locator('#step-eyebrow')).toHaveText(/Etapa 1 de 3/);
+
+  // Com 1 passageiro o bloco "Dados dos passageiros" não existe na tela...
+  await expect(page.locator('#passengers-fieldset')).toBeHidden();
+  // ...e a descrição não pode prometer uma etapa que a pessoa não vai encontrar.
+  await expect(page.locator('#step-description')).toHaveText(/sozinho/i);
+
+  // Com grupo, o bloco volta e a descrição volta ao texto completo.
+  await page.locator('#passenger-count').fill('3');
+  await page.locator('#passenger-count').dispatchEvent('input');
+  await expect(page.locator('#passengers-fieldset')).toBeVisible();
+  await expect(page.locator('#step-description')).toHaveText(/CPF de cada pessoa/i);
+
+  await page.getByLabel('Nome completo (contato principal)').fill('Maria de Souza');
+  await page.getByLabel('CPF do contato principal').fill(primaryCpf);
+  await page.getByLabel('E-mail').fill('maria@example.com');
+  await page.getByLabel('WhatsApp').fill('11942554141');
+  await page.locator('#passenger-2-name').fill('Ana Souza Lima');
+  await page.locator('#passenger-2-cpf').fill('111.444.777-35');
+  await page.locator('#passenger-3-name').fill('Bruno Costa Reis');
+  await page.locator('#passenger-3-cpf').fill('153.509.460-56');
+  await page.getByLabel(/Li e concordo/i).check();
+  await page.getByRole('button', { name: /continuar para o pagamento pix/i }).click();
+
+  // Etapa 2.
+  await expect(page.locator('#payment-panel')).toBeVisible();
+  await expect(page.locator('#step-heading')).toHaveAttribute('data-step', 'pagamento');
+  await expect(page.locator('#step-eyebrow')).toHaveText(/Etapa 2 de 3/);
+  await expect(page.locator('#form-title')).toHaveText(/Pix/i);
+
+  // Etapa 3.
+  confirmado = true;
+  await expect(page.locator('#confirmation-panel')).toBeVisible({ timeout: 20000 });
+  await expect(page.locator('#step-heading')).toHaveAttribute('data-step', 'confirmacao');
+  await expect(page.locator('#step-eyebrow')).toHaveText(/Etapa 3 de 3/);
+  await expect(page.locator('#form-title')).toHaveText(/garantida/i);
+});

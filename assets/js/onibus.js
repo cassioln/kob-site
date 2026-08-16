@@ -11,6 +11,12 @@
   var passengerCount = document.getElementById('passenger-count');
   var childrenCount = document.getElementById('children-count');
   var passengerFields = document.getElementById('passenger-fields');
+  var passengersFieldset = document.getElementById('passengers-fieldset');
+  var stepHeading = document.getElementById('step-heading');
+  var stepEyebrow = document.getElementById('step-eyebrow');
+  var stepTitle = document.getElementById('form-title');
+  var stepDescription = document.getElementById('step-description');
+  var currentStep = 'cadastro';
   var total = document.getElementById('bus-total');
   var summaryCount = document.getElementById('bus-summary-count');
   var summaryPaying = document.getElementById('bus-summary-paying');
@@ -84,6 +90,49 @@
     return count + ' ' + (count === 1 ? singular : plural);
   }
 
+  // Cabeçalho por etapa: o texto acompanha o passo atual em vez de continuar
+  // pedindo dados de passageiro quando a pessoa já está pagando ou já confirmou.
+  var STEP_COPY = {
+    cadastro: {
+      eyebrow: 'Etapa 1 de 3 · Cadastro',
+      title: 'Quem vai embarcar com você?',
+      description: 'Comece pelo contato principal. Depois, informe o nome completo e o CPF de cada pessoa do grupo, incluindo você.'
+    },
+    pagamento: {
+      eyebrow: 'Etapa 2 de 3 · Pagamento',
+      title: 'Falta pouco: pague com Pix',
+      description: 'Abra o app do seu banco e escaneie o QR Code, ou use o Pix Copia e Cola. A confirmação aparece aqui automaticamente.'
+    },
+    confirmacao: {
+      eyebrow: 'Etapa 3 de 3 · Confirmação',
+      title: 'Sua vaga está garantida',
+      description: 'Pagamento confirmado e assentos reservados. Guarde o código da reserva — é ele que identifica seu grupo no embarque.'
+    }
+  };
+
+  function setStep(step) {
+    var copy = STEP_COPY[step];
+    if (!copy) return;
+    if (stepEyebrow) stepEyebrow.textContent = copy.eyebrow;
+    if (stepTitle) stepTitle.textContent = copy.title;
+    if (stepDescription) stepDescription.textContent = copy.description;
+    // Expõe a etapa no DOM para estilizar sem depender da ordem dos elementos.
+    if (stepHeading) stepHeading.dataset.step = step;
+    currentStep = step;
+    if (step === 'cadastro') syncStepDescription();
+  }
+
+  // No cadastro, a descrição depende do tamanho do grupo: com 1 passageiro o
+  // bloco "Dados dos passageiros" não existe, então prometer "informe o CPF de
+  // cada pessoa do grupo" descreve uma etapa que a pessoa não vai encontrar.
+  function syncStepDescription() {
+    if (!stepDescription || currentStep !== 'cadastro') return;
+    var count = Math.max(1, Number(passengerCount.value) || 1);
+    stepDescription.textContent = count === 1
+      ? 'Você viaja sozinho(a): basta preencher seus dados de contato abaixo. Se mudar de ideia, aumente o tamanho do grupo.'
+      : STEP_COPY.cadastro.description;
+  }
+
   function readPassengerValues() {
     Array.prototype.slice.call(passengerFields.querySelectorAll('[data-passenger-position]')).forEach(function (field) {
       var position = field.dataset.passengerPosition;
@@ -121,9 +170,13 @@
     }
 
     var extra = count - 1;
-    if (extra === 0) {
-      passengerFields.innerHTML = '<p class="bus-fieldset__note">Você está viajando sozinho(a). O contato principal já é o passageiro 1.</p>';
+    // Com 1 passageiro o bloco inteiro sai de cena: o contato principal já é o
+    // passageiro 1, então um fieldset com um aviso de "você está sozinho" é
+    // ruído. `hidden` remove da tela e da árvore de acessibilidade.
+    if (passengersFieldset) {
+      passengersFieldset.hidden = extra === 0;
     }
+    syncStepDescription();
     updateSummary();
   }
 
@@ -293,6 +346,7 @@
   var confirmedSnapshot = null;
 
   function showConfirmation(data) {
+    setStep('confirmacao');
     stopExpiryCountdown();
     closeStillHereDialog();
     window.clearTimeout(statusTimer);
@@ -401,6 +455,7 @@
 
   function showPayment(payment) {
     activeRegistrationId = payment.registrationId;
+    setStep('pagamento');
     // Guarda os nomes digitados agora para montar a confirmação depois, sem
     // precisar que o servidor devolva dados pessoais em uma consulta por UUID.
     confirmedSnapshot = {
@@ -501,5 +556,6 @@
     }
   });
 
+  setStep('cadastro');
   renderPassengers();
 })();
