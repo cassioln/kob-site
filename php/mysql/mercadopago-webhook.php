@@ -6,6 +6,7 @@ declare(strict_types=1);
 require dirname(__DIR__) . '/lib/validation.php';
 require __DIR__ . '/lib/db.php';
 require dirname(__DIR__) . '/lib/mercadopago.php';
+require dirname(__DIR__) . '/lib/mp-signature.php';
 
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
     json_response(405, ['error' => 'Método não permitido.']);
@@ -20,6 +21,22 @@ try {
         // responder 400 faz a URL parecer inválida na validação. Nada foi
         // alterado, então 200 é a resposta honesta.
         json_response(200, ['received' => true, 'ignored' => 'missing_order_id']);
+        exit;
+    }
+
+    // Origem da notificação. Descarta antes de gastar chamada ao provedor.
+    // A chave é POR AMBIENTE: o painel gera uma para teste e outra para
+    // produção. `mp_is_sandbox()` decide qual usar pela tag test_user da conta.
+    $config = bus_config();
+    $secret = mp_is_sandbox()
+        ? ($config['mp_webhook_secret_test'] ?? null)
+        : ($config['mp_webhook_secret'] ?? null);
+
+    $origem = mp_webhook_origin_check($_SERVER, $_GET, is_string($secret) ? $secret : null, (string) $orderId);
+    if (!$origem['ok']) {
+        // 401 sem detalhe: não confirma ao remetente o que faltou.
+        log_failure('mercadopago-webhook/origem', new RuntimeException('rejeitado: ' . $origem['motivo']));
+        json_response(401, ['error' => 'Notificação não autenticada.']);
         exit;
     }
 
