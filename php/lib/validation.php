@@ -183,11 +183,27 @@ function validate_bus_payload(mixed $payload): array
             }
         }
 
+        // E-mail do passageiro é OPCIONAL: só o contato principal é obrigado a
+        // informar. Quem informa recebe confirmação própria (sem QR Code nem
+        // código de pagamento, que vão apenas para quem pagou). Vazio vira null;
+        // preenchido é validado, porque guardar e-mail malformado faria o envio
+        // falhar depois, longe de onde o erro foi cometido.
+        $rawEmailPassenger = $entry['email'] ?? null;
+        $emailPassenger = null;
+        if (is_string($rawEmailPassenger) && trim($rawEmailPassenger) !== '') {
+            $candidato = trim($rawEmailPassenger);
+            if (!filter_var($candidato, FILTER_VALIDATE_EMAIL) || mb_strlen($candidato) > 255) {
+                throw new ValidationError("E-mail do passageiro {$position} inválido.");
+            }
+            $emailPassenger = mb_strtolower($candidato);
+        }
+
         $passengers[] = [
             'position' => $position,
             'fullName' => $fullName,
             'cpf' => $cpf,
             'whatsapp' => $whatsappPassenger,
+            'email' => $emailPassenger,
         ];
     }
 

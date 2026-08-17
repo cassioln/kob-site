@@ -68,7 +68,7 @@ try {
 
     $q = $pdo->query(
         'SELECT r.id, r.primary_name, r.primary_cpf, r.email, r.whatsapp, r.status,
-                r.status_detail, r.passenger_count, r.children_count, r.amount_cents,
+                r.status_detail, r.passenger_count, r.children_count, r.group_name, r.amount_cents,
                 r.mercadopago_order_id, r.confirmation_email_sent_at, r.created_at,
                 DATE_FORMAT(CONVERT_TZ(r.created_at, "+00:00", "-03:00"), "%d/%m/%Y %H:%i") AS criado_em,
                 DATE_FORMAT(CONVERT_TZ(r.paid_at, "+00:00", "-03:00"), "%d/%m/%Y %H:%i") AS pago_em
@@ -199,6 +199,7 @@ try {
             'contato_whatsapp' => bus_format_phone((string) $r['whatsapp']),
             'pagantes' => (int) $r['passenger_count'],
             'criancas' => (int) $r['children_count'],
+            'grupo' => ($r['group_name'] ?? '') !== '' ? $r['group_name'] : null,
             'valor' => number_format(((int) $r['amount_cents']) / 100, 2, ',', '.'),
             'valor_centavos' => (int) $r['amount_cents'],
             'criado_em' => $r['criado_em'],

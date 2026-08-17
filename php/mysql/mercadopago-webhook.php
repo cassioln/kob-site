@@ -8,6 +8,7 @@ require_once __DIR__ . '/lib/db.php';
 require_once dirname(__DIR__) . '/lib/mercadopago.php';
 require_once dirname(__DIR__) . '/lib/mp-signature.php';
 require_once __DIR__ . '/lib/confirmation-mailer.php';
+require_once __DIR__ . '/lib/group-assign.php';
 
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
     json_response(405, ['error' => 'Método não permitido.']);
@@ -100,6 +101,16 @@ try {
     // problema de e-mail, quando o pagamento já está gravado corretamente.
     $emailEnviado = null;
     if ($status === 'confirmed') {
+        // Nome do grupo ANTES do e-mail: a mensagem cita o nome, e atribuir
+        // depois faria o primeiro e-mail sair sem ele.
+        try {
+            bus_garantir_nome_grupo($pdo, (string) $registration['id']);
+        } catch (Throwable $grupoError) {
+            // Apelido do grupo não é requisito de embarque: se falhar, a reserva
+            // segue confirmada e o e-mail sai sem o nome.
+            log_failure('group-name', $grupoError);
+        }
+
         try {
             $envio = bus_send_confirmation_email($pdo, $config, (string) $registration['id']);
             $emailEnviado = $envio['ok'] ? 'enviado' : ($envio['motivo'] ?? 'nao_enviado');

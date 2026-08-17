@@ -47,9 +47,15 @@ function bus_receipt_pdf(array $dados): string
     $y -= 30;
     $linhas = [
         ['Código da reserva', $dados['code']],
-        ['Valor pago', 'R$ ' . str_replace('.', ',', $dados['amount'])],
-        ['Passageiros pagantes', (string) $dados['passengerCount']],
     ];
+    // Nome do grupo logo abaixo do código: é como a organização vai chamar o
+    // grupo no embarque, então precisa estar junto do identificador. Reserva de
+    // uma pessoa não tem grupo, e a linha simplesmente não aparece.
+    if (!empty($dados['groupName'])) {
+        $linhas[] = ['Grupo', $dados['groupName']];
+    }
+    $linhas[] = ['Valor pago', 'R$ ' . str_replace('.', ',', $dados['amount'])];
+    $linhas[] = ['Passageiros pagantes', (string) $dados['passengerCount']];
     if ($dados['childrenCount'] > 0) {
         $linhas[] = ['Crianças de até 5 anos', $dados['childrenCount'] . ' (não pagante, no colo)'];
     }

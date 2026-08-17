@@ -7,6 +7,7 @@ require_once dirname(__DIR__) . '/lib/validation.php';
 require_once __DIR__ . '/lib/db.php';
 require_once dirname(__DIR__) . '/lib/mercadopago.php';
 require_once __DIR__ . '/lib/confirmation-mailer.php';
+require_once __DIR__ . '/lib/group-assign.php';
 
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'GET') {
     json_response(405, ['error' => 'Método não permitido.']);
@@ -96,6 +97,16 @@ function reconcile_pending_registration(PDO $pdo, array $registration): ?array
     // Falha de e-mail não pode derrubar a consulta de status: a pessoa está com a
     // página aberta esperando ver a vaga confirmada.
     if ($status === 'confirmed') {
+        // Nome do grupo ANTES do e-mail: a mensagem precisa citar o nome, e
+        // atribuir depois faria o primeiro e-mail sair sem ele.
+        try {
+            bus_garantir_nome_grupo($pdo, (string) $registration['id']);
+        } catch (Throwable $grupoError) {
+            // Nome de grupo é apelido, não requisito de embarque: se falhar, a
+            // reserva segue confirmada e o e-mail sai sem o nome.
+            log_failure('group-name', $grupoError);
+        }
+
         try {
             bus_send_confirmation_email($pdo, bus_config(), (string) $registration['id']);
         } catch (Throwable $mailError) {
@@ -149,10 +160,23 @@ try {
         }
     }
 
+    // Nome do grupo, para a tela de confirmação exibir. É apelido de grupo, não
+    // dado pessoal: não identifica ninguém sozinho, então pode sair aqui. CPF,
+    // nome, e-mail e WhatsApp continuam fora.
+    $grupo = null;
+    if ($status === 'confirmed') {
+        $qg = $pdo->prepare('SELECT group_name FROM bus_registrations WHERE id = :id LIMIT 1');
+        $qg->execute([':id' => $id]);
+        $linha = $qg->fetch(PDO::FETCH_ASSOC);
+        $valor = $linha['group_name'] ?? null;
+        $grupo = ($valor !== null && $valor !== '') ? (string) $valor : null;
+    }
+
     // Só o estado operacional. Nunca CPF, nome, e-mail ou WhatsApp.
     json_response(200, [
         'status' => $status,
         'statusDetail' => $detail ?: null,
+        'groupName' => $grupo,
     ]);
 } catch (Throwable $error) {
     log_failure('bus-registration-status', $error);

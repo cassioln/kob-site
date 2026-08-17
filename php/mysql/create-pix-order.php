@@ -46,8 +46,8 @@ try {
     ]);
 
     $insertPassenger = $pdo->prepare(
-        'INSERT INTO bus_passengers (registration_id, position, full_name, cpf, whatsapp, is_primary)
-         VALUES (:rid, :pos, :name, :cpf, :whatsapp, :primary)'
+        'INSERT INTO bus_passengers (registration_id, position, full_name, cpf, whatsapp, email, is_primary)
+         VALUES (:rid, :pos, :name, :cpf, :whatsapp, :email, :primary)'
     );
     foreach ($data['passengers'] as $passenger) {
         // MySQL: booleano é TINYINT(1) — 1/0 com PARAM_INT, e não 'true'/'false'.
@@ -67,6 +67,19 @@ try {
             ($whatsappPassenger === null || $whatsappPassenger === '') ? PDO::PARAM_NULL : PDO::PARAM_STR
         );
         $insertPassenger->bindValue(':primary', $passenger['position'] === 1 ? 1 : 0, PDO::PARAM_INT);
+
+        // E-mail do passageiro é opcional. O passageiro 1 é o contato principal,
+        // então herda o e-mail da reserva: ele já é obrigatório no formulário e
+        // repetir o campo para a mesma pessoa seria pedir duas vezes o mesmo dado.
+        $emailPassenger = $passenger['email'] ?? null;
+        if ($passenger['position'] === 1 && ($emailPassenger === null || $emailPassenger === '')) {
+            $emailPassenger = $data['contact']['email'];
+        }
+        $insertPassenger->bindValue(
+            ':email',
+            ($emailPassenger === null || $emailPassenger === '') ? null : $emailPassenger,
+            ($emailPassenger === null || $emailPassenger === '') ? PDO::PARAM_NULL : PDO::PARAM_STR
+        );
         $insertPassenger->execute();
     }
     $pdo->commit();

@@ -123,9 +123,15 @@ function bus_boarding_pdf(array $reservas, ?array $logo = null): string
             [$blocos, $y] = $abrirPagina($numeroPagina);
         }
 
-        // Cabeçalho da reserva.
+        // Cabeçalho da reserva. O nome do grupo vem ao lado do código, separado
+        // por barra: na conferência a organização chama pelo nome do grupo, então
+        // ele precisa estar na mesma linha do identificador.
+        $tituloReserva = 'RESERVA ' . $r['code'];
+        if (!empty($r['group_name'])) {
+            $tituloReserva .= '  |  ' . $r['group_name'];
+        }
         $blocos[] = ['tipo' => 'texto', 'x' => $esq, 'y' => $y,
-                     'texto' => 'RESERVA ' . $r['code'], 'tamanho' => 10,
+                     'texto' => $tituloReserva, 'tamanho' => 10,
                      'negrito' => true, 'espacamento' => 0.5];
 
         $meta = sprintf(

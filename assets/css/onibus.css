@@ -1302,6 +1302,88 @@
   font-size: 0.88rem;
 }
 
+/*
+ * Cor do botão, decidida por medição e não por gosto:
+ *   #25D366 (verde claro da marca) com branco = 1.98:1  -> reprova
+ *   #128C7E (verde escuro oficial)  com branco = 4.14:1  -> passa só como texto
+ *                                                            grande, no limite
+ *   #0F7A6E (escolhido)             com branco = 5.21:1  -> passa em qualquer
+ *                                                            tamanho
+ * Ficou o #0F7A6E: continua na família de verdes do WhatsApp, então a marca é
+ * reconhecível, mas sem depender do texto ser grande para atingir o mínimo.
+ * O alvo de toque tem 48px de altura e o foco é visível.
+ */
+.bus-confirmed__group {
+  margin-top: var(--s-xl);
+  padding: 22px 24px;
+  /* Régua neutra em vez de faixa colorida na borda: a cor de destaque fica no
+     botão, que é a ação. Duas cores competindo diluem as duas. */
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r-sm);
+  background: var(--bus-paper);
+}
+
+.bus-confirmed__group[hidden] {
+  display: none;
+}
+
+.bus-confirmed__group h3 {
+  color: var(--bus-ink);
+  font-size: 1.05rem;
+}
+
+.bus-confirmed__group-name {
+  margin-top: var(--s-xs);
+  color: var(--bus-ink);
+  font-size: 0.95rem;
+}
+
+.bus-confirmed__group-name strong {
+  color: var(--bus-ink);
+  font-weight: 800;
+}
+
+.bus-confirmed__group-text {
+  margin-top: var(--s-xs);
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+  line-height: 1.65;
+}
+
+.bus-confirmed__wa-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 48px;
+  margin-top: var(--s-md);
+  padding: 12px 24px;
+  border-radius: var(--r-sm);
+  background-color: #0F7A6E;
+  color: #ffffff;
+  font-size: 1.125rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background-color var(--dur-state) var(--ease-quart), box-shadow var(--dur-state) var(--ease-quart);
+}
+
+.bus-confirmed__wa-btn:hover {
+  background-color: #0B5D52;
+  color: #ffffff;
+}
+
+.bus-confirmed__wa-btn:focus-visible {
+  outline: 2px solid #0F7A6E;
+  outline-offset: 3px;
+}
+
+.bus-confirmed__wa-btn svg {
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
+  flex-shrink: 0;
+}
+
 .bus-confirmed__next {
   margin-top:var(--s-xl);
   padding: 22px 24px;
@@ -1375,6 +1457,7 @@
   #bus-form,
   #payment-panel,
   #still-here-dialog,
+  .bus-confirmed__group,
   .bus-confirmed__actions,
   .bus-confirmed__seal,
   .bus-confirmed .eyebrow,

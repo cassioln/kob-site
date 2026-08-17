@@ -131,10 +131,12 @@ function xlsx_styles(): string
     $xfs = [
         // 0 padrao
         '<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>',
-        // 1 titulo
-        '<xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1" applyAlignment="1"><alignment vertical="center" indent="1"/></xf>',
-        // 2 subtitulo
-        '<xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment vertical="center" indent="1"/></xf>',
+        // 1 titulo — centralizado na faixa mesclada A1:<última>1. Sem
+        // horizontal="center" a mesclagem só alarga a caixa e o texto continua
+        // encostado na esquerda.
+        '<xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>',
+        // 2 subtitulo — também centralizado, para acompanhar o título mesclado.
+        '<xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>',
         // 3 cabecalho
         '<xf numFmtId="0" fontId="3" fillId="3" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf>',
         // 4 normal
@@ -162,6 +164,24 @@ function xlsx_styles(): string
 }
 
 /**
+ * Emite células vazias `<c/>` de `$de` a `$ate` (índices de coluna) numa linha.
+ *
+ * Existe por dois motivos: numa faixa mesclada, o Excel só aplica o preenchimento
+ * às células que EXISTEM no XML (a faixa fica meio pintada se elas faltarem); e
+ * numa linha de dados, a célula vazia é o que desenha a borda — sem ela a moldura
+ * da tabela fica com furos.
+ */
+function xlsx_celulas_vazias(int $de, int $ate, int $linha, int $estilo): string
+{
+    $xml = '';
+    for ($i = $de; $i <= $ate; $i++) {
+        $xml .= '<c r="' . xlsx_coluna_letra($i) . $linha . '" s="' . $estilo . '"/>';
+    }
+
+    return $xml;
+}
+
+/**
  * Gera o .xlsx.
  *
  * @param array{
@@ -178,22 +198,35 @@ function xlsx_build(array $planilha): string
     $ultimaLetra = xlsx_coluna_letra(max(0, $totalColunas - 1));
 
     $linhasXml = [];
+    $mesclagens = [];
     $numero = 1;
 
     // Título e subtítulo mesclados na largura da tabela: dão contexto quando a
-    // planilha circula por e-mail, longe do painel que a gerou.
+    // planilha circula por e-mail, longe do painel que a gerou. A mesclagem é
+    // declarada em <mergeCells>; sem ela o texto só "transborda" visualmente e
+    // a primeira célula com conteúdo à direita o corta.
     if (!empty($planilha['titulo'])) {
         $linhasXml[] = '<row r="' . $numero . '" ht="30" customHeight="1">'
             . '<c r="A' . $numero . '" s="' . $indices['titulo'] . '" t="inlineStr">'
             . '<is><t>' . xlsx_texto((string) $planilha['titulo']) . '</t></is></c>'
+            // As células mescladas ainda precisam existir com o mesmo estilo, ou
+            // o Excel pinta o fundo apenas na primeira coluna da faixa.
+            . xlsx_celulas_vazias(1, $totalColunas - 1, $numero, $indices['titulo'])
             . '</row>';
+        if ($totalColunas > 1) {
+            $mesclagens[] = 'A' . $numero . ':' . $ultimaLetra . $numero;
+        }
         $numero++;
     }
     if (!empty($planilha['subtitulo'])) {
         $linhasXml[] = '<row r="' . $numero . '" ht="18" customHeight="1">'
             . '<c r="A' . $numero . '" s="' . $indices['subtitulo'] . '" t="inlineStr">'
             . '<is><t>' . xlsx_texto((string) $planilha['subtitulo']) . '</t></is></c>'
+            . xlsx_celulas_vazias(1, $totalColunas - 1, $numero, $indices['subtitulo'])
             . '</row>';
+        if ($totalColunas > 1) {
+            $mesclagens[] = 'A' . $numero . ':' . $ultimaLetra . $numero;
+        }
         $numero++;
     }
 
@@ -239,6 +272,16 @@ function xlsx_build(array $planilha): string
             . '" width="' . (float) ($col['largura'] ?? 14) . '" customWidth="1"/>';
     }
 
+    // <mergeCells> vem DEPOIS de <sheetData> e ANTES de <autoFilter>: a ordem
+    // dos elementos é fixa no schema OOXML, e fora dela o Excel recusa o arquivo.
+    $mergeXml = $mesclagens
+        ? '<mergeCells count="' . count($mesclagens) . '">'
+            . implode('', array_map(static function (string $ref): string {
+                return '<mergeCell ref="' . $ref . '"/>';
+            }, $mesclagens))
+            . '</mergeCells>'
+        : '';
+
     // Congela abaixo do cabeçalho para rolar a lista sem perder os títulos.
     $sheet = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
         . '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
@@ -249,6 +292,7 @@ function xlsx_build(array $planilha): string
         . '<sheetFormatPr defaultRowHeight="16"/>'
         . '<cols>' . implode('', $cols) . '</cols>'
         . '<sheetData>' . implode('', $linhasXml) . '</sheetData>'
+        . $mergeXml
         . '<autoFilter ref="A' . $linhaCabecalho . ':' . $ultimaLetra . $ultimaLinha . '"/>'
         . '</worksheet>';
 

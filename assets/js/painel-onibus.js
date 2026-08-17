@@ -90,7 +90,7 @@
           var alvo = [
             reserva.code, reserva.contato, reserva.email, reserva.contato_whatsapp,
             reserva.contato_cpf, p.nome, p.cpf || '', p.whatsapp || '',
-            reserva.order_id || '', reserva.status_rotulo
+            reserva.order_id || '', reserva.status_rotulo, reserva.grupo || ''
           ].join(' ').toLowerCase();
           if (alvo.indexOf(termo) === -1) return;
         }
@@ -116,7 +116,7 @@
         var td = document.createElement('td');
         td.dataset.rotulo = rotulo;
         if (classe) td.className = classe;
-        if (conteudo == null) {
+        if (conteudo == null || conteudo === '') {
           td.textContent = '';
         } else if (typeof conteudo === 'string') {
           td.textContent = conteudo;
@@ -127,13 +127,35 @@
         return td;
       }
 
-      // Reserva, Grupo, Status e Pago em aparecem SÓ na primeira linha do grupo.
-      // Repetir em cada passageiro triplicava a mesma informação e fazia o olho
-      // reler dado idêntico; vazio deixa o bloco visualmente coeso.
-      var reservaSpan = document.createElement('span');
-      reservaSpan.className = 'tabela__codigo';
-      reservaSpan.textContent = primeiro ? r.code : '';
-      celula('Reserva', reservaSpan);
+      // Reserva, Grupo, Status e Pago em aparecem SO na primeira linha do grupo
+      // para evitar duplicar informacoes visuais identicas.
+      if (primeiro) {
+        var blocoReserva = document.createElement('div');
+        blocoReserva.className = 'tabela__bloco-reserva';
+
+        var reservaSpan = document.createElement('span');
+        reservaSpan.className = 'tabela__codigo';
+        reservaSpan.textContent = r.code;
+        blocoReserva.appendChild(reservaSpan);
+
+        var totalPessoas = (r.pagantes || 0) + (r.criancas || 0);
+        // Exibe a contagem de integrantes abaixo do codigo apenas se for maior que 1,
+        // pois em reservas individuais a informacao e redundante.
+        if (totalPessoas > 1) {
+          var qtdDiv = document.createElement('div');
+          qtdDiv.className = 'tabela__qtd-reserva';
+          var textoQtd = (r.pagantes === 1 ? '1 pessoa' : r.pagantes + ' pessoas');
+          if (r.criancas > 0) {
+            textoQtd += ' + ' + r.criancas + ' colo';
+          }
+          qtdDiv.textContent = textoQtd;
+          blocoReserva.appendChild(qtdDiv);
+        }
+
+        celula('Reserva', blocoReserva);
+      } else {
+        celula('Reserva', '');
+      }
 
       // Passageiro: número, nome, selo de responsável e aviso de nova reserva.
       var nomeWrap = document.createElement('div');
@@ -188,10 +210,10 @@
         celula('WhatsApp', 'não informado', 'tabela__tel tabela__tel--vazio');
       }
 
-      var grupo = primeiro
-        ? r.pagantes + (r.criancas > 0 ? ' + ' + r.criancas + ' colo' : '')
-        : '';
-      celula('Grupo', grupo, 'tabela__num');
+      // O nome do grupo substitui a antiga contagem de pessoas e e exibido apenas na
+      // primeira linha da reserva para manter o alinhamento visual do grupo.
+      var nomeGrupo = (primeiro && r.grupo) ? r.grupo : '';
+      celula('Grupo', nomeGrupo, 'tabela__grupo');
 
       celula('Status', primeiro ? badge(r.status_rotulo, r.status_tom) : null);
 

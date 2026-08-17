@@ -44,6 +44,9 @@ CREATE TABLE IF NOT EXISTS bus_registrations (
   whatsapp               VARCHAR(32)     NOT NULL,
   passenger_count        INT             NOT NULL,
   children_count         INT             NOT NULL DEFAULT 0,
+  -- Nome do grupo, para reservas com 2+ pessoas (pagantes ou criancas de colo).
+  -- NULL significa reserva individual, que nao recebe apelido.
+  group_name             VARCHAR(64)     NULL,
   amount_cents           INT             NOT NULL,
   currency               CHAR(3)         NOT NULL DEFAULT 'BRL',
   -- ENUM em vez de TEXT + CHECK: o ENUM é aplicado tanto no 5.7 quanto no 8.0.
@@ -65,12 +68,16 @@ CREATE TABLE IF NOT EXISTS bus_registrations (
   -- Idempotencia do e-mail de confirmacao: reentrega de webhook nao pode gerar
   -- um segundo e-mail para a mesma reserva.
   confirmation_email_sent_at DATETIME NULL COMMENT 'UTC',
+  admin_email_sent_at    DATETIME        NULL COMMENT 'UTC',
   reconciled_at          DATETIME        NULL COMMENT 'UTC',
   created_at             DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'UTC',
   updated_at             DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'UTC',
 
   PRIMARY KEY (id),
   UNIQUE KEY bus_registrations_external_reference_key (external_reference),
+  -- Nome do grupo nao pode repetir. NULL nao conflita com NULL no MySQL, entao
+  -- varias reservas individuais convivem sem problema.
+  UNIQUE KEY bus_registrations_group_name_key (group_name),
   -- UNIQUE no MySQL permite múltiplos NULL — comportamento desejado aqui,
   -- idêntico ao PostgreSQL.
   UNIQUE KEY bus_registrations_mercadopago_order_id_key (mercadopago_order_id),
@@ -106,6 +113,10 @@ CREATE TABLE IF NOT EXISTS bus_passengers (
   -- Opcional: so o contato principal tem WhatsApp obrigatorio. Aqui serve para a
   -- organizacao falar direto com quem embarca, quando a pessoa quiser informar.
   whatsapp        VARCHAR(11)      NULL,
+  -- E-mail OPCIONAL do passageiro. Se presente, ele recebe confirmacao propria
+  -- (sem QR Code nem codigo de pagamento, que so vao para o contato principal).
+  email           VARCHAR(255)     NULL,
+  confirmation_email_sent_at DATETIME NULL COMMENT 'UTC',
   is_primary      TINYINT(1)       NOT NULL DEFAULT 0,
   created_at      DATETIME         NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'UTC',
 

@@ -35,6 +35,8 @@
   var confirmedCode = document.getElementById('confirmed-code');
   var confirmedPassengers = document.getElementById('confirmed-passengers');
   var confirmedChildren = document.getElementById('confirmed-children');
+  var confirmedGroup = document.getElementById('confirmed-group');
+  var confirmedGroupName = document.getElementById('confirmed-group-name');
   var confirmedIssued = document.getElementById('confirmed-issued');
   var confirmedOrder = document.getElementById('confirmed-order');
   var stillHereDialog = document.getElementById('still-here-dialog');
@@ -137,10 +139,12 @@
     Array.prototype.slice.call(passengerFields.querySelectorAll('[data-passenger-position]')).forEach(function (field) {
       var position = field.dataset.passengerPosition;
       var wa = field.querySelector('[data-passenger-whatsapp]');
+      var email = field.querySelector('[data-passenger-email]');
       savedPassengers[position] = {
         fullName: field.querySelector('[data-passenger-name]').value,
         cpf: field.querySelector('[data-passenger-cpf]').value,
-        whatsapp: wa ? wa.value : ''
+        whatsapp: wa ? wa.value : '',
+        email: email ? email.value : ''
       };
     });
   }
@@ -152,7 +156,7 @@
     passengerFields.replaceChildren();
 
     for (var position = 2; position <= count; position += 1) {
-      var values = savedPassengers[position] || { fullName: '', cpf: '', whatsapp: '' };
+      var values = savedPassengers[position] || { fullName: '', cpf: '', whatsapp: '', email: '' };
       var wrapper = document.createElement('div');
       wrapper.className = 'bus-passenger';
       wrapper.dataset.passengerPosition = position;
@@ -166,6 +170,9 @@
         // label, para a pessoa não travar achando que precisa preencher.
         + '<div class="bus-field"><label for="passenger-' + position + '-whatsapp">WhatsApp do passageiro ' + position + ' <small>(opcional)</small></label>'
         + '<input id="passenger-' + position + '-whatsapp" aria-label="WhatsApp do passageiro ' + position + ' (opcional)" data-passenger-whatsapp type="tel" inputmode="tel" autocomplete="off" maxlength="15" placeholder="(11) 90000-0000"></div>'
+        // E-mail opcional para passageiros adicionais: segue o mesmo padrao visual do WhatsApp opcional.
+        + '<div class="bus-field"><label for="passenger-' + position + '-email">E-mail do passageiro ' + position + ' <small>(opcional)</small></label>'
+        + '<input id="passenger-' + position + '-email" aria-label="E-mail do passageiro ' + position + ' (opcional)" data-passenger-email type="email" autocomplete="email"></div>'
         + '</div>';
       passengerFields.appendChild(wrapper);
       wrapper.querySelector('[data-passenger-name]').value = values.fullName || '';
@@ -178,6 +185,8 @@
       waField.addEventListener('input', function (event) {
         event.currentTarget.value = maskWhatsapp(event.currentTarget.value);
       });
+      var emailField = wrapper.querySelector('[data-passenger-email]');
+      emailField.value = values.email || '';
     }
 
     var extra = count - 1;
@@ -255,11 +264,15 @@
     for (var position = 2; position <= count; position += 1) {
       var nameField = document.getElementById('passenger-' + position + '-name');
       var cpfField = document.getElementById('passenger-' + position + '-cpf');
+      var emailField = document.getElementById('passenger-' + position + '-email');
       if (!nameField || normalizeFullName(nameField.value).split(' ').length < 2) {
         return invalid('Preencha os dados do passageiro ' + position + '.', nameField);
       }
       if (!cpfField || !validCpf(cpfField.value)) {
         return invalid('Informe um CPF válido para o passageiro ' + position + '.', cpfField);
+      }
+      if (emailField && emailField.value.trim() !== '' && !emailField.validity.valid) {
+        return invalid('Informe um e-mail válido para o passageiro ' + position + '.', emailField);
       }
     }
 
@@ -277,17 +290,18 @@
     var passengers = [{
       full_name: normalizeFullName(primaryName.value),
       cpf: digits(primaryCpf.value),
-      // O passageiro 1 É o contato principal, então o WhatsApp dele é o do
-      // contato — enviado aqui também para que a lista de embarque tenha um
-      // telefone por passageiro sem depender de join com bus_registrations.
-      whatsapp: digits(primaryWhatsapp.value)
+      // O passageiro 1 e o contato principal, entao o WhatsApp e o E-mail sao os do contato.
+      whatsapp: digits(primaryWhatsapp.value),
+      email: primaryEmail.value.trim()
     }];
     for (var position = 2; position <= count; position += 1) {
       var waInput = document.getElementById('passenger-' + position + '-whatsapp');
+      var emailInput = document.getElementById('passenger-' + position + '-email');
       passengers.push({
         full_name: normalizeFullName(document.getElementById('passenger-' + position + '-name').value),
         cpf: digits(document.getElementById('passenger-' + position + '-cpf').value),
-        whatsapp: waInput ? digits(waInput.value) : ''
+        whatsapp: waInput ? digits(waInput.value) : '',
+        email: emailInput ? emailInput.value.trim() : ''
       });
     }
     return {
@@ -417,6 +431,18 @@
         : '+ ' + kids + ' crianças de até 5 anos, no colo de um responsável (sem cobrança).';
     } else {
       confirmedChildren.hidden = true;
+    }
+
+    // Exibe o bloco do grupo exclusivo apenas se houver um nome de grupo definido no servidor.
+    // Reservas individuais nao possuem grupo (groupName e null ou vazio), mantendo o bloco oculto.
+    var gName = data && typeof data.groupName === 'string' ? data.groupName.trim() : '';
+    if (confirmedGroup && confirmedGroupName) {
+      if (gName.length > 0) {
+        confirmedGroupName.textContent = gName;
+        confirmedGroup.hidden = false;
+      } else {
+        confirmedGroup.hidden = true;
+      }
     }
 
     confirmationPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });

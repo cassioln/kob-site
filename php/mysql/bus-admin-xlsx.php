@@ -59,7 +59,7 @@ try {
 
     $q = $pdo->query(
         'SELECT r.id, r.primary_name, r.email, r.whatsapp, r.status,
-                r.passenger_count, r.children_count, r.amount_cents,
+                r.passenger_count, r.children_count, r.group_name, r.amount_cents,
                 r.mercadopago_order_id,
                 DATE_FORMAT(CONVERT_TZ(r.paid_at, "+00:00", "-03:00"), "%d/%m/%Y %H:%i") AS pago_em,
                 DATE_FORMAT(CONVERT_TZ(r.created_at, "+00:00", "-03:00"), "%d/%m/%Y %H:%i") AS criado_em
@@ -84,7 +84,8 @@ try {
         ['titulo' => 'CPF', 'largura' => 16],
         ['titulo' => 'WhatsApp', 'largura' => 17],
         ['titulo' => 'Responsável', 'largura' => 12],
-        ['titulo' => 'Grupo', 'largura' => 10],
+        ['titulo' => 'Grupo', 'largura' => 22],
+        ['titulo' => 'Qtd Pessoas', 'largura' => 13],
         ['titulo' => 'Valor pago', 'largura' => 13],
         ['titulo' => 'Status', 'largura' => 22],
         ['titulo' => 'Pago em', 'largura' => 17],
@@ -146,6 +147,8 @@ try {
                     bus_format_cpf((string) ($p['cpf'] ?? '')),
                     ($p['whatsapp'] ?? '') !== '' ? bus_format_phone((string) $p['whatsapp']) : '',
                     $responsavel ? 'Sim' : '',
+                    // Nome do grupo, vazio quando a reserva e individual.
+                    $primeiro ? ($r['group_name'] ?? '') : '',
                     $primeiro ? $grupo : '',
                     $primeiro ? $valor : '',
                     $primeiro

@@ -38,7 +38,7 @@ test('cadastra o grupo, calcula o valor e exibe o Pix', async ({ page }) => {
 
   await page.getByLabel('Nome completo (contato principal)').fill('Maria de Souza');
   await page.getByLabel('CPF do contato principal').fill(primaryCpf);
-  await page.getByLabel('E-mail').fill('maria@example.com');
+  await page.locator('#primary-email').fill('maria@example.com');
   await page.locator('#primary-whatsapp').fill('11942554141');
   await page.getByLabel(/Quantas pessoas vão com você/i).fill('3');
   await page.getByLabel(/Crianças de até 5 anos/i).fill('1');
@@ -100,7 +100,7 @@ test('confirma a vaga automaticamente quando o pagamento é identificado', async
   await page.goto('/onibus.html');
   await page.getByLabel('Nome completo (contato principal)').fill('Maria de Souza');
   await page.getByLabel('CPF do contato principal').fill(primaryCpf);
-  await page.getByLabel('E-mail').fill('maria@example.com');
+  await page.locator('#primary-email').fill('maria@example.com');
   await page.locator('#primary-whatsapp').fill('11942554141');
   await page.getByLabel(/Li e concordo com as condições/i).check();
   await page.getByRole('button', { name: /continuar para o pagamento pix/i }).click();
@@ -153,7 +153,7 @@ test('janela de 10 minutos abre o aviso e não confirma nada sozinha', async ({ 
   await page.goto('/onibus.html');
   await page.getByLabel('Nome completo (contato principal)').fill('Maria de Souza');
   await page.getByLabel('CPF do contato principal').fill(primaryCpf);
-  await page.getByLabel('E-mail').fill('maria@example.com');
+  await page.locator('#primary-email').fill('maria@example.com');
   await page.locator('#primary-whatsapp').fill('11942554141');
   await page.getByLabel(/Li e concordo com as condições/i).check();
   await page.getByRole('button', { name: /continuar para o pagamento pix/i }).click();
@@ -196,7 +196,7 @@ test('impede gerar pagamento sem preencher passageiros adicionais', async ({ pag
   await page.goto('/onibus.html');
   await page.getByLabel('Nome completo (contato principal)').fill('Maria de Souza');
   await page.getByLabel('CPF do contato principal').fill(primaryCpf);
-  await page.getByLabel('E-mail').fill('maria@example.com');
+  await page.locator('#primary-email').fill('maria@example.com');
   await page.locator('#primary-whatsapp').fill('11942554141');
   await page.getByLabel(/Quantas pessoas vão com você/i).fill('2');
   await page.getByLabel(/Li e concordo com as condições/i).check();
@@ -234,7 +234,7 @@ test('comprovante impresso sai em A4 monocromático, sem sobras da página', asy
   await page.goto('/onibus.html');
   await page.getByLabel('Nome completo (contato principal)').fill('Maria de Souza');
   await page.getByLabel('CPF do contato principal').fill(primaryCpf);
-  await page.getByLabel('E-mail').fill('maria@example.com');
+  await page.locator('#primary-email').fill('maria@example.com');
   await page.locator('#primary-whatsapp').fill('11942554141');
   await page.getByLabel(/Li e concordo com as condições/i).check();
   await page.getByRole('button', { name: /continuar para o pagamento pix/i }).click();
@@ -344,7 +344,7 @@ test('cabeçalho acompanha a etapa e o bloco 03 some com 1 passageiro', async ({
 
   await page.getByLabel('Nome completo (contato principal)').fill('Maria de Souza');
   await page.getByLabel('CPF do contato principal').fill(primaryCpf);
-  await page.getByLabel('E-mail').fill('maria@example.com');
+  await page.locator('#primary-email').fill('maria@example.com');
   await page.locator('#primary-whatsapp').fill('11942554141');
   await page.locator('#passenger-2-name').fill('Ana Souza Lima');
   await page.locator('#passenger-2-cpf').fill('111.444.777-35');
@@ -410,7 +410,7 @@ test('layout do checkout: ritmo por escala e colunas do painel alinhadas', async
 
   await page.getByLabel('Nome completo (contato principal)').fill('Maria de Souza');
   await page.getByLabel('CPF do contato principal').fill(primaryCpf);
-  await page.getByLabel('E-mail').fill('maria@example.com');
+  await page.locator('#primary-email').fill('maria@example.com');
   await page.locator('#primary-whatsapp').fill('11942554141');
   await page.getByLabel(/Li e concordo/i).check();
   await page.getByRole('button', { name: /continuar para o pagamento pix/i }).click();
@@ -482,23 +482,30 @@ test('contato em 3 linhas e WhatsApp opcional nos passageiros extras', async ({ 
     await expect(campo).toBeVisible();
     expect(await campo.getAttribute('required')).toBeNull();
     await expect(page.locator(`label[for="passenger-${pos}-whatsapp"]`)).toContainText(/opcional/i);
+
+    const campoEmail = page.locator(`#passenger-${pos}-email`);
+    await expect(campoEmail).toBeVisible();
+    expect(await campoEmail.getAttribute('required')).toBeNull();
+    await expect(page.locator(`label[for="passenger-${pos}-email"]`)).toContainText(/opcional/i);
   }
 
   // Máscara igual à do contato principal.
   await page.locator('#passenger-2-whatsapp').fill('11912345678');
   await page.locator('#passenger-2-whatsapp').dispatchEvent('input');
   await expect(page.locator('#passenger-2-whatsapp')).toHaveValue('(11) 91234-5678');
+  await page.locator('#passenger-2-email').fill('ana@example.com');
 
   // Mudar a quantidade não pode apagar o que já foi digitado.
   await page.locator('#passenger-count').fill('4');
   await page.locator('#passenger-count').dispatchEvent('input');
   await expect(page.locator('#passenger-2-whatsapp')).toHaveValue('(11) 91234-5678');
+  await expect(page.locator('#passenger-2-email')).toHaveValue('ana@example.com');
   await page.locator('#passenger-count').fill('3');
   await page.locator('#passenger-count').dispatchEvent('input');
 
   await page.getByLabel('Nome completo (contato principal)').fill('Maria de Souza');
   await page.getByLabel('CPF do contato principal').fill(primaryCpf);
-  await page.getByLabel('E-mail').fill('maria@example.com');
+  await page.locator('#primary-email').fill('maria@example.com');
   await page.locator('#primary-whatsapp').fill('11942554141');
   await page.locator('#passenger-2-name').fill('Ana Souza Lima');
   await page.locator('#passenger-2-cpf').fill('111.444.777-35');
@@ -510,5 +517,31 @@ test('contato em 3 linhas e WhatsApp opcional nos passageiros extras', async ({ 
   await expect(page.locator('#payment-panel')).toBeVisible();
 
   expect(enviado.passengers[1].whatsapp).toBe('11912345678');
+  expect(enviado.passengers[1].email).toBe('ana@example.com');
   expect(enviado.passengers[2].whatsapp).toBe('');
+  expect(enviado.passengers[2].email).toBe('');
+});
+
+test('exibe o bloco e nome do grupo na confirmação apenas quando groupName está presente', async ({ page }) => {
+  await page.route('**/api/create-pix-order', route => route.fulfill({
+    status: 201, contentType: 'application/json', body: JSON.stringify(fakePixResponse())
+  }));
+  await page.route('**/api/bus-registration-status**', route => route.fulfill({
+    status: 200,
+    contentType: 'application/json',
+    body: JSON.stringify({ status: 'confirmed', groupName: 'Wingspan' })
+  }));
+
+  await page.goto('/onibus.html');
+  await page.getByLabel('Nome completo (contato principal)').fill('Maria de Souza');
+  await page.getByLabel('CPF do contato principal').fill(primaryCpf);
+  await page.locator('#primary-email').fill('maria@example.com');
+  await page.locator('#primary-whatsapp').fill('11942554141');
+  await page.getByLabel(/Li e concordo/i).check();
+  await page.getByRole('button', { name: /continuar para o pagamento pix/i }).click();
+
+  await expect(page.locator('#confirmation-panel')).toBeVisible({ timeout: 15000 });
+  await expect(page.locator('#confirmed-group')).toBeVisible();
+  await expect(page.locator('#confirmed-group-name')).toHaveText('Wingspan');
+  await expect(page.locator('.bus-confirmed__wa-btn')).toHaveAttribute('href', 'https://chat.whatsapp.com/DxTVSZrcKXa6WopHZkGL5N?s=cl&p=i&ilr=4');
 });

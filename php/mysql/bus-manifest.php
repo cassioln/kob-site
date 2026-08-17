@@ -43,7 +43,7 @@ try {
     // organização a contar passageiro que talvez não apareça.
     $q = $pdo->query(
         'SELECT r.id, r.primary_name, r.email, r.whatsapp AS contato_whatsapp,
-                r.passenger_count, r.children_count, r.amount_cents,
+                r.passenger_count, r.children_count, r.group_name, r.amount_cents,
                 r.mercadopago_order_id,
                 DATE_FORMAT(CONVERT_TZ(r.paid_at, "+00:00", "-03:00"), "%d/%m/%Y %H:%i") AS pago_em,
                 p.`position`, p.full_name AS passageiro, p.cpf AS passageiro_cpf,
@@ -64,6 +64,7 @@ try {
         if (!isset($grupos[$code])) {
             $grupos[$code] = [
                 'code' => $code,
+                'group_name' => $l['group_name'] ?? null,
                 'contato' => $l['primary_name'],
                 'email' => $l['email'],
                 'contato_whatsapp' => bus_format_phone((string) $l['contato_whatsapp']),

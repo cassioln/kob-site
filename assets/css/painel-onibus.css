@@ -556,6 +556,27 @@
   letter-spacing: 0.04em;
 }
 
+/* Bloco do código da reserva com a contagem de pessoas logo abaixo. */
+.tabela__bloco-reserva {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* Quantidade de pessoas exibida em letra menor e tom fraco para nao competir com dados principais. */
+.tabela__qtd-reserva {
+  margin-top: 2px;
+  color: var(--p-tinta-fraca);
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 1.25;
+}
+
+/* Destaque tipografico leve ao nome do grupo, facilitando a chamada na porta do onibus. */
+.tabela__grupo {
+  font-weight: 600;
+}
+
 .tabela__nome {
   font-weight: 550;
 }
@@ -707,6 +728,17 @@
      e-mail/código: aplicado no nome, ele quebraria "Nascimento" no meio. */
   .tabela tbody td > * {
     min-width: 0;
+  }
+
+  /* Alinha a quantidade abaixo do codigo da reserva a direita no cartao mobile. */
+  .tabela__bloco-reserva {
+    align-items: flex-end;
+    text-align: right;
+  }
+
+  /* Oculta celulas sem conteudo para nao exibir linhas orfas de rotulo no mobile. */
+  .tabela tbody td:empty {
+    display: none;
   }
 
   /* A célula do contato tem nome + telefone + e-mail. Empilha em vez de disputar

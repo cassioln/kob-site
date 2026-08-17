@@ -24,6 +24,8 @@ declare(strict_types=1);
  *   passengers: list<array{name: string, whatsapp: ?string}>, issuedAt: string
  * } $dados
  */
+require_once __DIR__ . '/email-parts.php';
+
 function bus_confirmation_email_html(array $dados): string
 {
     $e = static fn (string $v): string => htmlspecialchars($v, ENT_QUOTES, 'UTF-8');
@@ -104,14 +106,24 @@ function bus_confirmation_email_html(array $dados): string
       <td align="center" style="padding:32px 16px;">
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;">
 
-          <!-- Cabeçalho. É a assinatura da marca no topo da mensagem, então tem
-               tamanho de título e não de rótulo. O tracking cai de 0.14em para
-               0.06em: espaçamento largo funciona em texto de 11px, mas em 20px
-               espalha as palavras e enfraquece o conjunto. -->
+          <!-- Cabeçalho padronizado com os outros e-mails da reserva: logo
+               centralizado no topo, título e subtítulo abaixo. O logo vem por URL
+               absoluta porque `cid:` inline depende do cliente montar o
+               multipart/related, e Gmail no navegador costuma bloquear. -->
           <tr>
-            <td style="padding:0 0 26px;font:700 20px/1.25 Arial,Helvetica,sans-serif;color:#ffffff;letter-spacing:0.06em;text-transform:uppercase;">
-              Kriativos On Board 2026<br>
-              <span style="color:#29c3f5;">Transporte fretado</span>
+            <td style="padding:0 0 22px;text-align:center;">
+              <img src="' . BUS_EMAIL_LOGO . '" alt="Kriativos On Board" width="168"
+                   style="display:inline-block;width:168px;max-width:60%;height:auto;border:0;">
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:0 0 6px;text-align:center;font:700 24px/1.25 Arial,Helvetica,sans-serif;color:#ffffff;">
+              Kriativos On Board 2026
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:0 0 26px;text-align:center;font:400 14px/1.5 Arial,Helvetica,sans-serif;color:#29c3f5;">
+              Transporte fretado
             </td>
           </tr>
 
@@ -184,6 +196,8 @@ function bus_confirmation_email_html(array $dados): string
               </table>
             </td>
           </tr>
+
+          ' . bus_email_bloco_grupo($dados['groupName'] ?? null) . '
 
           <!-- Aviso de contratação. Fica sobre o fundo escuro do corpo do
                e-mail, então o texto é claro; um fundo translúcido claro aqui
@@ -271,6 +285,10 @@ function bus_confirmation_email_text(array $dados): string
     $linhas[] = '';
     $linhas[] = 'O onibus so sera contratado se o minimo de passageiros for atingido.';
     $linhas[] = 'Caso contrario, o valor e devolvido integralmente.';
+    $linhas[] = '';
+    // Mesma informacao do HTML: quem le em texto puro nao pode receber menos.
+    $linhas = array_merge($linhas, bus_email_grupo_texto($dados['groupName'] ?? null));
+
     $linhas[] = '';
     $linhas[] = 'Ficou com alguma duvida? Responda este e-mail que a gente te ajuda.';
     $linhas[] = 'Se for algo urgente, chama no WhatsApp da organizacao:';
