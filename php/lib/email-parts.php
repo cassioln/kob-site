@@ -24,8 +24,21 @@ declare(strict_types=1);
 /** Link do grupo oficial de WhatsApp do fretado. */
 const BUS_GRUPO_WHATSAPP = 'https://chat.whatsapp.com/DxTVSZrcKXa6WopHZkGL5N?s=cl&p=i&ilr=4';
 
-/** Logo por URL absoluta (ver comentário no topo). */
-const BUS_EMAIL_LOGO = 'https://kriativosonboard.com.br/assets/images/brand/kriativos-on-board-logo.webp';
+/**
+ * Logo por URL absoluta, em PNG.
+ *
+ * PNG e nao WebP: cliente de e-mail NÃO suporta WebP. Gmail, Outlook e Apple
+ * Mail não renderizam `image/webp` em <img>, e o resultado é o logo não aparecer
+ * (foi o que aconteceu no teste real). PNG com canal alfa é o único formato com
+ * transparência que funciona em todos eles.
+ *
+ * O arquivo tem 336px de largura (2x os 168px de exibição) para não serrilhar em
+ * tela retina, sem carregar os 1200px do original num e-mail.
+ */
+const BUS_EMAIL_LOGO = 'https://kriativosonboard.com.br/assets/images/brand/kriativos-on-board-logo-email.png';
+
+/** Ícone do WhatsApp para o botão do grupo, em PNG pelo mesmo motivo do logo. */
+const BUS_EMAIL_ICONE_WA = 'https://kriativosonboard.com.br/assets/images/brand/whatsapp-icon-white.png';
 
 /** Escapa para HTML. Todo dado que vem do banco passa por aqui. */
 function bus_email_e(?string $valor): string
@@ -115,8 +128,23 @@ function bus_email_bloco_grupo(?string $nomeGrupo): string
                 <tr>
                   <td style="background:#0F7A6E;border-radius:8px;">
                     <a href="' . BUS_GRUPO_WHATSAPP . '" target="_blank"
-                       style="display:inline-block;padding:14px 26px;font:700 16px/1.2 Arial,Helvetica,sans-serif;color:#ffffff;text-decoration:none;">
-                      Entrar no Grupo Oficial do Fretado
+                       style="display:inline-block;padding:13px 24px;font:700 16px/1.2 Arial,Helvetica,sans-serif;color:#ffffff;text-decoration:none;">
+                      <!-- Ícone e texto em células irmãs de uma tabela interna:
+                           o Outlook não alinha verticalmente <img> e texto soltos
+                           dentro do mesmo <a>, e o ícone sairia deslocado. O
+                           `border:0` evita a borda azul que alguns clientes
+                           adicionam em imagem dentro de link. -->
+                      <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                        <tr>
+                          <td style="padding-right:9px;line-height:0;" valign="middle">
+                            <img src="' . BUS_EMAIL_ICONE_WA . '" alt="" width="20" height="20"
+                                 style="display:block;width:20px;height:20px;border:0;">
+                          </td>
+                          <td style="font:700 16px/1.2 Arial,Helvetica,sans-serif;color:#ffffff;white-space:nowrap;" valign="middle">
+                            Entrar no Grupo Oficial do Fretado
+                          </td>
+                        </tr>
+                      </table>
                     </a>
                   </td>
                 </tr>

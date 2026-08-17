@@ -225,15 +225,12 @@ function bus_confirmation_email_html(array $dados): string
           <!-- Rodapé -->
           <tr>
             <td style="padding:26px 4px 0;">
-              <!-- Os dois canais estão abertos, então o texto diz qual usar em
-                   vez de listar ambos e deixar a escolha no ar. O número aparece
-                   escrito ao lado do link porque cliente de e-mail costuma
-                   bloquear link e a pessoa precisa poder copiar. -->
+              <!-- Só o convite a responder. O canal de WhatsApp já está no botão
+                   do grupo oficial, acima: repetir um número aqui daria duas
+                   rotas para a mesma coisa e competiria com o botão, que é a ação
+                   que queremos que a pessoa tome. -->
               <p style="margin:0 0 10px;font:400 13px/1.6 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.72);">
-                Ficou com alguma dúvida? Responda este e-mail que a gente te ajuda. Se for algo
-                urgente, chama no WhatsApp da organização:
-                <a href="https://wa.me/5511996847615" style="color:#29c3f5;font-weight:700;text-decoration:underline;">
-                  (11) 99684-7615</a>.
+                Ficou com alguma dúvida? Responda este e-mail que a gente te ajuda.
               </p>
               <p style="margin:0;font:400 11px/1.6 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.45);">
                 Emitido em ' . $e($dados['issuedAt']) . ' &middot; Kriativos On Board 2026
@@ -298,8 +295,6 @@ function bus_confirmation_email_text(array $dados): string
 
     $linhas[] = '';
     $linhas[] = 'Ficou com alguma duvida? Responda este e-mail que a gente te ajuda.';
-    $linhas[] = 'Se for algo urgente, chama no WhatsApp da organizacao:';
-    $linhas[] = '(11) 99684-7615  -  https://wa.me/5511996847615';
     $linhas[] = '';
     $linhas[] = 'Emitido em ' . $dados['issuedAt'];
 
