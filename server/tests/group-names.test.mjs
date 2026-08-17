@@ -164,3 +164,51 @@ test('regra do estado vazio: relatorio sem reservas precisa explicar, nao so mos
   assert.ok(cheia.some(b => b.startsWith('*')), 'legenda do asterisco faltou com dados');
   assert.equal(cheia.filter(b => b.startsWith('RESERVA')).length, 2);
 });
+
+test('log do webhook distingue envio real de reenvio sem envio', () => {
+  // Porta da regra de php/mysql/mercadopago-webhook.php.
+  //
+  // O Mercado Pago reenvia notificacao rotineiramente. Antes, qualquer resultado
+  // com ok:true virava "enviado", inclusive quando NADA foi enviado porque tudo
+  // ja tinha sido entregue. Log que mente sobre isso custa tempo: manda procurar
+  // e-mail que nunca saiu, ou culpar o sistema por duplicata que ele nao mandou.
+  function resumir(envio) {
+    if (!envio.ok) return envio.motivo || 'nao_enviado';
+    const enviados = [];
+    if (envio.contato === 'enviado') enviados.push('contato');
+    for (const p of envio.passageiros || []) {
+      if (p.status === 'enviado') enviados.push('passageiro' + p.pos);
+    }
+    if (envio.admin === 'enviado') enviados.push('admin');
+    let r = enviados.length ? enviados.join('+') : 'nada_novo';
+    if (envio.erros && envio.erros.length) r += ` (com falha: ${envio.erros.length})`;
+    return r;
+  }
+
+  // Primeira notificacao: tudo sai.
+  assert.equal(resumir({
+    ok: true, contato: 'enviado', admin: 'enviado',
+    passageiros: [{ pos: 2, status: 'enviado' }, { pos: 3, status: 'enviado' }],
+  }), 'contato+passageiro2+passageiro3+admin');
+
+  // Reenvio: nada sai. O caso que estava sendo relatado como "enviado".
+  assert.equal(resumir({
+    ok: true, contato: 'ja_enviado', admin: 'ja_enviado',
+    passageiros: [{ pos: 2, status: 'ja_enviado' }],
+  }), 'nada_novo');
+
+  // Passageiro sem e-mail informado nao conta como envio.
+  assert.equal(resumir({
+    ok: true, contato: 'enviado', admin: 'enviado',
+    passageiros: [{ pos: 2, status: 'sem_email' }],
+  }), 'contato+admin');
+
+  // Falha parcial precisa aparecer, senao passa por sucesso completo.
+  assert.equal(resumir({
+    ok: true, contato: 'enviado', admin: 'falhou',
+    passageiros: [], erros: ['admin: timeout'],
+  }), 'contato (com falha: 1)');
+
+  // Reserva ainda nao confirmada.
+  assert.equal(resumir({ ok: false, motivo: 'nao_confirmada' }), 'nao_confirmada');
+});

@@ -113,7 +113,37 @@ try {
 
         try {
             $envio = bus_send_confirmation_email($pdo, $config, (string) $registration['id']);
-            $emailEnviado = $envio['ok'] ? 'enviado' : ($envio['motivo'] ?? 'nao_enviado');
+
+            // O mailer devolve o resultado POR destinatário, porque cada um tem
+            // sua própria marca de envio. Resumir tudo em "enviado" escondia o
+            // caso mais comum em produção: reenvio de notificação, em que nada
+            // foi enviado de novo. Um log que mente sobre isso faz perder tempo
+            // procurando e-mail que nunca saiu (ou culpar o sistema por e-mail
+            // duplicado que ele não mandou).
+            if (!($envio['ok'] ?? false)) {
+                $emailEnviado = $envio['motivo'] ?? 'nao_enviado';
+            } else {
+                $enviados = [];
+                if (($envio['contato'] ?? '') === 'enviado') {
+                    $enviados[] = 'contato';
+                }
+                foreach (($envio['passageiros'] ?? []) as $p) {
+                    if (($p['status'] ?? '') === 'enviado') {
+                        $enviados[] = 'passageiro' . $p['pos'];
+                    }
+                }
+                if (($envio['admin'] ?? '') === 'enviado') {
+                    $enviados[] = 'admin';
+                }
+
+                $emailEnviado = $enviados
+                    ? implode('+', $enviados)
+                    : 'nada_novo';   // reenvio: tudo já havia sido entregue
+
+                if (!empty($envio['erros'])) {
+                    $emailEnviado .= ' (com falha: ' . count($envio['erros']) . ')';
+                }
+            }
         } catch (Throwable $mailError) {
             log_failure('confirmation-email', $mailError);
             $emailEnviado = 'falhou';
