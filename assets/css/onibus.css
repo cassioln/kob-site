@@ -2,6 +2,28 @@
   --bus-ink: #0d2242;
   --bus-paper: #f6f8fc;
   --bus-cyan-soft: #dff6ff;
+
+  /* Escala de espaçamento 4pt. Antes desta escala o checkout usava 21 valores
+     distintos (2, 7, 9.4, 9.9, 13, 14, 15, 18, 19, 25, 30, 34, 50...), a maioria
+     fora de qualquer múltiplo de 4 — espaçamento decidido caso a caso, não
+     sistema. Os passos são nomeados por intenção, não por pixel, para que trocar
+     um valor não exija renomear a variável.
+
+     `tight` agrupa o que pertence junto (label + input); `loose` separa blocos
+     distintos. É essa diferença que cria ritmo — não o valor absoluto. */
+  --s-2xs: 4px;
+  --s-xs: 8px;
+  --s-sm: 12px;
+  --s-md: 16px;
+  --s-lg: 24px;
+  --s-xl: 32px;
+  --s-2xl: 48px;
+  --s-3xl: 64px;
+
+  /* Passos fluidos: respiram no desktop sem estourar no celular. */
+  --s-block: clamp(var(--s-md), 2.2vw, var(--s-lg));
+  --s-section: clamp(var(--s-lg), 4vw, var(--s-2xl));
+
   background: var(--bus-paper);
 }
 
@@ -304,22 +326,44 @@
 
 .bus-form {
   display: grid;
-  gap: 20px;
+  /* Separação entre blocos distintos. Antes era 20px, o MESMO valor usado entre
+     campos dentro do bloco — sem essa diferença o olho não distingue "campos do
+     mesmo assunto" de "outro assunto", e o formulário lê como uma lista longa. */
+  gap: var(--s-section);
 }
 
 .bus-form[hidden] {
   display: none;
 }
 
+/* Blocos do formulário: régua + espaço, não card.
+   Antes eram três caixas idênticas (mesmo padding de 34px, mesma borda 1px, mesmo
+   raio de 16px, mesmo gap de 20px entre elas) — o "identical card grid" que faz
+   um checkout parecer template. Um formulário é UMA tarefa contínua, não três
+   objetos separados; empacotar cada etapa numa caixa sugere que são coisas
+   independentes.
+
+   O agrupamento agora vem de proximidade e de uma régua superior, que é o
+   suficiente para o olho separar assuntos. A legenda numerada permanece porque
+   aqui a ordem É a informação (01 → 02 → 03 é a sequência real do cadastro). */
 .bus-fieldset {
-  padding: clamp(22px, 3vw, 34px);
-  border: 1px solid var(--line-mid);
-  border-radius: var(--r-lg);
-  background: var(--surface-card);
+  padding: 0;
+  border: 0;
+  border-top: 1px solid var(--line-mid);
+  border-radius: 0;
+  background: none;
+  padding-top: var(--s-lg);
+}
+
+/* O primeiro bloco não precisa de régua: nada vem antes dele para separar. */
+.bus-fieldset:first-of-type {
+  border-top: 0;
+  padding-top: 0;
 }
 
 .bus-fieldset legend {
-  padding: 0 10px 0 0;
+  padding: 0;
+  margin-bottom: var(--s-sm);
   color: var(--bus-ink);
   font-family: var(--font-display);
   font-size: clamp(1.25rem, 2vw, 1.7rem);
@@ -327,12 +371,14 @@
 
 .bus-fieldset legend span {
   display: inline-block;
-  margin-right: 7px;
+  margin-right: var(--s-xs);
   color: var(--action-ink);
 }
 
 .bus-fieldset__note {
-  margin: 4px 0 25px;
+  /* Colada na legenda que explica, e separada dos campos que vêm depois:
+     proximidade diz a que texto a nota pertence. */
+  margin: calc(var(--s-sm) * -1) 0 var(--s-md);
   color: var(--ink-faint);
   font-size: 0.86rem;
 }
@@ -340,7 +386,8 @@
 .bus-form__grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 20px;
+  /* Campos do mesmo bloco ficam juntos: proximidade é o que os agrupa. */
+  gap: var(--s-block);
 }
 
 /* Bloco 02: labels de tamanhos diferentes quebravam em 1 ou 2 linhas e
@@ -378,11 +425,21 @@
 .bus-field label,
 .bus-payment-panel__copy label {
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: var(--s-xs);
   color: var(--bus-ink);
   font-size: 0.81rem;
   font-weight: 800;
   letter-spacing: 0.04em;
+}
+
+/* "(opcional)" no label: o `*` magenta marca obrigatório, então o oposto precisa
+   de marca própria — sem ela a pessoa trava achando que o campo é exigido.
+   Peso e cor mais leves para não competir com o nome do campo. */
+.bus-field label small {
+  color: var(--ink-faint);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: none;
 }
 
 .bus-field label b {
@@ -393,7 +450,7 @@
 .bus-payment-panel__copy textarea {
   width: 100%;
   min-height: 54px;
-  padding: 13px 15px;
+  padding:var(--s-sm) var(--s-md);
   border: 1px solid var(--line-mid);
   border-radius: var(--r-sm);
   color: var(--bus-ink);
@@ -422,7 +479,7 @@
 
 .bus-field__hint {
   display: block;
-  margin-top: 7px;
+  margin-top:var(--s-xs);
   color: var(--ink-faint);
   font-size: 0.75rem;
   line-height: 1.45;
@@ -430,7 +487,7 @@
 
 .bus-passengers {
   display: grid;
-  gap: 18px;
+  gap:var(--s-md);
 }
 
 .bus-passenger {
@@ -445,7 +502,7 @@
   align-items: baseline;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 15px;
+  margin-bottom:var(--s-md);
   color: var(--bus-ink);
   font-family: var(--font-display);
   font-size: 1.1rem;
@@ -486,7 +543,7 @@
 
 /* Validade do Pix. Informativo: o estado real da reserva vem do servidor. */
 .bus-payment-panel__expiry {
-  margin-top: 10px;
+  margin-top:var(--s-sm);
   color: var(--bus-ink-soft, #4a5b70);
   font-size: 0.82rem;
   font-variant-numeric: tabular-nums;
@@ -620,11 +677,17 @@
   font-weight: 800;
 }
 
+/* Painel de pagamento: superfície elevada, sem "ghost card".
+   Antes combinava sombra difusa de 16px com o mesmo raio dos cards do formulário.
+   Sombra larga + borda/raio de card é a assinatura de decoração sem função: aqui
+   a elevação tem propósito (é o painel que substitui o formulário e concentra a
+   atenção), então uma sombra definida e curta basta. */
 .bus-payment-panel {
-  padding: clamp(24px, 4vw, 44px);
+  container-type: inline-size;
+  padding: var(--s-section);
   border-radius: var(--r-lg);
   background: var(--surface-card);
-  box-shadow: 0 8px 16px rgba(8, 47, 87, 0.14);
+  box-shadow: 0 2px 8px rgba(8, 47, 87, 0.12);
 }
 
 .bus-payment-panel[hidden] {
@@ -633,31 +696,74 @@
 
 .bus-payment-panel__header > p:last-child {
   max-width: 54ch;
-  margin-top: 14px;
+  margin-top:var(--s-md);
   color: var(--ink-soft);
 }
 
+/* Corpo do painel: empilhado por padrão, lado a lado só quando couber.
+   O grid fixo de `minmax(220px, 280px) + 1fr` com gap de até 50px espremia as
+   ações em 204px dentro de um painel de 534px (medido) — botão "Copiar código" e
+   contador comprimidos ao lado de um QR de 280px.
+
+   Container query em vez de media query: o painel vive numa coluna do checkout,
+   então quem decide o arranjo é a largura DELE, não a da janela. A mesma regra
+   funciona se o painel for movido para uma coluna mais estreita. */
 .bus-payment-panel__body {
   display: grid;
-  grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
-  gap: clamp(24px, 5vw, 50px);
-  align-items: center;
-  margin-top: 34px;
+  gap: var(--s-lg);
+  align-items: start;
+  margin-top: var(--s-lg);
+}
+
+/* 460px é o ponto onde QR (240px) + gap (32px) + ações (≥180px) passam a caber
+   sem comprimir. Medido: o painel tem 526px internos no desktop do checkout, e
+   um limiar de 560px o mantinha empilhado à toa, com 703px de altura. */
+@container (min-width: 460px) {
+  .bus-payment-panel__body {
+    grid-template-columns: 240px minmax(0, 1fr);
+    gap: var(--s-xl);
+    /* Alinhado pelo topo, não centralizado. As colunas têm alturas diferentes
+       por natureza (QR + legenda vs. campo + botão + status), e `center` deslocava
+       uma em relação à outra em 47px, com 94px de espaço morto embaixo do QR. */
+    align-items: start;
+  }
 }
 
 .bus-payment-panel__qr-wrap {
   display: grid;
-  justify-items: center;
-  gap: 12px;
+  justify-items: stretch;
+  align-content: start;
+  gap: var(--s-sm);
   color: var(--ink-faint);
   font-size: 0.76rem;
-  text-align: center;
+  text-align: left;
+}
+
+/* A imagem continua centralizada dentro da própria coluna; é o TEXTO que passa a
+   seguir a margem esquerda comum, para as duas colunas compartilharem uma única
+   âncora de leitura. */
+.bus-payment-panel__qr-wrap img {
+  justify-self: center;
+}
+
+/* Rótulo do caminho do QR. Mesmo tratamento do <label> "Pix Copia e Cola" da
+   coluna vizinha: as duas formas de pagar são equivalentes, então recebem o
+   mesmo nível tipográfico. É esse par que faz as colunas iniciarem na mesma
+   linha — antes o QR começava 47px abaixo por não ter rótulo. */
+.bus-payment-panel__way-label {
+  margin: 0;
+  justify-self: stretch;
+  color: var(--bus-ink);
+  font-size: 0.81rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-align: left;
 }
 
 .bus-payment-panel__qr-wrap img {
   width: min(100%, 280px);
   aspect-ratio: 1;
-  padding: 10px;
+  padding:var(--s-sm);
   border: 1px solid var(--line-mid);
   border-radius: var(--r-md);
   background: var(--foam-white);
@@ -676,7 +782,7 @@
 
 .bus-payment-panel__ticket {
   display: block;
-  margin-top: 18px;
+  margin-top:var(--s-md);
   color: var(--action-ink);
   font-size: 0.75rem;
   font-weight: 700;
@@ -739,12 +845,12 @@
 }
 
 .bus-payment-panel__status {
-  margin-top: 18px;
+  margin-top:var(--s-md);
   color: var(--action-ink);
 }
 
 .bus-payment-panel__footnote {
-  margin-top: 30px;
+  margin-top:var(--s-xl);
   padding-top: 20px;
   border-top: 1px solid var(--line-soft);
   color: var(--ink-faint);
@@ -922,7 +1028,11 @@
   }
 
   .bus-fieldset {
-    padding: 20px 16px;
+    padding-top: var(--s-md);
+  }
+
+  .bus-fieldset:first-of-type {
+    padding-top: 0;
   }
 
   .bus-passenger {
@@ -976,7 +1086,7 @@
    oposto do estado real. Aqui o sucesso é a página inteira.
    ========================================================================== */
 .bus-confirmed {
-  padding: clamp(30px, 4vw, 52px);
+  padding:clamp(var(--s-xl), 4vw, 52px);
   border: 1px solid var(--line-mid);
   border-radius: var(--r-lg);
   background: #fff;
@@ -1013,7 +1123,7 @@
 }
 
 .bus-confirmed h2 {
-  margin-top: 10px;
+  margin-top:var(--s-sm);
   color: var(--bus-ink);
   font-size: clamp(2.1rem, 4.2vw, 3.5rem);
   letter-spacing: -0.018em;
@@ -1027,7 +1137,7 @@
 
 .bus-confirmed__lead {
   max-width: 56ch;
-  margin-top: 14px;
+  margin-top:var(--s-md);
   color: var(--ink-soft);
   font-size: 1.02rem;
   line-height: 1.6;
@@ -1046,14 +1156,14 @@
 .bus-confirmed__facts {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-  margin-top: 34px;
+  margin-top:var(--s-xl);
   border-top: 1px solid var(--line-mid);
   border-bottom: 1px solid var(--line-mid);
 }
 
 .bus-confirmed__facts > div {
   position: relative;
-  padding: 18px 22px 18px 0;
+  padding:var(--s-md) 22px var(--s-md) 0;
 }
 
 /* Separador de linha: só no primeiro item de cada linha a partir da segunda,
@@ -1083,7 +1193,7 @@
 }
 
 .bus-confirmed__facts dd {
-  margin-top: 7px;
+  margin-top:var(--s-xs);
   color: var(--bus-ink);
   font-size: 1.05rem;
   font-weight: 700;
@@ -1105,7 +1215,7 @@
 }
 
 .bus-confirmed__list {
-  margin-top: 14px;
+  margin-top:var(--s-md);
   padding: 0;
   list-style: none;
   counter-reset: manifest;
@@ -1116,7 +1226,7 @@
   flex-wrap: wrap;
   align-items: baseline;
   gap: 4px 12px;
-  padding: 13px 0;
+  padding:var(--s-sm) 0;
   border-bottom: 1px solid var(--line-mid);
   counter-increment: manifest;
 }
@@ -1151,7 +1261,7 @@
 }
 
 .bus-confirmed__next {
-  margin-top: 34px;
+  margin-top:var(--s-xl);
   padding: 22px 24px;
   border-left: 2px solid var(--action);
   background: var(--bus-paper);
@@ -1159,7 +1269,7 @@
 
 .bus-confirmed__next ul {
   margin: 12px 0 0;
-  padding-left: 18px;
+  padding-left:var(--s-md);
   color: var(--ink-soft);
   font-size: 0.92rem;
   line-height: 1.65;
@@ -1174,7 +1284,7 @@
   flex-wrap: wrap;
   align-items: stretch;
   gap: 12px;
-  margin-top: 34px;
+  margin-top:var(--s-xl);
 }
 
 /* Lado a lado, dividindo o espaço em partes iguais. Empilham só quando não
@@ -1494,7 +1604,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 10px 18px;
+  gap:var(--s-sm) var(--s-md);
   margin-top: 26px;
 }
 

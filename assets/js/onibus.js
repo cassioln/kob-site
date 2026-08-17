@@ -136,9 +136,11 @@
   function readPassengerValues() {
     Array.prototype.slice.call(passengerFields.querySelectorAll('[data-passenger-position]')).forEach(function (field) {
       var position = field.dataset.passengerPosition;
+      var wa = field.querySelector('[data-passenger-whatsapp]');
       savedPassengers[position] = {
         fullName: field.querySelector('[data-passenger-name]').value,
-        cpf: field.querySelector('[data-passenger-cpf]').value
+        cpf: field.querySelector('[data-passenger-cpf]').value,
+        whatsapp: wa ? wa.value : ''
       };
     });
   }
@@ -150,7 +152,7 @@
     passengerFields.replaceChildren();
 
     for (var position = 2; position <= count; position += 1) {
-      var values = savedPassengers[position] || { fullName: '', cpf: '' };
+      var values = savedPassengers[position] || { fullName: '', cpf: '', whatsapp: '' };
       var wrapper = document.createElement('div');
       wrapper.className = 'bus-passenger';
       wrapper.dataset.passengerPosition = position;
@@ -160,12 +162,21 @@
         + '<input id="passenger-' + position + '-name" aria-label="Nome completo do passageiro ' + position + '" data-passenger-name type="text" autocomplete="off" minlength="3" required></div>'
         + '<div class="bus-field"><label for="passenger-' + position + '-cpf">CPF do passageiro ' + position + ' <b aria-hidden="true">*</b></label>'
         + '<input id="passenger-' + position + '-cpf" aria-label="CPF do passageiro ' + position + '" data-passenger-cpf type="text" inputmode="numeric" autocomplete="off" maxlength="14" placeholder="000.000.000-00" required></div>'
+        // WhatsApp opcional: sem `required` e rotulado como opcional no próprio
+        // label, para a pessoa não travar achando que precisa preencher.
+        + '<div class="bus-field"><label for="passenger-' + position + '-whatsapp">WhatsApp do passageiro ' + position + ' <small>(opcional)</small></label>'
+        + '<input id="passenger-' + position + '-whatsapp" aria-label="WhatsApp do passageiro ' + position + ' (opcional)" data-passenger-whatsapp type="tel" inputmode="tel" autocomplete="off" maxlength="15" placeholder="(11) 90000-0000"></div>'
         + '</div>';
       passengerFields.appendChild(wrapper);
       wrapper.querySelector('[data-passenger-name]').value = values.fullName || '';
       wrapper.querySelector('[data-passenger-cpf]').value = maskCpf(values.cpf || '');
       wrapper.querySelector('[data-passenger-cpf]').addEventListener('input', function (event) {
         event.currentTarget.value = maskCpf(event.currentTarget.value);
+      });
+      var waField = wrapper.querySelector('[data-passenger-whatsapp]');
+      waField.value = maskWhatsapp(values.whatsapp || '');
+      waField.addEventListener('input', function (event) {
+        event.currentTarget.value = maskWhatsapp(event.currentTarget.value);
       });
     }
 
@@ -265,12 +276,18 @@
     var count = Number(passengerCount.value);
     var passengers = [{
       full_name: normalizeFullName(primaryName.value),
-      cpf: digits(primaryCpf.value)
+      cpf: digits(primaryCpf.value),
+      // O passageiro 1 É o contato principal, então o WhatsApp dele é o do
+      // contato — enviado aqui também para que a lista de embarque tenha um
+      // telefone por passageiro sem depender de join com bus_registrations.
+      whatsapp: digits(primaryWhatsapp.value)
     }];
     for (var position = 2; position <= count; position += 1) {
+      var waInput = document.getElementById('passenger-' + position + '-whatsapp');
       passengers.push({
         full_name: normalizeFullName(document.getElementById('passenger-' + position + '-name').value),
-        cpf: digits(document.getElementById('passenger-' + position + '-cpf').value)
+        cpf: digits(document.getElementById('passenger-' + position + '-cpf').value),
+        whatsapp: waInput ? digits(waInput.value) : ''
       });
     }
     return {

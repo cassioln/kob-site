@@ -168,7 +168,27 @@ function validate_bus_payload(mixed $payload): array
             throw new ValidationError('Não repita o CPF de um passageiro.');
         }
         $seen[$cpf] = true;
-        $passengers[] = ['position' => $position, 'fullName' => $fullName, 'cpf' => $cpf];
+
+        // WhatsApp do passageiro é OPCIONAL: serve para a organização falar
+        // direto com quem embarca, quando a pessoa quiser informar. Vazio passa
+        // como null; preenchido é validado com o mesmo rigor do contato
+        // principal — aceitar um número malformado seria pior que não ter número.
+        $rawWhatsapp = $entry['whatsapp'] ?? null;
+        $whatsappPassenger = null;
+        if (is_string($rawWhatsapp) && digits_only($rawWhatsapp) !== '') {
+            try {
+                $whatsappPassenger = normalize_whatsapp($rawWhatsapp);
+            } catch (ValidationError) {
+                throw new ValidationError("WhatsApp do passageiro {$position} inválido.");
+            }
+        }
+
+        $passengers[] = [
+            'position' => $position,
+            'fullName' => $fullName,
+            'cpf' => $cpf,
+            'whatsapp' => $whatsappPassenger,
+        ];
     }
 
     if ($passengers[0]['fullName'] !== $primaryName || $passengers[0]['cpf'] !== $primaryCpf) {

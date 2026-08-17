@@ -46,8 +46,8 @@ try {
     ]);
 
     $insertPassenger = $pdo->prepare(
-        'INSERT INTO bus_passengers (registration_id, position, full_name, cpf, is_primary)
-         VALUES (:rid, :pos, :name, :cpf, :primary)'
+        'INSERT INTO bus_passengers (registration_id, position, full_name, cpf, whatsapp, is_primary)
+         VALUES (:rid, :pos, :name, :cpf, :whatsapp, :primary)'
     );
     foreach ($data['passengers'] as $passenger) {
         // MySQL: booleano é TINYINT(1) — 1/0 com PARAM_INT, e não 'true'/'false'.
@@ -55,6 +55,17 @@ try {
         $insertPassenger->bindValue(':pos', $passenger['position'], PDO::PARAM_INT);
         $insertPassenger->bindValue(':name', $passenger['fullName']);
         $insertPassenger->bindValue(':cpf', $passenger['cpf']);
+        // Passageiro 1 é o contato principal: o WhatsApp dele já está em
+        // bus_registrations, então aqui vale o do próprio passageiro (opcional).
+        $whatsappPassenger = $passenger['whatsapp'] ?? null;
+        if ($passenger['position'] === 1 && ($whatsappPassenger === null || $whatsappPassenger === '')) {
+            $whatsappPassenger = $data['contact']['whatsapp'];
+        }
+        $insertPassenger->bindValue(
+            ':whatsapp',
+            ($whatsappPassenger === null || $whatsappPassenger === '') ? null : $whatsappPassenger,
+            ($whatsappPassenger === null || $whatsappPassenger === '') ? PDO::PARAM_NULL : PDO::PARAM_STR
+        );
         $insertPassenger->bindValue(':primary', $passenger['position'] === 1 ? 1 : 0, PDO::PARAM_INT);
         $insertPassenger->execute();
     }

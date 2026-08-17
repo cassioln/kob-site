@@ -39,7 +39,7 @@ test('cadastra o grupo, calcula o valor e exibe o Pix', async ({ page }) => {
   await page.getByLabel('Nome completo (contato principal)').fill('Maria de Souza');
   await page.getByLabel('CPF do contato principal').fill(primaryCpf);
   await page.getByLabel('E-mail').fill('maria@example.com');
-  await page.getByLabel('WhatsApp').fill('11942554141');
+  await page.locator('#primary-whatsapp').fill('11942554141');
   await page.getByLabel(/Quantas pessoas vão com você/i).fill('3');
   await page.getByLabel(/Crianças de até 5 anos/i).fill('1');
 
@@ -101,7 +101,7 @@ test('confirma a vaga automaticamente quando o pagamento é identificado', async
   await page.getByLabel('Nome completo (contato principal)').fill('Maria de Souza');
   await page.getByLabel('CPF do contato principal').fill(primaryCpf);
   await page.getByLabel('E-mail').fill('maria@example.com');
-  await page.getByLabel('WhatsApp').fill('11942554141');
+  await page.locator('#primary-whatsapp').fill('11942554141');
   await page.getByLabel(/Li e concordo com as condições/i).check();
   await page.getByRole('button', { name: /continuar para o pagamento pix/i }).click();
 
@@ -154,7 +154,7 @@ test('janela de 10 minutos abre o aviso e não confirma nada sozinha', async ({ 
   await page.getByLabel('Nome completo (contato principal)').fill('Maria de Souza');
   await page.getByLabel('CPF do contato principal').fill(primaryCpf);
   await page.getByLabel('E-mail').fill('maria@example.com');
-  await page.getByLabel('WhatsApp').fill('11942554141');
+  await page.locator('#primary-whatsapp').fill('11942554141');
   await page.getByLabel(/Li e concordo com as condições/i).check();
   await page.getByRole('button', { name: /continuar para o pagamento pix/i }).click();
 
@@ -197,7 +197,7 @@ test('impede gerar pagamento sem preencher passageiros adicionais', async ({ pag
   await page.getByLabel('Nome completo (contato principal)').fill('Maria de Souza');
   await page.getByLabel('CPF do contato principal').fill(primaryCpf);
   await page.getByLabel('E-mail').fill('maria@example.com');
-  await page.getByLabel('WhatsApp').fill('11942554141');
+  await page.locator('#primary-whatsapp').fill('11942554141');
   await page.getByLabel(/Quantas pessoas vão com você/i).fill('2');
   await page.getByLabel(/Li e concordo com as condições/i).check();
   await page.getByRole('button', { name: /continuar para o pagamento pix/i }).click();
@@ -235,7 +235,7 @@ test('comprovante impresso sai em A4 monocromático, sem sobras da página', asy
   await page.getByLabel('Nome completo (contato principal)').fill('Maria de Souza');
   await page.getByLabel('CPF do contato principal').fill(primaryCpf);
   await page.getByLabel('E-mail').fill('maria@example.com');
-  await page.getByLabel('WhatsApp').fill('11942554141');
+  await page.locator('#primary-whatsapp').fill('11942554141');
   await page.getByLabel(/Li e concordo com as condições/i).check();
   await page.getByRole('button', { name: /continuar para o pagamento pix/i }).click();
   await expect(page.locator('#confirmation-panel')).toBeVisible({ timeout: 15000 });
@@ -345,7 +345,7 @@ test('cabeçalho acompanha a etapa e o bloco 03 some com 1 passageiro', async ({
   await page.getByLabel('Nome completo (contato principal)').fill('Maria de Souza');
   await page.getByLabel('CPF do contato principal').fill(primaryCpf);
   await page.getByLabel('E-mail').fill('maria@example.com');
-  await page.getByLabel('WhatsApp').fill('11942554141');
+  await page.locator('#primary-whatsapp').fill('11942554141');
   await page.locator('#passenger-2-name').fill('Ana Souza Lima');
   await page.locator('#passenger-2-cpf').fill('111.444.777-35');
   await page.locator('#passenger-3-name').fill('Bruno Costa Reis');
@@ -365,4 +365,150 @@ test('cabeçalho acompanha a etapa e o bloco 03 some com 1 passageiro', async ({
   await expect(page.locator('#step-heading')).toHaveAttribute('data-step', 'confirmacao');
   await expect(page.locator('#step-eyebrow')).toHaveText(/Etapa 3 de 3/);
   await expect(page.locator('#form-title')).toHaveText(/garantida/i);
+});
+
+test('layout do checkout: ritmo por escala e colunas do painel alinhadas', async ({ page }) => {
+  // Este teste trava três decisões de layout que já regrediram por acidente antes:
+  //
+  // 1. RITMO. O formulário usava gap 20px entre blocos E 20px entre campos — o
+  //    mesmo valor, então nada indicava onde um assunto terminava. A separação
+  //    entre blocos precisa ser visivelmente maior que a de dentro do bloco.
+  // 2. SEM CARDS. Os três fieldsets eram caixas idênticas (padding 34px, borda
+  //    1px, raio 16px). Um formulário é uma tarefa contínua, não três objetos.
+  // 3. ALINHAMENTO. As colunas do painel (QR / copia-e-cola) começavam 47px
+  //    desalinhadas porque só uma tinha rótulo.
+  await page.route('**/api/create-pix-order', route => route.fulfill({
+    status: 201, contentType: 'application/json', body: JSON.stringify(fakePixResponse())
+  }));
+  await page.route('**/api/bus-registration-status**', route => route.fulfill({
+    status: 200, contentType: 'application/json',
+    body: JSON.stringify({ status: 'payment_pending', statusDetail: null })
+  }));
+
+  await page.goto('/onibus.html');
+
+  // (1) e (2): ritmo e ausência de card.
+  const forma = await page.evaluate(() => {
+    const blocos = [...document.querySelectorAll('#bus-form .bus-fieldset')].filter(e => e.offsetHeight);
+    const grid = document.querySelector('#bus-form .bus-form__grid');
+    const segundo = getComputedStyle(blocos[1]);
+    return {
+      entreBlocos: Math.round(blocos[1].getBoundingClientRect().top - blocos[0].getBoundingClientRect().bottom),
+      dentroDoBloco: Math.round(parseFloat(getComputedStyle(grid).rowGap)),
+      radius: parseFloat(segundo.borderTopLeftRadius),
+      bordaLateral: parseFloat(segundo.borderLeftWidth),
+      shadow: segundo.boxShadow
+    };
+  });
+
+  // A separação entre blocos precisa ser claramente maior — não igual, como antes.
+  expect(forma.entreBlocos).toBeGreaterThan(forma.dentroDoBloco * 1.5);
+  // Nada de card: sem raio, sem borda lateral, sem sombra.
+  expect(forma.radius).toBe(0);
+  expect(forma.bordaLateral).toBe(0);
+  expect(forma.shadow).toBe('none');
+
+  await page.getByLabel('Nome completo (contato principal)').fill('Maria de Souza');
+  await page.getByLabel('CPF do contato principal').fill(primaryCpf);
+  await page.getByLabel('E-mail').fill('maria@example.com');
+  await page.locator('#primary-whatsapp').fill('11942554141');
+  await page.getByLabel(/Li e concordo/i).check();
+  await page.getByRole('button', { name: /continuar para o pagamento pix/i }).click();
+  await expect(page.locator('#payment-panel')).toBeVisible();
+
+  // (3): as duas formas de pagar começam na mesma linha.
+  const colunas = await page.evaluate(() => {
+    const filhos = [...document.querySelector('.bus-payment-panel__body').children]
+      .filter(e => e.offsetHeight);
+    if (filhos.length < 2) return null; // empilhado (viewport estreito)
+    return {
+      desalinhamento: Math.abs(
+        Math.round(filhos[0].getBoundingClientRect().top - filhos[1].getBoundingClientRect().top)
+      ),
+      larguraAcoes: Math.round(filhos[1].getBoundingClientRect().width)
+    };
+  });
+
+  if (colunas) {
+    expect(colunas.desalinhamento).toBeLessThanOrEqual(2);
+    // As ações tinham 204px comprimidos; abaixo de 230px voltou a apertar.
+    expect(colunas.larguraAcoes).toBeGreaterThan(230);
+  }
+
+  // O rótulo do QR é o que cria o par que alinha as colunas.
+  await expect(page.locator('.bus-payment-panel__way-label')).toBeVisible();
+
+  // Nenhum viewport pode gerar rolagem horizontal.
+  for (const w of [390, 768, 1280]) {
+    await page.setViewportSize({ width: w, height: 900 });
+    const overflow = await page.evaluate(() =>
+      document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    expect(overflow, `overflow horizontal em ${w}px`).toBe(0);
+  }
+});
+
+test('contato em 3 linhas e WhatsApp opcional nos passageiros extras', async ({ page }) => {
+  let enviado = null;
+  await page.route('**/api/create-pix-order', async route => {
+    enviado = JSON.parse(route.request().postData() || '{}');
+    await route.fulfill({ status: 201, contentType: 'application/json', body: JSON.stringify(fakePixResponse()) });
+  });
+
+  await page.goto('/onibus.html');
+
+  // Arranjo pedido: NOME / CPF + WHATSAPP / EMAIL.
+  const linhas = await page.evaluate(() => {
+    const campos = [...document.querySelectorAll('#bus-form .bus-fieldset:first-of-type .bus-field')];
+    const porLinha = {};
+    campos.forEach(c => {
+      const y = Math.round(c.getBoundingClientRect().top);
+      (porLinha[y] ||= []).push(c.querySelector('input')?.id);
+    });
+    return Object.keys(porLinha).sort((a, b) => a - b).map(y => porLinha[y]);
+  });
+  expect(linhas).toEqual([
+    ['primary-name'],
+    ['primary-cpf', 'primary-whatsapp'],
+    ['primary-email']
+  ]);
+
+  await page.locator('#passenger-count').fill('3');
+  await page.locator('#passenger-count').dispatchEvent('input');
+
+  // O campo existe nos extras e NÃO é obrigatório: se fosse, o "opcional"
+  // bloquearia o cadastro na prática.
+  for (const pos of [2, 3]) {
+    const campo = page.locator(`#passenger-${pos}-whatsapp`);
+    await expect(campo).toBeVisible();
+    expect(await campo.getAttribute('required')).toBeNull();
+    await expect(page.locator(`label[for="passenger-${pos}-whatsapp"]`)).toContainText(/opcional/i);
+  }
+
+  // Máscara igual à do contato principal.
+  await page.locator('#passenger-2-whatsapp').fill('11912345678');
+  await page.locator('#passenger-2-whatsapp').dispatchEvent('input');
+  await expect(page.locator('#passenger-2-whatsapp')).toHaveValue('(11) 91234-5678');
+
+  // Mudar a quantidade não pode apagar o que já foi digitado.
+  await page.locator('#passenger-count').fill('4');
+  await page.locator('#passenger-count').dispatchEvent('input');
+  await expect(page.locator('#passenger-2-whatsapp')).toHaveValue('(11) 91234-5678');
+  await page.locator('#passenger-count').fill('3');
+  await page.locator('#passenger-count').dispatchEvent('input');
+
+  await page.getByLabel('Nome completo (contato principal)').fill('Maria de Souza');
+  await page.getByLabel('CPF do contato principal').fill(primaryCpf);
+  await page.getByLabel('E-mail').fill('maria@example.com');
+  await page.locator('#primary-whatsapp').fill('11942554141');
+  await page.locator('#passenger-2-name').fill('Ana Souza Lima');
+  await page.locator('#passenger-2-cpf').fill('111.444.777-35');
+  await page.locator('#passenger-3-name').fill('Bruno Costa Reis');
+  await page.locator('#passenger-3-cpf').fill('153.509.460-56');
+  // Passageiro 3 fica SEM WhatsApp de propósito: precisa enviar do mesmo jeito.
+  await page.getByLabel(/Li e concordo/i).check();
+  await page.getByRole('button', { name: /continuar para o pagamento pix/i }).click();
+  await expect(page.locator('#payment-panel')).toBeVisible();
+
+  expect(enviado.passengers[1].whatsapp).toBe('11912345678');
+  expect(enviado.passengers[2].whatsapp).toBe('');
 });

@@ -100,6 +100,9 @@ CREATE TABLE IF NOT EXISTS bus_passengers (
   `position`      SMALLINT         NOT NULL,
   full_name       VARCHAR(255)     NOT NULL,
   cpf             VARCHAR(14)      NOT NULL,
+  -- Opcional: so o contato principal tem WhatsApp obrigatorio. Aqui serve para a
+  -- organizacao falar direto com quem embarca, quando a pessoa quiser informar.
+  whatsapp        VARCHAR(11)      NULL,
   is_primary      TINYINT(1)       NOT NULL DEFAULT 0,
   created_at      DATETIME         NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'UTC',
 

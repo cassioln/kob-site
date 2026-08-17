@@ -112,7 +112,20 @@ export function validateBusPayload(payload) {
       throw new ValidationError(`Informe o nome completo do passageiro ${index + 1}.`);
     }
     const cpf = normalizeCpf(entry.cpf, `CPF do passageiro ${index + 1}`);
-    return { position: index + 1, fullName, cpf };
+
+    // WhatsApp do passageiro é OPCIONAL (só o do contato principal é exigido).
+    // Vazio vira null; preenchido é validado com o mesmo rigor — aceitar número
+    // malformado seria pior do que não ter número.
+    let passengerWhatsapp = null;
+    if (typeof entry.whatsapp === 'string' && entry.whatsapp.replace(/\D/g, '') !== '') {
+      try {
+        passengerWhatsapp = normalizeWhatsapp(entry.whatsapp);
+      } catch {
+        throw new ValidationError(`WhatsApp do passageiro ${index + 1} inválido.`);
+      }
+    }
+
+    return { position: index + 1, fullName, cpf, whatsapp: passengerWhatsapp };
   });
 
   if (passengers[0].fullName !== primaryName || passengers[0].cpf !== primaryCpf) {

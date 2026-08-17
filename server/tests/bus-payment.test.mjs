@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { createPixOrder } from '../bus-payment.mjs';
+import { createPixOrder, validateBusPayload } from '../bus-payment.mjs';
 import { createMercadoPagoOrder } from '../mercadopago.mjs';
 import { handleCreatePixRequest, handleMercadoPagoWebhook, handlePaymentProofRequest, handleRegistrationStatusRequest } from '../http.mjs';
 
@@ -377,4 +377,53 @@ test('sandbox envia APRO em payer.first_name; produção preserva o nome real', 
   // 360 / 3 passageiros = 120 por passagem.
   assert.equal(producao.items[0].unit_price, '120.00');
   assert.ok(producao.items[0].title);
+});
+
+test('WhatsApp do passageiro é opcional, mas inválido é recusado', () => {
+  // Só o contato principal tem WhatsApp obrigatório. Nos passageiros extras o
+  // campo serve para a organização falar direto com quem embarca — vazio precisa
+  // passar, senão o campo "opcional" bloqueia o cadastro na prática.
+  const base = {
+    contact: {
+      full_name: 'Cassio Lima do Nascimento',
+      cpf: '529.982.247-25',
+      email: 'cassio@example.com',
+      whatsapp: '(11) 98765-4321'
+    },
+    passenger_count: 2,
+    children_count: 0
+  };
+
+  // (a) ausente e (b) string vazia: ambos viram null, sem erro.
+  for (const valor of [undefined, '', '   ']) {
+    const entrada = {
+      ...base,
+      passengers: [
+        { full_name: 'Cassio Lima do Nascimento', cpf: '529.982.247-25', whatsapp: '11987654321' },
+        { full_name: 'Ana Souza Lima', cpf: '111.444.777-35', ...(valor === undefined ? {} : { whatsapp: valor }) }
+      ]
+    };
+    const ok = validateBusPayload(entrada);
+    assert.equal(ok.passengers[1].whatsapp, null, `valor ${JSON.stringify(valor)} deveria virar null`);
+  }
+
+  // (c) preenchido e válido: normalizado para dígitos nacionais.
+  const comNumero = validateBusPayload({
+    ...base,
+    passengers: [
+      { full_name: 'Cassio Lima do Nascimento', cpf: '529.982.247-25', whatsapp: '11987654321' },
+      { full_name: 'Ana Souza Lima', cpf: '111.444.777-35', whatsapp: '(11) 91234-5678' }
+    ]
+  });
+  assert.equal(comNumero.passengers[1].whatsapp, '11912345678');
+
+  // (d) preenchido e MALFORMADO: recusa. Opcional não significa "aceita lixo" —
+  // guardar um telefone quebrado é pior do que não guardar telefone.
+  assert.throws(() => validateBusPayload({
+    ...base,
+    passengers: [
+      { full_name: 'Cassio Lima do Nascimento', cpf: '529.982.247-25', whatsapp: '11987654321' },
+      { full_name: 'Ana Souza Lima', cpf: '111.444.777-35', whatsapp: '123' }
+    ]
+  }), /WhatsApp do passageiro 2 inválido/);
 });
