@@ -44,6 +44,11 @@
     token: ''
   };
 
+  // Número do grupo atualmente realçado. Guardado fora do handler para o
+  // mouseover poder sair cedo quando o cursor apenas anda entre linhas da MESMA
+  // reserva: sem isso, cada célula percorrida repintaria o grupo inteiro.
+  var grupoRealcado = null;
+
   // ---- utilidades ---------------------------------------------------------
 
   function mostrar(secao) {
@@ -105,12 +110,23 @@
     var linhas = linhasVisiveis();
     el.corpo.replaceChildren();
 
+    // Contador de grupo, para o realce ao passar o mouse cobrir a RESERVA inteira
+    // e não só a linha sob o cursor: quem confere decide sobre o grupo todo (uma
+    // família embarca junta), então o destaque precisa acompanhar essa unidade.
+    //
+    // Uso um contador em vez do código da reserva porque o código exibido é um
+    // prefixo de 8 caracteres do UUID: dois prefixos iguais acenderiam dois
+    // grupos distintos ao mesmo tempo.
+    var grupoAtual = 0;
+
     linhas.forEach(function (linha) {
       var r = linha.reserva;
       var p = linha.passageiro;
       var primeiro = linha.primeiroDoGrupo;
+      if (primeiro) grupoAtual++;
       var tr = document.createElement('tr');
       if (primeiro) tr.dataset.grupoInicio = 'true';
+      tr.dataset.grupo = String(grupoAtual);
 
       function celula(rotulo, conteudo, classe) {
         var td = document.createElement('td');
@@ -157,27 +173,36 @@
         celula('Reserva', '');
       }
 
-      // Passageiro: número, nome, selo de responsável e aviso de nova reserva.
+      // Passageiro: marcador de responsável, nome e aviso de nova reserva.
       var nomeWrap = document.createElement('div');
       var linhaNome = document.createElement('div');
       var pos = document.createElement('span');
       pos.className = 'tabela__posicao';
-      pos.textContent = p.posicao + '.';
+      // Numerar não ajudava a conferência: a ordem já é visual, e o número
+      // competia com o nome. O que importa é UMA marca — quem é o responsável
+      // pela reserva. Estrela para ele, travessão para os demais. O `title` e o
+      // texto para leitor de tela existem porque símbolo sozinho não é lido.
+      if (p.responsavel) {
+        pos.classList.add('tabela__posicao--responsavel');
+        pos.textContent = '★';
+        pos.setAttribute('title', 'Contato responsável pela reserva');
+      } else {
+        pos.textContent = '–';
+        pos.setAttribute('aria-hidden', 'true');
+      }
       var nome = document.createElement('span');
       nome.className = 'tabela__nome';
       nome.textContent = ' ' + p.nome;
       linhaNome.append(pos, nome);
 
       if (p.responsavel) {
-        var selo = document.createElement('span');
-        selo.className = 'tabela__selo-responsavel';
-        var estrela = document.createElement('span');
-        estrela.setAttribute('aria-hidden', 'true');
-        estrela.textContent = '★';
-        var textoSelo = document.createElement('span');
-        textoSelo.textContent = 'Responsável';
-        selo.append(estrela, textoSelo);
-        linhaNome.appendChild(selo);
+        // O badge "★ Responsável" saiu: a estrela antes do nome já diz isso, e
+        // repetir na mesma linha ocupava espaço sem informar nada novo. Fica só
+        // o rótulo invisível, para quem usa leitor de tela não perder o dado.
+        var apenasLeitor = document.createElement('span');
+        apenasLeitor.className = 'sr-only';
+        apenasLeitor.textContent = ' (contato responsável pela reserva)';
+        linhaNome.appendChild(apenasLeitor);
       }
       nomeWrap.appendChild(linhaNome);
 
@@ -221,6 +246,12 @@
 
       el.corpo.appendChild(tr);
     });
+
+    // O corpo da tabela é recriado inteiro a cada render, então o grupo realçado
+    // antes morreu junto com as linhas antigas. Zerar o estado evita que o
+    // próximo mouseover no MESMO número de grupo seja descartado pelo
+    // curto-circuito de `realcarGrupo`.
+    grupoRealcado = null;
 
     var vazioPorBusca = linhas.length === 0 && estado.reservas.length > 0;
     el.semResultado.hidden = !vazioPorBusca;
@@ -341,6 +372,44 @@
   el.recarregar.addEventListener('click', carregar);
   el.tentarNovamente.addEventListener('click', carregar);
   el.exportar.addEventListener('click', exportarExcel);
+
+  // Realce por RESERVA, não por linha. Feito em JS e não com `tr:hover` puro
+  // porque CSS não tem seletor de irmão anterior: `:hover` numa linha do meio do
+  // grupo não consegue alcançar as linhas de cima.
+  //
+  // Delegação no <tbody>: o corpo é recriado a cada render, e listener por linha
+  // teria de ser religado toda vez (e vazaria se alguém esquecesse de remover).
+  function realcarGrupo(numero) {
+    if (numero === grupoRealcado) return;   // cursor andando dentro do mesmo grupo
+    if (grupoRealcado !== null) {
+      el.corpo.querySelectorAll('tr[data-grupo="' + grupoRealcado + '"]')
+        .forEach(function (tr) { tr.classList.remove('is-realcada'); });
+    }
+    if (numero !== null) {
+      el.corpo.querySelectorAll('tr[data-grupo="' + numero + '"]')
+        .forEach(function (tr) { tr.classList.add('is-realcada'); });
+    }
+    grupoRealcado = numero;
+  }
+
+  el.corpo.addEventListener('mouseover', function (ev) {
+    var tr = ev.target.closest ? ev.target.closest('tr[data-grupo]') : null;
+    realcarGrupo(tr ? tr.dataset.grupo : null);
+  });
+
+  // mouseleave no <tbody> em vez de mouseout por linha: mouseout dispara a cada
+  // troca de célula, e apagaria o realce no meio da leitura.
+  el.corpo.addEventListener('mouseleave', function () {
+    realcarGrupo(null);
+  });
+
+  // Teclado: quem navega por Tab também precisa ver o grupo, senão o recurso
+  // existe só para quem usa mouse. focusin/focusout borbulham, ao contrário de
+  // focus/blur, então funcionam com delegação.
+  el.corpo.addEventListener('focusin', function (ev) {
+    var tr = ev.target.closest ? ev.target.closest('tr[data-grupo]') : null;
+    if (tr) realcarGrupo(tr.dataset.grupo);
+  });
 
   // O token vem na URL. Sai do histórico depois de lido, para o link não vazar
   // em captura de tela da barra de endereço nem no histórico do navegador.

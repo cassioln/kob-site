@@ -34,6 +34,12 @@
   --p-acao: #7b1fa2;
   --p-acao-escura: #5f1780;
   --p-acao-fraca: #f3e8f8;
+  /* Realce de linha ao passar o mouse. Azul, não o lilás de `--p-acao-fraca`:
+     aquele tom é da cor de ação (botões, links) e usá-lo no hover sugeria que a
+     linha era clicável, o que não é o caso num painel somente leitura.
+     Medido: 12.75:1 com o texto e 1.22:1 contra o branco, ou seja, legível e
+     perceptível ao mesmo tempo. */
+  --p-realce-linha: #dfeaf7;
 
   /* Semântica de estado. */
   --p-ok: #0f7a4a;
@@ -469,8 +475,11 @@
   border-top: 2px solid var(--p-linha-forte);
 }
 
-.tabela tbody tr:hover td {
-  background: var(--p-acao-fraca);
+/* Realce aplicado a TODAS as linhas da reserva, não só à linha sob o cursor.
+   A classe vem do JS porque CSS não tem seletor de irmão anterior: `:hover` numa
+   linha do meio do grupo não alcança as de cima. */
+.tabela tbody tr.is-realcada td {
+  background: var(--p-realce-linha);
 }
 
 .tabela__col-reserva {
@@ -492,25 +501,6 @@
   font-size: 0.8125rem;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
-}
-
-/* Selo do contato responsável. Vai junto do nome, não em coluna própria: quem
-   confere procura uma pessoa, e a informação "é o responsável" pertence à
-   linha dela. A estrela tem aria-hidden porque o texto ao lado já diz. */
-.tabela__selo-responsavel {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  margin-left: var(--p-2);
-  padding: 2px 7px;
-  border-radius: 999px;
-  background: var(--p-acao-fraca);
-  color: var(--p-acao-escura);
-  font-size: 0.6875rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  white-space: nowrap;
-  vertical-align: 1px;
 }
 
 /* Aviso de nova reserva: aparece na linha do passageiro cuja reserva antiga
@@ -581,12 +571,45 @@
   font-weight: 550;
 }
 
+/* Marcador antes do nome: estrela para o responsável, travessão para os demais.
+   Largura fixa para os nomes alinharem na vertical, independente do símbolo. */
+/* Texto só para leitor de tela. A estrela comunica visualmente quem é o
+   responsável, mas símbolo não é lido em voz alta: este rótulo cobre isso sem
+   ocupar espaço na tela. `clip-path` em vez de `display:none` porque conteúdo
+   escondido com display:none NÃO é anunciado. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
 .tabela__posicao {
   display: inline-block;
   min-width: 18px;
   color: var(--p-tinta-fraca);
   font-size: 0.8125rem;
   font-variant-numeric: tabular-nums;
+}
+
+/* A estrela é a única marca de "este é o contato responsável" agora que o badge
+   saiu, então precisa de cor e peso próprios: sem isso ela se perderia no meio
+   dos travessões.
+
+   Azul e não o roxo de `--p-acao`: o roxo é a cor de ação (botões, links) e usá-lo
+   num marcador estático sugeria que a estrela era clicável. O tom foi escolhido
+   por medição para render praticamente o mesmo contraste do roxo anterior
+   (8.09:1 contra 8.2:1 no branco) e continuar legível sobre o realce azul da
+   linha (6.65:1). */
+.tabela__posicao--responsavel {
+  color: #155288;
+  font-size: 0.875rem;
+  cursor: help;
 }
 
 .tabela__tel {
@@ -937,7 +960,9 @@
     box-shadow: none;
   }
 
-  .tabela tbody tr:hover td {
+  /* Realce é recurso de tela: numa folha impressa viraria fundo cinza sem
+     significado, e ainda gastaria tinta. */
+  .tabela tbody tr.is-realcada td {
     background: none;
   }
 

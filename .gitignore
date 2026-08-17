@@ -42,3 +42,11 @@ loop_finder/*
 
 # Scripts temporários de operação/diagnóstico (caminhos e fluxos locais)
 .hermes-tmp/
+
+# Ferramentas de agente instaladas localmente pela skill impeccable (3,4 MB de
+# scripts de build/preview). São ferramenta de trabalho de quem edita, não código
+# do site: entram no repositório sem servir a ninguém que só faça deploy.
+# O workflow de deploy (.github/workflows/) continua rastreado.
+.github/agents/
+.github/hooks/
+.github/skills/
