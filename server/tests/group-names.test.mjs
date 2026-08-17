@@ -212,3 +212,67 @@ test('log do webhook distingue envio real de reenvio sem envio', () => {
   // Reserva ainda nao confirmada.
   assert.equal(resumir({ ok: false, motivo: 'nao_confirmada' }), 'nao_confirmada');
 });
+
+test('falha de SMTP em um destinatario nao impede nem duplica os outros', () => {
+  // Porta da regra de php/mysql/lib/confirmation-mailer.php.
+  //
+  // Cada destinatario tem sua PROPRIA marca de envio no banco (a da reserva para
+  // o contato, uma por passageiro, e a de admin). Isso existe para que uma falha
+  // isolada de SMTP -- comum na Locaweb, que limita por janela e devolve 451 de
+  // forma inconsistente -- nao vire perda silenciosa nem reenvio em massa.
+  //
+  // Contrato provado aqui:
+  //   1. falha em um destinatario NAO bloqueia os seguintes;
+  //   2. quem falhou NAO recebe marca, entao a proxima passagem tenta de novo;
+  //   3. quem teve sucesso RECEBE marca, entao nao recebe segunda via;
+  //   4. na segunda passagem, so o que faltava e enviado.
+
+  function disparar(estado, smtpFalhaPara) {
+    const enviados = [];
+    const erros = [];
+
+    const tentar = (quem) => {
+      if (estado[quem]) return 'ja_enviado';        // marca no banco: nao reenvia
+      if (smtpFalhaPara.includes(quem)) {
+        erros.push(quem);
+        return 'falhou';                             // sem marca: retenta depois
+      }
+      estado[quem] = 'MARCADO';
+      enviados.push(quem);
+      return 'enviado';
+    };
+
+    const r = {
+      contato: tentar('contato'),
+      passageiros: [2, 3].map(pos => ({ pos, status: tentar('p' + pos) })),
+      admin: tentar('admin'),
+    };
+    return { r, enviados, erros, estado };
+  }
+
+  // Passagem 1: o SMTP falha para o passageiro 2 e para o admin.
+  const estado = {};
+  const a = disparar(estado, ['p2', 'admin']);
+
+  assert.equal(a.r.contato, 'enviado', 'contato deveria ter saido');
+  assert.equal(a.r.passageiros[0].status, 'falhou');
+  assert.equal(a.r.passageiros[1].status, 'enviado',
+    'falha no passageiro 2 nao pode impedir o passageiro 3');
+  assert.equal(a.r.admin, 'falhou');
+  assert.deepEqual(a.enviados, ['contato', 'p3']);
+
+  // Quem falhou NAO tem marca; quem foi tem.
+  assert.ok(estado.contato && estado.p3, 'sucesso precisa de marca');
+  assert.ok(!estado.p2 && !estado.admin, 'falha NAO pode gravar marca');
+
+  // Passagem 2 (retentativa, SMTP normal): so o que faltava sai.
+  const b = disparar(estado, []);
+  assert.deepEqual(b.enviados, ['p2', 'admin'],
+    'retentativa deve enviar apenas o que faltava');
+  assert.equal(b.r.contato, 'ja_enviado', 'contato nao pode receber duas vezes');
+  assert.equal(b.r.passageiros[1].status, 'ja_enviado');
+
+  // Passagem 3: nada mais a fazer.
+  const c = disparar(estado, []);
+  assert.deepEqual(c.enviados, [], 'terceira passagem nao deve enviar nada');
+});
