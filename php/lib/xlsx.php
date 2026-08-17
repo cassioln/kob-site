@@ -272,8 +272,13 @@ function xlsx_build(array $planilha): string
             . '" width="' . (float) ($col['largura'] ?? 14) . '" customWidth="1"/>';
     }
 
-    // <mergeCells> vem DEPOIS de <sheetData> e ANTES de <autoFilter>: a ordem
-    // dos elementos é fixa no schema OOXML, e fora dela o Excel recusa o arquivo.
+    // <autoFilter> vem DEPOIS de <sheetData> e ANTES de <mergeCells>: é a ordem
+    // do schema CT_Worksheet (ECMA-376) — confirmada contra duas
+    // implementações de referência testadas contra o Excel real (openpyxl e
+    // xlsxwriter escrevem autoFilter antes de mergeCells). A ordem inversa
+    // (usada antes aqui) não quebrou nos leitores testados (openpyxl,
+    // Gnumeric), mas segue a ordem certa evita depender da tolerância do
+    // leitor.
     $mergeXml = $mesclagens
         ? '<mergeCells count="' . count($mesclagens) . '">'
             . implode('', array_map(static function (string $ref): string {
@@ -281,6 +286,7 @@ function xlsx_build(array $planilha): string
             }, $mesclagens))
             . '</mergeCells>'
         : '';
+    $autoFilterXml = '<autoFilter ref="A' . $linhaCabecalho . ':' . $ultimaLetra . $ultimaLinha . '"/>';
 
     // Congela abaixo do cabeçalho para rolar a lista sem perder os títulos.
     $sheet = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
@@ -292,8 +298,8 @@ function xlsx_build(array $planilha): string
         . '<sheetFormatPr defaultRowHeight="16"/>'
         . '<cols>' . implode('', $cols) . '</cols>'
         . '<sheetData>' . implode('', $linhasXml) . '</sheetData>'
+        . $autoFilterXml
         . $mergeXml
-        . '<autoFilter ref="A' . $linhaCabecalho . ':' . $ultimaLetra . $ultimaLinha . '"/>'
         . '</worksheet>';
 
     $nomeAba = xlsx_texto(substr($planilha['nome'] ?? 'Dados', 0, 31));
