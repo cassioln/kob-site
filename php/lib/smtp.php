@@ -159,8 +159,12 @@ function smtp_montar_mensagem(
         'Date: ' . gmdate('D, d M Y H:i:s') . ' +0000',
         'Message-ID: <' . bin2hex(random_bytes(12)) . '@kriativosonboard.com.br>',
         'MIME-Version: 1.0',
-        // Resposta cai numa caixa lida por humano, não no no-reply.
-        'Reply-To: contato@kriativosonboard.com.br',
+        // Sem Reply-To de propósito: o corpo da mensagem orienta a falar pelo
+        // WhatsApp, então apontar para uma caixa de e-mail contradiria a
+        // instrução — e se a caixa não existir, a resposta volta com erro.
+        // O cabeçalho abaixo é o padrão para mensagem automática: sinaliza aos
+        // servidores que não se deve gerar resposta automática (férias etc.).
+        'Auto-Submitted: auto-generated',
         "Content-Type: multipart/mixed; boundary=\"{$limiteMixed}\"",
     ];
 

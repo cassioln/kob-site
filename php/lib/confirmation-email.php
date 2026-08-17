@@ -71,8 +71,11 @@ function bus_confirmation_email_html(array $dados): string
     $linhasFatos = '';
     foreach ($fatos as $i => [$rotulo, $valor]) {
         $borda = $i === 0 ? '' : 'border-top:1px solid rgba(13,41,78,0.12);';
+        // Código e transação usam monoespaçada. `word-break:break-all` só aqui:
+        // o Order ID tem 32 caracteres sem espaço e, sem poder quebrar, impunha
+        // largura mínima que estourava a tela em aparelho estreito.
         $mono = str_contains($rotulo, 'Transação') || str_contains($rotulo, 'Código')
-            ? 'font-family:\'Courier New\',Courier,monospace;letter-spacing:0.06em;'
+            ? 'font-family:\'Courier New\',Courier,monospace;letter-spacing:0.06em;word-break:break-all;'
             : '';
         $linhasFatos .= '
             <tr>
@@ -99,12 +102,16 @@ function bus_confirmation_email_html(array $dados): string
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#041d3a;">
     <tr>
       <td align="center" style="padding:32px 16px;">
-        <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:100%;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;">
 
-          <!-- Cabeçalho -->
+          <!-- Cabeçalho. É a assinatura da marca no topo da mensagem, então tem
+               tamanho de título e não de rótulo. O tracking cai de 0.14em para
+               0.06em: espaçamento largo funciona em texto de 11px, mas em 20px
+               espalha as palavras e enfraquece o conjunto. -->
           <tr>
-            <td style="padding:0 0 24px;font:700 11px/1.4 Arial,Helvetica,sans-serif;color:#29c3f5;letter-spacing:0.14em;text-transform:uppercase;">
-              Kriativos On Board 2026 &middot; Transporte fretado
+            <td style="padding:0 0 26px;font:700 20px/1.25 Arial,Helvetica,sans-serif;color:#ffffff;letter-spacing:0.06em;text-transform:uppercase;">
+              Kriativos On Board 2026<br>
+              <span style="color:#29c3f5;">Transporte fretado</span>
             </td>
           </tr>
 
@@ -197,10 +204,19 @@ function bus_confirmation_email_html(array $dados): string
           <!-- Rodapé -->
           <tr>
             <td style="padding:26px 4px 0;">
-              <p style="margin:0 0 8px;font:400 12px/1.6 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.56);">
-                Dúvidas? Responda este e-mail ou fale com a organização pelo WhatsApp do evento.
+              <!-- A caixa no-reply@ não é lida por ninguém, então dizer "responda
+                   este e-mail" mandaria a dúvida para o vazio. O link wa.me abre
+                   a conversa direto, no app ou no navegador; o número aparece
+                   escrito porque cliente de e-mail costuma bloquear link e a
+                   pessoa precisa poder copiar. -->
+              <p style="margin:0 0 10px;font:400 13px/1.6 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.72);">
+                <strong style="color:#ffffff;">Não responda este e-mail</strong> &mdash; ele é enviado
+                automaticamente e a caixa não é monitorada. Para qualquer dúvida, fale com a
+                organização pelo WhatsApp do evento:
+                <a href="https://wa.me/5511996847615" style="color:#29c3f5;font-weight:700;text-decoration:underline;">
+                  (11) 99684-7615</a>.
               </p>
-              <p style="margin:0;font:400 11px/1.6 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.38);">
+              <p style="margin:0;font:400 11px/1.6 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.45);">
                 Emitido em ' . $e($dados['issuedAt']) . ' &middot; Kriativos On Board 2026
               </p>
             </td>
@@ -257,6 +273,10 @@ function bus_confirmation_email_text(array $dados): string
     $linhas[] = '';
     $linhas[] = 'O onibus so sera contratado se o minimo de passageiros for atingido.';
     $linhas[] = 'Caso contrario, o valor e devolvido integralmente.';
+    $linhas[] = '';
+    $linhas[] = 'NAO RESPONDA ESTE E-MAIL: ele e automatico e a caixa nao e monitorada.';
+    $linhas[] = 'Duvidas? Fale com a organizacao pelo WhatsApp do evento:';
+    $linhas[] = '(11) 99684-7615  -  https://wa.me/5511996847615';
     $linhas[] = '';
     $linhas[] = 'Emitido em ' . $dados['issuedAt'];
 
