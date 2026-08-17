@@ -858,6 +858,16 @@
   text-underline-offset: 4px;
 }
 
+/* Crédito de quem fez o site: linha própria, com régua acima. O rodapé é flex
+   com space-between, então sem o flex-basis de 100% o crédito disputaria a
+   mesma linha do link de voltar e a leitura ficaria confusa. */
+.cookie-policy__powered {
+  flex: 1 0 100%;
+  padding-top: 14px;
+  border-top: 1px solid color-mix(in srgb, var(--consent-ink, #0d2242) 14%, transparent);
+  font-size: 0.8125rem;
+}
+
 @media (max-width: 520px) {
   .cookie-policy__nav {
     min-height: 76px;

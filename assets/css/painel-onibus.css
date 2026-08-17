@@ -702,12 +702,85 @@
   }
 }
 
+/* --------------------------------------------------------------------------
+   Rodapé — mesmo padrão visual de onibus.html (fundo escuro da marca), sem os
+   links de navegação: o painel é ferramenta interna, não caminho para o evento.
+   -------------------------------------------------------------------------- */
+
+.painel-footer {
+  margin-top: var(--p-7);
+  padding: var(--p-6) var(--p-5) var(--p-5);
+  background: #041d3a;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.painel-footer__inner,
+.painel-footer__powered {
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+.painel-footer__inner {
+  display: flex;
+  align-items: center;
+  gap: var(--p-5);
+}
+
+.painel-footer__brand {
+  display: inline-flex;
+  flex: 0 0 auto;
+  width: 104px;
+}
+
+.painel-footer__brand img {
+  width: 100%;
+  height: auto;
+}
+
+.painel-footer__inner p {
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+.painel-footer__powered {
+  margin-top: var(--p-4);
+  padding-top: var(--p-3);
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 0.8125rem;
+}
+
+.painel-footer__powered a {
+  color: #29c3f5;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.painel-footer__powered a:hover {
+  color: #ffffff;
+}
+
+.painel-footer__powered a:focus-visible {
+  outline: 2px solid #29c3f5;
+  outline-offset: 3px;
+}
+
+@media (max-width: 560px) {
+  .painel-footer__inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--p-3);
+  }
+}
+
 /* Impressão: a lista de embarque em papel é caso de uso real na porta do
    ônibus, onde às vezes não há sinal. */
 @media print {
   .painel__topo,
   .ferramentas,
-  .painel__acoes-topo {
+  .painel__acoes-topo,
+  .painel-footer {
     display: none !important;
   }
 

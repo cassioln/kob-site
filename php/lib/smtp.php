@@ -8,7 +8,7 @@ declare(strict_types=1);
  * Por que não PHPMailer: o projeto não usa Composer e não queremos introduzir
  * `vendor/` num site estático publicado por FTP. Por que não `mail()`: ela usa o
  * sendmail local, o que faz a mensagem sair sem autenticação e cair em spam —
- * autenticar no SMTP da própria Locaweb com a conta `no-reply@` é o que garante
+ * autenticar no SMTP da própria Locaweb com a conta do domínio é o que garante
  * SPF/DKIM alinhados com o domínio.
  *
  * Medido no servidor antes de escrever: `openssl` disponível,
@@ -159,12 +159,11 @@ function smtp_montar_mensagem(
         'Date: ' . gmdate('D, d M Y H:i:s') . ' +0000',
         'Message-ID: <' . bin2hex(random_bytes(12)) . '@kriativosonboard.com.br>',
         'MIME-Version: 1.0',
-        // Sem Reply-To de propósito: o corpo da mensagem orienta a falar pelo
-        // WhatsApp, então apontar para uma caixa de e-mail contradiria a
-        // instrução — e se a caixa não existir, a resposta volta com erro.
-        // O cabeçalho abaixo é o padrão para mensagem automática: sinaliza aos
-        // servidores que não se deve gerar resposta automática (férias etc.).
-        'Auto-Submitted: auto-generated',
+        // Reply-To igual ao remetente: a mensagem convida a responder, então a
+        // resposta tem de cair na mesma caixa que a organização lê. Sem
+        // `Auto-Submitted: auto-generated` de propósito — aquele cabeçalho pede
+        // aos servidores que não gerem resposta, o oposto do que queremos aqui.
+        'Reply-To: ' . $de,
         "Content-Type: multipart/mixed; boundary=\"{$limiteMixed}\"",
     ];
 

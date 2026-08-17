@@ -901,6 +901,30 @@
   width: 104px;
 }
 
+/* Assinatura de quem fez o site. Régua acima para separar dos links sem
+   precisar de mais um bloco, e tamanho menor porque é crédito, não navegação. */
+.bus-footer__powered {
+  margin-top: var(--s-lg);
+  padding-top: var(--s-md);
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 0.8125rem;
+}
+
+.bus-footer__powered a {
+  color: var(--ocean-cyan);
+  font-size: inherit;
+  font-weight: 600;
+  letter-spacing: normal;
+  text-transform: none;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.bus-footer__powered a:hover {
+  color: var(--foam-white);
+}
+
 .bus-footer p {
   font-family: var(--font-script);
   font-size: 1.1rem;

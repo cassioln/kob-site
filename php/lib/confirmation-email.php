@@ -204,15 +204,13 @@ function bus_confirmation_email_html(array $dados): string
           <!-- Rodapé -->
           <tr>
             <td style="padding:26px 4px 0;">
-              <!-- A caixa no-reply@ não é lida por ninguém, então dizer "responda
-                   este e-mail" mandaria a dúvida para o vazio. O link wa.me abre
-                   a conversa direto, no app ou no navegador; o número aparece
-                   escrito porque cliente de e-mail costuma bloquear link e a
-                   pessoa precisa poder copiar. -->
+              <!-- Os dois canais estão abertos, então o texto diz qual usar em
+                   vez de listar ambos e deixar a escolha no ar. O número aparece
+                   escrito ao lado do link porque cliente de e-mail costuma
+                   bloquear link e a pessoa precisa poder copiar. -->
               <p style="margin:0 0 10px;font:400 13px/1.6 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.72);">
-                <strong style="color:#ffffff;">Não responda este e-mail</strong> &mdash; ele é enviado
-                automaticamente e a caixa não é monitorada. Para qualquer dúvida, fale com a
-                organização pelo WhatsApp do evento:
+                Ficou com alguma dúvida? Responda este e-mail que a gente te ajuda. Se for algo
+                urgente, chama no WhatsApp da organização:
                 <a href="https://wa.me/5511996847615" style="color:#29c3f5;font-weight:700;text-decoration:underline;">
                   (11) 99684-7615</a>.
               </p>
@@ -274,8 +272,8 @@ function bus_confirmation_email_text(array $dados): string
     $linhas[] = 'O onibus so sera contratado se o minimo de passageiros for atingido.';
     $linhas[] = 'Caso contrario, o valor e devolvido integralmente.';
     $linhas[] = '';
-    $linhas[] = 'NAO RESPONDA ESTE E-MAIL: ele e automatico e a caixa nao e monitorada.';
-    $linhas[] = 'Duvidas? Fale com a organizacao pelo WhatsApp do evento:';
+    $linhas[] = 'Ficou com alguma duvida? Responda este e-mail que a gente te ajuda.';
+    $linhas[] = 'Se for algo urgente, chama no WhatsApp da organizacao:';
     $linhas[] = '(11) 99684-7615  -  https://wa.me/5511996847615';
     $linhas[] = '';
     $linhas[] = 'Emitido em ' . $dados['issuedAt'];
