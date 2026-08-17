@@ -3,9 +3,10 @@
 declare(strict_types=1);
 
 // validation.php é agnóstica de banco: reaproveitamos a lib existente.
-require dirname(__DIR__) . '/lib/validation.php';
-require __DIR__ . '/lib/db.php';
-require dirname(__DIR__) . '/lib/mercadopago.php';
+require_once dirname(__DIR__) . '/lib/validation.php';
+require_once __DIR__ . '/lib/db.php';
+require_once dirname(__DIR__) . '/lib/mercadopago.php';
+require_once __DIR__ . '/lib/confirmation-mailer.php';
 
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'GET') {
     json_response(405, ['error' => 'Método não permitido.']);
@@ -89,6 +90,18 @@ function reconcile_pending_registration(PDO $pdo, array $registration): ?array
         ':paid' => $paidAt,
         ':id' => $registration['id'],
     ]);
+
+    // E-mail de confirmação. Este é o caminho que de fato dispara em ambiente de
+    // teste, já que o Mercado Pago não entrega webhook automático em sandbox.
+    // Falha de e-mail não pode derrubar a consulta de status: a pessoa está com a
+    // página aberta esperando ver a vaga confirmada.
+    if ($status === 'confirmed') {
+        try {
+            bus_send_confirmation_email($pdo, bus_config(), (string) $registration['id']);
+        } catch (Throwable $mailError) {
+            log_failure('confirmation-email', $mailError);
+        }
+    }
 
     return ['status' => $status, 'status_detail' => $detail];
 }

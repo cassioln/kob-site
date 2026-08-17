@@ -38,6 +38,11 @@ RewriteRule ^ https://%1%{REQUEST_URI} [L,R=301]
 # L encerra o processamento para a requisicao nao cair no 404 do final.
 RewriteRule ^api/create-pix-order/?$          php/mysql/create-pix-order.php [QSA,L]
 RewriteRule ^api/bus-registration-status/?$   php/mysql/bus-registration-status.php [QSA,L]
+# Lista de embarque da organizacao. Exige token (bus-secrets.php) e devolve 404
+# sem ele, para nao confirmar a existencia do endpoint a quem sonda.
+RewriteRule ^api/bus-manifest/?$              php/mysql/bus-manifest.php [QSA,L]
+# Dados do painel da organizacao (JSON agregado). Mesmo token do manifest.
+RewriteRule ^api/bus-admin-data/?$            php/mysql/bus-admin-data.php [QSA,L]
 RewriteRule ^api/bus-payment-proof/?$         php/mysql/bus-payment-proof.php [QSA,L]
 RewriteRule ^api/mercadopago-webhook/?$       php/mysql/mercadopago-webhook.php [QSA,L]
 

@@ -1,0 +1,733 @@
+/* ==========================================================================
+   Painel da organização — transporte fretado
+
+   Register: PRODUCT, não brand. Isto é ferramenta de trabalho: a pessoa está
+   conferindo uma lista de embarque, possivelmente na porta do ônibus, no
+   celular. As decisões seguem daí:
+
+   - UMA família de fonte (system-ui). Nada de display do site em rótulo de
+     tabela: fonte de pôster em UI de dados vira ruído.
+   - Escala FIXA em rem, sem clamp(). O painel é visto em DPI consistente, e um
+     título fluido dentro de uma tabela fica pior, não melhor.
+   - Cor CONTIDA: neutros + um acento para ação e seleção. Estado (pago,
+     pendente) usa cor semântica, nunca decoração.
+   - Densidade é um recurso aqui, não um defeito.
+
+   Herda as cores da marca de main.css para o painel não parecer de outro
+   produto, mas não herda a tipografia de campanha.
+   ========================================================================== */
+
+.painel {
+  /* Neutros próprios: uma camada mais fria que o site, típico de superfície de
+     ferramenta. Chroma baixo puxado para o azul da marca, sem virar cinza morto. */
+  --p-fundo: #f4f6fa;
+  --p-superficie: #ffffff;
+  --p-superficie-2: #eef2f8;
+  --p-linha: #d9e1ec;
+  --p-linha-forte: #b9c6d8;
+
+  --p-tinta: #0d2242;
+  --p-tinta-media: #4a5b73;
+  --p-tinta-fraca: #5a6a82;
+
+  /* Acento: o roxo de ação da marca. Reservado a ação primária e seleção. */
+  --p-acao: #7b1fa2;
+  --p-acao-escura: #5f1780;
+  --p-acao-fraca: #f3e8f8;
+
+  /* Semântica de estado. */
+  --p-ok: #0f7a4a;
+  --p-ok-fundo: #e6f5ee;
+  --p-espera: #8a5a00;
+  --p-espera-fundo: #fdf3e2;
+  --p-falha: #a3232b;
+  --p-falha-fundo: #fbeaea;
+
+  /* Escala 4pt. */
+  --p-1: 4px;
+  --p-2: 8px;
+  --p-3: 12px;
+  --p-4: 16px;
+  --p-5: 24px;
+  --p-6: 32px;
+  --p-7: 48px;
+
+  --p-raio: 10px;
+  --p-raio-p: 6px;
+
+  /* Sombra curta e definida. Nada de sombra difusa larga somada a borda. */
+  --p-sombra: 0 1px 2px rgba(13, 34, 66, 0.08);
+
+  /* 150–250ms: a pessoa está numa tarefa, não assistindo coreografia. */
+  --p-transicao: 180ms cubic-bezier(0.22, 0.61, 0.36, 1);
+
+  margin: 0;
+  min-height: 100vh;
+  background: var(--p-fundo);
+  color: var(--p-tinta);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.visualmente-oculto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Topo
+   -------------------------------------------------------------------------- */
+
+.painel__topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--p-4);
+  padding: var(--p-4) var(--p-5);
+  background: var(--p-superficie);
+  border-bottom: 1px solid var(--p-linha);
+}
+
+.painel__marca {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.painel__marca-nome {
+  font-size: 0.9375rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.painel__marca-contexto {
+  color: var(--p-tinta-fraca);
+  font-size: 0.8125rem;
+}
+
+.painel__conteudo {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: var(--p-6) var(--p-5) var(--p-7);
+}
+
+.painel__titulo {
+  margin: 0 0 var(--p-4);
+  font-size: 1.25rem;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+}
+
+/* --------------------------------------------------------------------------
+   Estados: carregando, erro, vazio, sem acesso
+   -------------------------------------------------------------------------- */
+
+.painel__estado {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: var(--p-6) 0;
+}
+
+.painel__estado--aviso {
+  padding: var(--p-6);
+  background: var(--p-superficie);
+  border: 1px solid var(--p-linha);
+  border-radius: var(--p-raio);
+  box-shadow: var(--p-sombra);
+}
+
+.painel__estado-titulo {
+  margin: 0 0 var(--p-3);
+  font-size: 1.125rem;
+  font-weight: 650;
+}
+
+.painel__estado-texto {
+  margin: 0 0 var(--p-4);
+  color: var(--p-tinta-media);
+  font-size: 0.9375rem;
+}
+
+.painel__estado-texto:last-child {
+  margin-bottom: 0;
+}
+
+.painel__estado-texto code {
+  padding: 2px 6px;
+  background: var(--p-superficie-2);
+  border-radius: var(--p-raio-p);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.875em;
+}
+
+/* Skeleton em vez de spinner: mostra a FORMA do que vem, então a página não
+   pula quando os dados chegam. */
+.skeleton {
+  border-radius: var(--p-raio);
+  background: linear-gradient(90deg, var(--p-superficie-2) 25%, #e3e9f2 50%, var(--p-superficie-2) 75%);
+  background-size: 200% 100%;
+  animation: skeleton 1.4s ease-in-out infinite;
+}
+
+.skeleton--resumo {
+  height: 104px;
+  margin-bottom: var(--p-4);
+}
+
+.skeleton--tabela {
+  height: 280px;
+  margin-bottom: var(--p-4);
+}
+
+@keyframes skeleton {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+
+/* --------------------------------------------------------------------------
+   Resumo
+   -------------------------------------------------------------------------- */
+
+.resumo {
+  margin-bottom: var(--p-6);
+}
+
+.resumo__grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: var(--p-3);
+  margin: 0;
+}
+
+/* Sem card por item: régua superior + espaço já agrupa, e quatro caixas
+   idênticas lado a lado é o padrão que faz painel parecer template. */
+.resumo__item {
+  padding: var(--p-4);
+  background: var(--p-superficie);
+  border: 1px solid var(--p-linha);
+  border-radius: var(--p-raio);
+}
+
+.resumo__item dt {
+  color: var(--p-tinta-fraca);
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+.resumo__item dd {
+  margin: var(--p-1) 0 0;
+  font-size: 1.75rem;
+  font-weight: 680;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.resumo__nota {
+  margin: var(--p-1) 0 0;
+  color: var(--p-tinta-fraca);
+  font-size: 0.8125rem;
+}
+
+/* --------------------------------------------------------------------------
+   Ferramentas
+   -------------------------------------------------------------------------- */
+
+.ferramentas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--p-3);
+  margin-bottom: var(--p-4);
+}
+
+.campo-busca {
+  flex: 1 1 260px;
+  min-width: 0;
+}
+
+.campo-busca input {
+  width: 100%;
+  padding: 10px var(--p-3);
+  border: 1px solid var(--p-linha-forte);
+  border-radius: var(--p-raio-p);
+  background: var(--p-superficie);
+  color: var(--p-tinta);
+  font: inherit;
+  font-size: 0.9375rem;
+  transition: border-color var(--p-transicao), box-shadow var(--p-transicao);
+}
+
+.campo-busca input::placeholder {
+  /* 4.5:1 mesmo em placeholder: cinza claro "elegante" é o motivo nº 1 de
+     interface difícil de ler. */
+  color: var(--p-tinta-fraca);
+}
+
+.campo-busca input:focus-visible {
+  outline: none;
+  border-color: var(--p-acao);
+  box-shadow: 0 0 0 3px var(--p-acao-fraca);
+}
+
+/* Filtro em segmentos: afordância padrão, não controle inventado. */
+.filtro {
+  display: inline-flex;
+  padding: 3px;
+  background: var(--p-superficie-2);
+  border: 1px solid var(--p-linha);
+  border-radius: var(--p-raio-p);
+}
+
+.filtro__opcao {
+  padding: 7px var(--p-3);
+  border: 0;
+  border-radius: 4px;
+  background: none;
+  color: var(--p-tinta-media);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 550;
+  cursor: pointer;
+  transition: background var(--p-transicao), color var(--p-transicao);
+}
+
+.filtro__opcao:hover {
+  color: var(--p-tinta);
+}
+
+.filtro__opcao[aria-pressed="true"] {
+  background: var(--p-superficie);
+  color: var(--p-tinta);
+  box-shadow: var(--p-sombra);
+}
+
+.filtro__opcao:focus-visible {
+  outline: 2px solid var(--p-acao);
+  outline-offset: 1px;
+}
+
+.ferramentas__exportar {
+  display: flex;
+  gap: var(--p-2);
+  margin-left: auto;
+}
+
+/* Botões: um vocabulário só, usado igual em toda a página. */
+.botao {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--p-2);
+  padding: 10px var(--p-4);
+  border: 1px solid transparent;
+  border-radius: var(--p-raio-p);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background var(--p-transicao), border-color var(--p-transicao),
+              color var(--p-transicao), transform var(--p-transicao);
+}
+
+.botao:active {
+  transform: translateY(1px);
+}
+
+.botao:focus-visible {
+  outline: 2px solid var(--p-acao);
+  outline-offset: 2px;
+}
+
+.botao--primario {
+  background: var(--p-acao);
+  color: #ffffff;
+}
+
+.botao--primario:hover {
+  background: var(--p-acao-escura);
+}
+
+.botao--discreto {
+  background: var(--p-superficie);
+  border-color: var(--p-linha-forte);
+  color: var(--p-tinta);
+}
+
+.botao--discreto:hover {
+  border-color: var(--p-tinta-fraca);
+  background: var(--p-superficie-2);
+}
+
+.botao[aria-busy="true"],
+.botao[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.link-botao {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--p-acao);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.painel__contagem {
+  margin: 0 0 var(--p-3);
+  color: var(--p-tinta-fraca);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* --------------------------------------------------------------------------
+   Tabela
+   -------------------------------------------------------------------------- */
+
+.tabela-envolve {
+  background: var(--p-superficie);
+  border: 1px solid var(--p-linha);
+  border-radius: var(--p-raio);
+  box-shadow: var(--p-sombra);
+  overflow: hidden;
+}
+
+.tabela {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+}
+
+.tabela thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: var(--p-3) var(--p-4);
+  background: var(--p-superficie-2);
+  border-bottom: 1px solid var(--p-linha);
+  color: var(--p-tinta-media);
+  font-size: 0.75rem;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-align: left;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.tabela tbody td {
+  padding: var(--p-3) var(--p-4);
+  border-bottom: 1px solid var(--p-linha);
+  vertical-align: baseline;
+}
+
+/* Linhas da MESMA reserva ficam visualmente ligadas: quem confere lê por
+   grupo, não por linha solta. A régua mais forte marca onde um grupo começa. */
+.tabela tbody tr[data-grupo-inicio="true"] td {
+  border-top: 2px solid var(--p-linha-forte);
+}
+
+.tabela tbody tr:hover td {
+  background: var(--p-acao-fraca);
+}
+
+.tabela__col-reserva {
+  width: 116px;
+}
+
+.tabela__col-num {
+  width: 84px;
+}
+
+.tabela__codigo {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.tabela__nome {
+  font-weight: 550;
+}
+
+.tabela__posicao {
+  display: inline-block;
+  min-width: 18px;
+  color: var(--p-tinta-fraca);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.tabela__tel {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.tabela__tel--vazio {
+  color: var(--p-tinta-fraca);
+  font-style: italic;
+}
+
+.tabela__secundario {
+  display: block;
+  color: var(--p-tinta-fraca);
+  font-size: 0.8125rem;
+}
+
+.tabela__num {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Etiqueta de situação: cor semântica, com texto — nunca só cor, que exclui
+   quem não distingue matizes. */
+.etiqueta {
+  display: inline-block;
+  padding: 3px var(--p-2);
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.etiqueta--ok {
+  background: var(--p-ok-fundo);
+  color: var(--p-ok);
+}
+
+.etiqueta--espera {
+  background: var(--p-espera-fundo);
+  color: var(--p-espera);
+}
+
+.etiqueta--falha {
+  background: var(--p-falha-fundo);
+  color: var(--p-falha);
+}
+
+.painel__sem-resultado {
+  padding: var(--p-6) var(--p-4);
+  text-align: center;
+}
+
+.painel__rodape {
+  margin: var(--p-4) 0 0;
+  color: var(--p-tinta-fraca);
+  font-size: 0.8125rem;
+}
+
+/* --------------------------------------------------------------------------
+   Responsivo: comportamento ESTRUTURAL (a tabela vira cartões), não
+   tipografia fluida. No celular a organização confere de pé, com uma mão.
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 860px) {
+  .painel__conteudo {
+    padding: var(--p-5) var(--p-4) var(--p-6);
+  }
+
+  .ferramentas__exportar {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .ferramentas__exportar .botao {
+    flex: 1;
+    justify-content: center;
+    text-align: center;
+  }
+
+  /* Filtro em largura total: mais área de toque e sem espaço morto à direita. */
+  .filtro {
+    display: flex;
+    width: 100%;
+  }
+
+  .filtro__opcao {
+    flex: 1;
+  }
+
+  .tabela-envolve {
+    background: none;
+    border: 0;
+    box-shadow: none;
+    overflow: visible;
+  }
+
+  .tabela thead {
+    display: none;
+  }
+
+  .tabela,
+  .tabela tbody,
+  .tabela tr,
+  .tabela td {
+    display: block;
+    width: 100%;
+  }
+
+  .tabela tbody tr {
+    margin-bottom: var(--p-3);
+    padding: var(--p-3) var(--p-4);
+    background: var(--p-superficie);
+    border: 1px solid var(--p-linha);
+    border-radius: var(--p-raio);
+    box-shadow: var(--p-sombra);
+  }
+
+  .tabela tbody tr[data-grupo-inicio="true"] td {
+    border-top: 0;
+  }
+
+  .tabela tbody td {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--p-4);
+    padding: 5px 0;
+    border-bottom: 0;
+    text-align: right;
+    /* min-width:0 é o que permite ao conteúdo encolher dentro do flex; sem ele,
+       a linha "telefone · e-mail" do contato empurrava a página 39px além da
+       viewport (medido a 390px). */
+    min-width: 0;
+  }
+
+  /* Texto secundário longo (telefone + e-mail juntos) precisa poder quebrar,
+     senão vira a fonte do overflow horizontal. `anywhere` fica restrito a
+     e-mail/código: aplicado no nome, ele quebraria "Nascimento" no meio. */
+  .tabela tbody td > * {
+    min-width: 0;
+  }
+
+  /* A célula do contato tem nome + telefone + e-mail. Empilha em vez de disputar
+     largura com o rótulo: com três blocos na mesma linha, o nome ficava numa
+     coluna de ~55px e quebrava no meio da palavra. */
+  .tabela tbody td[data-rotulo="Contato principal"] {
+    display: block;
+    text-align: left;
+  }
+
+  /* Número + nome do passageiro andam juntos: com o flex da célula, o "1."
+     ficava separado do nome nas pontas opostas da linha. */
+  .tabela tbody td[data-rotulo="Passageiro"] {
+    display: block;
+    text-align: left;
+  }
+
+  .tabela tbody td[data-rotulo="Passageiro"]::before {
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .tabela tbody td[data-rotulo="Contato principal"]::before {
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .tabela__secundario {
+    text-align: left;
+    /* Só aqui: e-mail longo não tem espaço onde quebrar naturalmente. */
+    overflow-wrap: anywhere;
+  }
+
+  /* O rótulo da coluna vira prefixo da célula: sem cabeçalho, o dado sozinho
+     não diz o que é. */
+  .tabela tbody td::before {
+    content: attr(data-rotulo);
+    color: var(--p-tinta-fraca);
+    font-size: 0.8125rem;
+    font-weight: 550;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  .tabela tbody td:first-child {
+    padding-top: 0;
+  }
+}
+
+@media (max-width: 560px) {
+  .ferramentas__exportar {
+    flex-direction: column;
+  }
+
+  .painel__topo {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--p-3);
+  }
+
+  .painel__acoes-topo .botao {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Movimento reduzido: o skeleton pulsa, então precisa de alternativa.
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+    background: var(--p-superficie-2);
+  }
+
+  .botao,
+  .filtro__opcao,
+  .campo-busca input {
+    transition: none;
+  }
+
+  .botao:active {
+    transform: none;
+  }
+}
+
+/* Impressão: a lista de embarque em papel é caso de uso real na porta do
+   ônibus, onde às vezes não há sinal. */
+@media print {
+  .painel__topo,
+  .ferramentas,
+  .painel__acoes-topo {
+    display: none !important;
+  }
+
+  .painel {
+    background: #ffffff;
+    font-size: 11pt;
+  }
+
+  .tabela-envolve {
+    border: 0;
+    box-shadow: none;
+  }
+
+  .tabela tbody tr:hover td {
+    background: none;
+  }
+
+  .etiqueta {
+    border: 1px solid #000000;
+    background: none !important;
+    color: #000000 !important;
+  }
+}

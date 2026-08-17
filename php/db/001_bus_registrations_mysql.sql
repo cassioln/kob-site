@@ -62,6 +62,9 @@ CREATE TABLE IF NOT EXISTS bus_registrations (
   -- Ultima vez que consultamos o Mercado Pago para reconciliar este cadastro.
   -- Existe para limitar a frequencia: a pagina faz polling a cada 5s e sem
   -- isso cada consulta viraria uma chamada ao provedor.
+  -- Idempotencia do e-mail de confirmacao: reentrega de webhook nao pode gerar
+  -- um segundo e-mail para a mesma reserva.
+  confirmation_email_sent_at DATETIME NULL COMMENT 'UTC',
   reconciled_at          DATETIME        NULL COMMENT 'UTC',
   created_at             DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'UTC',
   updated_at             DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'UTC',

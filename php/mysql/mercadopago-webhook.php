@@ -3,10 +3,11 @@
 declare(strict_types=1);
 
 // Libs agnósticas de banco continuam vindo de php/lib/.
-require dirname(__DIR__) . '/lib/validation.php';
-require __DIR__ . '/lib/db.php';
-require dirname(__DIR__) . '/lib/mercadopago.php';
-require dirname(__DIR__) . '/lib/mp-signature.php';
+require_once dirname(__DIR__) . '/lib/validation.php';
+require_once __DIR__ . '/lib/db.php';
+require_once dirname(__DIR__) . '/lib/mercadopago.php';
+require_once dirname(__DIR__) . '/lib/mp-signature.php';
+require_once __DIR__ . '/lib/confirmation-mailer.php';
 
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
     json_response(405, ['error' => 'Método não permitido.']);
@@ -92,7 +93,23 @@ try {
         ':id' => $registration['id'],
     ]);
 
-    json_response(200, ['received' => true, 'status' => $status]);
+    // E-mail de confirmação: disparado só quando a vaga foi efetivamente
+    // confirmada, e uma única vez por reserva (a marca fica em
+    // confirmation_email_sent_at). A falha no envio NÃO derruba o webhook:
+    // devolver 503 aqui faria o Mercado Pago reenviar a notificação por um
+    // problema de e-mail, quando o pagamento já está gravado corretamente.
+    $emailEnviado = null;
+    if ($status === 'confirmed') {
+        try {
+            $envio = bus_send_confirmation_email($pdo, $config, (string) $registration['id']);
+            $emailEnviado = $envio['ok'] ? 'enviado' : ($envio['motivo'] ?? 'nao_enviado');
+        } catch (Throwable $mailError) {
+            log_failure('confirmation-email', $mailError);
+            $emailEnviado = 'falhou';
+        }
+    }
+
+    json_response(200, ['received' => true, 'status' => $status, 'email' => $emailEnviado]);
 } catch (ValidationError $error) {
     json_response(400, ['error' => $error->getMessage()]);
 } catch (Throwable $error) {

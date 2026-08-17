@@ -392,12 +392,19 @@
     }
 
     confirmedPassengers.replaceChildren();
-    (snap.passengers || []).forEach(function (name, index) {
+    (snap.passengers || []).forEach(function (passenger, index) {
+      // Compatibilidade: snapshots antigos guardavam apenas a string do nome.
+      var name = typeof passenger === 'string' ? passenger : passenger.name;
+      var phone = typeof passenger === 'string' ? '' : (passenger.whatsapp || '');
+
       var item = document.createElement('li');
       var label = document.createElement('span');
       label.textContent = name;
       var tag = document.createElement('small');
-      tag.textContent = index === 0 ? 'Contato principal' : 'Passageiro ' + (index + 1);
+      var papel = index === 0 ? 'Contato principal' : 'Passageiro ' + (index + 1);
+      // Telefone junto do papel: quem confere a lista precisa do contato ao lado
+      // do nome, nao numa segunda coluna que o olho tem de cruzar.
+      tag.textContent = phone ? papel + ' · ' + maskWhatsapp(phone) : papel;
       item.append(label, tag);
       confirmedPassengers.appendChild(item);
     });
@@ -480,7 +487,11 @@
       orderId: payment.orderId,
       totalAmount: payment.totalAmount,
       childrenCount: Number(childrenCount.value || 0),
-      passengers: getPayload().passengers.map(function (p) { return p.full_name; })
+      // Nome e telefone: a organizacao usa o comprovante como referencia de
+      // contato do grupo, entao o telefone de quem informou vai junto.
+      passengers: getPayload().passengers.map(function (p) {
+        return { name: p.full_name, whatsapp: p.whatsapp || '' };
+      })
     };
     form.hidden = true;
     paymentPanel.hidden = false;
