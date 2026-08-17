@@ -170,8 +170,11 @@
         // label, para a pessoa não travar achando que precisa preencher.
         + '<div class="bus-field"><label for="passenger-' + position + '-whatsapp">WhatsApp do passageiro ' + position + ' <small>(opcional)</small></label>'
         + '<input id="passenger-' + position + '-whatsapp" aria-label="WhatsApp do passageiro ' + position + ' (opcional)" data-passenger-whatsapp type="tel" inputmode="tel" autocomplete="off" maxlength="15" placeholder="(11) 90000-0000"></div>'
-        // E-mail opcional para passageiros adicionais: segue o mesmo padrao visual do WhatsApp opcional.
-        + '<div class="bus-field"><label for="passenger-' + position + '-email">E-mail do passageiro ' + position + ' <small>(opcional)</small></label>'
+        // E-mail opcional do passageiro adicional. Ocupa a linha inteira
+        // (`--wide`), igual ao e-mail do contato principal: endereço longo
+        // truncaria visualmente num campo de meia largura, e é por ele que a
+        // confirmação chega.
+        + '<div class="bus-field bus-field--wide"><label for="passenger-' + position + '-email">E-mail do passageiro ' + position + ' <small>(opcional)</small></label>'
         + '<input id="passenger-' + position + '-email" aria-label="E-mail do passageiro ' + position + ' (opcional)" data-passenger-email type="email" autocomplete="email"></div>'
         + '</div>';
       passengerFields.appendChild(wrapper);
