@@ -276,3 +276,50 @@ test('falha de SMTP em um destinatario nao impede nem duplica os outros', () => 
   const c = disparar(estado, []);
   assert.deepEqual(c.enviados, [], 'terceira passagem nao deve enviar nada');
 });
+
+test('payload minimo por audiencia: template do cliente nao RECEBE cpf nem email', () => {
+  // Porta da regra de php/mysql/lib/confirmation-mailer.php.
+  //
+  // Antes havia UM conjunto de passageiros com cpf e email, entregue aos tres
+  // templates; a blindagem dependia de o template do cliente "escolher nao
+  // imprimir" esses campos. Isso e fragil: uma alteracao futura, um log de
+  // excecao que serialize o payload, ou um esquecimento vazariam CPF e e-mail de
+  // todos os passageiros para um unico destinatario.
+  //
+  // Agora sao DOIS conjuntos. O contrato provado aqui e estrutural: o dado
+  // sensivel nem chega ao template do cliente, entao nao ha o que ele imprima
+  // por engano.
+  function montarPayload(passageiros) {
+    return {
+      passengers: passageiros.map(p => ({
+        name: p.name, whatsapp: p.whatsapp, isPrimary: p.isPrimary,
+      })),
+      passengersAdmin: passageiros.map(p => ({
+        name: p.name, whatsapp: p.whatsapp, cpf: p.cpf, email: p.email,
+        isPrimary: p.isPrimary,
+      })),
+    };
+  }
+
+  const d = montarPayload([
+    { name: 'Mariana', whatsapp: '(11) 98765-4321', cpf: '126.842.132-40', email: 'mariana@x.com', isPrimary: true },
+    { name: 'Rafael', whatsapp: '(11) 91234-5678', cpf: '377.243.745-11', email: 'rafael@x.com', isPrimary: false },
+  ]);
+
+  // Conjunto do CLIENTE: cpf e email nem existem como chave.
+  for (const p of d.passengers) {
+    assert.ok(!('cpf' in p), `cpf chegou ao template do cliente: ${JSON.stringify(p)}`);
+    assert.ok(!('email' in p), `email chegou ao template do cliente: ${JSON.stringify(p)}`);
+    assert.ok(p.name, 'nome e necessario para listar quem embarca');
+  }
+
+  // Mesmo serializando o conjunto do cliente (log, var_dump), nada sensivel sai.
+  const serializado = JSON.stringify(d.passengers);
+  assert.ok(!/\d{3}\.\d{3}\.\d{3}-\d{2}/.test(serializado), 'CPF vazou na serializacao');
+  assert.ok(!/@/.test(serializado), 'e-mail vazou na serializacao');
+
+  // Conjunto do ADMIN: precisa ter tudo, senao a ficha interna fica inutil.
+  assert.equal(d.passengersAdmin.length, 2);
+  assert.equal(d.passengersAdmin[1].cpf, '377.243.745-11');
+  assert.equal(d.passengersAdmin[1].email, 'rafael@x.com');
+});

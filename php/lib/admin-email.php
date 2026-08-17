@@ -118,9 +118,9 @@ function bus_admin_email_html(array $dados): string
 
     // Tabela de passageiros. Cabeçalho com fundo próprio para a leitura não se
     // perder quando a lista tem muitas linhas.
-    if (!empty($dados['passengers'])) {
+    if (!empty($dados['passengersAdmin'])) {
         $linhas = '';
-        foreach ($dados['passengers'] as $p) {
+        foreach ($dados['passengersAdmin'] as $p) {
             $fundo = !empty($p['isPrimary']) ? 'background:rgba(41,195,245,0.08);' : '';
             $peso = !empty($p['isPrimary']) ? '700' : '400';
             $marca = !empty($p['isPrimary']) ? ' *' : '';
@@ -205,10 +205,10 @@ function bus_admin_email_text(array $dados): string
             ? ' pagantes + ' . $dados['childrenCount'] . ' de colo'
             : ' pagante(s)');
 
-    if (!empty($dados['passengers'])) {
+    if (!empty($dados['passengersAdmin'])) {
         $linhas[] = '';
         $linhas[] = 'PASSAGEIROS';
-        foreach ($dados['passengers'] as $i => $p) {
+        foreach ($dados['passengersAdmin'] as $i => $p) {
             $linhas[] = ($i + 1) . '. ' . $p['name']
                 . (!empty($p['isPrimary']) ? ' (responsavel)' : '');
             $linhas[] = '   CPF: ' . ($p['cpf'] ?? '-');

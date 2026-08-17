@@ -79,12 +79,19 @@ function bus_confirmation_email_html(array $dados): string
         $mono = str_contains($rotulo, 'Transação') || str_contains($rotulo, 'Código')
             ? 'font-family:\'Courier New\',Courier,monospace;letter-spacing:0.06em;word-break:break-all;'
             : '';
+        // Escapa rótulo e valor. `orderId` vem de API externa (Mercado Pago),
+        // então não é dado que controlamos: confiar no formato dele quebraria o
+        // invariante "todo dado dinâmico passa pelo escaper", documentado em
+        // email-parts.php. O rótulo "Rota" traz `&rarr;` de propósito, e é o
+        // único caso, então ele é montado depois do escape.
+        $rotuloSeguro = $rotulo === 'Rota' ? $rotulo : $e($rotulo);
+        $valorSeguro = $rotulo === 'Rota' ? $valor : $e($valor);
         $linhasFatos .= '
             <tr>
               <td style="' . $borda . 'padding:13px 0;font:400 13px/1.4 Arial,Helvetica,sans-serif;color:rgba(13,34,66,0.72);">'
-                . $rotulo . '</td>
+                . $rotuloSeguro . '</td>
               <td style="' . $borda . 'padding:13px 0;font:700 14px/1.4 Arial,Helvetica,sans-serif;color:#0d2242;text-align:right;' . $mono . '">'
-                . $valor . '</td>
+                . $valorSeguro . '</td>
             </tr>';
     }
 

@@ -145,14 +145,28 @@ function bus_confirmation_payload(PDO $pdo, string $registrationId): array
             'contactCpf' => bus_format_cpf((string) $reg['primary_cpf']),
             'contactEmail' => (string) $reg['email'],
             'contactWhatsapp' => bus_format_phone((string) $reg['whatsapp']),
+            // DOIS conjuntos de passageiros, de propósito. A blindagem contra
+            // vazamento não pode depender de o template "escolher não imprimir"
+            // um campo: qualquer alteração futura, um log de exceção que serialize
+            // $dados, ou um esquecimento passariam a expor CPF e e-mail de todos
+            // os passageiros a um único destinatário.
+            //
+            // `passengers` é o conjunto MÍNIMO (só nome, telefone e quem é o
+            // responsável) e vai para os e-mails do cliente. `passengersAdmin`
+            // tem CPF e e-mail, e só o admin-email.php usa.
             'passengers' => array_map(
                 static fn ($p) => [
                     'name' => $p['name'],
                     'whatsapp' => $p['whatsapp'],
+                    'isPrimary' => $p['isPrimary'],
+                ],
+                $passageiros
+            ),
+            'passengersAdmin' => array_map(
+                static fn ($p) => [
+                    'name' => $p['name'],
+                    'whatsapp' => $p['whatsapp'],
                     'cpf' => $p['cpf'],
-                    // O e-mail entra aqui porque a ficha administrativa lista o
-                    // contato de cada passageiro. Os templates do cliente NÃO
-                    // imprimem este campo: só o admin-email usa.
                     'email' => $p['email'],
                     'isPrimary' => $p['isPrimary'],
                 ],
