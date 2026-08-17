@@ -1348,41 +1348,39 @@
   display: none;
 }
 
-.bus-confirmed__group-header {
+.bus-confirmed__manifest-header {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 16px;
+  justify-content: space-between;
+  gap: 12px;
 }
 
-.bus-confirmed__group-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  background: rgba(123, 31, 162, 0.08);
-  color: var(--kriativa-purple);
-  flex-shrink: 0;
+@keyframes groupBadgeGlow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 174, 239, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(0, 174, 239, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 174, 239, 0);
+  }
 }
 
-.bus-confirmed__group-icon svg {
-  width: 28px;
-  height: 28px;
-}
-
-.bus-confirmed__group-headings {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.bus-confirmed__group-headings h3 {
-  margin: 0;
-  color: var(--bus-ink);
-  font-size: 1.1rem;
-  font-weight: 800;
-  line-height: 1.25;
+@keyframes groupBadgeEntrance {
+  0% {
+    opacity: 0;
+    transform: scale(0.92) translateY(6px);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.03) translateY(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 .bus-confirmed__group-badge {
@@ -1390,25 +1388,43 @@
   align-items: center;
   gap: 8px;
   width: fit-content;
-  padding: 3px 10px;
-  border: 1px solid rgba(0, 174, 239, 0.3);
-  border-radius: 6px;
-  background: var(--bus-cyan-soft, #dff6ff);
+  padding: 6px 14px;
+  border: 1px solid rgba(0, 174, 239, 0.4);
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(0, 174, 239, 0.14), rgba(123, 31, 162, 0.08));
+  box-shadow: 0 2px 12px rgba(0, 174, 239, 0.12);
+}
+
+.bus-confirmed__group-badge:not([hidden]) {
+  animation: groupBadgeEntrance 500ms var(--ease-expo) both, groupBadgeGlow 2.4s ease-out 600ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bus-confirmed__group-badge:not([hidden]) {
+    animation: none;
+  }
 }
 
 .bus-confirmed__group-badge-label {
   color: #00709e;
   font-size: 0.72rem;
   font-weight: 800;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
+  background: rgba(0, 174, 239, 0.16);
+  padding: 2px 8px;
+  border-radius: 4px;
 }
 
 .bus-confirmed__group-badge strong,
-.bus-confirmed__group-name strong {
+#confirmed-group-name {
   color: var(--bus-ink);
-  font-size: 0.95rem;
+  font-family: var(--font-display, inherit);
+  font-size: 1.18rem;
   font-weight: 800;
+  letter-spacing: 0.05em;
+  line-height: 1.1;
+  text-transform: uppercase;
 }
 
 .bus-confirmed__group-text {

@@ -37,6 +37,7 @@
   var confirmedChildren = document.getElementById('confirmed-children');
   var confirmedGroup = document.getElementById('confirmed-group');
   var confirmedGroupName = document.getElementById('confirmed-group-name');
+  var confirmedGroupBadge = document.getElementById('confirmed-group-badge');
   var confirmedIssued = document.getElementById('confirmed-issued');
   var confirmedOrder = document.getElementById('confirmed-order');
   var stillHereDialog = document.getElementById('still-here-dialog');
@@ -439,13 +440,14 @@
     // Exibe o bloco do grupo exclusivo apenas se houver um nome de grupo definido no servidor.
     // Reservas individuais nao possuem grupo (groupName e null ou vazio), mantendo o bloco oculto.
     var gName = data && typeof data.groupName === 'string' ? data.groupName.trim() : '';
-    if (confirmedGroup && confirmedGroupName) {
-      if (gName.length > 0) {
-        confirmedGroupName.textContent = gName;
-        confirmedGroup.hidden = false;
-      } else {
-        confirmedGroup.hidden = true;
-      }
+    if (confirmedGroupName) {
+      confirmedGroupName.textContent = gName;
+    }
+    if (confirmedGroupBadge) {
+      confirmedGroupBadge.hidden = gName.length === 0;
+    }
+    if (confirmedGroup) {
+      confirmedGroup.hidden = gName.length === 0;
     }
 
     confirmationPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
