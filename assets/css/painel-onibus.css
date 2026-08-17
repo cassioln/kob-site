@@ -714,13 +714,9 @@
   color: rgba(255, 255, 255, 0.72);
 }
 
-.painel-footer__inner,
-.painel-footer__powered {
+.painel-footer__inner {
   max-width: 1240px;
   margin: 0 auto;
-}
-
-.painel-footer__inner {
   display: flex;
   align-items: center;
   gap: var(--p-5);
@@ -742,28 +738,51 @@
   font-size: 0.875rem;
 }
 
+/* Assinatura de quem fez o site, na mesma formatação da home
+   (.ksio-powered-line em main.css): texto 1rem com tracking de 0.035em, link em
+   1.2rem peso 700 sem sublinhado, e alvo de toque de 44px de altura.
+   As cores da marca aparecem em hex literal porque o painel não carrega
+   main.css e portanto não tem as custom properties --ocean-cyan / --foam-white.
+   Centralizado, como pedido — na home fica à direita porque divide a linha com
+   o bloco legal; aqui ocupa a faixa inteira, então centro é o eixo natural. */
 .painel-footer__powered {
-  margin-top: var(--p-4);
+  max-width: 1240px;
+  margin: var(--p-4) auto 0;
   padding-top: var(--p-3);
   border-top: 1px solid rgba(255, 255, 255, 0.14);
-  color: rgba(255, 255, 255, 0.62);
-  font-size: 0.8125rem;
+  /* Mesmo tom da home. O valor lá é `color-mix(in oklab, foam-white 52%,
+     ocean-cyan)`, que resolve para rgb(171, 227, 252) — medido renderizando a
+     cor num canvas, não estimado. Fica em hex porque o painel não carrega
+     main.css e não tem as custom properties da marca. */
+  color: #abe3fc;
+  font-size: 1rem;
+  letter-spacing: 0.035em;
+  text-align: center;
 }
 
 .painel-footer__powered a {
+  /* inline-flex + min-height 44px: mesmo alvo de toque da home. Com o pai
+     centralizado, precisa de align-items para o texto não colar no topo. */
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
   color: #29c3f5;
-  font-weight: 600;
-  text-decoration: underline;
-  text-underline-offset: 2px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 0.035em;
+  text-decoration: none;
+  transition: color var(--p-transicao);
 }
 
 .painel-footer__powered a:hover {
   color: #ffffff;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .painel-footer__powered a:focus-visible {
   outline: 2px solid #29c3f5;
-  outline-offset: 3px;
+  outline-offset: 5px;
 }
 
 @media (max-width: 560px) {

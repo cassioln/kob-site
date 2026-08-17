@@ -901,28 +901,46 @@
   width: 104px;
 }
 
-/* Assinatura de quem fez o site. Régua acima para separar dos links sem
-   precisar de mais um bloco, e tamanho menor porque é crédito, não navegação. */
+/* Assinatura de quem fez o site, na mesma formatação da home
+   (.ksio-powered-line em main.css): texto 1rem com tracking de 0.035em, link em
+   1.2rem peso 700 sem sublinhado, alvo de toque de 44px. Régua acima para
+   separar dos links de navegação, e centralizado porque ocupa a faixa inteira. */
 .bus-footer__powered {
   margin-top: var(--s-lg);
   padding-top: var(--s-md);
   border-top: 1px solid rgba(255, 255, 255, 0.14);
-  color: rgba(255, 255, 255, 0.62);
-  font-size: 0.8125rem;
+  color: color-mix(in oklab, var(--foam-white) 52%, var(--ocean-cyan));
+  font-size: 1rem;
+  letter-spacing: 0.035em;
+  text-align: center;
 }
 
-.bus-footer__powered a {
+/* `.bus-footer__powered a` empata em especificidade com `.bus-footer a` (linha 54,
+   que impõe 0.75rem em maiúsculas para os links de navegação) e perde por vir
+   antes na cascata. O seletor descendente resolve sem !important: medido, o link
+   estava saindo em 12px em vez de 19.2px. */
+.bus-footer .bus-footer__powered a {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
   color: var(--ocean-cyan);
-  font-size: inherit;
-  font-weight: 600;
-  letter-spacing: normal;
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 0.035em;
   text-transform: none;
-  text-decoration: underline;
-  text-underline-offset: 2px;
+  text-decoration: none;
+  transition: color 180ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
-.bus-footer__powered a:hover {
+.bus-footer .bus-footer__powered a:hover {
   color: var(--foam-white);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.bus-footer .bus-footer__powered a:focus-visible {
+  outline: 2px solid var(--ocean-cyan);
+  outline-offset: 5px;
 }
 
 .bus-footer p {

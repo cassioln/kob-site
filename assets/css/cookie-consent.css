@@ -858,14 +858,38 @@
   text-underline-offset: 4px;
 }
 
-/* Crédito de quem fez o site: linha própria, com régua acima. O rodapé é flex
-   com space-between, então sem o flex-basis de 100% o crédito disputaria a
-   mesma linha do link de voltar e a leitura ficaria confusa. */
+/* Crédito de quem fez o site: linha própria centralizada, com régua acima. O
+   rodapé é flex com space-between, então sem o flex-basis de 100% o crédito
+   disputaria a mesma linha do link de voltar.
+
+   Tipografia igual à da home (1rem, tracking 0.035em, link 1.2rem peso 700,
+   alvo de 44px), mas NÃO as cores: esta página tem fundo claro (#eef4fb), e o
+   tom claro da home dá 1.25:1 sobre ele — ilegível. Aqui o roxo da marca já
+   usado nos outros links do rodapé rende 7.1:1. */
 .cookie-policy__powered {
   flex: 1 0 100%;
   padding-top: 14px;
   border-top: 1px solid color-mix(in srgb, var(--consent-ink, #0d2242) 14%, transparent);
-  font-size: 0.8125rem;
+  color: color-mix(in srgb, var(--consent-ink, #0d2242) 72%, #ffffff);
+  font-size: 1rem;
+  letter-spacing: 0.035em;
+  text-align: center;
+}
+
+.cookie-policy__powered a {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  color: var(--consent-purple-deep, #57127a);
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 0.035em;
+  text-decoration: none;
+}
+
+.cookie-policy__powered a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 @media (max-width: 520px) {
