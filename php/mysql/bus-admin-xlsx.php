@@ -169,6 +169,19 @@ try {
         'todas' => 'todas as reservas',
     ][$filtro] ?? $filtro;
 
+    // Estado vazio: uma planilha só com cabeçalho parece exportação que falhou.
+    // Uma linha dizendo o que aconteceu evita a dúvida "quebrou ou está vazio?".
+    if (!$linhas) {
+        $linhas[] = [
+            'estilo' => 'normal',
+            'celulas' => [
+                $busca !== ''
+                    ? 'Nenhum passageiro corresponde ao filtro e a busca aplicados.'
+                    : 'Nenhuma reserva neste filtro ainda.',
+            ],
+        ];
+    }
+
     $bytes = xlsx_build([
         'nome' => 'Passageiros',
         'titulo' => 'Kriativos On Board 2026 · Transporte fretado · Passageiros',

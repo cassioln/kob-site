@@ -110,6 +110,31 @@ function bus_boarding_pdf(array $reservas, ?array $logo = null): string
 
     [$blocos, $y] = $abrirPagina($numeroPagina);
 
+    // Estado vazio: sem nenhuma reserva paga, a folha sairia com "0 reserva(s)" e
+    // a legenda do asterisco sem nada para explicar, o que parece defeito. Melhor
+    // dizer o que aconteceu e o que esperar.
+    if (!$reservas) {
+        $blocos[] = ['tipo' => 'texto', 'x' => $esq, 'y' => $y - 6,
+                     'texto' => 'Nenhuma reserva paga ainda.', 'tamanho' => 13,
+                     'negrito' => true];
+        $blocos[] = ['tipo' => 'texto', 'x' => $esq, 'y' => $y - 26,
+                     'texto' => 'A lista passa a ser preenchida conforme os pagamentos sao confirmados.',
+                     'tamanho' => 10];
+        $blocos[] = ['tipo' => 'texto', 'x' => $esq, 'y' => $y - 42,
+                     'texto' => 'Somente reservas com pagamento aprovado aparecem aqui.',
+                     'tamanho' => 10];
+
+        // Rodapé sem a legenda do asterisco, que aqui não explicaria nada.
+        $blocos[] = ['tipo' => 'linha', 'x1' => $esq, 'y1' => PDF_MARGEM + 26,
+                     'x2' => $dir, 'y2' => PDF_MARGEM + 26, 'espessura' => 0.5];
+        $pag = 'Pagina 1 de 1';
+        $blocos[] = ['tipo' => 'texto',
+                     'x' => $dir - pdf_largura_texto($pag, 8) - 2,
+                     'y' => PDF_MARGEM + 12, 'texto' => $pag, 'tamanho' => 8];
+
+        return pdf_montar_multipagina([$blocos], $logo !== null ? ['Logo' => $logo] : []);
+    }
+
     foreach ($reservas as $indice => $r) {
         // Altura do bloco: cabeçalho da reserva + uma linha por passageiro.
         $alturaBloco = 26 + (count($r['passageiros']) * EMBARQUE_LINHA)

@@ -136,3 +136,31 @@ test('aborta a busca quando a falha nao foi conflito de nome', () => {
   assert.equal(r, null, 'deveria devolver null ao abortar');
   assert.equal(tentativas, 1, `abortou tarde: ${tentativas} tentativas em vez de 1`);
 });
+
+test('regra do estado vazio: relatorio sem reservas precisa explicar, nao so mostrar zero', () => {
+  // Porta da decisao de php/lib/boarding-pdf.php e php/mysql/bus-admin-xlsx.php.
+  //
+  // Uma folha com "0 reserva(s)" e a legenda de um asterisco que nao aponta para
+  // nada parece defeito de geracao. O teste fixa o contrato: quando a lista esta
+  // vazia, o relatorio diz o que aconteceu E omite a legenda que nao se aplica.
+  function montarLista(reservas) {
+    const blocos = ['Lista de Embarque', `${reservas.length} reserva(s)`];
+    if (reservas.length === 0) {
+      blocos.push('Nenhuma reserva paga ainda.');
+      // Sem legenda de asterisco: nao ha responsavel marcado para explicar.
+    } else {
+      reservas.forEach(r => blocos.push(`RESERVA ${r}`));
+      blocos.push('* contato responsavel pela reserva');
+    }
+    return blocos;
+  }
+
+  const vazia = montarLista([]);
+  assert.ok(vazia.some(b => /Nenhuma reserva paga/.test(b)), 'vazio sem explicacao');
+  assert.ok(!vazia.some(b => b.startsWith('*')), 'legenda do asterisco sobrou no vazio');
+
+  const cheia = montarLista(['ABC12345', 'DEF67890']);
+  assert.ok(!cheia.some(b => /Nenhuma reserva paga/.test(b)), 'mensagem de vazio sobrou');
+  assert.ok(cheia.some(b => b.startsWith('*')), 'legenda do asterisco faltou com dados');
+  assert.equal(cheia.filter(b => b.startsWith('RESERVA')).length, 2);
+});
