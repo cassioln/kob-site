@@ -43,6 +43,8 @@ RewriteRule ^api/bus-registration-status/?$   php/mysql/bus-registration-status.
 RewriteRule ^api/bus-manifest/?$              php/mysql/bus-manifest.php [QSA,L]
 # Dados do painel da organizacao (JSON agregado). Mesmo token do manifest.
 RewriteRule ^api/bus-admin-data/?$            php/mysql/bus-admin-data.php [QSA,L]
+# Exportacao .xlsx do painel. Mesmo token do manifest.
+RewriteRule ^api/bus-admin-xlsx/?$            php/mysql/bus-admin-xlsx.php [QSA,L]
 RewriteRule ^api/bus-payment-proof/?$         php/mysql/bus-payment-proof.php [QSA,L]
 RewriteRule ^api/mercadopago-webhook/?$       php/mysql/mercadopago-webhook.php [QSA,L]
 

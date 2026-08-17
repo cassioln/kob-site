@@ -103,21 +103,45 @@
   border-bottom: 1px solid var(--p-linha);
 }
 
-.painel__marca {
+.painel__titulo-bloco {
   display: flex;
   flex-direction: column;
   gap: 2px;
 }
 
-.painel__marca-nome {
-  font-size: 0.9375rem;
+.painel__titulo-principal {
+  margin: 0;
+  font-size: 1.0625rem;
   font-weight: 650;
   letter-spacing: -0.01em;
 }
 
-.painel__marca-contexto {
+.painel__subtitulo {
+  margin: 0;
   color: var(--p-tinta-fraca);
   font-size: 0.8125rem;
+}
+
+/* Logo no canto superior direito, como pedido. Âncora para a home, não
+   decoração: por isso é um link, e o alvo de toque respeita 44px mesmo com a
+   imagem sendo menor. */
+.painel__logo {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  min-height: 44px;
+  padding: 4px;
+}
+
+.painel__logo img {
+  width: 132px;
+  height: auto;
+}
+
+.painel__logo:focus-visible {
+  outline: 2px solid var(--p-acao);
+  outline-offset: 3px;
+  border-radius: var(--p-raio-p);
 }
 
 .painel__conteudo {
@@ -455,6 +479,74 @@
 
 .tabela__col-num {
   width: 84px;
+}
+
+/* CPF em tabular-nums e monoespaçada: colunas de dígitos precisam alinhar
+   verticalmente para o olho comparar, e a fonte proporcional desalinha. */
+.tabela__col-cpf {
+  width: 132px;
+}
+
+.tabela__cpf {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Selo do contato responsável. Vai junto do nome, não em coluna própria: quem
+   confere procura uma pessoa, e a informação "é o responsável" pertence à
+   linha dela. A estrela tem aria-hidden porque o texto ao lado já diz. */
+.tabela__selo-responsavel {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: var(--p-2);
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--p-acao-fraca);
+  color: var(--p-acao-escura);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  vertical-align: 1px;
+}
+
+/* Aviso de nova reserva: aparece na linha do passageiro cuja reserva antiga
+   cancelou/falhou, apontando para onde ele reapareceu. É a informação que evita
+   a organização cobrar quem já pagou, então precisa de peso visual próprio,
+   sem virar alarme vermelho: o problema já foi resolvido pela pessoa.
+   Fundo tingido + ícone, não faixa colorida na borda esquerda. */
+.tabela__nova-reserva {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 5px;
+  padding: 5px 9px;
+  border: 1px solid color-mix(in srgb, var(--p-acao) 22%, transparent);
+  border-radius: var(--p-raio-p);
+  background: var(--p-acao-fraca);
+  color: var(--p-tinta);
+  font-size: 0.75rem;
+  line-height: 1.35;
+}
+
+.tabela__nova-reserva__icone {
+  flex: 0 0 auto;
+  color: var(--p-acao-escura);
+  font-weight: 700;
+}
+
+.tabela__nova-reserva code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.tabela__nova-reserva .etiqueta {
+  font-size: 0.6875rem;
+  padding: 1px 6px;
 }
 
 .tabela__codigo {

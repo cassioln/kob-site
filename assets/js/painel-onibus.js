@@ -1,4 +1,4 @@
-/* Painel da organização — transporte fretado.
+/* Painel de gestão de reservas — transporte fretado.
  *
  * Somente leitura. Nenhuma ação aqui altera reserva: mudar status de pagamento
  * pela interface abriria caminho para confirmar vaga sem lastro no Mercado Pago.
@@ -39,7 +39,7 @@
 
   var estado = {
     reservas: [],
-    filtro: 'confirmed',
+    filtro: 'pago',
     busca: '',
     token: ''
   };
@@ -52,42 +52,45 @@
     });
   }
 
-  function textoStatus(status) {
-    if (status === 'confirmed') return { rotulo: 'Pago', classe: 'etiqueta--ok' };
-    if (status === 'payment_pending') return { rotulo: 'Aguardando', classe: 'etiqueta--espera' };
-    if (status === 'paid_awaiting_proof') return { rotulo: 'Em análise', classe: 'etiqueta--espera' };
-    if (status === 'cancelled' || status === 'failed') return { rotulo: 'Cancelado', classe: 'etiqueta--falha' };
-    return { rotulo: status || '—', classe: 'etiqueta--espera' };
-  }
-
   function plural(n, singular, pluralForma) {
     return n + ' ' + (n === 1 ? singular : pluralForma);
+  }
+
+  function badge(rotulo, tom) {
+    var span = document.createElement('span');
+    span.className = 'etiqueta etiqueta--' + tom;
+    span.textContent = rotulo;
+    return span;
   }
 
   // ---- montagem da tabela ------------------------------------------------
 
   /**
-   * Achata reservas em linhas de passageiro, que é o formato útil na conferência:
-   * quem está na porta do ônibus procura UMA pessoa, não um grupo.
+   * Achata reservas em linhas de passageiro, que é o formato útil na
+   * conferência: quem está na porta do ônibus procura UMA pessoa, não um grupo.
    */
   function linhasVisiveis() {
     var termo = estado.busca.trim().toLowerCase();
     var linhas = [];
 
     estado.reservas.forEach(function (reserva) {
-      if (estado.filtro !== 'todas' && reserva.status !== estado.filtro) return;
+      if (estado.filtro !== 'todas' && reserva.status_chave !== estado.filtro) return;
 
       var passageiros = reserva.passageiros.length
         ? reserva.passageiros
         // Reserva sem passageiro gravado ainda: mostra o contato, para a linha
         // não desaparecer da conferência.
-        : [{ posicao: 1, nome: reserva.contato, whatsapp: null }];
+        : [{
+            posicao: 1, nome: reserva.contato, cpf: reserva.contato_cpf,
+            whatsapp: reserva.contato_whatsapp, responsavel: true, nova_reserva: null
+          }];
 
       passageiros.forEach(function (p, i) {
         if (termo) {
           var alvo = [
-            reserva.code, reserva.contato, reserva.email,
-            reserva.contato_whatsapp, p.nome, p.whatsapp || '', reserva.order_id || ''
+            reserva.code, reserva.contato, reserva.email, reserva.contato_whatsapp,
+            reserva.contato_cpf, p.nome, p.cpf || '', p.whatsapp || '',
+            reserva.order_id || '', reserva.status_rotulo
           ].join(' ').toLowerCase();
           if (alvo.indexOf(termo) === -1) return;
         }
@@ -105,14 +108,17 @@
     linhas.forEach(function (linha) {
       var r = linha.reserva;
       var p = linha.passageiro;
+      var primeiro = linha.primeiroDoGrupo;
       var tr = document.createElement('tr');
-      if (linha.primeiroDoGrupo) tr.dataset.grupoInicio = 'true';
+      if (primeiro) tr.dataset.grupoInicio = 'true';
 
       function celula(rotulo, conteudo, classe) {
         var td = document.createElement('td');
         td.dataset.rotulo = rotulo;
         if (classe) td.className = classe;
-        if (typeof conteudo === 'string') {
+        if (conteudo == null) {
+          td.textContent = '';
+        } else if (typeof conteudo === 'string') {
           td.textContent = conteudo;
         } else {
           td.appendChild(conteudo);
@@ -121,21 +127,60 @@
         return td;
       }
 
-      // Reserva: só no primeiro do grupo, para o olho ler por bloco.
+      // Reserva, Grupo, Status e Pago em aparecem SÓ na primeira linha do grupo.
+      // Repetir em cada passageiro triplicava a mesma informação e fazia o olho
+      // reler dado idêntico; vazio deixa o bloco visualmente coeso.
       var reservaSpan = document.createElement('span');
       reservaSpan.className = 'tabela__codigo';
-      reservaSpan.textContent = linha.primeiroDoGrupo ? r.code : '';
+      reservaSpan.textContent = primeiro ? r.code : '';
       celula('Reserva', reservaSpan);
 
-      var nomeWrap = document.createDocumentFragment();
+      // Passageiro: número, nome, selo de responsável e aviso de nova reserva.
+      var nomeWrap = document.createElement('div');
+      var linhaNome = document.createElement('div');
       var pos = document.createElement('span');
       pos.className = 'tabela__posicao';
       pos.textContent = p.posicao + '.';
       var nome = document.createElement('span');
       nome.className = 'tabela__nome';
       nome.textContent = ' ' + p.nome;
-      nomeWrap.append(pos, nome);
+      linhaNome.append(pos, nome);
+
+      if (p.responsavel) {
+        var selo = document.createElement('span');
+        selo.className = 'tabela__selo-responsavel';
+        var estrela = document.createElement('span');
+        estrela.setAttribute('aria-hidden', 'true');
+        estrela.textContent = '★';
+        var textoSelo = document.createElement('span');
+        textoSelo.textContent = 'Responsável';
+        selo.append(estrela, textoSelo);
+        linhaNome.appendChild(selo);
+      }
+      nomeWrap.appendChild(linhaNome);
+
+      if (p.nova_reserva) {
+        var aviso = document.createElement('div');
+        aviso.className = 'tabela__nova-reserva';
+        var icone = document.createElement('span');
+        icone.className = 'tabela__nova-reserva__icone';
+        icone.setAttribute('aria-hidden', 'true');
+        icone.textContent = '↻';
+        var texto = document.createElement('span');
+        texto.append(document.createTextNode('Nova reserva: '));
+        var cod = document.createElement('code');
+        cod.textContent = p.nova_reserva.code;
+        texto.appendChild(cod);
+        aviso.append(icone, texto, badge(p.nova_reserva.rotulo, p.nova_reserva.tom));
+        // Título explica o motivo para quem passa o mouse, sem depender de
+        // tooltip customizado (que não funciona por teclado nem em toque).
+        aviso.title = 'Este passageiro aparece em uma reserva mais recente ('
+          + p.nova_reserva.code + ' · ' + p.nova_reserva.rotulo + ').';
+        nomeWrap.appendChild(aviso);
+      }
       celula('Passageiro', nomeWrap);
+
+      celula('CPF', p.cpf || '—', 'tabela__cpf');
 
       if (p.whatsapp) {
         celula('WhatsApp', p.whatsapp, 'tabela__tel');
@@ -143,25 +188,14 @@
         celula('WhatsApp', 'não informado', 'tabela__tel tabela__tel--vazio');
       }
 
-      var contatoWrap = document.createDocumentFragment();
-      var contatoNome = document.createElement('span');
-      contatoNome.textContent = r.contato;
-      var contatoInfo = document.createElement('span');
-      contatoInfo.className = 'tabela__secundario';
-      contatoInfo.textContent = r.contato_whatsapp + ' · ' + r.email;
-      contatoWrap.append(contatoNome, contatoInfo);
-      celula('Contato principal', contatoWrap);
-
-      var grupo = r.pagantes + (r.criancas > 0 ? ' + ' + r.criancas + ' colo' : '');
+      var grupo = primeiro
+        ? r.pagantes + (r.criancas > 0 ? ' + ' + r.criancas + ' colo' : '')
+        : '';
       celula('Grupo', grupo, 'tabela__num');
 
-      var st = textoStatus(r.status);
-      var etiqueta = document.createElement('span');
-      etiqueta.className = 'etiqueta ' + st.classe;
-      etiqueta.textContent = st.rotulo;
-      celula('Situação', etiqueta);
+      celula('Status', primeiro ? badge(r.status_rotulo, r.status_tom) : null);
 
-      celula('Pago em', r.pago_em || '—', 'tabela__num');
+      celula('Pago em', primeiro ? (r.pago_em || '—') : '', 'tabela__num');
 
       el.corpo.appendChild(tr);
     });
@@ -181,90 +215,31 @@
     el.rTotal.textContent = resumo.total_a_bordo;
     el.rTotalNota.textContent = plural(resumo.pagantes, 'pagante', 'pagantes')
       + ' + ' + plural(resumo.criancas_no_colo, 'criança no colo', 'crianças no colo');
-    el.rReservas.textContent = resumo.reservas_confirmadas;
-    el.rPendentes.textContent = resumo.reservas_pendentes > 0
-      ? plural(resumo.reservas_pendentes, 'pendente', 'pendentes')
-      : 'nenhuma pendente';
+    el.rReservas.textContent = resumo.reservas_pagas;
+    var pend = [];
+    if (resumo.reservas_pendentes > 0) pend.push(resumo.reservas_pendentes + ' aguardando');
+    if (resumo.reservas_falha > 0) pend.push(resumo.reservas_falha + ' cancelada(s)/falha');
+    el.rPendentes.textContent = pend.length ? pend.join(' · ') : 'nada pendente';
     el.rReceita.textContent = 'R$ ' + resumo.receita;
     el.rSemTelefone.textContent = resumo.sem_telefone;
   }
 
-  // ---- exportação --------------------------------------------------------
+  // ---- exportação Excel ---------------------------------------------------
 
   /**
-   * Exporta em SpreadsheetML 2003 (.xls), que o Excel abre nativamente.
+   * Exporta o que está na tela em .xlsx, gerado no servidor.
    *
-   * Por que não CSV aqui: CSV perde tipo de dado — o Excel transforma o código
-   * da reserva em número quando parece número, e telefone com zero à esquerda
-   * perde o zero. SpreadsheetML declara cada célula como texto, então o dado
-   * chega intacto. Por que não .xlsx de verdade: exigiria montar um ZIP no
-   * navegador, o que não se paga para uma planilha simples.
-   *
-   * O CSV continua disponível no botão "Baixar lista de embarque", que é o
-   * formato pedido por quem só quer imprimir.
+   * O arquivo é montado em PHP porque .xlsx é um ZIP com vários XMLs dentro:
+   * fazer isso no navegador exigiria uma biblioteca de ZIP, e o servidor já tem
+   * ZipArchive. O navegador só dispara o download com o filtro atual.
    */
   function exportarExcel() {
-    var linhas = linhasVisiveis();
-    if (!linhas.length) return;
-
-    function esc(v) {
-      return String(v == null ? '' : v)
-        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    var url = 'api/bus-admin-xlsx?token=' + encodeURIComponent(estado.token)
+      + '&filtro=' + encodeURIComponent(estado.filtro);
+    if (estado.busca.trim()) {
+      url += '&busca=' + encodeURIComponent(estado.busca.trim());
     }
-
-    var colunas = [
-      'Reserva', 'Nº', 'Passageiro', 'WhatsApp do passageiro',
-      'Contato principal', 'WhatsApp do contato', 'E-mail',
-      'Pagantes', 'Crianças (colo)', 'Valor pago', 'Situação', 'Pago em', 'Transação'
-    ];
-
-    var xml = '<?xml version="1.0" encoding="UTF-8"?>'
-      + '<?mso-application progid="Excel.Sheet"?>'
-      + '<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"'
-      + ' xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">'
-      + '<Styles>'
-      + '<Style ss:ID="cab"><Font ss:Bold="1"/>'
-      + '<Interior ss:Color="#EEF2F8" ss:Pattern="Solid"/></Style>'
-      + '</Styles>'
-      + '<Worksheet ss:Name="Passageiros"><Table>';
-
-    xml += '<Row>' + colunas.map(function (c) {
-      return '<Cell ss:StyleID="cab"><Data ss:Type="String">' + esc(c) + '</Data></Cell>';
-    }).join('') + '</Row>';
-
-    linhas.forEach(function (l) {
-      var r = l.reserva;
-      var p = l.passageiro;
-      var valores = [
-        r.code, p.posicao, p.nome, p.whatsapp || '',
-        r.contato, r.contato_whatsapp, r.email,
-        r.pagantes, r.criancas, 'R$ ' + r.valor,
-        textoStatus(r.status).rotulo, r.pago_em || '', r.order_id || ''
-      ];
-      xml += '<Row>' + valores.map(function (v) {
-        return '<Cell><Data ss:Type="String">' + esc(v) + '</Data></Cell>';
-      }).join('') + '</Row>';
-    });
-
-    xml += '</Table></Worksheet></Workbook>';
-
-    var hoje = new Date().toISOString().slice(0, 10);
-    baixar(xml, 'passageiros-kob2026-' + hoje + '.xls',
-      'application/vnd.ms-excel;charset=utf-8');
-  }
-
-  function baixar(conteudo, nome, tipo) {
-    // BOM: sem ele o Excel no Windows exibe acentuação quebrada.
-    var blob = new Blob(['\ufeff' + conteudo], { type: tipo });
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement('a');
-    a.href = url;
-    a.download = nome;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    // Revoga depois: revogar imediatamente cancela o download em alguns navegadores.
-    window.setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+    window.location.href = url;
   }
 
   // ---- carregamento ------------------------------------------------------
@@ -296,7 +271,7 @@
           return;
         }
 
-        el.baixarLista.href = API_LISTA + '?token=' + encodeURIComponent(estado.token) + '&format=csv';
+        el.baixarLista.href = API_LISTA + '?token=' + encodeURIComponent(estado.token);
         el.atualizadoEm.textContent = new Date().toLocaleString('pt-BR', {
           day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
         });
@@ -345,8 +320,8 @@
   el.tentarNovamente.addEventListener('click', carregar);
   el.exportar.addEventListener('click', exportarExcel);
 
-  // O token vem na URL. Fica fora do histórico depois de lido, para o link não
-  // vazar em captura de tela da barra de endereço nem no histórico do navegador.
+  // O token vem na URL. Sai do histórico depois de lido, para o link não vazar
+  // em captura de tela da barra de endereço nem no histórico do navegador.
   var params = new URLSearchParams(window.location.search);
   estado.token = params.get('token') || '';
   if (estado.token && window.history.replaceState) {

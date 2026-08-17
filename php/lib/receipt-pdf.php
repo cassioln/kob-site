@@ -133,6 +133,29 @@ function bus_receipt_pdf(array $dados): string
 }
 
 /**
+ * Formata CPF para leitura humana (000.000.000-00).
+ *
+ * Fora de 11 dígitos devolve marcado, em vez de mutilar o número: um CPF com
+ * tamanho errado é dado corrompido, e mostrar "00.000.000-0" fingiria que está
+ * tudo bem.
+ */
+function bus_format_cpf(string $valor): string
+{
+    $d = preg_replace('/\D/', '', $valor) ?? '';
+    if (strlen($d) === 11) {
+        return sprintf(
+            '%s.%s.%s-%s',
+            substr($d, 0, 3),
+            substr($d, 3, 3),
+            substr($d, 6, 3),
+            substr($d, 9)
+        );
+    }
+
+    return $d !== '' ? $d . ' (verificar)' : '';
+}
+
+/**
  * Formata telefone nacional (10 ou 11 dígitos) para leitura humana.
  * Fora desses tamanhos devolve como veio, em vez de mutilar o número.
  */

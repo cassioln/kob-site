@@ -5,64 +5,61 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Painel interno: nunca deve aparecer em busca. -->
   <meta name="robots" content="noindex, nofollow, noarchive">
-  <title>Painel do transporte · Kriativos On Board 2026</title>
+  <title>Painel de gestão · Reservas · Kriativos On Board 2026</title>
   <link rel="icon" href="assets/images/brand/favicon.png">
-  <link rel="stylesheet" href="assets/css/painel-onibus.css?v=20260817-7">
+  <link rel="stylesheet" href="assets/css/painel-onibus.css?v=20260817-8">
 </head>
 <body class="painel">
 
   <header class="painel__topo">
-    <div class="painel__marca">
-      <span class="painel__marca-nome">Kriativos On Board 2026</span>
-      <span class="painel__marca-contexto">Transporte fretado &middot; painel da organização</span>
+    <div class="painel__titulo-bloco">
+      <h1 class="painel__titulo-principal">Painel de gestão &middot; Reservas</h1>
+      <p class="painel__subtitulo">Transporte fretado &middot; Kriativos On Board 2026</p>
     </div>
-    <div class="painel__acoes-topo">
-      <button id="recarregar" class="botao botao--discreto" type="button">
-        <span class="botao__rotulo">Atualizar</span>
-      </button>
-    </div>
+    <!-- Logo à direita, como pedido. É âncora para a home, não decoração. -->
+    <a class="painel__logo" href="index.html" aria-label="Kriativos On Board">
+      <img src="assets/images/brand/kriativos-on-board-logo.webp" alt="Kriativos On Board"
+           width="1200" height="735">
+    </a>
   </header>
 
   <main class="painel__conteudo" id="conteudo">
 
-    <!-- Estado de carregamento: skeleton, não spinner no meio do conteúdo. -->
+    <!-- Carregamento: skeleton, não spinner no meio do conteúdo. -->
     <section id="estado-carregando" class="painel__estado" aria-live="polite">
       <div class="skeleton skeleton--resumo"></div>
       <div class="skeleton skeleton--tabela"></div>
       <p class="painel__estado-texto">Carregando reservas…</p>
     </section>
 
-    <!-- Sem token / token inválido. Ensina o que fazer. -->
     <section id="estado-sem-acesso" class="painel__estado painel__estado--aviso" hidden>
-      <h1 class="painel__estado-titulo">Este painel precisa de um link com chave de acesso</h1>
+      <h2 class="painel__estado-titulo">Este painel precisa de um link com chave de acesso</h2>
       <p class="painel__estado-texto">
-        A lista traz nome, telefone e e-mail dos passageiros, então o acesso é feito por
+        A lista traz nome, CPF, telefone e e-mail dos passageiros, então o acesso é feito por
         um link próprio. Peça o link completo a quem administra o site &mdash; ele termina
         com <code>?token=…</code>
       </p>
     </section>
 
-    <!-- Falha de rede/servidor. -->
     <section id="estado-erro" class="painel__estado painel__estado--aviso" hidden>
-      <h1 class="painel__estado-titulo">Não foi possível carregar os dados</h1>
+      <h2 class="painel__estado-titulo">Não foi possível carregar os dados</h2>
       <p class="painel__estado-texto" id="erro-detalhe">Tente novamente em alguns segundos.</p>
       <button id="tentar-novamente" class="botao botao--primario" type="button">Tentar novamente</button>
     </section>
 
-    <!-- Nenhuma reserva ainda: ensina a interface em vez de dizer "vazio". -->
     <section id="estado-vazio" class="painel__estado" hidden>
-      <h1 class="painel__estado-titulo">Nenhuma reserva ainda</h1>
+      <h2 class="painel__estado-titulo">Nenhuma reserva ainda</h2>
       <p class="painel__estado-texto">
         Quando alguém concluir o pagamento em <strong>onibus.html</strong>, a reserva aparece
-        aqui automaticamente, com os nomes e telefones de quem embarca.
+        aqui automaticamente, com nome, CPF e telefone de quem embarca.
       </p>
     </section>
 
     <div id="painel-dados" hidden>
 
-      <!-- Resumo. Números reais, não métricas decorativas. -->
+      <!-- Resumo em cards. Números reais, não métricas decorativas. -->
       <section class="resumo" aria-labelledby="resumo-titulo">
-        <h1 id="resumo-titulo" class="painel__titulo">Reservas confirmadas</h1>
+        <h2 id="resumo-titulo" class="visualmente-oculto">Resumo das reservas</h2>
         <dl class="resumo__grade">
           <div class="resumo__item">
             <dt>A bordo</dt>
@@ -70,7 +67,7 @@
             <p id="r-total-nota" class="resumo__nota">—</p>
           </div>
           <div class="resumo__item">
-            <dt>Reservas pagas</dt>
+            <dt>Pagamentos aprovados</dt>
             <dd id="r-reservas">—</dd>
             <p id="r-pendentes" class="resumo__nota">—</p>
           </div>
@@ -87,33 +84,35 @@
         </dl>
       </section>
 
-      <!-- Barra de ferramentas: busca, filtro e exportação. -->
+      <!-- Ferramentas: busca, filtro por status e exportação. -->
       <section class="ferramentas" aria-label="Filtrar e exportar">
         <div class="campo-busca">
-          <label class="visualmente-oculto" for="busca">Buscar por nome, código, e-mail ou telefone</label>
-          <input id="busca" type="search" placeholder="Buscar por nome, código, e-mail ou telefone"
+          <label class="visualmente-oculto" for="busca">Buscar por nome, CPF, código, e-mail ou telefone</label>
+          <input id="busca" type="search" placeholder="Buscar por nome, CPF, código, e-mail ou telefone"
                  autocomplete="off" spellcheck="false">
         </div>
 
-        <div class="filtro" role="group" aria-label="Filtrar por situação">
-          <button class="filtro__opcao" type="button" data-filtro="confirmed" aria-pressed="true">Pagas</button>
-          <button class="filtro__opcao" type="button" data-filtro="payment_pending" aria-pressed="false">Pendentes</button>
-          <button class="filtro__opcao" type="button" data-filtro="todas" aria-pressed="false">Todas</button>
+        <div class="filtro" role="group" aria-label="Filtrar por status do pagamento">
+          <button class="filtro__opcao" type="button" data-filtro="pago" aria-pressed="true">Pago</button>
+          <button class="filtro__opcao" type="button" data-filtro="pendente" aria-pressed="false">Pendente</button>
+          <button class="filtro__opcao" type="button" data-filtro="falha" aria-pressed="false">Cancelado/Falha</button>
+          <button class="filtro__opcao" type="button" data-filtro="todas" aria-pressed="false">Todos</button>
         </div>
 
         <div class="ferramentas__exportar">
           <button id="exportar-excel" class="botao botao--primario" type="button">
             Exportar Excel
           </button>
-          <a id="baixar-lista" class="botao botao--discreto" href="#" download>
-            Lista de embarque (CSV)
+          <a id="baixar-lista" class="botao botao--discreto" href="#" target="_blank" rel="noopener">
+            Lista de embarque (PDF)
           </a>
+          <button id="recarregar" class="botao botao--discreto" type="button">Atualizar</button>
         </div>
       </section>
 
       <p id="contagem" class="painel__contagem" role="status" aria-live="polite"></p>
 
-      <!-- Tabela. Densa de propósito: a organização confere muitas linhas. -->
+      <!-- Tabela densa de propósito: a organização confere muitas linhas. -->
       <section class="tabela-envolve" aria-labelledby="tabela-titulo">
         <h2 id="tabela-titulo" class="visualmente-oculto">Relação de passageiros</h2>
         <table class="tabela">
@@ -121,19 +120,19 @@
             <tr>
               <th scope="col" class="tabela__col-reserva">Reserva</th>
               <th scope="col">Passageiro</th>
+              <th scope="col" class="tabela__col-cpf">CPF</th>
               <th scope="col">WhatsApp</th>
-              <th scope="col">Contato principal</th>
               <th scope="col" class="tabela__col-num">Grupo</th>
-              <th scope="col">Situação</th>
+              <th scope="col">Status</th>
               <th scope="col">Pago em</th>
             </tr>
           </thead>
           <tbody id="tabela-corpo"></tbody>
         </table>
 
-        <!-- Busca sem resultado: estado próprio, diferente de "nenhuma reserva". -->
         <p id="sem-resultado" class="painel__estado-texto painel__sem-resultado" hidden>
-          Nenhum passageiro corresponde à busca. <button id="limpar-busca" class="link-botao" type="button">Limpar busca</button>
+          Nenhum passageiro corresponde à busca.
+          <button id="limpar-busca" class="link-botao" type="button">Limpar busca</button>
         </p>
       </section>
 
@@ -144,12 +143,10 @@
     </div>
   </main>
 
-  <!-- Rodapé no mesmo padrão de onibus.html, sem os links de navegação do site
-       (o painel é ferramenta interna, não caminho para o evento). -->
   <footer class="painel-footer">
     <div class="painel-footer__inner">
       <a href="index.html" class="painel-footer__brand" aria-label="Kriativos On Board">
-        <img src="assets/images/brand/kriativos-on-board-logo.webp" alt="Kriativos On Board" width="2930" height="1796">
+        <img src="assets/images/brand/kriativos-on-board-logo.webp" alt="Kriativos On Board" width="1200" height="735">
       </a>
       <p>Prepare-se para embarcar com a gente.</p>
     </div>
@@ -158,6 +155,6 @@
     </div>
   </footer>
 
-  <script defer src="assets/js/painel-onibus.js?v=20260817-6"></script>
+  <script defer src="assets/js/painel-onibus.js?v=20260817-8"></script>
 </body>
 </html>

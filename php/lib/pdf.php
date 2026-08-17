@@ -98,6 +98,19 @@ function pdf_conteudo(array $blocos): string
                 $b['x2'],
                 $b['y2']
             );
+        } elseif ($b['tipo'] === 'imagem') {
+            // `q ... Q` isola a matriz: sem o par, a transformação vazaria para
+            // todo desenho seguinte e deslocaria o resto da página.
+            $out[] = 'q';
+            $out[] = sprintf(
+                '%.2f 0 0 %.2f %.2f %.2f cm',
+                $b['largura'],
+                $b['altura'],
+                $b['x'],
+                $b['y']
+            );
+            $out[] = '/' . $b['nome'] . ' Do';
+            $out[] = 'Q';
         } elseif ($b['tipo'] === 'retangulo') {
             $out[] = sprintf('%.2f w', $b['espessura'] ?? 0.8);
             $out[] = sprintf(
@@ -114,23 +127,243 @@ function pdf_conteudo(array $blocos): string
 }
 
 /**
- * Empacota os objetos num arquivo PDF válido, com a tabela xref correta.
+ * Carrega uma imagem e devolve os dados prontos para virar um XObject no PDF.
+ *
+ * WebP não é formato que o PDF entenda: precisa ser decodificado e re-encodado.
+ * Escolhi JPEG com `/DCTDecode` porque o PDF aceita o fluxo JPEG direto, sem
+ * recomprimir nem inflar o arquivo (um logo de 1200x735 em RGB cru daria ~2,6 MB
+ * antes do Flate; em JPEG q88 fica em dezenas de KB).
+ *
+ * @return array{largura:int, altura:int, dados:string, filtro:string, colorspace:string, bpc:int}|null
+ */
+function pdf_carregar_imagem(string $caminho): ?array
+{
+    if (!is_file($caminho) || !function_exists('imagecreatefromwebp')) {
+        return null;
+    }
+
+    $info = @getimagesize($caminho);
+    if ($info === false) {
+        return null;
+    }
+
+    $img = match ($info[2]) {
+        IMAGETYPE_WEBP => @imagecreatefromwebp($caminho),
+        IMAGETYPE_PNG => @imagecreatefrompng($caminho),
+        IMAGETYPE_JPEG => @imagecreatefromjpeg($caminho),
+        default => false,
+    };
+    if ($img === false) {
+        return null;
+    }
+
+    try {
+        $largura = imagesx($img);
+        $altura = imagesy($img);
+
+        // JPEG não tem canal alfa. Se a imagem tiver transparência e for
+        // encodada direto, o fundo transparente sai PRETO no PDF. Compor sobre
+        // branco antes resolve, e é o que o comprovante espera (papel branco).
+        $plano = imagecreatetruecolor($largura, $altura);
+        if ($plano === false) {
+            return null;
+        }
+        $branco = imagecolorallocate($plano, 255, 255, 255);
+        imagefilledrectangle($plano, 0, 0, $largura, $altura, $branco);
+        imagecopy($plano, $img, 0, 0, 0, 0, $largura, $altura);
+
+        ob_start();
+        $ok = imagejpeg($plano, null, 88);
+        $jpeg = (string) ob_get_clean();
+        imagedestroy($plano);
+
+        if (!$ok || $jpeg === '') {
+            return null;
+        }
+
+        return [
+            'largura' => $largura,
+            'altura' => $altura,
+            'dados' => $jpeg,
+            'filtro' => 'DCTDecode',
+            'colorspace' => 'DeviceRGB',
+            'bpc' => 8,
+        ];
+    } finally {
+        imagedestroy($img);
+    }
+}
+
+/**
+ * Altura que preserva a proporção da imagem para uma largura dada.
+ * Existe para o chamador não recalcular (e errar) a razão em cada uso.
+ */
+function pdf_altura_proporcional(array $imagem, float $largura): float
+{
+    if ($imagem['largura'] <= 0) {
+        return 0.0;
+    }
+
+    return $largura * ($imagem['altura'] / $imagem['largura']);
+}
+
+/**
+ * Versão multipágina: cada item de $paginas é a lista de blocos daquela página.
+ *
+ * A de uma página só continua existindo porque o comprovante usa aquela forma.
+ * Aqui o /Pages tem N filhos, e a numeração dos objetos é calculada: são 3 fixos
+ * (catálogo, pages, fontes contam 2) mais 2 por página (a página e o conteúdo),
+ * mais 1 por imagem. Errar essa conta desalinha a xref e o arquivo não abre.
+ *
+ * @param list<list<array>> $paginas
+ * @param array<string, array> $imagens
+ */
+function pdf_montar_multipagina(array $paginas, array $imagens = []): string
+{
+    if (!$paginas) {
+        $paginas = [[]];
+    }
+
+    $objetos = [];
+    $num = 1;
+
+    $idCatalogo = $num++;
+    $idPages = $num++;
+    $idFonteNormal = $num++;
+    $idFonteNegrito = $num++;
+
+    // Imagens antes das páginas para os /Resources já poderem referenciá-las.
+    $refsXObject = [];
+    foreach ($imagens as $nome => $img) {
+        if (!is_array($img) || empty($img['dados'])) {
+            continue;
+        }
+        $id = $num++;
+        $refsXObject[] = '/' . $nome . ' ' . $id . ' 0 R';
+        $objetos[$id] = sprintf(
+            "<< /Type /XObject /Subtype /Image /Width %d /Height %d /ColorSpace /%s "
+            . "/BitsPerComponent %d /Filter /%s /Length %d >>\nstream\n%s\nendstream",
+            $img['largura'],
+            $img['altura'],
+            $img['colorspace'],
+            $img['bpc'],
+            $img['filtro'],
+            strlen($img['dados']),
+            $img['dados']
+        );
+    }
+
+    $recursos = sprintf('/Font << /F1 %d 0 R /F2 %d 0 R >>', $idFonteNormal, $idFonteNegrito);
+    if ($refsXObject) {
+        $recursos .= ' /XObject << ' . implode(' ', $refsXObject) . ' >>';
+    }
+
+    $idsPaginas = [];
+    foreach ($paginas as $blocos) {
+        $conteudo = pdf_conteudo($blocos);
+        $idPagina = $num++;
+        $idConteudo = $num++;
+        $idsPaginas[] = $idPagina;
+
+        $objetos[$idPagina] = sprintf(
+            "<< /Type /Page /Parent %d 0 R /MediaBox [0 0 %.2f %.2f] "
+            . "/Resources << %s >> /Contents %d 0 R >>",
+            $idPages,
+            PDF_A4_LARGURA,
+            PDF_A4_ALTURA,
+            $recursos,
+            $idConteudo
+        );
+        $objetos[$idConteudo] = sprintf(
+            "<< /Length %d >>\nstream\n%s\nendstream",
+            strlen($conteudo),
+            $conteudo
+        );
+    }
+
+    $kids = implode(' ', array_map(static fn ($id) => $id . ' 0 R', $idsPaginas));
+    $objetos[$idCatalogo] = "<< /Type /Catalog /Pages {$idPages} 0 R >>";
+    $objetos[$idPages] = sprintf(
+        "<< /Type /Pages /Kids [%s] /Count %d >>",
+        $kids,
+        count($idsPaginas)
+    );
+    $objetos[$idFonteNormal] = "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>";
+    $objetos[$idFonteNegrito] = "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>";
+
+    ksort($objetos);
+
+    $pdf = "%PDF-1.4\n";
+    $offsets = [];
+    foreach ($objetos as $id => $corpo) {
+        $offsets[$id] = strlen($pdf);
+        $pdf .= "{$id} 0 obj\n{$corpo}\nendobj\n";
+    }
+
+    $inicioXref = strlen($pdf);
+    $total = count($objetos) + 1;
+    $pdf .= "xref\n0 {$total}\n0000000000 65535 f \n";
+    foreach ($offsets as $offset) {
+        $pdf .= sprintf("%010d 00000 n \n", $offset);
+    }
+    $pdf .= "trailer\n<< /Size {$total} /Root {$idCatalogo} 0 R >>\n";
+    $pdf .= "startxref\n{$inicioXref}\n%%EOF";
+
+    return $pdf;
+}
+/**
+ * Empacota UMA página num arquivo PDF válido, com a tabela xref correta.
+ *
+ * Mantida com esta assinatura porque o comprovante (receipt-pdf.php) já a chama
+ * assim. Para várias páginas use pdf_montar_multipagina().
  *
  * A xref precisa apontar o byte exato de cada objeto; errar isso produz um
  * arquivo que abre em alguns leitores e falha em outros. Por isso os offsets são
  * medidos com strlen conforme a saída é construída, nunca estimados.
+ *
+ * @param array<string, array> $imagens mapa nome-no-PDF => pdf_carregar_imagem()
  */
-function pdf_montar(string $conteudo): string
+function pdf_montar(string $conteudo, array $imagens = []): string
 {
     $objetos = [];
+
+    // Objetos 1 a 6 são fixos. As imagens entram a partir do 7, e o número é
+    // calculado, nunca embutido: hardcodar quebraria ao adicionar a segunda.
+    $proximo = 7;
+    $refsXObject = [];
+    $objetosImagem = [];
+    foreach ($imagens as $nome => $img) {
+        if (!is_array($img) || empty($img['dados'])) {
+            continue;
+        }
+        $refsXObject[] = '/' . $nome . ' ' . $proximo . ' 0 R';
+        $objetosImagem[$proximo] = sprintf(
+            "<< /Type /XObject /Subtype /Image /Width %d /Height %d /ColorSpace /%s "
+            . "/BitsPerComponent %d /Filter /%s /Length %d >>\nstream\n%s\nendstream",
+            $img['largura'],
+            $img['altura'],
+            $img['colorspace'],
+            $img['bpc'],
+            $img['filtro'],
+            strlen($img['dados']),
+            $img['dados']
+        );
+        $proximo++;
+    }
+
+    $recursos = '/Font << /F1 5 0 R /F2 6 0 R >>';
+    if ($refsXObject) {
+        $recursos .= ' /XObject << ' . implode(' ', $refsXObject) . ' >>';
+    }
 
     $objetos[1] = "<< /Type /Catalog /Pages 2 0 R >>";
     $objetos[2] = "<< /Type /Pages /Kids [3 0 R] /Count 1 >>";
     $objetos[3] = sprintf(
         "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 %.2f %.2f] "
-        . "/Resources << /Font << /F1 5 0 R /F2 6 0 R >> >> /Contents 4 0 R >>",
+        . "/Resources << %s >> /Contents 4 0 R >>",
         PDF_A4_LARGURA,
-        PDF_A4_ALTURA
+        PDF_A4_ALTURA,
+        $recursos
     );
     $objetos[4] = sprintf(
         "<< /Length %d >>\nstream\n%s\nendstream",
@@ -139,6 +372,11 @@ function pdf_montar(string $conteudo): string
     );
     $objetos[5] = "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>";
     $objetos[6] = "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>";
+
+    foreach ($objetosImagem as $num => $corpo) {
+        $objetos[$num] = $corpo;
+    }
+    ksort($objetos);
 
     $pdf = "%PDF-1.4\n";
     $offsets = [];

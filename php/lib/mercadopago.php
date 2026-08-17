@@ -263,9 +263,20 @@ function map_provider_status(array $order): string
     if (in_array($payment, ['approved', 'processed', 'paid'], true) || $orderStatus === 'processed') {
         return 'confirmed';
     }
+
+    // Expirado entra como CANCELADO de propósito. Para a organização os dois
+    // significam a mesma coisa na prática: a ordem encerrou sem pagamento e a
+    // vaga não está reservada. Manter um status separado só para "expirou"
+    // exigiria migrar o ENUM sem mudar nenhuma decisão operacional.
     $encerrados = ['cancelled', 'canceled', 'expired', 'refunded'];
     if (in_array($payment, $encerrados, true) || in_array($orderStatus, $encerrados, true)) {
         return ($payment === 'refunded' || $orderStatus === 'refunded') ? 'refunded' : 'cancelled';
+    }
+
+    // `rejected` caía em payment_pending, então um pagamento recusado ficava
+    // "aguardando" para sempre no painel. Agora vira falha, que é o que é.
+    if (in_array($payment, ['rejected', 'failed'], true) || $orderStatus === 'failed') {
+        return 'payment_failed';
     }
 
     return 'payment_pending';
