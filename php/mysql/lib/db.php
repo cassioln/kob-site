@@ -52,9 +52,28 @@ function bus_config(): array
         if (is_file($path) && is_readable($path)) {
             /** @var array $loaded */
             $loaded = require $path;
-            if (!is_array($loaded) || !isset($loaded['db_password'], $loaded['mp_access_token'])) {
+            if (!is_array($loaded) || !isset($loaded['db_password'])) {
                 throw new RuntimeException('Arquivo de segredos incompleto.');
             }
+
+            // Suporte à flag de alternância entre modo teste ('test') e produção ('production').
+            $modo = strtolower((string) ($loaded['mp_mode'] ?? $loaded['mp_environment'] ?? 'test'));
+            if ($modo === 'production' || $modo === 'prod') {
+                $loaded['mp_access_token'] = $loaded['mp_access_token_prod'] ?? ($loaded['mp_access_token'] ?? '');
+                $loaded['mp_public_key'] = $loaded['mp_public_key_prod'] ?? ($loaded['mp_public_key'] ?? '');
+                $loaded['mp_webhook_secret'] = $loaded['mp_webhook_secret_prod'] ?? ($loaded['mp_webhook_secret'] ?? '');
+                $loaded['mp_mode'] = 'production';
+            } else {
+                $loaded['mp_access_token'] = $loaded['mp_access_token_test'] ?? ($loaded['mp_access_token'] ?? '');
+                $loaded['mp_public_key'] = $loaded['mp_public_key_test'] ?? ($loaded['mp_public_key'] ?? '');
+                $loaded['mp_webhook_secret'] = $loaded['mp_webhook_secret_test'] ?? ($loaded['mp_webhook_secret'] ?? '');
+                $loaded['mp_mode'] = 'test';
+            }
+
+            if ($loaded['mp_access_token'] === '') {
+                throw new RuntimeException('Access Token do Mercado Pago não configurado.');
+            }
+
             $config = $loaded + [
                 // Host real do Percona 5.7 da Locaweb (confirmado no painel).
                 'db_host' => '186.202.152.70',

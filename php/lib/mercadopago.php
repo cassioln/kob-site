@@ -110,6 +110,17 @@ function mp_is_sandbox(): bool
     }
 
     try {
+        $config = bus_config();
+        $mode = strtolower((string) ($config['mp_mode'] ?? $config['mp_environment'] ?? ''));
+        if ($mode === 'production' || $mode === 'prod') {
+            $cached = false;
+            return $cached;
+        }
+        if ($mode === 'test' || $mode === 'sandbox') {
+            $cached = true;
+            return $cached;
+        }
+
         $me = mp_request('GET', 'https://api.mercadopago.com/users/me', null);
         $tags = $me['tags'] ?? [];
         $cached = is_array($tags) && in_array('test_user', $tags, true);
