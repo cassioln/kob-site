@@ -43,7 +43,7 @@ const BUS_EMAIL_ICONE_WA = 'https://kriativosonboard.com.br/assets/images/brand/
 /** Escapa para HTML. Todo dado que vem do banco passa por aqui. */
 function bus_email_e(?string $valor): string
 {
-    return htmlspecialchars((string) $valor, ENT_QUOTES, 'UTF-8');
+  return htmlspecialchars((string) $valor, ENT_QUOTES, 'UTF-8');
 }
 
 /**
@@ -55,7 +55,7 @@ function bus_email_e(?string $valor): string
  */
 function bus_email_cabecalho(string $titulo, string $subtitulo): string
 {
-    return '
+  return '
           <tr>
             <td style="padding:0 0 22px;text-align:center;">
               <img src="' . BUS_EMAIL_LOGO . '" alt="Kriativos On Board" width="168"
@@ -86,38 +86,44 @@ function bus_email_cabecalho(string $titulo, string $subtitulo): string
  */
 function bus_email_bloco_grupo(?string $nomeGrupo): string
 {
-    $html = '';
+  $html = '';
 
-    if ($nomeGrupo !== null && $nomeGrupo !== '') {
-        $html .= '
+  if ($nomeGrupo !== null && $nomeGrupo !== '') {
+    $nomeUpper = function_exists('mb_strtoupper') ? mb_strtoupper($nomeGrupo, 'UTF-8') : strtoupper($nomeGrupo);
+    $html .= '
           <tr>
             <td style="padding:0 0 18px;">
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
-                     style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.16);border-radius:10px;">
+                     style="background:#072b4f;border:1px solid #144573;border-radius:12px;">
                 <tr>
                   <td style="padding:18px 20px;text-align:center;">
-                    <p style="margin:0 0 6px;font:700 15px/1.4 Arial,Helvetica,sans-serif;color:#ffffff;">
+                    <p style="margin:0 0 10px;font:700 15px/1.3 Arial,Helvetica,sans-serif;color:#ffffff;">
                       Seu grupo está confirmado!
                     </p>
-                    <p style="margin:0;font:400 14px/1.5 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.78);">
-                      Seu grupo é o
-                      <strong style="color:#29c3f5;font-size:19px;letter-spacing:0.01em;">'
-                        . bus_email_e($nomeGrupo) . '</strong>
-                    </p>
+                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:0 auto;">
+                      <tr>
+                        <td style="padding:4px 10px;background:rgba(41,195,245,0.15);border:1px solid rgba(41,195,245,0.35);border-radius:6px;font:700 11px/1.2 Arial,Helvetica,sans-serif;color:#29c3f5;letter-spacing:0.12em;text-transform:uppercase;">
+                          GRUPO
+                        </td>
+                        <td style="padding-left:10px;font:800 22px/1.2 Arial,Helvetica,sans-serif;color:#ffffff;letter-spacing:0.04em;text-transform:uppercase;">
+                          ' . bus_email_e($nomeUpper) . '
+                        </td>
+                      </tr>
+                    </table>
                   </td>
                 </tr>
               </table>
             </td>
           </tr>';
-    }
+  }
 
-    // O botão do grupo aparece SEMPRE, mesmo em reserva individual: o grupo de
-    // WhatsApp é do fretado inteiro, não do grupo da reserva. Quem viaja sozinho
-    // também precisa receber os avisos de embarque.
-    $html .= '
+  // O botão do grupo aparece SEMPRE, mesmo em reserva individual: o grupo de
+  // WhatsApp é do fretado inteiro, não do grupo da reserva. Quem viaja sozinho
+  // também precisa receber os avisos de embarque.
+  $html .= '
           <tr>
             <td style="padding:0 0 22px;text-align:center;">
-              <p style="margin:0 0 14px;font:400 13px/1.6 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.72);">
+              <p style="margin:0 0 14px;font:400 13px/1.6 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.76);">
                 Junte-se ao grupo exclusivo do fretado oficial do Kriativos on Board para receber
                 informações, tirar dúvidas e acompanhar as novidades.
               </p>
@@ -128,7 +134,7 @@ function bus_email_bloco_grupo(?string $nomeGrupo): string
                 <tr>
                   <td style="background:#0F7A6E;border-radius:8px;">
                     <a href="' . BUS_GRUPO_WHATSAPP . '" target="_blank"
-                       style="display:inline-block;padding:13px 24px;font:700 16px/1.2 Arial,Helvetica,sans-serif;color:#ffffff;text-decoration:none;">
+                       style="display:inline-block;padding:14px 28px;font:700 15px/1.2 Arial,Helvetica,sans-serif;color:#ffffff;text-decoration:none;border-radius:8px;">
                       <!-- Ícone e texto em células irmãs de uma tabela interna:
                            o Outlook não alinha verticalmente <img> e texto soltos
                            dentro do mesmo <a>, e o ícone sairia deslocado. O
@@ -136,11 +142,11 @@ function bus_email_bloco_grupo(?string $nomeGrupo): string
                            adicionam em imagem dentro de link. -->
                       <table role="presentation" cellpadding="0" cellspacing="0" border="0">
                         <tr>
-                          <td style="padding-right:9px;line-height:0;" valign="middle">
+                          <td style="padding-right:10px;line-height:0;" valign="middle">
                             <img src="' . BUS_EMAIL_ICONE_WA . '" alt="" width="20" height="20"
                                  style="display:block;width:20px;height:20px;border:0;">
                           </td>
-                          <td style="font:700 16px/1.2 Arial,Helvetica,sans-serif;color:#ffffff;white-space:nowrap;" valign="middle">
+                          <td style="font:700 15px/1.2 Arial,Helvetica,sans-serif;color:#ffffff;white-space:nowrap;" valign="middle">
                             Entrar no Grupo Oficial do Fretado
                           </td>
                         </tr>
@@ -152,13 +158,14 @@ function bus_email_bloco_grupo(?string $nomeGrupo): string
             </td>
           </tr>';
 
-    return $html;
+  return $html;
 }
 
 /** Abre o documento e o cartão escuro onde o conteúdo vive. */
 function bus_email_abertura(string $preheader): string
 {
-    return '<!DOCTYPE html>
+  $spacer = str_repeat('&zwnj;&nbsp;&#847; ', 20);
+  return '<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
@@ -168,7 +175,9 @@ function bus_email_abertura(string $preheader): string
 <body style="margin:0;padding:0;background:#061a30;">
   <!-- Preheader: primeira linha que o cliente mostra na lista, antes de abrir.
        Escondido no corpo para não duplicar o texto visível. -->
-  <div style="display:none;max-height:0;overflow:hidden;opacity:0;">' . bus_email_e($preheader) . '</div>
+  <div style="display:none;max-height:0;overflow:hidden;opacity:0;font-size:1px;line-height:1px;color:#061a30;">
+    ' . bus_email_e($preheader) . $spacer . '
+  </div>
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
          style="background:#061a30;">
     <tr>
@@ -183,7 +192,7 @@ function bus_email_abertura(string $preheader): string
 /** Fecha o cartão e o documento, com a assinatura do rodapé. */
 function bus_email_fechamento(string $rodape): string
 {
-    return '
+  return '
               </table>
             </td>
           </tr>
@@ -209,15 +218,15 @@ function bus_email_fechamento(string $rodape): string
  */
 function bus_email_linha(string $rotulo, ?string $valor, bool $destaque = false): string
 {
-    if ($valor === null || $valor === '') {
-        return '';
-    }
+  if ($valor === null || $valor === '') {
+    return '';
+  }
 
-    $estiloValor = $destaque
-        ? 'font:700 16px/1.4 Arial,Helvetica,sans-serif;color:#29c3f5;'
-        : 'font:400 14px/1.4 Arial,Helvetica,sans-serif;color:#ffffff;';
+  $estiloValor = $destaque
+    ? 'font:700 16px/1.4 Arial,Helvetica,sans-serif;color:#29c3f5;'
+    : 'font:400 14px/1.4 Arial,Helvetica,sans-serif;color:#ffffff;';
 
-    return '
+  return '
                 <tr>
                   <td style="padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.09);font:400 12px/1.4 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.6);">
                     ' . bus_email_e($rotulo) . '
@@ -231,17 +240,17 @@ function bus_email_linha(string $rotulo, ?string $valor, bool $destaque = false)
 /** Bloco de grupo na versão texto puro, para quem lê sem HTML. */
 function bus_email_grupo_texto(?string $nomeGrupo): array
 {
-    $linhas = [];
-    if ($nomeGrupo !== null && $nomeGrupo !== '') {
-        $linhas[] = '';
-        $linhas[] = 'SEU GRUPO ESTA CONFIRMADO!';
-        $linhas[] = 'Seu grupo e o ' . $nomeGrupo;
-    }
+  $linhas = [];
+  if ($nomeGrupo !== null && $nomeGrupo !== '') {
     $linhas[] = '';
-    $linhas[] = 'GRUPO OFICIAL DO FRETADO NO WHATSAPP';
-    $linhas[] = 'Junte-se ao grupo exclusivo do fretado oficial do Kriativos on Board';
-    $linhas[] = 'para receber informacoes, tirar duvidas e acompanhar as novidades:';
-    $linhas[] = BUS_GRUPO_WHATSAPP;
+    $linhas[] = 'SEU GRUPO ESTA CONFIRMADO!';
+    $linhas[] = 'GRUPO: ' . (function_exists('mb_strtoupper') ? mb_strtoupper($nomeGrupo, 'UTF-8') : strtoupper($nomeGrupo));
+  }
+  $linhas[] = '';
+  $linhas[] = 'GRUPO OFICIAL DO FRETADO NO WHATSAPP';
+  $linhas[] = 'Junte-se ao grupo exclusivo do fretado oficial do Kriativos on Board';
+  $linhas[] = 'para receber informacoes, tirar duvidas e acompanhar as novidades:';
+  $linhas[] = BUS_GRUPO_WHATSAPP;
 
-    return $linhas;
+  return $linhas;
 }

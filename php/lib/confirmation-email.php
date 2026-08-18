@@ -104,8 +104,8 @@ function bus_confirmation_email_html(array $dados): string
 </head>
 <body style="margin:0;padding:0;background:#041d3a;">
   <!-- Preheader: primeira linha que aparece na lista de mensagens. -->
-  <div style="display:none;max-height:0;overflow:hidden;opacity:0;">
-    Sua vaga no ônibus fretado está garantida. Código ' . $e($dados['code']) . '.
+  <div style="display:none;max-height:0;overflow:hidden;opacity:0;font-size:1px;line-height:1px;color:#041d3a;">
+    Sua vaga no ônibus fretado está garantida. Código ' . $e($dados['code']) . '. ' . str_repeat('&zwnj;&nbsp;&#847; ', 20) . '
   </div>
 
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#041d3a;">
