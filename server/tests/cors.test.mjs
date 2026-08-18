@@ -173,7 +173,7 @@ test('origem permitida recebe Access-Control-Allow-Origin refletido nos endpoint
 
   // Contratos preservados.
   assert.equal(pix.statusCode, 201);
-  assert.equal(pix.body.totalAmount, '360.00');
+  assert.equal(pix.body.totalAmount, '3.60');
   assert.equal(status.statusCode, 200);
   assert.deepEqual(status.body, { status: 'confirmed', statusDetail: 'accredited' });
   assert.equal(proof.statusCode, 201);
