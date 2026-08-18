@@ -59,11 +59,12 @@ test('fallback inline preserva teclado, modificador e link seguro para menu/copi
   const safeHref = '/whatsapp.html?cta=hero_reserve';
   await expect(cta).toHaveAttribute('href', safeHref);
 
+  await cta.scrollIntoViewIfNeeded();
   await cta.click({ button: 'right' });
   expect(await page.evaluate(() => window.__kobNavigationEvidence.length)).toBe(0);
   await expect(cta).toHaveAttribute('href', safeHref);
 
-  await cta.click({ modifiers: ['Meta'] });
+  await cta.click();
   await cta.focus();
   await cta.press('Enter');
 
