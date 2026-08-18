@@ -102,7 +102,7 @@
 .painel__topo {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: var(--p-4);
   padding: var(--p-4) var(--p-5);
   background: var(--p-superficie);
@@ -113,6 +113,8 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
+  border-left: 1px solid var(--p-linha);
+  padding-left: var(--p-4);
 }
 
 .painel__titulo-principal {
@@ -128,9 +130,7 @@
   font-size: 0.8125rem;
 }
 
-/* Logo no canto superior direito, como pedido. Âncora para a home, não
-   decoração: por isso é um link, e o alvo de toque respeita 44px mesmo com a
-   imagem sendo menor. */
+/* Logo no canto superior esquerdo. Âncora para a home. */
 .painel__logo {
   display: inline-flex;
   flex: 0 0 auto;
@@ -818,13 +818,13 @@
 
   .painel__topo {
     flex-direction: column;
-    align-items: stretch;
+    align-items: flex-start;
     gap: var(--p-3);
   }
 
-  .painel__acoes-topo .botao {
-    width: 100%;
-    justify-content: center;
+  .painel__titulo-bloco {
+    border-left: none;
+    padding-left: 0;
   }
 }
 
