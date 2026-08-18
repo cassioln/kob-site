@@ -2530,10 +2530,10 @@
 }
 
 .bus-confirmed__list li {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: auto 1fr;
   align-items: baseline;
-  gap: 4px 12px;
+  gap: 2px 12px;
   padding: var(--s-sm) 0;
   border-bottom: 1px solid var(--line-mid);
   counter-increment: manifest;
@@ -2546,20 +2546,24 @@
   font-family: var(--font-display);
   font-size: 1.02rem;
   min-width: 2ch;
+  grid-row: 1 / -1;
 }
 
 .bus-confirmed__list li>span {
   color: var(--bus-ink);
   font-weight: 700;
+  grid-column: 2;
+  grid-row: 1;
 }
 
 .bus-confirmed__list li>small {
-  margin-left: auto;
   color: var(--ink-faint);
   font-size: 0.74rem;
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+  grid-column: 2;
+  grid-row: 2;
 }
 
 .bus-confirmed__children {

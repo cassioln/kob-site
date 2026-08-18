@@ -972,7 +972,7 @@
       var label = document.createElement('span');
       label.textContent = child.name;
       var tag = document.createElement('small');
-      tag.textContent = 'Criança de colo ' + (index + 1) + ' (até 5 anos) · CPF: ' + maskCpf(child.cpf || '') + ' · Cortesia';
+      tag.textContent = 'Criança de colo ' + (index + 1) + ' (até 5 anos) · Cortesia';
       item.append(label, tag);
       confirmedPassengers.appendChild(item);
     });
