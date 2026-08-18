@@ -1557,7 +1557,14 @@
   accent-color: var(--action);
 }
 
-.bus-form__status,
+.bus-form__status {
+  min-height: 1.5em;
+  color: var(--kriativa-magenta);
+  font-size: 0.86rem;
+  font-weight: 700;
+  text-align: right;
+}
+
 .bus-payment-panel__status {
   min-height: 1.5em;
   color: var(--kriativa-magenta);
