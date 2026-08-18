@@ -563,11 +563,9 @@
 }
 
 .bus-form {
-  display: grid;
-  /* Separação entre blocos distintos. Antes era 20px, o MESMO valor usado entre
-     campos dentro do bloco — sem essa diferença o olho não distingue "campos do
-     mesmo assunto" de "outro assunto", e o formulário lê como uma lista longa. */
-  gap: var(--s-section);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .bus-form[hidden] {
