@@ -884,6 +884,27 @@
 
 .bus-passenger--primary-summary {
   margin-bottom: var(--s-sm);
+  border: 1px solid #142d48;
+  box-shadow: 0 4px 12px rgba(15, 39, 66, 0.08);
+}
+
+.bus-passenger--primary-summary .bus-passenger__header {
+  background: #0f2742;
+  border-top: 4px solid var(--action, #7b1fa2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.bus-passenger--primary-summary .bus-passenger__header-num {
+  color: #ffffff;
+}
+
+.bus-passenger--primary-summary .bus-passenger__pipe {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.bus-passenger--primary-summary .bus-passenger__category {
+  color: #f7941e;
+  font-weight: 700;
 }
 
 .bus-passenger--child {
@@ -909,37 +930,48 @@
 
 .bus-passenger__header-title {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   flex-wrap: wrap;
-  gap: 4px 8px;
+  gap: 2px 6px;
   font-family: var(--font-headline, inherit);
-  font-size: 1.05rem;
-  font-weight: 800;
-  letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: #0f2742;
   line-height: 1.3;
 }
 
-.bus-passenger__header-title strong {
+.bus-passenger__header-num {
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
   color: #0f2742;
 }
 
 .bus-passenger__pipe {
   color: #64748b;
-  font-weight: 400;
-  margin: 0 2px;
-  opacity: 0.7;
+  font-weight: 300;
+  margin: 0 4px;
+  opacity: 0.6;
+  font-size: 0.95rem;
 }
 
 .bus-passenger__category {
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  color: #0f2742;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: #475569;
+}
+
+.bus-passenger--child .bus-passenger__header-num {
+  color: #7c2d12;
+}
+
+.bus-passenger--child .bus-passenger__pipe {
+  color: #d97706;
 }
 
 .bus-passenger--child .bus-passenger__category {
   color: #b45309;
+  font-weight: 700;
 }
 
 .bus-passenger__baby-icon {
@@ -1224,6 +1256,10 @@
   padding: 4px 0;
   font-size: 0.88rem;
   color: var(--bus-ink-soft, #4a5b70);
+}
+
+.bus-review-card__price-row[hidden] {
+  display: none !important;
 }
 
 .bus-review-card__price-row strong {

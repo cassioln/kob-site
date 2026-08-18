@@ -383,7 +383,7 @@
       var babyIconHtml = '';
       if (p.ageGroup === 'child') {
         roleText = '0 A 5 ANOS';
-        babyIconHtml = '<span class="bus-passenger__baby-icon" aria-label="Criança de 0 a 5 anos" title="Criança de 0 a 5 anos">👶</span>';
+        babyIconHtml = '<span class="bus-passenger__baby-icon" aria-label="Criança de 0 a 5 anos" title="Criança de 0 a 5 anos">👶</span> ';
       } else if (p.ageGroup === 'minor') {
         roleText = '6 A 17 ANOS';
       }
@@ -392,7 +392,8 @@
       card.className = 'bus-passenger bus-passenger--added' + (p.ageGroup === 'child' ? ' bus-passenger--child' : '');
       card.dataset.passengerId = p.id;
 
-      var detailsHtml = '<span>CPF: <strong>' + maskCpf(p.cpf) + '</strong></span>';
+      var detailsHtml = '<span>Nome: ' + babyIconHtml + '<strong>' + escapeHtml(p.fullName) + '</strong></span>' +
+        '<span>CPF: <strong>' + maskCpf(p.cpf) + '</strong></span>';
       if (p.whatsapp) {
         detailsHtml += '<span>WhatsApp: <strong>' + maskWhatsapp(p.whatsapp) + '</strong></span>';
       }
@@ -402,7 +403,7 @@
 
       card.innerHTML = '<div class="bus-passenger__header">' +
         '<div class="bus-passenger__header-title">' +
-        '<span>PASSAGEIRO ' + pNum + ': ' + babyIconHtml + '<strong>' + escapeHtml(p.fullName) + '</strong></span>' +
+        '<span class="bus-passenger__header-num">PASSAGEIRO ' + pNum + '</span>' +
         '<span class="bus-passenger__pipe">|</span>' +
         '<span class="bus-passenger__category">' + roleText + '</span>' +
         '</div>' +
@@ -670,7 +671,7 @@
     var p1Item = document.createElement('li');
     p1Item.className = 'bus-review-card__item';
     p1Item.innerHTML = '<span class="bus-review-card__item-name">1. ' + (escapeHtml(normalizeFullName(primaryName.value)) || 'Contato Principal') + '</span>' +
-      '<span class="bus-review-card__item-details"><small class="bus-passenger__tag bus-passenger__tag--primary">Responsável</small></span>';
+      '<span class="bus-review-card__item-details"><small class="bus-passenger__tag bus-passenger__tag--primary">Contato Principal</small></span>';
     reviewPassengersList.appendChild(p1Item);
 
     // Passageiros Adicionais

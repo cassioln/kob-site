@@ -727,6 +727,7 @@ test('navegação do wizard: voltar e avançar mantém dados e validações', as
   await expect(page.locator('[data-wizard-step="3"]')).toBeVisible();
   await expect(page.locator('#review-passengers-list')).toContainText('Carlos Silva');
   await expect(page.locator('#review-passengers-list')).toContainText('Fernanda Silva');
+  await expect(page.locator('#review-children-row')).toBeHidden();
 
   // Voltar de Step 3 para Step 2
   await page.getByRole('button', { name: /voltar e editar grupo/i }).click();
