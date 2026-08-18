@@ -1020,6 +1020,46 @@
   background: #ffffff;
 }
 
+.bus-passenger__added-details--child {
+  padding: 10px 16px;
+}
+
+.bus-passenger__child-layout {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+}
+
+.bus-passenger__meeple-img {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  flex-shrink: 0;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.bus-passenger__child-data {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.bus-passenger__child-data span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.88rem;
+  color: var(--bus-ink-soft, #4a5b70);
+  line-height: 1.35;
+}
+
+.bus-passenger__child-data strong {
+  color: var(--bus-ink, #0f2742);
+  font-weight: 700;
+}
+
 .bus-passenger__added-details span {
   display: inline-flex;
   align-items: center;

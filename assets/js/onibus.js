@@ -380,10 +380,8 @@
     addedPassengers.forEach(function (p, index) {
       var pNum = index + 2;
       var roleText = '18 ANOS OU MAIS';
-      var babyIconHtml = '';
       if (p.ageGroup === 'child') {
         roleText = '0 A 5 ANOS';
-        babyIconHtml = '<span class="bus-passenger__baby-icon" aria-label="Criança de 0 a 5 anos" title="Criança de 0 a 5 anos">👶</span> ';
       } else if (p.ageGroup === 'minor') {
         roleText = '6 A 17 ANOS';
       }
@@ -392,13 +390,24 @@
       card.className = 'bus-passenger bus-passenger--added' + (p.ageGroup === 'child' ? ' bus-passenger--child' : '');
       card.dataset.passengerId = p.id;
 
-      var detailsHtml = '<span>Nome: ' + babyIconHtml + '<strong>' + escapeHtml(p.fullName) + '</strong></span>' +
-        '<span>CPF: <strong>' + maskCpf(p.cpf) + '</strong></span>';
-      if (p.whatsapp) {
-        detailsHtml += '<span>WhatsApp: <strong>' + maskWhatsapp(p.whatsapp) + '</strong></span>';
-      }
-      if (p.email) {
-        detailsHtml += '<span>E-mail: <strong>' + escapeHtml(p.email) + '</strong></span>';
+      var detailsHtml = '';
+      if (p.ageGroup === 'child') {
+        detailsHtml = '<div class="bus-passenger__child-layout">' +
+          '<img src="assets/images/brand/meeple-baby.webp" alt="Criança de colo (0 a 5 anos)" class="bus-passenger__meeple-img" width="48" height="48" loading="lazy">' +
+          '<div class="bus-passenger__child-data">' +
+          '<span>Nome: <strong>' + escapeHtml(p.fullName) + '</strong></span>' +
+          '<span>CPF: <strong>' + maskCpf(p.cpf) + '</strong></span>' +
+          '</div>' +
+          '</div>';
+      } else {
+        detailsHtml = '<span>Nome: <strong>' + escapeHtml(p.fullName) + '</strong></span>' +
+          '<span>CPF: <strong>' + maskCpf(p.cpf) + '</strong></span>';
+        if (p.whatsapp) {
+          detailsHtml += '<span>WhatsApp: <strong>' + maskWhatsapp(p.whatsapp) + '</strong></span>';
+        }
+        if (p.email) {
+          detailsHtml += '<span>E-mail: <strong>' + escapeHtml(p.email) + '</strong></span>';
+        }
       }
 
       card.innerHTML = '<div class="bus-passenger__header">' +
@@ -413,7 +422,7 @@
         '</svg>' +
         '</button>' +
         '</div>' +
-        '<div class="bus-passenger__added-details">' +
+        '<div class="bus-passenger__added-details' + (p.ageGroup === 'child' ? ' bus-passenger__added-details--child' : '') + '">' +
         detailsHtml +
         '</div>';
 
@@ -675,19 +684,17 @@
     reviewPassengersList.appendChild(p1Item);
 
     // Passageiros Adicionais
-    var babyIconSvg = '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 12h.01"/><path d="M15 12h.01"/><path d="M10 16c.5.3 1.2.5 2 .5s1.5-.2 2-.5"/><path d="M19 6.3a9 9 0 0 1 1.8 3.9 2 2 0 0 1 0 3.6 9 9 0 0 1-17.6 0 2 2 0 0 1 0-3.6A9 9 0 0 1 12 3c2 0 3.5 1.1 3.5 2.5s-.9 2.5-2 2.5c-.8 0-1.5-.4-1.5-1"/></svg>';
-
     addedPassengers.forEach(function (p, index) {
       var pNum = index + 2;
       var item = document.createElement('li');
       item.className = 'bus-review-card__item';
       var tagHtml = '';
       if (p.ageGroup === 'child') {
-        tagHtml = '<small class="bus-passenger__tag">' + babyIconSvg + 'Cortesia</small>';
+        tagHtml = '<small class="bus-passenger__tag">0 a 5 anos</small>';
       } else if (p.ageGroup === 'minor') {
         tagHtml = '<small class="bus-passenger__tag bus-passenger__tag--minor">6 a 17 anos</small>';
       } else {
-        tagHtml = '<small class="bus-passenger__tag bus-passenger__tag--adult">Adulto</small>';
+        tagHtml = '<small class="bus-passenger__tag bus-passenger__tag--adult">18 anos ou mais</small>';
       }
 
       item.innerHTML = '<span class="bus-review-card__item-name">' + pNum + '. ' + escapeHtml(p.fullName) + '</span>' +
