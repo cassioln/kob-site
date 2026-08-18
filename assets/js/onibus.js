@@ -617,4 +617,71 @@
 
   setStep('cadastro');
   renderPassengers();
+
+  // ──────────────────────────────────────────────
+  // Hero: Cartão de embarque holográfico 3D (Overdrive)
+  // ──────────────────────────────────────────────
+  (function () {
+    var ticket = document.getElementById('heroTicket');
+    if (!ticket) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (!window.matchMedia('(pointer: fine)').matches) return;
+
+    var hero = ticket.closest('.bus-hero') || ticket;
+    var targetX = 0;
+    var targetY = 0;
+    var currentX = 0;
+    var currentY = 0;
+    var sheenX = 50;
+    var sheenY = 50;
+    var isHovered = false;
+    var rafId = null;
+
+    function update() {
+      currentX += (targetX - currentX) * 0.12;
+      currentY += (targetY - currentY) * 0.12;
+
+      ticket.style.setProperty('--tilt-x', currentX.toFixed(2) + 'deg');
+      ticket.style.setProperty('--tilt-y', currentY.toFixed(2) + 'deg');
+      ticket.style.setProperty('--sheen-x', sheenX.toFixed(1) + '%');
+      ticket.style.setProperty('--sheen-y', sheenY.toFixed(1) + '%');
+
+      if (isHovered || Math.abs(targetX - currentX) > 0.05 || Math.abs(targetY - currentY) > 0.05) {
+        rafId = requestAnimationFrame(update);
+      } else {
+        ticket.style.setProperty('--tilt-x', '0deg');
+        ticket.style.setProperty('--tilt-y', '0deg');
+        rafId = null;
+      }
+    }
+
+    hero.addEventListener('pointermove', function (e) {
+      var rect = ticket.getBoundingClientRect();
+      var centerX = rect.left + rect.width / 2;
+      var centerY = rect.top + rect.height / 2;
+      var dx = (e.clientX - centerX) / (window.innerWidth / 2);
+      var dy = (e.clientY - centerY) / (window.innerHeight / 2);
+
+      targetY = Math.max(-14, Math.min(14, dx * 14));
+      targetX = Math.max(-12, Math.min(12, -dy * 12));
+
+      var localX = ((e.clientX - rect.left) / rect.width) * 100;
+      var localY = ((e.clientY - rect.top) / rect.height) * 100;
+      sheenX = Math.max(0, Math.min(100, localX));
+      sheenY = Math.max(0, Math.min(100, localY));
+
+      if (!rafId) {
+        isHovered = true;
+        rafId = requestAnimationFrame(update);
+      }
+    }, { passive: true });
+
+    hero.addEventListener('pointerleave', function () {
+      isHovered = false;
+      targetX = 0;
+      targetY = 0;
+      if (!rafId) rafId = requestAnimationFrame(update);
+    });
+  })();
+
 })();

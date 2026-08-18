@@ -55,20 +55,63 @@
           <p class="bus-hero__lead">Saia de São Paulo com a turma, chegue ao Porto de Santos sem preocupação e volte com
             a gente depois do cruzeiro.</p>
           <div class="bus-route" aria-label="Rota de ida e volta">
-            <div class="bus-route__stop"><span class="bus-route__dot bus-route__dot--start"
-                aria-hidden="true"></span><span><small>Embarque</small><strong>Barra Funda · São Paulo</strong></span>
+            <div class="bus-route__stop">
+              <span class="bus-route__dot bus-route__dot--start" aria-hidden="true">
+                <span class="bus-route__ping"></span>
+              </span>
+              <span><small>Embarque</small><strong>Barra Funda · São Paulo</strong></span>
             </div>
-            <span class="bus-route__line" aria-hidden="true"></span>
-            <div class="bus-route__stop"><span class="bus-route__dot bus-route__dot--end"
-                aria-hidden="true"></span><span><small>Destino</small><strong>Porto de Santos</strong></span></div>
+            <div class="bus-route__track" aria-hidden="true">
+              <span class="bus-route__line"></span>
+              <span class="bus-route__beacon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M8 6v6"></path>
+                  <path d="M15 6v6"></path>
+                  <path d="M2 12h19.6"></path>
+                  <path d="M18 18h3s.5-1.7.8-2.8c.1-.4.2-.8.2-1.2 0-.4-.1-.8-.2-1.2l-1.4-5C20 6.3 18.7 5 17.2 5H4.8C3.3 5 2 6.3 1.6 7.8L.2 12.8c-.1.4-.2.8-.2 1.2 0 .4.1.8.2 1.2.3 1.1.8 2.8.8 2.8h3"></path>
+                  <circle cx="6.5" cy="17.5" r="2.5"></circle>
+                  <circle cx="16.5" cy="17.5" r="2.5"></circle>
+                </svg>
+              </span>
+            </div>
+            <div class="bus-route__stop">
+              <span class="bus-route__dot bus-route__dot--end" aria-hidden="true">
+                <span class="bus-route__ping"></span>
+              </span>
+              <span><small>Destino</small><strong>Porto de Santos</strong></span>
+            </div>
           </div>
         </div>
-        <aside class="bus-hero__ticket" aria-label="Resumo do transporte">
-          <span class="bus-hero__ticket-label">Ida e volta</span>
-          <strong>R$ 120,00</strong>
-          <span>por pessoa pagante</span>
-          <div class="bus-hero__ticket-rule"></div>
-          <p>Crianças de até 5 anos não pagam e viajam no colo de um responsável.</p>
+        <aside class="bus-hero__ticket" id="heroTicket" aria-label="Resumo do transporte">
+          <div class="bus-hero__ticket-shine" aria-hidden="true"></div>
+          <div class="bus-hero__ticket-notch bus-hero__ticket-notch--left" aria-hidden="true"></div>
+          <div class="bus-hero__ticket-notch bus-hero__ticket-notch--right" aria-hidden="true"></div>
+          
+          <div class="bus-hero__ticket-head">
+            <span class="bus-hero__ticket-kicker">CARTÃO DE EMBARQUE</span>
+            <span class="bus-hero__ticket-code">KOB·2026</span>
+          </div>
+
+          <div class="bus-hero__ticket-main">
+            <span class="bus-hero__ticket-label">Ida e volta</span>
+            <strong class="bus-hero__ticket-price">R$ 120,00</strong>
+            <span class="bus-hero__ticket-sub">por pessoa pagante</span>
+          </div>
+
+          <div class="bus-hero__ticket-perforation" aria-hidden="true">
+            <span class="bus-hero__ticket-dash"></span>
+          </div>
+
+          <div class="bus-hero__ticket-foot">
+            <p>Crianças de até 5 anos não pagam e viajam no colo de um responsável.</p>
+            <div class="bus-hero__ticket-seal" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                <path d="m9 12 2 2 4-4"></path>
+              </svg>
+              <span>Vaga 100% Assegurada</span>
+            </div>
+          </div>
         </aside>
       </div>
     </section>
@@ -122,19 +165,20 @@
     </section>
 
     <section class="bus-checkout" aria-labelledby="form-title">
-      <div class="container bus-checkout__grid">
-        <div class="bus-form-column">
-          <!-- Cabeçalho da etapa: o texto acompanha o passo atual (cadastro →
-               pagamento → confirmação). O JS troca o conteúdo; estes valores são
-               o estado inicial e o que aparece sem JS. -->
-          <div class="bus-section-heading bus-section-heading--form" id="step-heading">
-            <p class="eyebrow" id="step-eyebrow">Cadastro dos passageiros</p>
-            <h2 id="form-title">Quem vai embarcar com você?</h2>
-            <p id="step-description">Comece pelo contato principal. Depois, informe o nome completo e o CPF de cada
-              pessoa do grupo, incluindo você.</p>
-          </div>
+      <div class="container">
+        <!-- Cabeçalho da etapa: o texto acompanha o passo atual (cadastro →
+             pagamento → confirmação). O JS troca o conteúdo; estes valores são
+             o estado inicial e o que aparece sem JS. -->
+        <div class="bus-section-heading bus-section-heading--form" id="step-heading">
+          <p class="eyebrow" id="step-eyebrow">Cadastro dos passageiros</p>
+          <h2 id="form-title">Quem vai embarcar com você?</h2>
+          <p id="step-description">Comece pelo contato principal. Depois, informe o nome completo e o CPF de cada
+            pessoa do grupo, incluindo você.</p>
+        </div>
 
-          <form id="bus-form" class="bus-form" novalidate>
+        <div class="bus-checkout__grid">
+          <div class="bus-form-column">
+            <form id="bus-form" class="bus-form" novalidate>
             <fieldset class="bus-fieldset">
               <legend><span>01</span> Contato principal</legend>
               <p class="bus-fieldset__note">Esta pessoa será o contato do grupo com a organização.</p>
@@ -365,18 +409,45 @@
             mínimo de passageiros for atingido. Caso contrário, o valor será devolvido integralmente.</p>
         </aside>
       </div>
-    </section>
+    </div>
+  </section>
 
     <section class="bus-reassurance" aria-labelledby="conditions-title">
-      <div class="container bus-reassurance__grid">
-        <div>
-          <p class="eyebrow">Importante</p>
+      <div class="container bus-reassurance__inner">
+        <div class="bus-reassurance__head">
           <h2 id="conditions-title">A contratação depende da turma.</h2>
+          <p class="bus-reassurance__lead">Transparência total desde a reserva: grupo mínimo necessário e garantia de reembolso.</p>
         </div>
-        <div class="bus-reassurance__copy">
-          <p>Precisamos atingir a quantidade mínima de passageiros para viabilizar pelo menos um ônibus. Se isso não
-            acontecer, todo o valor pago será devolvido integralmente aos passageiros.</p>
-          <p>O preço de R$ 120,00 inclui o transporte de ida e volta entre a Barra Funda e o Porto de Santos.</p>
+        <div class="bus-reassurance__cards">
+          <article class="bus-reassurance__card">
+            <div class="bus-reassurance__icon bus-reassurance__icon--shield" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                <path d="m9 12 2 2 4-4"></path>
+              </svg>
+            </div>
+            <div class="bus-reassurance__content">
+              <h3>Quórum mínimo &amp; Reembolso integral</h3>
+              <p>Precisamos atingir a quantidade mínima de passageiros para viabilizar pelo menos um ônibus. Se a meta não for atingida, <strong>100% do valor pago via Pix será devolvido integralmente</strong> a todos os passageiros.</p>
+            </div>
+          </article>
+
+          <article class="bus-reassurance__card">
+            <div class="bus-reassurance__icon bus-reassurance__icon--route" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="16" height="16" x="4" y="3" rx="2"></rect>
+                <path d="M4 11h16"></path>
+                <path d="M8 15h.01"></path>
+                <path d="M16 15h.01"></path>
+                <path d="M6 19v2"></path>
+                <path d="M18 19v2"></path>
+              </svg>
+            </div>
+            <div class="bus-reassurance__content">
+              <h3>Transporte completo de ida e volta</h3>
+              <p>O valor de <strong>R$ 120,00</strong> cobre a viagem completa de ida e volta (Terminal Barra Funda ⇄ Porto de Santos) com transporte de bagagem já incluído, sem cobranças extras.</p>
+            </div>
+          </article>
         </div>
       </div>
     </section>
