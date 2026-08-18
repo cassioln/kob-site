@@ -137,15 +137,28 @@ try {
                 }
             }
 
+            $isChildLap = !empty($p['is_child_lap']);
+
             $faixaEtaria = '18 anos ou mais';
-            if (!empty($p['is_child_lap'])) {
+            if ($isChildLap) {
                 $faixaEtaria = '0 a 5 anos (colo)';
             } elseif (!empty($p['is_minor'])) {
                 $faixaEtaria = '6 a 17 anos';
             }
 
-            $emailPassageiro = (string) ($p['email'] ?? '');
-            if ($emailPassageiro === '' && $responsavel) {
+            $whatsappPassageiro = '';
+            if ($isChildLap) {
+                $whatsappPassageiro = 'N/A';
+            } elseif (($p['whatsapp'] ?? '') !== '') {
+                $whatsappPassageiro = bus_format_phone((string) $p['whatsapp']);
+            }
+
+            $emailPassageiro = '';
+            if ($isChildLap) {
+                $emailPassageiro = 'N/A';
+            } elseif ((string) ($p['email'] ?? '') !== '') {
+                $emailPassageiro = (string) $p['email'];
+            } elseif ($responsavel) {
                 $emailPassageiro = (string) ($r['email'] ?? '');
             }
 
@@ -161,7 +174,7 @@ try {
                     (string) $p['full_name'],
                     bus_format_cpf((string) ($p['cpf'] ?? '')),
                     $faixaEtaria,
-                    ($p['whatsapp'] ?? '') !== '' ? bus_format_phone((string) $p['whatsapp']) : '',
+                    $whatsappPassageiro,
                     $emailPassageiro,
                     (string) $r['primary_name'],
                     (string) ($r['group_name'] ?? ''),

@@ -247,6 +247,8 @@
 
       if (p.whatsapp) {
         celula('WhatsApp', p.whatsapp, 'tabela__tel');
+      } else if (p.crianca_colo) {
+        celula('WhatsApp', 'N/A', 'tabela__tel tabela__tel--vazio');
       } else {
         celula('WhatsApp', 'não informado', 'tabela__tel tabela__tel--vazio');
       }
