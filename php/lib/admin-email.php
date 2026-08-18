@@ -58,10 +58,12 @@ function bus_admin_email_html(array $dados): string
         $nomeUpper = function_exists('mb_strtoupper') ? mb_strtoupper((string) $dados['groupName'], 'UTF-8') : strtoupper((string) $dados['groupName']);
         $html .= '
                       <tr>
-                        <td colspan="2" style="padding-top:12px;border-top:1px solid rgba(255,255,255,0.12);font:400 12px/1.4 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.6);">
-                          GRUPO
-                          <span style="display:block;margin-top:4px;font:800 18px/1.3 Arial,Helvetica,sans-serif;color:#29c3f5;letter-spacing:0.04em;text-transform:uppercase;">'
-                            . $e($nomeUpper) . '</span>
+                        <td colspan="2" style="padding-top:12px;border-top:1px solid rgba(255,255,255,0.12);">
+                          <p style="margin:0 0 3px;font:700 11px/1.4 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.6);letter-spacing:0.12em;text-transform:uppercase;">
+                            GRUPO:
+                          </p>
+                          <strong style="display:block;font:800 18px/1.3 Arial,Helvetica,sans-serif;color:#29c3f5;letter-spacing:0.04em;text-transform:uppercase;">'
+                            . $e($nomeUpper) . '</strong>
                         </td>
                       </tr>';
     }

@@ -1385,18 +1385,14 @@
 
 .bus-confirmed__group-badge {
   display: inline-flex;
-  align-items: center;
-  gap: 8px;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
   width: fit-content;
-  padding: 6px 14px;
-  border: 1px solid rgba(0, 174, 239, 0.4);
-  border-radius: 8px;
-  background: linear-gradient(135deg, rgba(0, 174, 239, 0.14), rgba(123, 31, 162, 0.08));
-  box-shadow: 0 2px 12px rgba(0, 174, 239, 0.12);
 }
 
 .bus-confirmed__group-badge:not([hidden]) {
-  animation: groupBadgeEntrance 500ms var(--ease-expo) both, groupBadgeGlow 2.4s ease-out 600ms;
+  animation: groupBadgeEntrance 500ms var(--ease-expo) both;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1406,23 +1402,20 @@
 }
 
 .bus-confirmed__group-badge-label {
-  color: #00709e;
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.1em;
+  color: var(--ink-muted, #5a7184);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  background: rgba(0, 174, 239, 0.16);
-  padding: 2px 8px;
-  border-radius: 4px;
 }
 
 .bus-confirmed__group-badge strong,
 #confirmed-group-name {
-  color: var(--bus-ink);
+  color: #00709e;
   font-family: var(--font-display, inherit);
-  font-size: 1.18rem;
+  font-size: 1.15rem;
   font-weight: 800;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   line-height: 1.1;
   text-transform: uppercase;
 }
