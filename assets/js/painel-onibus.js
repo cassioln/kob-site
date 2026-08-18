@@ -200,28 +200,27 @@
       nome.textContent = ' ' + p.nome;
       linhaNome.append(pos, nome);
 
-      if (p.crianca_colo) {
-        var tagColo = document.createElement('span');
-        tagColo.className = 'tabela__tag-colo';
-        tagColo.textContent = 'Colo (0 a 5 anos)';
-        linhaNome.appendChild(tagColo);
-      } else if (p.menor) {
-        var tagMenor = document.createElement('span');
-        tagMenor.className = 'tabela__tag-menor';
-        tagMenor.textContent = '6 a 17 anos';
-        linhaNome.appendChild(tagMenor);
-      }
-
       if (p.responsavel) {
-        // O badge "★ Responsável" saiu: a estrela antes do nome já diz isso, e
-        // repetir na mesma linha ocupava espaço sem informar nada novo. Fica só
-        // o rótulo invisível, para quem usa leitor de tela não perder o dado.
         var apenasLeitor = document.createElement('span');
         apenasLeitor.className = 'sr-only';
         apenasLeitor.textContent = ' (contato responsável pela reserva)';
         linhaNome.appendChild(apenasLeitor);
       }
       nomeWrap.appendChild(linhaNome);
+
+      // Faixa etária abaixo do nome dos passageiros extras em letra pequena e discreta
+      if (!p.responsavel) {
+        var faixaDiv = document.createElement('div');
+        faixaDiv.className = 'tabela__faixa-passageiro';
+        var textoFaixa = '18 anos ou mais';
+        if (p.crianca_colo) {
+          textoFaixa = '0 a 5 anos (colo)';
+        } else if (p.menor) {
+          textoFaixa = '6 a 17 anos';
+        }
+        faixaDiv.textContent = textoFaixa;
+        nomeWrap.appendChild(faixaDiv);
+      }
 
       if (p.nova_reserva) {
         var aviso = document.createElement('div');

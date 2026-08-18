@@ -69,7 +69,7 @@ try {
     $reservas = $q->fetchAll(PDO::FETCH_ASSOC);
 
     $qp = $pdo->query(
-        'SELECT registration_id, `position`, full_name, cpf, whatsapp, is_primary, is_minor, is_child_lap
+        'SELECT registration_id, `position`, full_name, cpf, whatsapp, email, is_primary, is_minor, is_child_lap
            FROM bus_passengers ORDER BY registration_id, `position`'
     );
     $porReserva = [];
@@ -82,14 +82,15 @@ try {
         ['titulo' => 'Nº', 'largura' => 5],
         ['titulo' => 'Passageiro', 'largura' => 30],
         ['titulo' => 'CPF', 'largura' => 16],
+        ['titulo' => 'Faixa Etária', 'largura' => 18],
         ['titulo' => 'WhatsApp', 'largura' => 17],
-        ['titulo' => 'Responsável', 'largura' => 12],
+        ['titulo' => 'E-mail', 'largura' => 30],
+        ['titulo' => 'Responsável', 'largura' => 30],
         ['titulo' => 'Grupo', 'largura' => 22],
         ['titulo' => 'Qtd Pessoas', 'largura' => 13],
         ['titulo' => 'Valor pago', 'largura' => 13],
         ['titulo' => 'Status', 'largura' => 22],
         ['titulo' => 'Pago em', 'largura' => 17],
-        ['titulo' => 'E-mail do contato', 'largura' => 30],
         ['titulo' => 'Transação', 'largura' => 34],
     ];
 
@@ -109,7 +110,10 @@ try {
                 'full_name' => $r['primary_name'],
                 'cpf' => '',
                 'whatsapp' => $r['whatsapp'],
+                'email' => $r['email'],
                 'is_primary' => 1,
+                'is_minor' => 0,
+                'is_child_lap' => 0,
             ]];
         }
 
@@ -125,37 +129,48 @@ try {
             if ($busca !== '') {
                 $alvo = mb_strtolower(implode(' ', [
                     $code, $p['full_name'], $p['cpf'] ?? '', $p['whatsapp'] ?? '',
-                    $r['primary_name'], $r['email'], $r['whatsapp'],
-                    $r['mercadopago_order_id'] ?? '', $st['rotulo'],
+                    $p['email'] ?? '', $r['primary_name'], $r['email'], $r['whatsapp'],
+                    $r['group_name'] ?? '', $r['mercadopago_order_id'] ?? '', $st['rotulo'],
                 ]), 'UTF-8');
                 if (mb_strpos($alvo, $busca) === false) {
                     continue;
                 }
             }
 
-            // Reserva, Grupo, Valor, Status e Pago em só na primeira linha do
-            // grupo, igual à tabela do painel: repetir em cada passageiro faz o
-            // olho reler dado idêntico.
+            $faixaEtaria = '18 anos ou mais';
+            if (!empty($p['is_child_lap'])) {
+                $faixaEtaria = '0 a 5 anos (colo)';
+            } elseif (!empty($p['is_minor'])) {
+                $faixaEtaria = '6 a 17 anos';
+            }
+
+            $emailPassageiro = (string) ($p['email'] ?? '');
+            if ($emailPassageiro === '' && $responsavel) {
+                $emailPassageiro = (string) ($r['email'] ?? '');
+            }
+
+            // Reserva, Responsável e Grupo repetem em todas as linhas do grupo,
+            // facilitando ordenação e conferência no Excel.
             $linhas[] = [
                 // Linha do responsável ganha destaque; a primeira linha de cada
                 // grupo ganha a borda superior que separa os blocos.
                 'estilo' => $responsavel ? 'responsavel' : ($primeiro ? 'grupo' : 'normal'),
                 'celulas' => [
-                    $primeiro ? $code : '',
+                    $code,
                     (string) $p['position'],
                     (string) $p['full_name'],
                     bus_format_cpf((string) ($p['cpf'] ?? '')),
+                    $faixaEtaria,
                     ($p['whatsapp'] ?? '') !== '' ? bus_format_phone((string) $p['whatsapp']) : '',
-                    $responsavel ? 'Sim' : '',
-                    // Nome do grupo, vazio quando a reserva e individual.
-                    $primeiro ? ($r['group_name'] ?? '') : '',
+                    $emailPassageiro,
+                    (string) $r['primary_name'],
+                    (string) ($r['group_name'] ?? ''),
                     $primeiro ? $grupo : '',
                     $primeiro ? $valor : '',
                     $primeiro
                         ? ['v' => $st['rotulo'], 'estilo' => $st['estilo']]
                         : '',
                     $primeiro ? (string) ($r['pago_em'] ?? '') : '',
-                    $primeiro ? (string) $r['email'] : '',
                     $primeiro ? (string) ($r['mercadopago_order_id'] ?? '') : '',
                 ],
             ];

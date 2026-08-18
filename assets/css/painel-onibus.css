@@ -562,6 +562,16 @@
   line-height: 1.25;
 }
 
+/* Faixa etária de passageiros extras em letra pequena e discreta abaixo do nome. */
+.tabela__faixa-passageiro {
+  margin-top: 1px;
+  margin-left: 18px;
+  color: var(--p-tinta-fraca);
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
 /* Destaque tipografico leve ao nome do grupo, facilitando a chamada na porta do onibus. */
 .tabela__grupo {
   font-weight: 600;
