@@ -342,23 +342,50 @@
     if (!addedPassengersList) return;
     addedPassengersList.replaceChildren();
 
-    if (primarySummaryText && primaryName && primaryCpf) {
-      var pName = normalizeFullName(primaryName.value) || 'Contato Principal';
+    if (primarySummaryCard && primaryName && primaryCpf) {
+      var pName = normalizeFullName(primaryName.value) || 'CONTATO PRINCIPAL';
       var pCpf = maskCpf(primaryCpf.value) || '—';
-      primarySummaryText.textContent = pName + ' · CPF ' + pCpf;
-    }
+      var pWa = primaryWhatsapp ? digits(primaryWhatsapp.value) : '';
+      var pEmail = primaryEmail ? primaryEmail.value.trim() : '';
 
-    var babyIconSvg = '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 12h.01"/><path d="M15 12h.01"/><path d="M10 16c.5.3 1.2.5 2 .5s1.5-.2 2-.5"/><path d="M19 6.3a9 9 0 0 1 1.8 3.9 2 2 0 0 1 0 3.6 9 9 0 0 1-17.6 0 2 2 0 0 1 0-3.6A9 9 0 0 1 12 3c2 0 3.5 1.1 3.5 2.5s-.9 2.5-2 2.5c-.8 0-1.5-.4-1.5-1"/></svg>';
+      var pNameEl = document.getElementById('primary-summary-name');
+      if (pNameEl) pNameEl.textContent = pName;
+
+      var pCpfEl = document.getElementById('primary-summary-cpf');
+      if (pCpfEl) pCpfEl.textContent = pCpf;
+
+      var pWaWrap = document.getElementById('primary-summary-wa-wrap');
+      var pWaEl = document.getElementById('primary-summary-whatsapp');
+      if (pWaWrap && pWaEl) {
+        if (pWa) {
+          pWaEl.textContent = maskWhatsapp(pWa);
+          pWaWrap.hidden = false;
+        } else {
+          pWaWrap.hidden = true;
+        }
+      }
+
+      var pEmailWrap = document.getElementById('primary-summary-email-wrap');
+      var pEmailEl = document.getElementById('primary-summary-email');
+      if (pEmailWrap && pEmailEl) {
+        if (pEmail) {
+          pEmailEl.textContent = pEmail;
+          pEmailWrap.hidden = false;
+        } else {
+          pEmailWrap.hidden = true;
+        }
+      }
+    }
 
     addedPassengers.forEach(function (p, index) {
       var pNum = index + 2;
-      var ageTagHtml = '';
+      var roleText = '18 ANOS OU MAIS';
+      var babyIconHtml = '';
       if (p.ageGroup === 'child') {
-        ageTagHtml = '<small class="bus-passenger__tag">' + babyIconSvg + 'Cortesia · 0 a 5 anos</small>';
+        roleText = '0 A 5 ANOS';
+        babyIconHtml = '<span class="bus-passenger__baby-icon" aria-label="Criança de 0 a 5 anos" title="Criança de 0 a 5 anos">👶</span>';
       } else if (p.ageGroup === 'minor') {
-        ageTagHtml = '<small class="bus-passenger__tag bus-passenger__tag--minor">6 a 17 anos</small>';
-      } else {
-        ageTagHtml = '<small class="bus-passenger__tag bus-passenger__tag--adult">18 anos ou mais</small>';
+        roleText = '6 A 17 ANOS';
       }
 
       var card = document.createElement('div');
@@ -373,10 +400,11 @@
         detailsHtml += '<span>E-mail: <strong>' + escapeHtml(p.email) + '</strong></span>';
       }
 
-      card.innerHTML = '<div class="bus-passenger__title">' +
-        '<div class="bus-passenger__title-info">' +
-        '<span>Passageiro ' + pNum + ': <strong>' + escapeHtml(p.fullName) + '</strong></span>' +
-        ageTagHtml +
+      card.innerHTML = '<div class="bus-passenger__header">' +
+        '<div class="bus-passenger__header-title">' +
+        '<span>PASSAGEIRO ' + pNum + ': ' + babyIconHtml + '<strong>' + escapeHtml(p.fullName) + '</strong></span>' +
+        '<span class="bus-passenger__pipe">|</span>' +
+        '<span class="bus-passenger__category">' + roleText + '</span>' +
         '</div>' +
         '<button type="button" class="bus-passenger__btn-remove" data-action="remove-passenger" data-passenger-id="' + p.id + '" aria-label="Remover passageiro ' + escapeHtml(p.fullName) + '" title="Remover passageiro">' +
         '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
