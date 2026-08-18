@@ -9,23 +9,74 @@
   var primaryBirth = document.getElementById('primary-birth');
   var primaryEmail = document.getElementById('primary-email');
   var primaryWhatsapp = document.getElementById('primary-whatsapp');
-  var passengerCount = document.getElementById('passenger-count');
-  var childrenCount = document.getElementById('children-count');
-  var childrenHint = document.getElementById('children-hint');
-  var passengerFields = document.getElementById('passenger-fields');
-  var childrenFields = document.getElementById('children-fields');
-  var passengersFieldset = document.getElementById('passengers-fieldset');
-  var passengersNote = document.getElementById('passengers-note');
+
+  // Elementos da Etapa 2 (Grupo e Passageiros)
+  var soloTraveler = document.getElementById('solo-traveler');
+  var btnOpenAddPassenger = document.getElementById('btn-open-add-passenger');
+  var groupMainView = document.getElementById('group-main-view');
+  var groupPassengersContainer = document.getElementById('group-passengers-container');
+  var primarySummaryCard = document.getElementById('primary-summary-card');
+  var primarySummaryText = document.getElementById('primary-summary-text');
+  var addedPassengersList = document.getElementById('added-passengers-list');
+  var btnGroupNext = document.getElementById('btn-group-next');
+
+  // Mini Multi-step Form (Adição de Pessoa)
+  var addPassengerPanel = document.getElementById('add-passenger-panel');
+  var btnCancelAddPassenger = document.getElementById('btn-cancel-add-passenger');
+  var substepAge = document.getElementById('substep-age');
+  var substepFields = document.getElementById('substep-fields');
+  var substepConfirm = document.getElementById('substep-confirm');
+  var newPassengerAge = document.getElementById('new-passenger-age');
+  var substepAgeAlert = document.getElementById('substep-age-alert');
+  var btnSubstepAgeNext = document.getElementById('btn-substep-age-next');
+  var newPName = document.getElementById('new-p-name');
+  var newPCpf = document.getElementById('new-p-cpf');
+  var newPWaWrapper = document.getElementById('new-p-wa-wrapper');
+  var newPWhatsapp = document.getElementById('new-p-whatsapp');
+  var newPEmailWrapper = document.getElementById('new-p-email-wrapper');
+  var newPEmail = document.getElementById('new-p-email');
+  var substepFieldsAlert = document.getElementById('substep-fields-alert');
+  var btnSubstepFieldsBack = document.getElementById('btn-substep-fields-back');
+  var btnSubstepFieldsNext = document.getElementById('btn-substep-fields-next');
+  var reviewPersonAge = document.getElementById('review-person-age');
+  var reviewPersonName = document.getElementById('review-person-name');
+  var reviewPersonCpf = document.getElementById('review-person-cpf');
+  var reviewPersonWaRow = document.getElementById('review-person-wa-row');
+  var reviewPersonWhatsapp = document.getElementById('review-person-whatsapp');
+  var reviewPersonEmailRow = document.getElementById('review-person-email-row');
+  var reviewPersonEmail = document.getElementById('review-person-email');
+  var btnSubstepConfirmEdit = document.getElementById('btn-substep-confirm-edit');
+  var btnSubstepConfirmSave = document.getElementById('btn-substep-confirm-save');
+
+  // Modal de Remoção de Passageiro
+  var removePassengerDialog = document.getElementById('remove-passenger-dialog');
+  var removeDialogText = document.getElementById('remove-dialog-text');
+  var removeDialogWarning = document.getElementById('remove-dialog-warning');
+  var btnCancelRemovePassenger = document.getElementById('btn-cancel-remove-passenger');
+  var btnConfirmRemovePassenger = document.getElementById('btn-confirm-remove-passenger');
+  var passengerToRemoveId = null;
+
+  // Elementos da Etapa 3 (Revisão)
+  var reviewPassengersList = document.getElementById('review-passengers-list');
+  var reviewPayingCount = document.getElementById('review-paying-count');
+  var reviewPayingSubtotal = document.getElementById('review-paying-subtotal');
+  var reviewChildrenRow = document.getElementById('review-children-row');
+  var reviewChildrenCount = document.getElementById('review-children-count');
+  var reviewTotalAmount = document.getElementById('review-total-amount');
+
+  // Cabeçalho e Painéis
   var stepHeading = document.getElementById('step-heading');
   var stepEyebrow = document.getElementById('step-eyebrow');
   var stepTitle = document.getElementById('form-title');
   var stepDescription = document.getElementById('step-description');
-  var currentStep = 'cadastro';
+  var stepper = document.getElementById('bus-stepper');
+  var stepperBar = document.getElementById('bus-stepper-bar');
   var total = document.getElementById('bus-total');
   var summaryCount = document.getElementById('bus-summary-count');
   var summaryPaying = document.getElementById('bus-summary-paying');
   var status = document.getElementById('bus-form-status');
   var submit = form.querySelector('button[type="submit"]');
+
   var paymentPanel = document.getElementById('payment-panel');
   var pixQr = document.getElementById('pix-qr');
   var pixCopyCode = document.getElementById('pix-copy-code');
@@ -48,24 +99,19 @@
   var stillHereContinue = document.getElementById('still-here-continue');
   var stillHereCancel = document.getElementById('still-here-cancel');
   var printConfirmation = document.getElementById('print-confirmation');
-  var stepper = document.getElementById('bus-stepper');
-  var stepperBar = document.getElementById('bus-stepper-bar');
-  var primarySummaryCard = document.getElementById('primary-summary-card');
-  var primarySummaryText = document.getElementById('primary-summary-text');
-  var reviewPassengersList = document.getElementById('review-passengers-list');
-  var reviewPayingCount = document.getElementById('review-paying-count');
-  var reviewPayingSubtotal = document.getElementById('review-paying-subtotal');
-  var reviewChildrenRow = document.getElementById('review-children-row');
-  var reviewChildrenCount = document.getElementById('review-children-count');
-  var reviewTotalAmount = document.getElementById('review-total-amount');
-  var btnGroupNext = document.getElementById('btn-group-next');
+
+  // Estado
+  var currentStep = 'cadastro';
   var currentWizardStep = 1;
   var priceCents = 12000;
-  var savedPassengers = {};
-  var savedChildren = {};
   var statusTimer = null;
   var expiryTimer = null;
   var activeRegistrationId = null;
+  var confirmedSnapshot = null;
+
+  // Lista de passageiros adicionais [{ id, ageGroup, fullName, cpf, whatsapp, email }]
+  var addedPassengers = [];
+  var pendingNewPassenger = { ageGroup: '', fullName: '', cpf: '', whatsapp: '', email: '' };
 
   function digits(value) {
     return String(value || '').replace(/\D/g, '');
@@ -156,13 +202,36 @@
       .replace(/'/g, '&#039;');
   }
 
-  function shouldSkipPassengersStep() {
-    var count = Number(passengerCount.value) || 1;
-    var kids = Number(childrenCount.value) || 0;
-    return count === 1 && kids === 0;
+  function getAdultCount() {
+    // Contato principal é sempre 18+ (validado no step 1) + adicionais adultos
+    var adultExtras = addedPassengers.filter(function (p) { return p.ageGroup === 'adult'; }).length;
+    return 1 + adultExtras;
   }
 
-  // Cabeçalho por etapa global (cadastro → pagamento → confirmação)
+  function getChildrenCount() {
+    return addedPassengers.filter(function (p) { return p.ageGroup === 'child'; }).length;
+  }
+
+  function getPayingCount() {
+    // Titular + adicionais maiores de 6 anos (adult ou minor)
+    var payingExtras = addedPassengers.filter(function (p) { return p.ageGroup !== 'child'; }).length;
+    return 1 + payingExtras;
+  }
+
+  function getTotalPassengersCount() {
+    return 1 + addedPassengers.length;
+  }
+
+  function updateSummary() {
+    var totalP = getTotalPassengersCount();
+    var paying = getPayingCount();
+    var amount = (paying * priceCents / 100).toFixed(2).replace('.', ',');
+    if (summaryCount) summaryCount.textContent = displayCount(totalP, 'passageiro', 'passageiros');
+    if (summaryPaying) summaryPaying.textContent = displayCount(paying, 'passageiro', 'passageiros');
+    if (total) total.textContent = 'R$ ' + amount;
+  }
+
+  // Cabeçalho por etapa global
   var STEP_COPY = {
     cadastro: {
       eyebrow: 'Etapa 1 de 3 · Cadastro',
@@ -200,29 +269,19 @@
 
   function updateWizardHeaderCopy() {
     if (!stepHeading || currentStep !== 'cadastro') return;
-    var skipStep3 = shouldSkipPassengersStep();
-    var totalSteps = skipStep3 ? 3 : 4;
-    var currentStepDisplay = currentWizardStep;
-    if (skipStep3 && currentWizardStep === 4) currentStepDisplay = 3;
-
     var stepInfo = {
       1: {
-        eyebrow: 'Etapa ' + currentStepDisplay + ' de ' + totalSteps + ' · Contato Principal',
+        eyebrow: 'Etapa 1 de 3 · Contato Principal',
         title: 'Quem é o responsável pela reserva?',
         description: 'Comece informando os dados do contato principal. Esta pessoa será o responsável financeiro e o canal oficial do grupo.'
       },
       2: {
-        eyebrow: 'Etapa ' + currentStepDisplay + ' de ' + totalSteps + ' · Vagas',
-        title: 'Quantas pessoas vão embarcar?',
-        description: 'Defina a quantidade de vagas pagantes e crianças de colo (0 a 5 anos cortesia no colo de adultos).'
+        eyebrow: 'Etapa 2 de 3 · Grupo & Passageiros',
+        title: 'Quem vai embarcar com você?',
+        description: 'Informe se você viajará sozinho(a) ou adicione as pessoas que irão com você na viagem.'
       },
       3: {
-        eyebrow: 'Etapa ' + currentStepDisplay + ' de ' + totalSteps + ' · Passageiros',
-        title: 'Quem vai embarcar com você?',
-        description: 'Informe o nome completo e o CPF de cada pessoa do grupo para emissão do manifesto de viagem.'
-      },
-      4: {
-        eyebrow: 'Etapa ' + currentStepDisplay + ' de ' + totalSteps + ' · Revisão',
+        eyebrow: 'Etapa 3 de 3 · Revisão do Pedido',
         title: 'Revise os dados antes do Pix',
         description: 'Confira as informações da viagem e dos passageiros antes de gerar o código de pagamento.'
       }
@@ -236,19 +295,11 @@
 
   function updateStepperUI() {
     if (!stepper) return;
-    var skipStep3 = shouldSkipPassengersStep();
     var stepItems = stepper.querySelectorAll('.bus-stepper__item');
-    var tab3 = document.getElementById('step-tab-3');
-    if (tab3) {
-      tab3.style.display = skipStep3 ? 'none' : 'flex';
-    }
+    var percentage = 33;
+    if (currentWizardStep === 2) percentage = 66;
+    if (currentWizardStep === 3) percentage = 100;
 
-    var effectiveSteps = skipStep3 ? [1, 2, 4] : [1, 2, 3, 4];
-    var currentEffectiveIndex = effectiveSteps.indexOf(currentWizardStep);
-    if (currentEffectiveIndex === -1) currentEffectiveIndex = 0;
-
-    var percentage = Math.round((currentEffectiveIndex / (effectiveSteps.length - 1)) * 100);
-    if (percentage === 0) percentage = skipStep3 ? 33 : 25;
     if (stepperBar) {
       stepperBar.style.width = percentage + '%';
     }
@@ -267,23 +318,312 @@
     });
   }
 
-  function updateGroupNextButtonLabel() {
-    if (!btnGroupNext) return;
-    if (shouldSkipPassengersStep()) {
-      btnGroupNext.innerHTML = 'Continuar para revisão <span aria-hidden="true">→</span>';
+  function syncGroupModeState() {
+    if (!soloTraveler || !btnOpenAddPassenger) return;
+
+    if (addedPassengers.length > 0) {
+      soloTraveler.checked = false;
+      soloTraveler.disabled = true;
+      btnOpenAddPassenger.disabled = false;
+      if (groupPassengersContainer) groupPassengersContainer.hidden = false;
     } else {
-      btnGroupNext.innerHTML = 'Continuar: Passageiros <span aria-hidden="true">→</span>';
+      soloTraveler.disabled = false;
+      if (soloTraveler.checked) {
+        btnOpenAddPassenger.disabled = true;
+      } else {
+        btnOpenAddPassenger.disabled = false;
+      }
+      if (groupPassengersContainer) groupPassengersContainer.hidden = true;
     }
+    updateSummary();
+  }
+
+  function renderAddedPassengers() {
+    if (!addedPassengersList) return;
+    addedPassengersList.replaceChildren();
+
+    if (primarySummaryText && primaryName && primaryCpf) {
+      var pName = normalizeFullName(primaryName.value) || 'Contato Principal';
+      var pCpf = maskCpf(primaryCpf.value) || '—';
+      primarySummaryText.textContent = pName + ' · CPF ' + pCpf;
+    }
+
+    var babyIconSvg = '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 12h.01"/><path d="M15 12h.01"/><path d="M10 16c.5.3 1.2.5 2 .5s1.5-.2 2-.5"/><path d="M19 6.3a9 9 0 0 1 1.8 3.9 2 2 0 0 1 0 3.6 9 9 0 0 1-17.6 0 2 2 0 0 1 0-3.6A9 9 0 0 1 12 3c2 0 3.5 1.1 3.5 2.5s-.9 2.5-2 2.5c-.8 0-1.5-.4-1.5-1"/></svg>';
+
+    addedPassengers.forEach(function (p, index) {
+      var pNum = index + 2;
+      var ageTagHtml = '';
+      if (p.ageGroup === 'child') {
+        ageTagHtml = '<small class="bus-passenger__tag">' + babyIconSvg + 'Cortesia · 0 a 5 anos</small>';
+      } else if (p.ageGroup === 'minor') {
+        ageTagHtml = '<small class="bus-passenger__tag bus-passenger__tag--minor">6 a 17 anos</small>';
+      } else {
+        ageTagHtml = '<small class="bus-passenger__tag bus-passenger__tag--adult">18 anos ou mais</small>';
+      }
+
+      var card = document.createElement('div');
+      card.className = 'bus-passenger bus-passenger--added' + (p.ageGroup === 'child' ? ' bus-passenger--child' : '');
+      card.dataset.passengerId = p.id;
+
+      var detailsHtml = '<span>CPF: <strong>' + maskCpf(p.cpf) + '</strong></span>';
+      if (p.whatsapp) {
+        detailsHtml += '<span>WhatsApp: <strong>' + maskWhatsapp(p.whatsapp) + '</strong></span>';
+      }
+      if (p.email) {
+        detailsHtml += '<span>E-mail: <strong>' + escapeHtml(p.email) + '</strong></span>';
+      }
+
+      card.innerHTML = '<div class="bus-passenger__title">' +
+        '<div class="bus-passenger__title-info">' +
+        '<span>Passageiro ' + pNum + ': <strong>' + escapeHtml(p.fullName) + '</strong></span>' +
+        ageTagHtml +
+        '</div>' +
+        '<button type="button" class="bus-passenger__btn-remove" data-action="remove-passenger" data-passenger-id="' + p.id + '" aria-label="Remover passageiro ' + escapeHtml(p.fullName) + '" title="Remover passageiro">' +
+        '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+        '<line x1="5" y1="12" x2="19" y2="12"></line>' +
+        '</svg>' +
+        '</button>' +
+        '</div>' +
+        '<div class="bus-passenger__added-details">' +
+        detailsHtml +
+        '</div>';
+
+      addedPassengersList.appendChild(card);
+    });
+
+    syncGroupModeState();
+  }
+
+  function showSubstep(substepNum) {
+    if (substepAge) substepAge.hidden = (substepNum !== 1);
+    if (substepFields) substepFields.hidden = (substepNum !== 2);
+    if (substepConfirm) substepConfirm.hidden = (substepNum !== 3);
+  }
+
+  function openAddPassengerFlow() {
+    if (soloTraveler && soloTraveler.checked) return;
+    pendingNewPassenger = { ageGroup: '', fullName: '', cpf: '', whatsapp: '', email: '' };
+    if (newPassengerAge) newPassengerAge.value = '';
+    if (newPName) newPName.value = '';
+    if (newPCpf) newPCpf.value = '';
+    if (newPWhatsapp) newPWhatsapp.value = '';
+    if (newPEmail) newPEmail.value = '';
+    if (substepAgeAlert) substepAgeAlert.hidden = true;
+    if (substepFieldsAlert) substepFieldsAlert.hidden = true;
+
+    if (groupMainView) groupMainView.hidden = true;
+    if (addPassengerPanel) addPassengerPanel.hidden = false;
+    showSubstep(1);
+    if (newPassengerAge) newPassengerAge.focus();
+  }
+
+  function closeAddPassengerFlow() {
+    if (addPassengerPanel) addPassengerPanel.hidden = true;
+    if (groupMainView) groupMainView.hidden = false;
+    syncGroupModeState();
+  }
+
+  function advanceSubstepAge() {
+    if (substepAgeAlert) substepAgeAlert.hidden = true;
+    var selectedAge = newPassengerAge ? newPassengerAge.value : '';
+    if (!selectedAge) {
+      if (substepAgeAlert) {
+        substepAgeAlert.textContent = 'Selecione a faixa etária da pessoa para continuar.';
+        substepAgeAlert.hidden = false;
+      }
+      if (newPassengerAge) newPassengerAge.focus();
+      return;
+    }
+
+    if (selectedAge === 'child') {
+      var availableAdults = getAdultCount();
+      var currentChildren = getChildrenCount();
+      if (currentChildren >= availableAdults) {
+        if (substepAgeAlert) {
+          substepAgeAlert.innerHTML = '<strong>Atenção:</strong> Cada criança de 0 a 5 anos precisa viajar no colo de um adulto (18+). No momento, todas as vagas de colo já possuem responsável. Adicione primeiro mais um adulto (18+) ao grupo antes de adicionar outra criança de colo.';
+          substepAgeAlert.hidden = false;
+        }
+        return;
+      }
+    }
+
+    pendingNewPassenger.ageGroup = selectedAge;
+
+    if (selectedAge === 'child') {
+      if (newPWaWrapper) newPWaWrapper.hidden = true;
+      if (newPEmailWrapper) newPEmailWrapper.hidden = true;
+      if (newPWhatsapp) newPWhatsapp.value = '';
+      if (newPEmail) newPEmail.value = '';
+    } else {
+      if (newPWaWrapper) newPWaWrapper.hidden = false;
+      if (newPEmailWrapper) newPEmailWrapper.hidden = false;
+    }
+
+    showSubstep(2);
+    if (newPName) newPName.focus();
+  }
+
+  function advanceSubstepFields() {
+    if (substepFieldsAlert) substepFieldsAlert.hidden = true;
+    var name = normalizeFullName(newPName ? newPName.value : '');
+    if (name.split(' ').length < 2) {
+      if (substepFieldsAlert) {
+        substepFieldsAlert.textContent = 'Informe o nome completo (nome e sobrenome).';
+        substepFieldsAlert.hidden = false;
+      }
+      if (newPName) newPName.focus();
+      return;
+    }
+
+    var cpfVal = newPCpf ? newPCpf.value : '';
+    if (!validCpf(cpfVal)) {
+      if (substepFieldsAlert) {
+        substepFieldsAlert.textContent = 'Informe um CPF válido.';
+        substepFieldsAlert.hidden = false;
+      }
+      if (newPCpf) newPCpf.focus();
+      return;
+    }
+
+    var cpfD = digits(cpfVal);
+    if (cpfD === digits(primaryCpf.value)) {
+      if (substepFieldsAlert) {
+        substepFieldsAlert.textContent = 'Este CPF já pertence ao contato principal da reserva.';
+        substepFieldsAlert.hidden = false;
+      }
+      if (newPCpf) newPCpf.focus();
+      return;
+    }
+
+    var duplicatePassenger = addedPassengers.some(function (p) {
+      return digits(p.cpf) === cpfD;
+    });
+    if (duplicatePassenger) {
+      if (substepFieldsAlert) {
+        substepFieldsAlert.textContent = 'Este CPF já foi adicionado a outro passageiro do grupo.';
+        substepFieldsAlert.hidden = false;
+      }
+      if (newPCpf) newPCpf.focus();
+      return;
+    }
+
+    var waVal = newPWhatsapp ? digits(newPWhatsapp.value) : '';
+    if (waVal && waVal.length !== 11) {
+      if (substepFieldsAlert) {
+        substepFieldsAlert.textContent = 'Informe um WhatsApp válido com DDD (11 dígitos) ou deixe o campo em branco.';
+        substepFieldsAlert.hidden = false;
+      }
+      if (newPWhatsapp) newPWhatsapp.focus();
+      return;
+    }
+
+    var emailVal = newPEmail ? newPEmail.value.trim() : '';
+    if (emailVal && !newPEmail.validity.valid) {
+      if (substepFieldsAlert) {
+        substepFieldsAlert.textContent = 'Informe um e-mail válido ou deixe o campo em branco.';
+        substepFieldsAlert.hidden = false;
+      }
+      if (newPEmail) newPEmail.focus();
+      return;
+    }
+
+    pendingNewPassenger.fullName = name;
+    pendingNewPassenger.cpf = cpfD;
+    pendingNewPassenger.whatsapp = waVal;
+    pendingNewPassenger.email = emailVal;
+
+    var ageLabels = {
+      child: '0 a 5 anos (Criança de colo · Cortesia)',
+      minor: '6 a 17 anos (Menor pagante)',
+      adult: '18 anos ou mais (Adulto pagante)'
+    };
+    if (reviewPersonAge) reviewPersonAge.textContent = ageLabels[pendingNewPassenger.ageGroup] || '—';
+    if (reviewPersonName) reviewPersonName.textContent = pendingNewPassenger.fullName;
+    if (reviewPersonCpf) reviewPersonCpf.textContent = maskCpf(pendingNewPassenger.cpf);
+
+    if (pendingNewPassenger.ageGroup === 'child') {
+      if (reviewPersonWaRow) reviewPersonWaRow.hidden = true;
+      if (reviewPersonEmailRow) reviewPersonEmailRow.hidden = true;
+    } else {
+      if (reviewPersonWaRow) {
+        reviewPersonWaRow.hidden = false;
+        if (reviewPersonWhatsapp) reviewPersonWhatsapp.textContent = pendingNewPassenger.whatsapp ? maskWhatsapp(pendingNewPassenger.whatsapp) : 'Não informado';
+      }
+      if (reviewPersonEmailRow) {
+        reviewPersonEmailRow.hidden = false;
+        if (reviewPersonEmail) reviewPersonEmail.textContent = pendingNewPassenger.email || 'Não informado';
+      }
+    }
+
+    showSubstep(3);
+  }
+
+  function savePendingPassenger() {
+    addedPassengers.push({
+      id: 'p_' + Date.now() + '_' + Math.random().toString(16).slice(2),
+      ageGroup: pendingNewPassenger.ageGroup,
+      fullName: pendingNewPassenger.fullName,
+      cpf: pendingNewPassenger.cpf,
+      whatsapp: pendingNewPassenger.whatsapp,
+      email: pendingNewPassenger.email
+    });
+
+    closeAddPassengerFlow();
+    renderAddedPassengers();
+  }
+
+  function openRemovePassengerDialog(passengerId) {
+    var p = addedPassengers.find(function (item) { return item.id === passengerId; });
+    if (!p) return;
+
+    passengerToRemoveId = passengerId;
+    if (removeDialogText) {
+      removeDialogText.innerHTML = 'Tem certeza que deseja remover o passageiro <strong>' + escapeHtml(p.fullName) + '</strong> do grupo?';
+    }
+
+    if (removeDialogWarning) {
+      if (p.ageGroup === 'adult') {
+        var remainingAdults = 1 + addedPassengers.filter(function (x) { return x.ageGroup === 'adult' && x.id !== passengerId; }).length;
+        var currentChildren = getChildrenCount();
+        if (currentChildren > remainingAdults) {
+          removeDialogWarning.innerHTML = '<strong>Atenção:</strong> Ao remover este adulto, não haverá responsáveis suficientes para todas as crianças de colo (0 a 5 anos) no grupo. Remova primeiro uma das crianças de colo antes de remover este adulto.';
+          removeDialogWarning.hidden = false;
+          if (btnConfirmRemovePassenger) btnConfirmRemovePassenger.disabled = true;
+        } else {
+          removeDialogWarning.hidden = true;
+          if (btnConfirmRemovePassenger) btnConfirmRemovePassenger.disabled = false;
+        }
+      } else {
+        removeDialogWarning.hidden = true;
+        if (btnConfirmRemovePassenger) btnConfirmRemovePassenger.disabled = false;
+      }
+    }
+
+    if (removePassengerDialog && typeof removePassengerDialog.showModal === 'function') {
+      removePassengerDialog.showModal();
+    }
+  }
+
+  function confirmRemovePassenger() {
+    if (!passengerToRemoveId) return;
+    addedPassengers = addedPassengers.filter(function (p) {
+      return p.id !== passengerToRemoveId;
+    });
+    passengerToRemoveId = null;
+    if (removePassengerDialog && typeof removePassengerDialog.close === 'function') {
+      removePassengerDialog.close();
+    }
+    renderAddedPassengers();
   }
 
   function renderReviewCard() {
     if (!reviewPassengersList) return;
-    var count = Math.max(1, Number(passengerCount.value) || 1);
-    var kids = Math.max(0, Number(childrenCount.value) || 0);
-    var totalCents = count * priceCents;
+    var paying = getPayingCount();
+    var kids = getChildrenCount();
+    var totalCents = paying * priceCents;
     var totalFormatted = 'R$ ' + (totalCents / 100).toFixed(2).replace('.', ',');
 
-    if (reviewPayingCount) reviewPayingCount.textContent = String(count);
+    if (reviewPayingCount) reviewPayingCount.textContent = String(paying);
     if (reviewPayingSubtotal) reviewPayingSubtotal.textContent = totalFormatted;
     if (reviewTotalAmount) reviewTotalAmount.textContent = totalFormatted;
 
@@ -305,38 +645,30 @@
       '<span class="bus-review-card__item-details"><small class="bus-passenger__tag bus-passenger__tag--primary">Responsável</small></span>';
     reviewPassengersList.appendChild(p1Item);
 
-    // Passageiros 2..N
-    for (var pos = 2; pos <= count; pos++) {
-      var pNameInput = document.getElementById('passenger-' + pos + '-name');
-      var pAgeInput = document.getElementById('passenger-' + pos + '-age');
-      var pName = pNameInput ? normalizeFullName(pNameInput.value) : (savedPassengers[pos] ? savedPassengers[pos].fullName : '');
-      var isMinor = (pAgeInput ? pAgeInput.value : (savedPassengers[pos] ? savedPassengers[pos].age : 'adult')) === 'minor';
-      var pItem = document.createElement('li');
-      pItem.className = 'bus-review-card__item';
-      pItem.innerHTML = '<span class="bus-review-card__item-name">' + pos + '. ' + (escapeHtml(pName) || ('Passageiro ' + pos)) + '</span>' +
-        '<span class="bus-review-card__item-details"><small class="bus-passenger__tag' + (isMinor ? ' bus-passenger__tag--minor' : '') + '">' + (isMinor ? '6 a 17 anos' : 'Adulto') + '</small></span>';
-      reviewPassengersList.appendChild(pItem);
-    }
+    // Passageiros Adicionais
+    var babyIconSvg = '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 12h.01"/><path d="M15 12h.01"/><path d="M10 16c.5.3 1.2.5 2 .5s1.5-.2 2-.5"/><path d="M19 6.3a9 9 0 0 1 1.8 3.9 2 2 0 0 1 0 3.6 9 9 0 0 1-17.6 0 2 2 0 0 1 0-3.6A9 9 0 0 1 12 3c2 0 3.5 1.1 3.5 2.5s-.9 2.5-2 2.5c-.8 0-1.5-.4-1.5-1"/></svg>';
 
-    // Crianças de colo 1..M
-    for (var cIdx = 1; cIdx <= kids; cIdx++) {
-      var cNameInput = document.getElementById('child-' + cIdx + '-name');
-      var cName = cNameInput ? normalizeFullName(cNameInput.value) : (savedChildren[cIdx] ? savedChildren[cIdx].fullName : '');
-      var cItem = document.createElement('li');
-      cItem.className = 'bus-review-card__item';
-      var babyIcon = '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 12h.01"/><path d="M15 12h.01"/><path d="M10 16c.5.3 1.2.5 2 .5s1.5-.2 2-.5"/><path d="M19 6.3a9 9 0 0 1 1.8 3.9 2 2 0 0 1 0 3.6 9 9 0 0 1-17.6 0 2 2 0 0 1 0-3.6A9 9 0 0 1 12 3c2 0 3.5 1.1 3.5 2.5s-.9 2.5-2 2.5c-.8 0-1.5-.4-1.5-1"/></svg>';
-      cItem.innerHTML = '<span class="bus-review-card__item-name">Colo ' + cIdx + '. ' + (escapeHtml(cName) || ('Criança ' + cIdx)) + '</span>' +
-        '<span class="bus-review-card__item-details"><small class="bus-passenger__tag">' + babyIcon + 'Cortesia</small></span>';
-      reviewPassengersList.appendChild(cItem);
-    }
+    addedPassengers.forEach(function (p, index) {
+      var pNum = index + 2;
+      var item = document.createElement('li');
+      item.className = 'bus-review-card__item';
+      var tagHtml = '';
+      if (p.ageGroup === 'child') {
+        tagHtml = '<small class="bus-passenger__tag">' + babyIconSvg + 'Cortesia</small>';
+      } else if (p.ageGroup === 'minor') {
+        tagHtml = '<small class="bus-passenger__tag bus-passenger__tag--minor">6 a 17 anos</small>';
+      } else {
+        tagHtml = '<small class="bus-passenger__tag bus-passenger__tag--adult">Adulto</small>';
+      }
+
+      item.innerHTML = '<span class="bus-review-card__item-name">' + pNum + '. ' + escapeHtml(p.fullName) + '</span>' +
+        '<span class="bus-review-card__item-details">' + tagHtml + '</span>';
+      reviewPassengersList.appendChild(item);
+    });
   }
 
   function setWizardStep(step) {
-    var targetStep = step;
-    if (targetStep === 3 && shouldSkipPassengersStep()) {
-      targetStep = 4;
-    }
-    currentWizardStep = Math.max(1, Math.min(4, targetStep));
+    currentWizardStep = Math.max(1, Math.min(3, step));
 
     var steps = form.querySelectorAll('[data-wizard-step]');
     steps.forEach(function (el) {
@@ -350,191 +682,21 @@
       }
     });
 
-    if (currentWizardStep === 3) {
-      if (primarySummaryText) {
-        primarySummaryText.textContent = (normalizeFullName(primaryName.value) || '—') + ' · CPF ' + (maskCpf(primaryCpf.value) || '—');
-      }
-      renderPassengers();
+    if (currentWizardStep === 2) {
+      renderAddedPassengers();
     }
 
-    if (currentWizardStep === 4) {
+    if (currentWizardStep === 3) {
       renderReviewCard();
     }
 
     updateStepperUI();
-    updateGroupNextButtonLabel();
     updateWizardHeaderCopy();
 
     var heading = document.getElementById('step-heading');
     if (heading) {
       heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-  }
-
-  function readPassengerValues() {
-    if (passengerFields) {
-      Array.prototype.slice.call(passengerFields.querySelectorAll('[data-passenger-position]')).forEach(function (field) {
-        var position = field.dataset.passengerPosition;
-        var wa = field.querySelector('[data-passenger-whatsapp]');
-        var email = field.querySelector('[data-passenger-email]');
-        var age = field.querySelector('[data-passenger-age]');
-        savedPassengers[position] = {
-          fullName: field.querySelector('[data-passenger-name]').value,
-          cpf: field.querySelector('[data-passenger-cpf]').value,
-          age: age ? age.value : 'adult',
-          whatsapp: wa ? wa.value : '',
-          email: email ? email.value : ''
-        };
-      });
-    }
-
-    if (childrenFields) {
-      Array.prototype.slice.call(childrenFields.querySelectorAll('[data-child-position]')).forEach(function (field) {
-        var position = field.dataset.childPosition;
-        savedChildren[position] = {
-          fullName: field.querySelector('[data-child-name]').value,
-          cpf: field.querySelector('[data-child-cpf]').value
-        };
-      });
-    }
-  }
-
-  function getAdultPayingCount() {
-    var count = Math.max(1, Math.min(100, Number(passengerCount.value) || 1));
-    var adults = 1; // Contato principal é sempre 18+ anos
-    for (var pos = 2; pos <= count; pos++) {
-      var pField = document.getElementById('passenger-' + pos + '-age');
-      var ageVal = pField ? pField.value : (savedPassengers[pos] ? savedPassengers[pos].age : 'adult');
-      if (ageVal !== 'minor') {
-        adults++;
-      }
-    }
-    return adults;
-  }
-
-  function renderChildren() {
-    if (!childrenFields) return;
-    var kids = Math.max(0, Math.floor(Number(childrenCount.value) || 0));
-    childrenFields.replaceChildren();
-
-    for (var idx = 1; idx <= kids; idx++) {
-      var values = savedChildren[idx] || { fullName: '', cpf: '' };
-      var wrapper = document.createElement('div');
-      wrapper.className = 'bus-passenger bus-passenger--child';
-      wrapper.dataset.childPosition = idx;
-      var babyIcon = '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 12h.01"/><path d="M15 12h.01"/><path d="M10 16c.5.3 1.2.5 2 .5s1.5-.2 2-.5"/><path d="M19 6.3a9 9 0 0 1 1.8 3.9 2 2 0 0 1 0 3.6 9 9 0 0 1-17.6 0 2 2 0 0 1 0-3.6A9 9 0 0 1 12 3c2 0 3.5 1.1 3.5 2.5s-.9 2.5-2 2.5c-.8 0-1.5-.4-1.5-1"/></svg>';
-      wrapper.innerHTML = '<div class="bus-passenger__title"><span>Criança de colo ' + idx + ' (até 5 anos)</span><small class="bus-passenger__tag">' + babyIcon + 'Cortesia</small></div>'
-        + '<div class="bus-form__grid">'
-        + '<div class="bus-field bus-field--wide"><label for="child-' + idx + '-name">Nome completo da criança ' + idx + ' <b aria-hidden="true">*</b></label>'
-        + '<input id="child-' + idx + '-name" aria-label="Nome completo da criança ' + idx + '" data-child-name type="text" autocomplete="off" minlength="3" required></div>'
-        + '<div class="bus-field bus-field--wide"><label for="child-' + idx + '-cpf">CPF da criança ' + idx + ' <b aria-hidden="true">*</b></label>'
-        + '<input id="child-' + idx + '-cpf" aria-label="CPF da criança ' + idx + '" data-child-cpf type="text" inputmode="numeric" autocomplete="off" maxlength="14" placeholder="000.000.000-00" required>'
-        + '<small class="bus-field__hint">O CPF de menores é obrigatório para emissão da apólice e lista de embarque.</small></div>'
-        + '</div>';
-      childrenFields.appendChild(wrapper);
-      wrapper.querySelector('[data-child-name]').value = values.fullName || '';
-      wrapper.querySelector('[data-child-cpf]').value = maskCpf(values.cpf || '');
-      wrapper.querySelector('[data-child-cpf]').addEventListener('input', function (event) {
-        event.currentTarget.value = maskCpf(event.currentTarget.value);
-      });
-    }
-  }
-
-  function renderPassengers() {
-    readPassengerValues();
-    var count = Math.max(1, Math.min(100, Number(passengerCount.value) || 1));
-    passengerCount.value = count;
-    passengerFields.replaceChildren();
-
-    for (var position = 2; position <= count; position += 1) {
-      var values = savedPassengers[position] || { fullName: '', cpf: '', age: 'adult', whatsapp: '', email: '' };
-      var wrapper = document.createElement('div');
-      wrapper.className = 'bus-passenger';
-      wrapper.dataset.passengerPosition = position;
-      wrapper.innerHTML = '<div class="bus-passenger__title"><span>Passageiro ' + position + '</span><small>Nome, CPF e faixa etária obrigatórios</small></div>'
-        + '<div class="bus-form__grid">'
-        + '<div class="bus-field bus-field--wide"><label for="passenger-' + position + '-name">Nome completo do passageiro ' + position + ' <b aria-hidden="true">*</b></label>'
-        + '<input id="passenger-' + position + '-name" aria-label="Nome completo do passageiro ' + position + '" data-passenger-name type="text" autocomplete="off" minlength="3" required></div>'
-        + '<div class="bus-field"><label for="passenger-' + position + '-cpf">CPF do passageiro ' + position + ' <b aria-hidden="true">*</b></label>'
-        + '<input id="passenger-' + position + '-cpf" aria-label="CPF do passageiro ' + position + '" data-passenger-cpf type="text" inputmode="numeric" autocomplete="off" maxlength="14" placeholder="000.000.000-00" required></div>'
-        + '<div class="bus-field"><label for="passenger-' + position + '-age">Faixa etária do passageiro ' + position + ' <b aria-hidden="true">*</b></label>'
-        + '<select id="passenger-' + position + '-age" aria-label="Faixa etária do passageiro ' + position + '" data-passenger-age required>'
-        + '<option value="adult"' + (values.age === 'minor' ? '' : ' selected') + '>18 anos ou mais</option>'
-        + '<option value="minor"' + (values.age === 'minor' ? ' selected' : '') + '>6 a 17 anos</option>'
-        + '</select></div>'
-        // WhatsApp opcional: sem `required` e rotulado como opcional no próprio
-        // label, para a pessoa não travar achando que precisa preencher.
-        + '<div class="bus-field"><label for="passenger-' + position + '-whatsapp">WhatsApp do passageiro ' + position + ' <small>(opcional)</small></label>'
-        + '<input id="passenger-' + position + '-whatsapp" aria-label="WhatsApp do passageiro ' + position + ' (opcional)" data-passenger-whatsapp type="tel" inputmode="tel" autocomplete="off" maxlength="15" placeholder="(11) 90000-0000"></div>'
-        // E-mail opcional do passageiro adicional.
-        + '<div class="bus-field bus-field--wide"><label for="passenger-' + position + '-email">E-mail do passageiro ' + position + ' <small>(opcional)</small></label>'
-        + '<input id="passenger-' + position + '-email" aria-label="E-mail do passageiro ' + position + ' (opcional)" data-passenger-email type="email" autocomplete="email"></div>'
-        + '</div>';
-      passengerFields.appendChild(wrapper);
-      wrapper.querySelector('[data-passenger-name]').value = values.fullName || '';
-      wrapper.querySelector('[data-passenger-cpf]').value = maskCpf(values.cpf || '');
-      wrapper.querySelector('[data-passenger-cpf]').addEventListener('input', function (event) {
-        event.currentTarget.value = maskCpf(event.currentTarget.value);
-      });
-      wrapper.querySelector('[data-passenger-age]').addEventListener('change', function () {
-        readPassengerValues();
-        updateSummary();
-      });
-      var waField = wrapper.querySelector('[data-passenger-whatsapp]');
-      waField.value = maskWhatsapp(values.whatsapp || '');
-      waField.addEventListener('input', function (event) {
-        event.currentTarget.value = maskWhatsapp(event.currentTarget.value);
-      });
-      var emailField = wrapper.querySelector('[data-passenger-email]');
-      emailField.value = values.email || '';
-    }
-
-    renderChildren();
-
-    var extra = count - 1;
-    var kids = Math.max(0, Math.floor(Number(childrenCount.value) || 0));
-    if (passengersFieldset) {
-      passengersFieldset.hidden = (extra === 0 && kids === 0);
-    }
-    updateGroupNextButtonLabel();
-    updateStepperUI();
-    updateWizardHeaderCopy();
-    updateSummary();
-  }
-
-  // Crianças de até 5 anos são ADICIONAIS ao grupo e não pagam: viajam no colo
-  // de um pagante de 18 anos ou mais. Pagantes de 6 a 17 anos NÃO podem levar
-  // crianças de colo. Logo, máximo de crianças = total de pagantes adultos (18+).
-  function syncChildrenLimit(count) {
-    var adultCount = getAdultPayingCount();
-    childrenCount.max = String(adultCount);
-    var current = Math.max(0, Math.floor(Number(childrenCount.value) || 0));
-    var clamped = Math.min(current, adultCount);
-    if (String(clamped) !== childrenCount.value) childrenCount.value = clamped;
-
-    if (adultCount === 0) {
-      childrenCount.disabled = true;
-      if (childrenHint) {
-        childrenHint.textContent = 'Crianças de colo só podem viajar acompanhadas por um pagante de 18 anos ou mais.';
-      }
-    } else {
-      childrenCount.disabled = false;
-      if (childrenHint) {
-        childrenHint.textContent = 'Viajam no colo de um pagante de 18 anos ou mais (máximo de 1 por adulto, ' + adultCount + ' disponível' + (adultCount === 1 ? '' : 'is') + '). Sem cobrança.';
-      }
-    }
-    return clamped;
-  }
-
-  function updateSummary() {
-    var count = Math.max(1, Number(passengerCount.value) || 1);
-    var children = syncChildrenLimit(count);
-    // Todo o grupo informado paga; as crianças entram sem assento e sem custo.
-    var paying = count;
-    var amount = (paying * priceCents / 100).toFixed(2).replace('.', ',');
-    summaryCount.textContent = displayCount(count + children, 'passageiro', 'passageiros');
-    summaryPaying.textContent = displayCount(paying, 'passageiro', 'passageiros');
-    total.textContent = 'R$ ' + amount;
   }
 
   function setStatus(message, isError) {
@@ -573,19 +735,8 @@
 
   function validateStep2() {
     clearInvalid();
-    var count = Number(passengerCount.value);
-    var children = Number(childrenCount.value || 0);
-    if (!Number.isInteger(count) || count < 1 || count > 100) return invalid('Informe entre 1 e 100 passageiros.', passengerCount);
-    if (!Number.isInteger(children) || children < 0) return invalid('Quantidade de crianças inválida.', childrenCount);
-
-    var adultCount = getAdultPayingCount();
-    if (children > 0) {
-      if (adultCount === 0) {
-        return invalid('Crianças de colo só podem viajar acompanhadas por um pagante de 18 anos ou mais.', childrenCount);
-      }
-      if (children > adultCount) {
-        return invalid('As crianças de até 5 anos não podem passar do número de pagantes maiores de 18 anos.', childrenCount);
-      }
+    if (!soloTraveler.checked && addedPassengers.length === 0) {
+      return invalid('Selecione "Vou Sozinho" ou adicione pessoas ao grupo para continuar.', soloTraveler);
     }
     setStatus('', false);
     return true;
@@ -593,68 +744,10 @@
 
   function validateStep3() {
     clearInvalid();
-    var count = Number(passengerCount.value);
-    var children = Number(childrenCount.value || 0);
-    var seenCpfs = {};
-    seenCpfs[digits(primaryCpf.value)] = primaryCpf;
-    var adultCount = 1;
-
-    for (var position = 2; position <= count; position += 1) {
-      var nameField = document.getElementById('passenger-' + position + '-name');
-      var cpfField = document.getElementById('passenger-' + position + '-cpf');
-      var ageField = document.getElementById('passenger-' + position + '-age');
-      var emailField = document.getElementById('passenger-' + position + '-email');
-      if (!nameField || normalizeFullName(nameField.value).split(' ').length < 2) {
-        return invalid('Preencha os dados do passageiro ' + position + '.', nameField);
-      }
-      if (!cpfField || !validCpf(cpfField.value)) {
-        return invalid('Informe um CPF válido para o passageiro ' + position + '.', cpfField);
-      }
-      var cpfD = digits(cpfField.value);
-      if (seenCpfs[cpfD]) {
-        return invalid('Não repita o CPF de um passageiro.', cpfField);
-      }
-      seenCpfs[cpfD] = cpfField;
-
-      if (ageField && ageField.value !== 'minor') {
-        adultCount++;
-      }
-
-      if (emailField && emailField.value.trim() !== '' && !emailField.validity.valid) {
-        return invalid('Informe um e-mail válido para o passageiro ' + position + '.', emailField);
-      }
-    }
-
-    if (children > 0) {
-      if (children > adultCount) {
-        return invalid('As crianças de até 5 anos não podem passar do número de pagantes maiores de 18 anos.', childrenCount);
-      }
-      for (var idx = 1; idx <= children; idx++) {
-        var childNameField = document.getElementById('child-' + idx + '-name');
-        var childCpfField = document.getElementById('child-' + idx + '-cpf');
-        if (!childNameField || normalizeFullName(childNameField.value).split(' ').length < 2) {
-          return invalid('Preencha o nome completo da criança ' + idx + '.', childNameField);
-        }
-        if (!childCpfField || !validCpf(childCpfField.value)) {
-          return invalid('Informe um CPF válido para a criança ' + idx + '.', childCpfField);
-        }
-        var cCpfD = digits(childCpfField.value);
-        if (seenCpfs[cCpfD]) {
-          return invalid('Não repita o CPF de um passageiro ou criança.', childCpfField);
-        }
-        seenCpfs[cCpfD] = childCpfField;
-      }
-    }
-    setStatus('', false);
-    return true;
-  }
-
-  function validateStep4() {
-    clearInvalid();
     var terms = document.getElementById('bus-terms');
-    if (!terms.checked) {
+    if (!terms || !terms.checked) {
       setStatus('Leia e aceite as condições para continuar.', true);
-      terms.focus();
+      if (terms) terms.focus();
       return false;
     }
     setStatus('', false);
@@ -670,57 +763,47 @@
       setWizardStep(2);
       return false;
     }
-    if (!shouldSkipPassengersStep() && !validateStep3()) {
+    if (!validateStep3()) {
       setWizardStep(3);
-      return false;
-    }
-    if (!validateStep4()) {
-      setWizardStep(4);
       return false;
     }
     return true;
   }
 
   function getPayload() {
-    var count = Number(passengerCount.value);
-    var kids = Number(childrenCount.value || 0);
     var birthParsed = primaryBirth ? parseBirthDate(primaryBirth.value) : null;
+    var payingPassengers = addedPassengers.filter(function (p) { return p.ageGroup !== 'child'; });
+    var childPassengers = addedPassengers.filter(function (p) { return p.ageGroup === 'child'; });
+
     var passengers = [{
       full_name: normalizeFullName(primaryName.value),
       cpf: digits(primaryCpf.value),
       birth_date: birthParsed ? birthParsed.iso : '',
-      // O passageiro 1 é o contato principal, então o WhatsApp e o E-mail são os do contato.
       whatsapp: digits(primaryWhatsapp.value),
       email: primaryEmail.value.trim(),
       age_group: 'adult',
       is_minor: false
     }];
-    for (var position = 2; position <= count; position += 1) {
-      var waInput = document.getElementById('passenger-' + position + '-whatsapp');
-      var emailInput = document.getElementById('passenger-' + position + '-email');
-      var ageInput = document.getElementById('passenger-' + position + '-age');
+
+    payingPassengers.forEach(function (p) {
       passengers.push({
-        full_name: normalizeFullName(document.getElementById('passenger-' + position + '-name').value),
-        cpf: digits(document.getElementById('passenger-' + position + '-cpf').value),
-        whatsapp: waInput ? digits(waInput.value) : '',
-        email: emailInput ? emailInput.value.trim() : '',
-        age_group: ageInput ? ageInput.value : 'adult',
-        is_minor: ageInput ? ageInput.value === 'minor' : false
+        full_name: normalizeFullName(p.fullName),
+        cpf: digits(p.cpf),
+        whatsapp: digits(p.whatsapp),
+        email: (p.email || '').trim(),
+        age_group: p.ageGroup,
+        is_minor: p.ageGroup === 'minor'
       });
-    }
+    });
 
     var children = [];
-    for (var i = 1; i <= kids; i++) {
-      var cNameInput = document.getElementById('child-' + i + '-name');
-      var cCpfInput = document.getElementById('child-' + i + '-cpf');
-      if (cNameInput && cCpfInput) {
-        children.push({
-          position: count + i,
-          full_name: normalizeFullName(cNameInput.value),
-          cpf: digits(cCpfInput.value)
-        });
-      }
-    }
+    childPassengers.forEach(function (c, idx) {
+      children.push({
+        position: passengers.length + idx + 1,
+        full_name: normalizeFullName(c.fullName),
+        cpf: digits(c.cpf)
+      });
+    });
 
     return {
       contact: {
@@ -732,8 +815,8 @@
         age_group: 'adult',
         is_minor: false
       },
-      passenger_count: count,
-      children_count: kids,
+      passenger_count: passengers.length,
+      children_count: children.length,
       passengers: passengers,
       children: children
     };
@@ -757,15 +840,6 @@
     return pad(minutes) + ':' + pad(seconds);
   }
 
-  // Janela de atenção de 10 minutos, não a validade real do Pix.
-  //
-  // O código do Mercado Pago vale 24h (medido), mas "expira em 23h 59min" não
-  // cria nenhum senso de urgência e o usuário abandona a aba com a vaga em
-  // aberto. Contamos 10 minutos e, ao zerar, perguntamos se ele ainda está aí.
-  //
-  // O contador NÃO invalida nada: quem decide o estado da reserva é sempre o
-  // servidor, via pollPaymentStatus(). Ao zerar, reconsultamos o servidor antes
-  // de mostrar o aviso, para não alarmar quem já pagou nos últimos segundos.
   var ATTENTION_WINDOW_MS = 10 * 60 * 1000;
   var attentionDeadline = 0;
 
@@ -779,8 +853,6 @@
         stopExpiryCountdown();
         pixExpiryCountdown.textContent = '00:00';
         pixExpiry.dataset.state = 'expired';
-        // Pergunta ao servidor antes de alarmar: o pagamento pode ter caído
-        // nos últimos segundos.
         pollPaymentStatus(registrationId, { onPending: openStillHereDialog });
         return;
       }
@@ -793,17 +865,11 @@
     expiryTimer = window.setInterval(render, 1000);
   }
 
-  // Nomes vêm do que o próprio usuário acabou de digitar nesta sessão, não de
-  // uma nova rota. Evita expor dados pessoais em GET /api/bus-registration-status,
-  // que é consultado só com o UUID e continua devolvendo apenas o status.
-  var confirmedSnapshot = null;
-
   function fitGroupName() {
     if (!confirmedGroupName || !confirmedGroupBadge || confirmedGroupBadge.hidden) return;
     var containerWidth = confirmedGroupBadge.clientWidth || (confirmedGroupBadge.parentElement ? confirmedGroupBadge.parentElement.clientWidth : 0);
     if (!containerWidth || containerWidth <= 0) return;
 
-    // Inicia no tamanho máximo de 4rem para medição de transbordamento
     confirmedGroupName.style.fontSize = '4rem';
     var textWidth = confirmedGroupName.scrollWidth;
 
@@ -831,18 +897,15 @@
 
     var snap = confirmedSnapshot || {};
     confirmedAmount.textContent = snap.totalAmount ? 'R$ ' + String(snap.totalAmount).replace('.', ',') : '—';
-    // Código curto e legível: o UUID inteiro não serve para ler no WhatsApp.
     confirmedCode.textContent = snap.registrationId
       ? String(snap.registrationId).split('-')[0].toUpperCase()
       : '—';
 
     if (confirmedOrder) {
-      // Identificador da transação no provedor, para conferência no painel.
       confirmedOrder.textContent = snap.orderId || '—';
     }
 
     if (confirmedIssued) {
-      // Data de emissão do comprovante, no fuso do usuário.
       confirmedIssued.textContent = new Date().toLocaleString('pt-BR', {
         day: '2-digit', month: '2-digit', year: 'numeric',
         hour: '2-digit', minute: '2-digit'
@@ -851,7 +914,6 @@
 
     confirmedPassengers.replaceChildren();
     (snap.passengers || []).forEach(function (passenger, index) {
-      // Compatibilidade: snapshots antigos guardavam apenas a string do nome.
       var name = typeof passenger === 'string' ? passenger : passenger.name;
       var phone = typeof passenger === 'string' ? '' : (passenger.whatsapp || '');
       var isMinor = typeof passenger === 'object' && passenger.is_minor;
@@ -889,8 +951,6 @@
       confirmedChildren.hidden = true;
     }
 
-    // Exibe o bloco do grupo exclusivo apenas se houver um nome de grupo definido no servidor.
-    // Reservas individuais nao possuem grupo (groupName e null ou vazio), mantendo o bloco oculto.
     var gName = data && typeof data.groupName === 'string' ? data.groupName.trim() : '';
     if (confirmedGroupName) {
       confirmedGroupName.textContent = gName;
@@ -906,9 +966,11 @@
     }
 
     confirmationPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    // Move o foco para o título: leitores de tela anunciam a mudança de etapa.
-    confirmationPanel.querySelector('#confirmed-title').setAttribute('tabindex', '-1');
-    confirmationPanel.querySelector('#confirmed-title').focus({ preventScroll: true });
+    var titleEl = confirmationPanel.querySelector('#confirmed-title');
+    if (titleEl) {
+      titleEl.setAttribute('tabindex', '-1');
+      titleEl.focus({ preventScroll: true });
+    }
   }
 
   function openStillHereDialog() {
@@ -951,8 +1013,6 @@
         stopExpiryCountdown();
         return;
       }
-      // Ainda pendente. Quando a janela de atenção zerou, é aqui que
-      // perguntamos se a pessoa continua na página.
       if (typeof onPending === 'function') onPending();
       statusTimer = window.setTimeout(function () {
         pollPaymentStatus(registrationId);
@@ -969,15 +1029,11 @@
     setStep('pagamento');
 
     var payload = getPayload();
-    // Guarda os dados para montar o comprovante na confirmação sem
-    // precisar que o servidor devolva dados pessoais em uma consulta por UUID.
     confirmedSnapshot = {
       registrationId: payment.registrationId,
       orderId: payment.orderId,
       totalAmount: payment.totalAmount,
-      childrenCount: Number(childrenCount.value || 0),
-      // Nome e telefone: a organização usa o comprovante como referência de
-      // contato do grupo, então o telefone de quem informou vai junto.
+      childrenCount: payload.children_count,
       passengers: payload.passengers.map(function (p) {
         return { name: p.full_name, whatsapp: p.whatsapp || '', is_minor: p.is_minor };
       }),
@@ -1023,24 +1079,69 @@
     }
   }
 
+  // Mascaras nos inputs do Contato Principal
   primaryCpf.addEventListener('input', function (event) { event.currentTarget.value = maskCpf(event.currentTarget.value); });
   if (primaryBirth) {
     primaryBirth.addEventListener('input', function (event) { event.currentTarget.value = maskDate(event.currentTarget.value); });
   }
   primaryWhatsapp.addEventListener('input', function (event) { event.currentTarget.value = maskWhatsapp(event.currentTarget.value); });
-  passengerCount.addEventListener('input', function () {
-    renderPassengers();
-    updateGroupNextButtonLabel();
-    updateStepperUI();
-  });
-  childrenCount.addEventListener('input', function () {
-    renderPassengers();
-    updateGroupNextButtonLabel();
-    updateStepperUI();
-  });
 
-  // Navegação do Wizard (Botões Próximo e Voltar)
+  // Mascaras nos inputs do Mini Multi-step
+  if (newPCpf) {
+    newPCpf.addEventListener('input', function (event) { event.currentTarget.value = maskCpf(event.currentTarget.value); });
+  }
+  if (newPWhatsapp) {
+    newPWhatsapp.addEventListener('input', function (event) { event.currentTarget.value = maskWhatsapp(event.currentTarget.value); });
+  }
+
+  // Interacoes da Etapa 2
+  if (soloTraveler) {
+    soloTraveler.addEventListener('change', syncGroupModeState);
+  }
+  if (btnOpenAddPassenger) {
+    btnOpenAddPassenger.addEventListener('click', openAddPassengerFlow);
+  }
+  if (btnCancelAddPassenger) {
+    btnCancelAddPassenger.addEventListener('click', closeAddPassengerFlow);
+  }
+  if (btnSubstepAgeNext) {
+    btnSubstepAgeNext.addEventListener('click', advanceSubstepAge);
+  }
+  if (btnSubstepFieldsBack) {
+    btnSubstepFieldsBack.addEventListener('click', function () { showSubstep(1); });
+  }
+  if (btnSubstepFieldsNext) {
+    btnSubstepFieldsNext.addEventListener('click', advanceSubstepFields);
+  }
+  if (btnSubstepConfirmEdit) {
+    btnSubstepConfirmEdit.addEventListener('click', function () { showSubstep(2); });
+  }
+  if (btnSubstepConfirmSave) {
+    btnSubstepConfirmSave.addEventListener('click', savePendingPassenger);
+  }
+
+  // Modal de Remocao
+  if (btnCancelRemovePassenger) {
+    btnCancelRemovePassenger.addEventListener('click', function () {
+      if (removePassengerDialog && typeof removePassengerDialog.close === 'function') {
+        removePassengerDialog.close();
+      }
+    });
+  }
+  if (btnConfirmRemovePassenger) {
+    btnConfirmRemovePassenger.addEventListener('click', confirmRemovePassenger);
+  }
+
+  // Delegacao de cliques do formulario (Acoes de navegacao e remocao)
   form.addEventListener('click', function (event) {
+    var removeBtn = event.target.closest('[data-action="remove-passenger"]');
+    if (removeBtn) {
+      event.preventDefault();
+      var pId = removeBtn.getAttribute('data-passenger-id');
+      if (pId) openRemovePassengerDialog(pId);
+      return;
+    }
+
     var nextBtn = event.target.closest('[data-action="next-step"]');
     if (nextBtn) {
       event.preventDefault();
@@ -1049,15 +1150,7 @@
       if (sNum === 1) {
         if (validateStep1()) setWizardStep(2);
       } else if (sNum === 2) {
-        if (validateStep2()) {
-          if (shouldSkipPassengersStep()) {
-            setWizardStep(4);
-          } else {
-            setWizardStep(3);
-          }
-        }
-      } else if (sNum === 3) {
-        if (validateStep3()) setWizardStep(4);
+        if (validateStep2()) setWizardStep(3);
       }
       return;
     }
@@ -1071,18 +1164,12 @@
         setWizardStep(1);
       } else if (sNum === 3) {
         setWizardStep(2);
-      } else if (sNum === 4) {
-        if (shouldSkipPassengersStep()) {
-          setWizardStep(2);
-        } else {
-          setWizardStep(3);
-        }
       }
       return;
     }
   });
 
-  // Navegação por clique nos passos do Stepper
+  // Navegacao por clique nos passos do Stepper
   if (stepper) {
     stepper.addEventListener('click', function (event) {
       var item = event.target.closest('.bus-stepper__item');
@@ -1093,17 +1180,14 @@
         setWizardStep(targetStep);
       } else if (targetStep === 2 && validateStep1()) {
         setWizardStep(2);
-      } else if (targetStep === 3 && validateStep1() && validateStep2() && !shouldSkipPassengersStep()) {
+      } else if (targetStep === 3 && validateStep1() && validateStep2()) {
         setWizardStep(3);
-      } else if (targetStep === 4 && validateStep1() && validateStep2() && (shouldSkipPassengersStep() || validateStep3())) {
-        setWizardStep(4);
       }
     });
   }
 
   form.addEventListener('submit', submitForm);
 
-  // "Continuar pagamento": reabre a janela de 10 minutos e volta ao polling.
   if (stillHereContinue) {
     stillHereContinue.addEventListener('click', function () {
       closeStillHereDialog();
@@ -1112,9 +1196,6 @@
     });
   }
 
-  // "Cancelar transação": só abandona a página. Não cancela nada no Mercado
-  // Pago nem no banco — quem decide isso é o servidor, e a cobrança pode
-  // continuar válida se a pessoa já tiver pagado.
   if (stillHereCancel) {
     stillHereCancel.addEventListener('click', function () {
       closeStillHereDialog();
@@ -1124,8 +1205,6 @@
     });
   }
 
-  // Esc fecha o dialog nativo: tratamos como "continuar" para não deixar a
-  // página parada sem contador nem polling.
   if (stillHereDialog) {
     stillHereDialog.addEventListener('close', function () {
       if (confirmationPanel && !confirmationPanel.hidden) return;
@@ -1139,24 +1218,25 @@
   if (printConfirmation) {
     printConfirmation.addEventListener('click', function () { window.print(); });
   }
-  copyPix.addEventListener('click', async function () {
-    try {
-      await navigator.clipboard.writeText(pixCopyCode.value);
-      paymentStatus.textContent = 'Código Pix copiado. Agora é só colar no app do seu banco.';
-    } catch (_error) {
-      pixCopyCode.focus();
-      pixCopyCode.select();
-      paymentStatus.textContent = 'Selecione e copie o código Pix manualmente.';
-    }
-  });
+
+  if (copyPix) {
+    copyPix.addEventListener('click', async function () {
+      try {
+        await navigator.clipboard.writeText(pixCopyCode.value);
+        paymentStatus.textContent = 'Código Pix copiado. Agora é só colar no app do seu banco.';
+      } catch (_error) {
+        pixCopyCode.focus();
+        pixCopyCode.select();
+        paymentStatus.textContent = 'Selecione e copie o código Pix manualmente.';
+      }
+    });
+  }
 
   setStep('cadastro');
   setWizardStep(1);
-  renderPassengers();
+  syncGroupModeState();
 
-  // ──────────────────────────────────────────────
   // Hero: Cartão de embarque holográfico 3D (Overdrive)
-  // ──────────────────────────────────────────────
   (function () {
     var ticket = document.getElementById('heroTicket');
     if (!ticket) return;

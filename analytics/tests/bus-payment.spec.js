@@ -42,35 +42,58 @@ test('cadastra o grupo, calcula o valor e exibe o Pix', async ({ page }) => {
   await page.locator('#primary-birth').fill('15/05/1990');
   await page.locator('#primary-email').fill('maria@example.com');
   await page.locator('#primary-whatsapp').fill('11942554141');
-  await page.getByRole('button', { name: /continuar: tamanho do grupo/i }).click();
+  await page.getByRole('button', { name: /continuar: grupo/i }).click();
 
-  // Etapa 2: Vagas do Grupo
+  // Etapa 2: Grupo e Passageiros
   await expect(page.locator('[data-wizard-step="2"]')).toBeVisible();
-  await page.getByLabel(/Quantas pessoas vão com você/i).fill('3');
-  await page.getByLabel(/Crianças de até 5 anos/i).fill('1');
-  await page.getByRole('button', { name: /continuar: passageiros/i }).click();
 
-  // Etapa 3: Dados dos Passageiros
+  // Adicionar Passageiro 2 (Adulto 18+)
+  await page.locator('#btn-open-add-passenger').click();
+  await expect(page.locator('#add-passenger-panel')).toBeVisible();
+  await page.locator('#new-passenger-age').selectOption('adult');
+  await page.locator('#btn-substep-age-next').click();
+
+  await page.locator('#new-p-name').fill('João de Souza');
+  await page.locator('#new-p-cpf').fill(passengerTwoCpf);
+  await page.locator('#btn-substep-fields-next').click();
+  await expect(page.locator('#review-person-name')).toHaveText('João de Souza');
+  await page.locator('#btn-substep-confirm-save').click();
+
+  // Adicionar Passageiro 3 (Menor 6-17)
+  await page.locator('#btn-open-add-passenger').click();
+  await page.locator('#new-passenger-age').selectOption('minor');
+  await page.locator('#btn-substep-age-next').click();
+
+  await page.locator('#new-p-name').fill('Ana de Souza');
+  await page.locator('#new-p-cpf').fill(passengerThreeCpf);
+  await page.locator('#btn-substep-fields-next').click();
+  await page.locator('#btn-substep-confirm-save').click();
+
+  // Adicionar Criança de Colo (0-5)
+  await page.locator('#btn-open-add-passenger').click();
+  await page.locator('#new-passenger-age').selectOption('child');
+  await page.locator('#btn-substep-age-next').click();
+
+  await page.locator('#new-p-name').fill('Pedro de Souza');
+  await page.locator('#new-p-cpf').fill('10000000019');
+  await page.locator('#btn-substep-fields-next').click();
+  await page.locator('#btn-substep-confirm-save').click();
+
+  // Verificar lista e resumo na Etapa 2
+  await expect(page.locator('#added-passengers-list .bus-passenger--added')).toHaveCount(3);
+  await expect(page.locator('#bus-summary-count')).toHaveText('4 passageiros');
+  await expect(page.locator('#bus-summary-paying')).toHaveText('3 passageiros');
+  await expect(page.locator('#bus-total')).toHaveText('R$ 360,00');
+
+  await page.locator('#btn-group-next').click();
+
+  // Etapa 3: Revisão do Pedido
   await expect(page.locator('[data-wizard-step="3"]')).toBeVisible();
-  await expect(page.locator('#passenger-fields .bus-passenger')).toHaveCount(2);
-  await page.getByLabel('Nome completo do passageiro 2').fill('João de Souza');
-  await page.getByLabel('CPF do passageiro 2').fill(passengerTwoCpf);
-  await page.getByLabel('Nome completo do passageiro 3').fill('Ana de Souza');
-  await page.getByLabel('CPF do passageiro 3').fill(passengerThreeCpf);
-  await page.getByLabel('Nome completo da criança 1').fill('Pedro de Souza');
-  await page.getByLabel('CPF da criança 1').fill('10000000019');
-  await page.getByRole('button', { name: /continuar para revisão/i }).click();
-
-  // Etapa 4: Revisão do Pedido
-  await expect(page.locator('[data-wizard-step="4"]')).toBeVisible();
   await expect(page.locator('#review-passengers-list .bus-review-card__item')).toHaveCount(4);
+  await expect(page.locator('#review-paying-count')).toHaveText('3');
   await expect(page.locator('#review-total-amount')).toHaveText('R$ 360,00');
   await page.getByLabel(/Li e concordo com as condições/i).check();
 
-  // 3 pagantes x R$ 120. A criança é adicional e não paga.
-  await expect(page.locator('#bus-total')).toHaveText('R$ 360,00');
-  // 4 pessoas a bordo: 3 pagantes + 1 criança no colo.
-  await expect(page.locator('#bus-summary-count')).toHaveText('4 passageiros');
   await page.getByRole('button', { name: /gerar pagamento pix/i }).click();
 
   await expect.poll(() => requestBody).not.toBeNull();
@@ -119,10 +142,15 @@ test('confirma a vaga automaticamente quando o pagamento é identificado', async
   await page.locator('#primary-birth').fill('15/05/1990');
   await page.locator('#primary-email').fill('maria@example.com');
   await page.locator('#primary-whatsapp').fill('11942554141');
-  await page.getByRole('button', { name: /continuar: tamanho do grupo/i }).click();
+  await page.getByRole('button', { name: /continuar: grupo/i }).click();
 
-  // 1 passageiro pula direto para a revisão
-  await page.getByRole('button', { name: /continuar para revisão/i }).click();
+  // Etapa 2: Seleciona Vou Sozinho
+  await expect(page.locator('[data-wizard-step="2"]')).toBeVisible();
+  await page.locator('#solo-traveler').check();
+  await page.locator('#btn-group-next').click();
+
+  // Etapa 3: Revisão
+  await expect(page.locator('[data-wizard-step="3"]')).toBeVisible();
   await page.getByLabel(/Li e concordo com as condições/i).check();
   await page.getByRole('button', { name: /gerar pagamento pix/i }).click();
 
@@ -164,9 +192,11 @@ test('janela de 10 minutos abre o aviso e não confirma nada sozinha', async ({ 
   await page.locator('#primary-birth').fill('15/05/1990');
   await page.locator('#primary-email').fill('maria@example.com');
   await page.locator('#primary-whatsapp').fill('11942554141');
-  await page.getByRole('button', { name: /continuar: tamanho do grupo/i }).click();
+  await page.getByRole('button', { name: /continuar: grupo/i }).click();
 
-  await page.getByRole('button', { name: /continuar para revisão/i }).click();
+  await page.locator('#solo-traveler').check();
+  await page.locator('#btn-group-next').click();
+
   await page.getByLabel(/Li e concordo com as condições/i).check();
   await page.getByRole('button', { name: /gerar pagamento pix/i }).click();
 
@@ -198,29 +228,137 @@ test('janela de 10 minutos abre o aviso e não confirma nada sozinha', async ({ 
   await expect(page.locator('#pix-expiry-countdown')).toHaveText(/^(10:00|09:\d{2})$/);
 });
 
-test('impede gerar pagamento sem preencher passageiros adicionais', async ({ page }) => {
-  let requestCount = 0;
-  await page.route('**/api/create-pix-order', async (route) => {
-    requestCount += 1;
-    await route.fulfill({ status: 500, body: '{}' });
-  });
-
+test('regras de bloqueio da etapa 2: checkbox Vou Sozinho e botão Adicionar Pessoas se desabilitam mutuamente', async ({ page }) => {
   await page.goto('/onibus.html');
+
   await page.getByLabel('Nome completo (contato principal)').fill('Maria de Souza');
   await page.getByLabel('CPF do contato principal').fill(primaryCpf);
   await page.locator('#primary-birth').fill('15/05/1990');
   await page.locator('#primary-email').fill('maria@example.com');
   await page.locator('#primary-whatsapp').fill('11942554141');
-  await page.getByRole('button', { name: /continuar: tamanho do grupo/i }).click();
+  await page.getByRole('button', { name: /continuar: grupo/i }).click();
 
-  await page.getByLabel(/Quantas pessoas vão com você/i).fill('2');
-  await page.getByRole('button', { name: /continuar: passageiros/i }).click();
+  await expect(page.locator('[data-wizard-step="2"]')).toBeVisible();
 
-  // Clica em continuar sem preencher os dados do passageiro 2
-  await page.getByRole('button', { name: /continuar para revisão/i }).click();
+  // 1. Marcar Vou Sozinho desabilita o botão Adicionar Pessoas
+  await page.locator('#solo-traveler').check();
+  await expect(page.locator('#btn-open-add-passenger')).toBeDisabled();
 
-  await expect(page.locator('#bus-form-status')).toContainText(/preencha os dados do passageiro 2/i);
-  expect(requestCount).toBe(0);
+  // 2. Desmarcar reabilita o botão
+  await page.locator('#solo-traveler').uncheck();
+  await expect(page.locator('#btn-open-add-passenger')).toBeEnabled();
+
+  // 3. Adicionar passageiro desabilita e desmarca Vou Sozinho
+  await page.locator('#btn-open-add-passenger').click();
+  await page.locator('#new-passenger-age').selectOption('adult');
+  await page.locator('#btn-substep-age-next').click();
+  await page.locator('#new-p-name').fill('Carlos Eduardo');
+  await page.locator('#new-p-cpf').fill(passengerTwoCpf);
+  await page.locator('#btn-substep-fields-next').click();
+  await page.locator('#btn-substep-confirm-save').click();
+
+  await expect(page.locator('#solo-traveler')).not.toBeChecked();
+  await expect(page.locator('#solo-traveler')).toBeDisabled();
+
+  // 4. Remover o passageiro reabilita o checkbox Vou Sozinho
+  await page.locator('[data-action="remove-passenger"]').click();
+  await expect(page.locator('#remove-passenger-dialog')).toBeVisible();
+  await page.locator('#btn-confirm-remove-passenger').click();
+
+  await expect(page.locator('#solo-traveler')).toBeEnabled();
+});
+
+test('regra de crianças de colo (0 a 5 anos): valida proporção de adultos e bloqueia quando necessário', async ({ page }) => {
+  await page.goto('/onibus.html');
+
+  await page.getByLabel('Nome completo (contato principal)').fill('Maria de Souza');
+  await page.getByLabel('CPF do contato principal').fill(primaryCpf);
+  await page.locator('#primary-birth').fill('15/05/1990');
+  await page.locator('#primary-email').fill('maria@example.com');
+  await page.locator('#primary-whatsapp').fill('11942554141');
+  await page.getByRole('button', { name: /continuar: grupo/i }).click();
+
+  // 1. Adiciona 1ª criança de colo (1 adulto titular disponível) -> OK
+  await page.locator('#btn-open-add-passenger').click();
+  await page.locator('#new-passenger-age').selectOption('child');
+  await page.locator('#btn-substep-age-next').click();
+  await page.locator('#new-p-name').fill('Lucas Bebe');
+  await page.locator('#new-p-cpf').fill('10000000019');
+  await page.locator('#btn-substep-fields-next').click();
+  await page.locator('#btn-substep-confirm-save').click();
+
+  // 2. Tenta adicionar 2ª criança de colo sem outro adulto -> Deve bloquear
+  await page.locator('#btn-open-add-passenger').click();
+  await page.locator('#new-passenger-age').selectOption('child');
+  await page.locator('#btn-substep-age-next').click();
+
+  await expect(page.locator('#substep-age-alert')).toBeVisible();
+  await expect(page.locator('#substep-age-alert')).toContainText(/Cada criança de 0 a 5 anos precisa viajar no colo de um adulto/i);
+  await page.locator('#btn-cancel-add-passenger').click();
+
+  // 3. Adiciona um 2º adulto (18+)
+  await page.locator('#btn-open-add-passenger').click();
+  await page.locator('#new-passenger-age').selectOption('adult');
+  await page.locator('#btn-substep-age-next').click();
+  await page.locator('#new-p-name').fill('Roberto Silva');
+  await page.locator('#new-p-cpf').fill(passengerTwoCpf);
+  await page.locator('#btn-substep-fields-next').click();
+  await page.locator('#btn-substep-confirm-save').click();
+
+  // 4. Agora deve permitir adicionar a 2ª criança de colo
+  await page.locator('#btn-open-add-passenger').click();
+  await page.locator('#new-passenger-age').selectOption('child');
+  await page.locator('#btn-substep-age-next').click();
+  await expect(page.locator('#substep-fields')).toBeVisible();
+  await page.locator('#new-p-name').fill('Sofia Bebe');
+  await page.locator('#new-p-cpf').fill('30000000035');
+  await page.locator('#btn-substep-fields-next').click();
+  await page.locator('#btn-substep-confirm-save').click();
+
+  // 5. Tenta remover o 2º adulto enquanto há 2 crianças -> O modal deve alertar e desabilitar remoção
+  const removeAdultBtn = page.locator(`.bus-passenger--added:has-text("Roberto Silva") [data-action="remove-passenger"]`);
+  await removeAdultBtn.click();
+  await expect(page.locator('#remove-passenger-dialog')).toBeVisible();
+  await expect(page.locator('#remove-dialog-warning')).toBeVisible();
+  await expect(page.locator('#btn-confirm-remove-passenger')).toBeDisabled();
+  await page.locator('#btn-cancel-remove-passenger').click();
+});
+
+test('modal de remoção de passageiro: cancela ou confirma exclusão', async ({ page }) => {
+  await page.goto('/onibus.html');
+
+  await page.getByLabel('Nome completo (contato principal)').fill('Maria de Souza');
+  await page.getByLabel('CPF do contato principal').fill(primaryCpf);
+  await page.locator('#primary-birth').fill('15/05/1990');
+  await page.locator('#primary-email').fill('maria@example.com');
+  await page.locator('#primary-whatsapp').fill('11942554141');
+  await page.getByRole('button', { name: /continuar: grupo/i }).click();
+
+  // Adiciona passageiro
+  await page.locator('#btn-open-add-passenger').click();
+  await page.locator('#new-passenger-age').selectOption('adult');
+  await page.locator('#btn-substep-age-next').click();
+  await page.locator('#new-p-name').fill('Carlos Eduardo');
+  await page.locator('#new-p-cpf').fill(passengerTwoCpf);
+  await page.locator('#btn-substep-fields-next').click();
+  await page.locator('#btn-substep-confirm-save').click();
+
+  await expect(page.locator('#added-passengers-list .bus-passenger--added')).toHaveCount(1);
+
+  // Clica em remover e cancela
+  await page.locator('[data-action="remove-passenger"]').click();
+  await expect(page.locator('#remove-passenger-dialog')).toBeVisible();
+  await expect(page.locator('#remove-dialog-text')).toContainText('Carlos Eduardo');
+  await page.locator('#btn-cancel-remove-passenger').click();
+  await expect(page.locator('#remove-passenger-dialog')).toBeHidden();
+  await expect(page.locator('#added-passengers-list .bus-passenger--added')).toHaveCount(1);
+
+  // Clica em remover e confirma
+  await page.locator('[data-action="remove-passenger"]').click();
+  await expect(page.locator('#remove-passenger-dialog')).toBeVisible();
+  await page.locator('#btn-confirm-remove-passenger').click();
+  await expect(page.locator('#added-passengers-list .bus-passenger--added')).toHaveCount(0);
+  await expect(page.locator('#solo-traveler')).toBeEnabled();
 });
 
 test('bloqueia envio se o contato principal for menor de 18 anos', async ({ page }) => {
@@ -236,7 +374,7 @@ test('bloqueia envio se o contato principal for menor de 18 anos', async ({ page
   await page.locator('#primary-birth').fill('15/05/2015'); // 11 anos
   await page.locator('#primary-email').fill('maria@example.com');
   await page.locator('#primary-whatsapp').fill('11942554141');
-  await page.getByRole('button', { name: /continuar: tamanho do grupo/i }).click();
+  await page.getByRole('button', { name: /continuar: grupo/i }).click();
 
   await expect(page.locator('#bus-form-status')).toContainText(/18 anos ou mais/i);
   expect(requestCount).toBe(0);
@@ -269,9 +407,10 @@ test('comprovante impresso sai em A4 monocromático, sem sobras da página', asy
   await page.locator('#primary-birth').fill('15/05/1990');
   await page.locator('#primary-email').fill('maria@example.com');
   await page.locator('#primary-whatsapp').fill('11942554141');
-  await page.getByRole('button', { name: /continuar: tamanho do grupo/i }).click();
+  await page.getByRole('button', { name: /continuar: grupo/i }).click();
 
-  await page.getByRole('button', { name: /continuar para revisão/i }).click();
+  await page.locator('#solo-traveler').check();
+  await page.locator('#btn-group-next').click();
   await page.getByLabel(/Li e concordo com as condições/i).check();
   await page.getByRole('button', { name: /gerar pagamento pix/i }).click();
   await expect(page.locator('#confirmation-panel')).toBeVisible({ timeout: 15000 });
@@ -366,28 +505,17 @@ test('cabeçalho acompanha a etapa e o wizard reflete a navegação', async ({ p
   await page.locator('#primary-birth').fill('15/05/1990');
   await page.locator('#primary-email').fill('maria@example.com');
   await page.locator('#primary-whatsapp').fill('11942554141');
-  await page.getByRole('button', { name: /continuar: tamanho do grupo/i }).click();
+  await page.getByRole('button', { name: /continuar: grupo/i }).click();
 
-  // Etapa 2 do Wizard: Vagas
+  // Etapa 2 do Wizard: Grupo
   await expect(page.locator('[data-wizard-step="2"]')).toBeVisible();
-  await page.locator('#passenger-count').fill('3');
-  await page.locator('#passenger-count').dispatchEvent('input');
-  await expect(page.locator('#step-eyebrow')).toHaveText(/Etapa 2 de 4/);
-  await expect(page.locator('#form-title')).toHaveText(/embarcar/i);
-  await page.getByRole('button', { name: /continuar: passageiros/i }).click();
+  await expect(page.locator('#step-eyebrow')).toHaveText(/Etapa 2 de 3/);
+  await page.locator('#solo-traveler').check();
+  await page.locator('#btn-group-next').click();
 
-  // Etapa 3 do Wizard: Passageiros
+  // Etapa 3 do Wizard: Revisão
   await expect(page.locator('[data-wizard-step="3"]')).toBeVisible();
-  await expect(page.locator('#step-eyebrow')).toHaveText(/Etapa 3 de 4/);
-  await page.locator('#passenger-2-name').fill('Ana Souza Lima');
-  await page.locator('#passenger-2-cpf').fill('111.444.777-35');
-  await page.locator('#passenger-3-name').fill('Bruno Costa Reis');
-  await page.locator('#passenger-3-cpf').fill('153.509.460-56');
-  await page.getByRole('button', { name: /continuar para revisão/i }).click();
-
-  // Etapa 4 do Wizard: Revisão
-  await expect(page.locator('[data-wizard-step="4"]')).toBeVisible();
-  await expect(page.locator('#step-eyebrow')).toHaveText(/Etapa 4 de 4/);
+  await expect(page.locator('#step-eyebrow')).toHaveText(/Etapa 3 de 3/);
   await page.getByLabel(/Li e concordo/i).check();
   await page.getByRole('button', { name: /gerar pagamento pix/i }).click();
 
@@ -421,9 +549,10 @@ test('layout do checkout: ritmo por escala e colunas do painel alinhadas', async
   await page.locator('#primary-birth').fill('15/05/1990');
   await page.locator('#primary-email').fill('maria@example.com');
   await page.locator('#primary-whatsapp').fill('11942554141');
-  await page.getByRole('button', { name: /continuar: tamanho do grupo/i }).click();
+  await page.getByRole('button', { name: /continuar: grupo/i }).click();
 
-  await page.getByRole('button', { name: /continuar para revisão/i }).click();
+  await page.locator('#solo-traveler').check();
+  await page.locator('#btn-group-next').click();
   await page.getByLabel(/Li e concordo/i).check();
   await page.getByRole('button', { name: /gerar pagamento pix/i }).click();
   await expect(page.locator('#payment-panel')).toBeVisible();
@@ -487,36 +616,40 @@ test('contato em 3 linhas e WhatsApp opcional nos passageiros extras', async ({ 
   await page.locator('#primary-birth').fill('15/05/1990');
   await page.locator('#primary-email').fill('maria@example.com');
   await page.locator('#primary-whatsapp').fill('11942554141');
-  await page.getByRole('button', { name: /continuar: tamanho do grupo/i }).click();
+  await page.getByRole('button', { name: /continuar: grupo/i }).click();
 
-  await page.locator('#passenger-count').fill('3');
-  await page.locator('#passenger-count').dispatchEvent('input');
-  await page.getByRole('button', { name: /continuar: passageiros/i }).click();
+  // Adiciona passageiro 2 com WhatsApp e Email
+  await page.locator('#btn-open-add-passenger').click();
+  await page.locator('#new-passenger-age').selectOption('adult');
+  await page.locator('#btn-substep-age-next').click();
 
-  // O campo existe nos extras e NÃO é obrigatório
-  for (const pos of [2, 3]) {
-    const campo = page.locator(`#passenger-${pos}-whatsapp`);
-    await expect(campo).toBeVisible();
-    expect(await campo.getAttribute('required')).toBeNull();
-    await expect(page.locator(`label[for="passenger-${pos}-whatsapp"]`)).toContainText(/opcional/i);
+  // WhatsApp e Email existem no formulário e são opcionais
+  const waInput = page.locator('#new-p-whatsapp');
+  await expect(waInput).toBeVisible();
+  expect(await waInput.getAttribute('required')).toBeNull();
 
-    const campoEmail = page.locator(`#passenger-${pos}-email`);
-    await expect(campoEmail).toBeVisible();
-    expect(await campoEmail.getAttribute('required')).toBeNull();
-    await expect(page.locator(`label[for="passenger-${pos}-email"]`)).toContainText(/opcional/i);
-  }
+  const emailInput = page.locator('#new-p-email');
+  await expect(emailInput).toBeVisible();
+  expect(await emailInput.getAttribute('required')).toBeNull();
 
-  // Máscara igual à do contato principal.
-  await page.locator('#passenger-2-whatsapp').fill('11912345678');
-  await page.locator('#passenger-2-whatsapp').dispatchEvent('input');
-  await expect(page.locator('#passenger-2-whatsapp')).toHaveValue('(11) 91234-5678');
-  await page.locator('#passenger-2-email').fill('ana@example.com');
+  await page.locator('#new-p-name').fill('Ana Souza Lima');
+  await page.locator('#new-p-cpf').fill(passengerTwoCpf);
+  await page.locator('#new-p-whatsapp').fill('11912345678');
+  await expect(page.locator('#new-p-whatsapp')).toHaveValue('(11) 91234-5678');
+  await page.locator('#new-p-email').fill('ana@example.com');
+  await page.locator('#btn-substep-fields-next').click();
+  await page.locator('#btn-substep-confirm-save').click();
 
-  await page.locator('#passenger-2-name').fill('Ana Souza Lima');
-  await page.locator('#passenger-2-cpf').fill('111.444.777-35');
-  await page.locator('#passenger-3-name').fill('Bruno Costa Reis');
-  await page.locator('#passenger-3-cpf').fill('153.509.460-56');
-  await page.getByRole('button', { name: /continuar para revisão/i }).click();
+  // Adiciona passageiro 3 sem WhatsApp e sem Email
+  await page.locator('#btn-open-add-passenger').click();
+  await page.locator('#new-passenger-age').selectOption('minor');
+  await page.locator('#btn-substep-age-next').click();
+  await page.locator('#new-p-name').fill('Bruno Costa Reis');
+  await page.locator('#new-p-cpf').fill(passengerThreeCpf);
+  await page.locator('#btn-substep-fields-next').click();
+  await page.locator('#btn-substep-confirm-save').click();
+
+  await page.locator('#btn-group-next').click();
 
   await page.getByLabel(/Li e concordo/i).check();
   await page.getByRole('button', { name: /gerar pagamento pix/i }).click();
@@ -544,9 +677,10 @@ test('exibe o bloco e nome do grupo na confirmação apenas quando groupName est
   await page.locator('#primary-birth').fill('15/05/1990');
   await page.locator('#primary-email').fill('maria@example.com');
   await page.locator('#primary-whatsapp').fill('11942554141');
-  await page.getByRole('button', { name: /continuar: tamanho do grupo/i }).click();
+  await page.getByRole('button', { name: /continuar: grupo/i }).click();
 
-  await page.getByRole('button', { name: /continuar para revisão/i }).click();
+  await page.locator('#solo-traveler').check();
+  await page.locator('#btn-group-next').click();
   await page.getByLabel(/Li e concordo/i).check();
   await page.getByRole('button', { name: /gerar pagamento pix/i }).click();
 
@@ -565,12 +699,10 @@ test('navegação do wizard: voltar e avançar mantém dados e validações', as
   await page.locator('#primary-birth').fill('20/10/1985');
   await page.locator('#primary-email').fill('carlos@example.com');
   await page.locator('#primary-whatsapp').fill('11987654321');
-  await page.getByRole('button', { name: /continuar: tamanho do grupo/i }).click();
+  await page.getByRole('button', { name: /continuar: grupo/i }).click();
 
   // Step 2
   await expect(page.locator('[data-wizard-step="2"]')).toBeVisible();
-  await page.locator('#passenger-count').fill('2');
-  await page.locator('#passenger-count').dispatchEvent('input');
 
   // Voltar para Step 1
   await page.getByRole('button', { name: /voltar ao contato/i }).click();
@@ -578,24 +710,26 @@ test('navegação do wizard: voltar e avançar mantém dados e validações', as
   await expect(page.getByLabel('Nome completo (contato principal)')).toHaveValue('Carlos Silva');
 
   // Avançar para Step 2 de novo
-  await page.getByRole('button', { name: /continuar: tamanho do grupo/i }).click();
+  await page.getByRole('button', { name: /continuar: grupo/i }).click();
   await expect(page.locator('[data-wizard-step="2"]')).toBeVisible();
-  await expect(page.locator('#passenger-count')).toHaveValue('2');
 
-  // Avançar para Step 3
-  await page.getByRole('button', { name: /continuar: passageiros/i }).click();
+  // Adiciona passageiro
+  await page.locator('#btn-open-add-passenger').click();
+  await page.locator('#new-passenger-age').selectOption('adult');
+  await page.locator('#btn-substep-age-next').click();
+  await page.locator('#new-p-name').fill('Fernanda Silva');
+  await page.locator('#new-p-cpf').fill(passengerTwoCpf);
+  await page.locator('#btn-substep-fields-next').click();
+  await page.locator('#btn-substep-confirm-save').click();
+
+  // Avançar para Step 3 (Revisão)
+  await page.locator('#btn-group-next').click();
   await expect(page.locator('[data-wizard-step="3"]')).toBeVisible();
-  await page.locator('#passenger-2-name').fill('Fernanda Silva');
-  await page.locator('#passenger-2-cpf').fill(passengerTwoCpf);
-
-  // Avançar para Step 4 (Revisão)
-  await page.getByRole('button', { name: /continuar para revisão/i }).click();
-  await expect(page.locator('[data-wizard-step="4"]')).toBeVisible();
   await expect(page.locator('#review-passengers-list')).toContainText('Carlos Silva');
   await expect(page.locator('#review-passengers-list')).toContainText('Fernanda Silva');
 
-  // Voltar de Step 4 para Step 3
-  await page.getByRole('button', { name: /voltar e editar/i }).click();
-  await expect(page.locator('[data-wizard-step="3"]')).toBeVisible();
-  await expect(page.locator('#passenger-2-name')).toHaveValue('Fernanda Silva');
+  // Voltar de Step 3 para Step 2
+  await page.getByRole('button', { name: /voltar e editar grupo/i }).click();
+  await expect(page.locator('[data-wizard-step="2"]')).toBeVisible();
+  await expect(page.locator('#added-passengers-list')).toContainText('Fernanda Silva');
 });
