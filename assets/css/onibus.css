@@ -574,6 +574,321 @@
   display: none;
 }
 
+/* ──────────────────────────────────────────────
+   Multi-Step Wizard & Stepper
+   ────────────────────────────────────────────── */
+
+.bus-stepper {
+  position: relative;
+  margin-bottom: var(--s-lg);
+  padding: var(--s-md) var(--s-md) var(--s-sm);
+  border-radius: var(--r-md);
+  background: var(--foam-white, #f4f8fb);
+  border: 1px solid var(--line-light, rgba(90, 113, 132, 0.15));
+}
+
+.bus-stepper__track {
+  position: absolute;
+  top: 32px;
+  left: 40px;
+  right: 40px;
+  height: 3px;
+  background: rgba(90, 113, 132, 0.18);
+  border-radius: var(--r-pill);
+  z-index: 1;
+}
+
+.bus-stepper__bar {
+  height: 100%;
+  width: 25%;
+  background: linear-gradient(90deg, var(--action), var(--sunset-gold));
+  border-radius: var(--r-pill);
+  transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.bus-stepper__list {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  z-index: 2;
+}
+
+.bus-stepper__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: default;
+  user-select: none;
+  flex: 1 1 0;
+  text-align: center;
+}
+
+.bus-stepper__badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid var(--line-mid, #cbd6e2);
+  color: var(--ink-faint, #6f8294);
+  font-weight: 800;
+  font-size: 0.85rem;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 6px rgba(15, 39, 66, 0.06);
+}
+
+.bus-stepper__check {
+  display: none;
+}
+
+.bus-stepper__label {
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--ink-faint, #6f8294);
+  transition: color 0.2s ease;
+}
+
+/* Item Ativo */
+.bus-stepper__item.is-active .bus-stepper__badge {
+  border-color: var(--action);
+  background: var(--action);
+  color: #ffffff;
+  box-shadow: 0 0 0 4px rgba(123, 31, 162, 0.18), 0 4px 10px rgba(123, 31, 162, 0.25);
+  transform: scale(1.08);
+}
+
+.bus-stepper__item.is-active .bus-stepper__label {
+  color: var(--bus-ink);
+  font-weight: 800;
+}
+
+/* Item Concluído */
+.bus-stepper__item.is-completed .bus-stepper__badge {
+  border-color: var(--ocean-cyan);
+  background: var(--ocean-cyan);
+  color: #032b43;
+}
+
+.bus-stepper__item.is-completed .bus-stepper__num {
+  display: none;
+}
+
+.bus-stepper__item.is-completed .bus-stepper__check {
+  display: block;
+  stroke: #032b43;
+}
+
+.bus-stepper__item.is-completed .bus-stepper__label {
+  color: var(--bus-ink);
+}
+
+/* Step container transitions */
+.bus-wizard-step {
+  display: block;
+  animation: busStepFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.bus-wizard-step[hidden] {
+  display: none !important;
+}
+
+@keyframes busStepFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Wizard Navigation Buttons */
+.bus-wizard__nav {
+  margin-top: var(--s-lg);
+  padding-top: var(--s-md);
+  border-top: 1px solid var(--line-light, rgba(90, 113, 132, 0.15));
+}
+
+.bus-wizard__nav--split {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.bus-wizard__btn-back {
+  padding: 12px 18px;
+  font-size: 0.88rem;
+  color: var(--bus-ink-soft, #4a5b70);
+}
+
+.bus-wizard__btn-back:hover {
+  color: var(--action);
+  background: rgba(123, 31, 162, 0.06);
+}
+
+/* Primary Contact Card inside Step 3 */
+.bus-passenger--primary-summary {
+  background: #f4f8fb;
+  border-color: rgba(90, 113, 132, 0.25);
+  margin-bottom: var(--s-md);
+}
+
+.bus-passenger__tag--primary {
+  background: rgba(123, 31, 162, 0.12);
+  border-color: rgba(123, 31, 162, 0.24);
+  color: var(--action) !important;
+}
+
+.bus-passenger__summary-info {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--bus-ink);
+  line-height: 1.45;
+}
+
+/* Review Card (Step 4) */
+.bus-review-card {
+  padding: 22px;
+  margin-bottom: var(--s-md);
+  border-radius: var(--r-md);
+  background: #fbfdff;
+  border: 1px solid var(--line-mid, #cbd6e2);
+  box-shadow: 0 4px 12px rgba(15, 39, 66, 0.04);
+}
+
+.bus-review-card__section {
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--line-light, rgba(90, 113, 132, 0.12));
+}
+
+.bus-review-card__section:last-child {
+  padding-bottom: 0;
+  margin-bottom: 0;
+  border-bottom: 0;
+}
+
+.bus-review-card__title {
+  margin: 0 0 10px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-faint, #6f8294);
+}
+
+.bus-review-card__route {
+  display: grid;
+  gap: 6px;
+  font-size: 0.86rem;
+  color: var(--bus-ink);
+}
+
+.bus-review-card__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.bus-review-card__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px;
+  border-radius: var(--r-sm);
+  background: #ffffff;
+  border: 1px solid var(--line-light, rgba(90, 113, 132, 0.12));
+  font-size: 0.86rem;
+}
+
+.bus-review-card__item-name {
+  font-weight: 700;
+  color: var(--bus-ink);
+}
+
+.bus-review-card__item-details {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bus-review-card__price-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0;
+  font-size: 0.88rem;
+  color: var(--bus-ink-soft, #4a5b70);
+}
+
+.bus-review-card__price-row strong {
+  color: var(--bus-ink);
+}
+
+.bus-review-card__price-row .text-free {
+  color: #c76700;
+  font-weight: 800;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  letter-spacing: 0.03em;
+}
+
+.bus-review-card__price-total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 2px solid var(--line-mid, #cbd6e2);
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--bus-ink);
+}
+
+.bus-review-card__total-val {
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  color: var(--kriativa-magenta);
+}
+
+@media (max-width: 640px) {
+  .bus-stepper {
+    padding: 12px 8px 8px;
+  }
+  .bus-stepper__track {
+    top: 28px;
+    left: 24px;
+    right: 24px;
+  }
+  .bus-stepper__badge {
+    width: 28px;
+    height: 28px;
+    font-size: 0.78rem;
+  }
+  .bus-stepper__label {
+    font-size: 0.7rem;
+  }
+  .bus-wizard__nav--split {
+    flex-direction: column-reverse;
+  }
+  .bus-wizard__nav--split .btn {
+    width: 100%;
+  }
+}
+
 /* Blocos do formulário: régua + espaço, não card.
    Antes eram três caixas idênticas (mesmo padding de 34px, mesma borda 1px, mesmo
    raio de 16px, mesmo gap de 20px entre elas) — o "identical card grid" que faz
@@ -593,8 +908,8 @@
   padding-top: var(--s-lg);
 }
 
-/* O primeiro bloco não precisa de régua: nada vem antes dele para separar. */
-.bus-fieldset:first-of-type {
+/* O primeiro bloco de cada etapa não precisa de régua */
+.bus-wizard-step .bus-fieldset:first-of-type {
   border-top: 0;
   padding-top: 0;
 }

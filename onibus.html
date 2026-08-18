@@ -178,75 +178,199 @@
 
         <div class="bus-checkout__grid">
           <div class="bus-form-column">
+            <!-- Stepper / Indicador de Progresso do Wizard -->
+            <nav class="bus-stepper" aria-label="Progresso do cadastro" id="bus-stepper">
+              <div class="bus-stepper__track">
+                <div class="bus-stepper__bar" id="bus-stepper-bar"></div>
+              </div>
+              <ol class="bus-stepper__list">
+                <li class="bus-stepper__item is-active" data-step-target="1" id="step-tab-1" aria-current="step">
+                  <span class="bus-stepper__badge">
+                    <span class="bus-stepper__num">1</span>
+                    <svg class="bus-stepper__check" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  </span>
+                  <span class="bus-stepper__label">Contato</span>
+                </li>
+                <li class="bus-stepper__item" data-step-target="2" id="step-tab-2">
+                  <span class="bus-stepper__badge">
+                    <span class="bus-stepper__num">2</span>
+                    <svg class="bus-stepper__check" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  </span>
+                  <span class="bus-stepper__label">Grupo</span>
+                </li>
+                <li class="bus-stepper__item" data-step-target="3" id="step-tab-3">
+                  <span class="bus-stepper__badge">
+                    <span class="bus-stepper__num">3</span>
+                    <svg class="bus-stepper__check" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  </span>
+                  <span class="bus-stepper__label">Passageiros</span>
+                </li>
+                <li class="bus-stepper__item" data-step-target="4" id="step-tab-4">
+                  <span class="bus-stepper__badge">
+                    <span class="bus-stepper__num">4</span>
+                    <svg class="bus-stepper__check" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  </span>
+                  <span class="bus-stepper__label">Revisão</span>
+                </li>
+              </ol>
+            </nav>
+
             <form id="bus-form" class="bus-form" novalidate>
-            <fieldset class="bus-fieldset">
-              <legend><span>01</span> Contato principal</legend>
-              <p class="bus-fieldset__note">Esta pessoa será o contato do grupo com a organização.</p>
-              <div class="bus-form__grid">
-                <div class="bus-field bus-field--wide">
-                  <label for="primary-name">Nome completo (contato principal) <b aria-hidden="true">*</b></label>
-                  <input id="primary-name" aria-label="Nome completo (contato principal)" name="primary_name"
-                    type="text" autocomplete="name" minlength="3" required>
-                </div>
-                <div class="bus-field">
-                  <label for="primary-cpf">CPF <b aria-hidden="true">*</b></label>
-                  <input id="primary-cpf" aria-label="CPF do contato principal" name="primary_cpf" type="text"
-                    inputmode="numeric" autocomplete="off" maxlength="14" placeholder="000.000.000-00" required>
-                </div>
-                <div class="bus-field">
-                  <label for="primary-birth">Data de nascimento <b aria-hidden="true">*</b></label>
-                  <input id="primary-birth" aria-label="Data de nascimento do contato principal" name="primary_birth" type="text"
-                    inputmode="numeric" autocomplete="bday" maxlength="10" placeholder="DD/MM/AAAA" required>
-                  <small class="bus-field__hint">O responsável financeiro deve ter 18 anos ou mais.</small>
-                </div>
-                <div class="bus-field">
-                  <label for="primary-whatsapp">WhatsApp <b aria-hidden="true">*</b></label>
-                  <input id="primary-whatsapp" aria-label="WhatsApp" name="whatsapp" type="tel" inputmode="tel"
-                    autocomplete="tel" maxlength="15" placeholder="(11) 90000-0000" required>
-                </div>
-                <div class="bus-field">
-                  <label for="primary-email">E-mail <b aria-hidden="true">*</b></label>
-                  <input id="primary-email" aria-label="E-mail" name="email" type="email" autocomplete="email" required>
-                </div>
-              </div>
-            </fieldset>
-
-            <fieldset class="bus-fieldset">
-              <legend><span>02</span> Tamanho do grupo</legend>
-              <div class="bus-form__grid bus-form__grid--counts">
-                <div class="bus-field">
-                  <label for="passenger-count">Quantas pessoas vão com você, incluindo você? <b
-                      aria-hidden="true">*</b></label>
-                  <input id="passenger-count" aria-label="Quantas pessoas vão com você, incluindo você?"
-                    name="passenger_count" type="number" inputmode="numeric" min="1" max="100" value="1" required>
-                  <small class="bus-field__hint">O contato principal entra nessa quantidade.</small>
-                </div>
-                <div class="bus-field">
-                  <label for="children-count">Crianças de até 5 anos (colo)</label>
-                  <input id="children-count" aria-label="Crianças de até 5 anos (colo)" name="children_count" type="number"
-                    inputmode="numeric" min="0" max="1" value="0">
-                  <small id="children-hint" class="bus-field__hint">Viajam no colo de um pagante de 18 anos ou mais (máximo de 1 por adulto). Sem cobrança.</small>
+              <!-- ETAPA 1: CONTATO PRINCIPAL -->
+              <div class="bus-wizard-step is-active" data-wizard-step="1">
+                <fieldset class="bus-fieldset">
+                  <legend><span>01</span> Contato principal</legend>
+                  <p class="bus-fieldset__note">Esta pessoa será o contato do grupo com a organização e o responsável financeiro.</p>
+                  <div class="bus-form__grid">
+                    <div class="bus-field bus-field--wide">
+                      <label for="primary-name">Nome completo (contato principal) <b aria-hidden="true">*</b></label>
+                      <input id="primary-name" aria-label="Nome completo (contato principal)" name="primary_name"
+                        type="text" autocomplete="name" minlength="3" required>
+                    </div>
+                    <div class="bus-field">
+                      <label for="primary-cpf">CPF <b aria-hidden="true">*</b></label>
+                      <input id="primary-cpf" aria-label="CPF do contato principal" name="primary_cpf" type="text"
+                        inputmode="numeric" autocomplete="off" maxlength="14" placeholder="000.000.000-00" required>
+                    </div>
+                    <div class="bus-field">
+                      <label for="primary-birth">Data de nascimento <b aria-hidden="true">*</b></label>
+                      <input id="primary-birth" aria-label="Data de nascimento do contato principal" name="primary_birth" type="text"
+                        inputmode="numeric" autocomplete="bday" maxlength="10" placeholder="DD/MM/AAAA" required>
+                      <small class="bus-field__hint">O responsável financeiro deve ter 18 anos ou mais.</small>
+                    </div>
+                    <div class="bus-field">
+                      <label for="primary-whatsapp">WhatsApp <b aria-hidden="true">*</b></label>
+                      <input id="primary-whatsapp" aria-label="WhatsApp" name="whatsapp" type="tel" inputmode="tel"
+                        autocomplete="tel" maxlength="15" placeholder="(11) 90000-0000" required>
+                    </div>
+                    <div class="bus-field">
+                      <label for="primary-email">E-mail <b aria-hidden="true">*</b></label>
+                      <input id="primary-email" aria-label="E-mail" name="email" type="email" autocomplete="email" required>
+                    </div>
+                  </div>
+                </fieldset>
+                <div class="bus-wizard__nav">
+                  <button type="button" class="btn btn--primary btn--lg bus-wizard__btn-next" data-action="next-step">
+                    Continuar: Tamanho do grupo <span aria-hidden="true">→</span>
+                  </button>
                 </div>
               </div>
-            </fieldset>
 
-            <fieldset class="bus-fieldset bus-fieldset--passengers" id="passengers-fieldset" hidden>
-              <legend><span>03</span> Dados dos passageiros</legend>
-              <p class="bus-fieldset__note" id="passengers-note">O passageiro 1 é o contato principal. Preencha os demais campos abaixo.</p>
-              <div id="passenger-fields" class="bus-passengers" aria-live="polite"></div>
-              <div id="children-fields" class="bus-passengers" aria-live="polite"></div>
-            </fieldset>
+              <!-- ETAPA 2: TAMANHO DO GRUPO -->
+              <div class="bus-wizard-step" data-wizard-step="2" hidden>
+                <fieldset class="bus-fieldset">
+                  <legend><span>02</span> Tamanho do grupo</legend>
+                  <p class="bus-fieldset__note">Defina o número de vagas pagantes e crianças de colo da sua reserva.</p>
+                  <div class="bus-form__grid bus-form__grid--counts">
+                    <div class="bus-field">
+                      <label for="passenger-count">Quantas pessoas vão com você, incluindo você? <b
+                          aria-hidden="true">*</b></label>
+                      <input id="passenger-count" aria-label="Quantas pessoas vão com você, incluindo você?"
+                        name="passenger_count" type="number" inputmode="numeric" min="1" max="100" value="1" required>
+                      <small class="bus-field__hint">O contato principal entra nessa quantidade (R$ 120,00 por pagante).</small>
+                    </div>
+                    <div class="bus-field">
+                      <label for="children-count">Crianças de até 5 anos (colo)</label>
+                      <input id="children-count" aria-label="Crianças de até 5 anos (colo)" name="children_count" type="number"
+                        inputmode="numeric" min="0" max="1" value="0">
+                      <small id="children-hint" class="bus-field__hint">Viajam no colo de um pagante de 18 anos ou mais (máximo de 1 por adulto). Sem cobrança.</small>
+                    </div>
+                  </div>
+                </fieldset>
+                <div class="bus-wizard__nav bus-wizard__nav--split">
+                  <button type="button" class="btn btn--ghost bus-wizard__btn-back" data-action="prev-step">
+                    <span aria-hidden="true">←</span> Voltar ao contato
+                  </button>
+                  <button type="button" class="btn btn--primary btn--lg bus-wizard__btn-next" data-action="next-step" id="btn-group-next">
+                    Continuar <span aria-hidden="true">→</span>
+                  </button>
+                </div>
+              </div>
 
-            <label class="bus-consent" for="bus-terms">
-              <input id="bus-terms" type="checkbox" required>
-              <span>Li e concordo com as condições do transporte, com o uso dos dados para o cadastro junto à empresa
-                responsável e com a política de devolução caso o mínimo de passageiros não seja atingido.</span>
-            </label>
+              <!-- ETAPA 3: DADOS DOS PASSAGEIROS -->
+              <div class="bus-wizard-step" data-wizard-step="3" hidden>
+                <fieldset class="bus-fieldset bus-fieldset--passengers" id="passengers-fieldset">
+                  <legend><span>03</span> Dados dos passageiros</legend>
+                  <p class="bus-fieldset__note" id="passengers-note">O passageiro 1 é o contato principal. Preencha os dados de cada pessoa para o manifesto de viagem.</p>
+                  <div class="bus-passenger bus-passenger--primary-summary" id="primary-summary-card">
+                    <div class="bus-passenger__title">
+                      <span>Passageiro 1 (Contato Principal)</span>
+                      <small class="bus-passenger__tag bus-passenger__tag--primary">Responsável</small>
+                    </div>
+                    <p class="bus-passenger__summary-info" id="primary-summary-text">—</p>
+                  </div>
+                  <div id="passenger-fields" class="bus-passengers" aria-live="polite"></div>
+                  <div id="children-fields" class="bus-passengers bus-passengers--children" aria-live="polite"></div>
+                </fieldset>
+                <div class="bus-wizard__nav bus-wizard__nav--split">
+                  <button type="button" class="btn btn--ghost bus-wizard__btn-back" data-action="prev-step">
+                    <span aria-hidden="true">←</span> Voltar ao tamanho do grupo
+                  </button>
+                  <button type="button" class="btn btn--primary btn--lg bus-wizard__btn-next" data-action="next-step">
+                    Continuar para revisão <span aria-hidden="true">→</span>
+                  </button>
+                </div>
+              </div>
 
-            <p id="bus-form-status" class="bus-form__status" role="status" aria-live="polite"></p>
-            <button class="btn btn--primary btn--lg bus-form__submit" type="submit">Continuar para o pagamento Pix <span
-                aria-hidden="true">→</span></button>
-          </form>
+              <!-- ETAPA 4: REVISÃO E CONFIRMAÇÃO -->
+              <div class="bus-wizard-step" data-wizard-step="4" hidden>
+                <fieldset class="bus-fieldset">
+                  <legend><span>04</span> Revisão do pedido</legend>
+                  <p class="bus-fieldset__note">Confira todos os detalhes antes de gerar o código Pix para pagamento.</p>
+                  
+                  <div class="bus-review-card">
+                    <div class="bus-review-card__section">
+                      <h3 class="bus-review-card__title">Resumo da Viagem</h3>
+                      <div class="bus-review-card__route">
+                        <div class="bus-review-card__route-item">
+                          <strong>Ida</strong>: Terminal Barra Funda (SP) → Porto de Santos (Concais)
+                        </div>
+                        <div class="bus-review-card__route-item">
+                          <strong>Volta</strong>: Porto de Santos (Concais) → Terminal Barra Funda (SP)
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="bus-review-card__section">
+                      <h3 class="bus-review-card__title">Passageiros Cadastrados</h3>
+                      <ul class="bus-review-card__list" id="review-passengers-list"></ul>
+                    </div>
+
+                    <div class="bus-review-card__section bus-review-card__section--pricing">
+                      <div class="bus-review-card__price-row">
+                        <span>Passagens pagantes (<span id="review-paying-count">1</span>x R$ 120,00)</span>
+                        <strong id="review-paying-subtotal">R$ 120,00</strong>
+                      </div>
+                      <div class="bus-review-card__price-row bus-review-card__price-row--free" id="review-children-row" hidden>
+                        <span>Crianças de colo (<span id="review-children-count">0</span>x Cortesia)</span>
+                        <strong class="text-free">Grátis</strong>
+                      </div>
+                      <div class="bus-review-card__price-total">
+                        <span>Total a pagar via Pix</span>
+                        <span class="bus-review-card__total-val" id="review-total-amount">R$ 120,00</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <label class="bus-consent" for="bus-terms">
+                    <input id="bus-terms" type="checkbox" required>
+                    <span>Li e concordo com as condições do transporte, com o uso dos dados para o cadastro junto à empresa
+                      responsável e com a política de devolução caso o mínimo de passageiros não seja atingido.</span>
+                  </label>
+                </fieldset>
+
+                <div class="bus-wizard__nav bus-wizard__nav--split">
+                  <button type="button" class="btn btn--ghost bus-wizard__btn-back" data-action="prev-step">
+                    <span aria-hidden="true">←</span> Voltar e editar
+                  </button>
+                  <button class="btn btn--primary btn--lg bus-form__submit" type="submit">
+                    Gerar pagamento Pix <span aria-hidden="true">→</span>
+                  </button>
+                </div>
+              </div>
+
+              <p id="bus-form-status" class="bus-form__status" role="status" aria-live="polite"></p>
+            </form>
 
           <section id="payment-panel" class="bus-payment-panel" hidden aria-labelledby="payment-title">
             <div class="bus-payment-panel__header">

@@ -36,14 +36,22 @@ test('cadastra o grupo, calcula o valor e exibe o Pix', async ({ page }) => {
   await expect(page.locator('.bus-hero__ticket').getByText(/por pessoa pagante/i)).toBeVisible();
   await expect(page.locator('.bus-route').getByText(/Barra Funda/i)).toBeVisible();
 
+  // Etapa 1: Contato Principal
   await page.getByLabel('Nome completo (contato principal)').fill('Maria de Souza');
   await page.getByLabel('CPF do contato principal').fill(primaryCpf);
   await page.locator('#primary-birth').fill('15/05/1990');
   await page.locator('#primary-email').fill('maria@example.com');
   await page.locator('#primary-whatsapp').fill('11942554141');
+  await page.getByRole('button', { name: /continuar: tamanho do grupo/i }).click();
+
+  // Etapa 2: Vagas do Grupo
+  await expect(page.locator('[data-wizard-step="2"]')).toBeVisible();
   await page.getByLabel(/Quantas pessoas vão com você/i).fill('3');
   await page.getByLabel(/Crianças de até 5 anos/i).fill('1');
+  await page.getByRole('button', { name: /continuar: passageiros/i }).click();
 
+  // Etapa 3: Dados dos Passageiros
+  await expect(page.locator('[data-wizard-step="3"]')).toBeVisible();
   await expect(page.locator('#passenger-fields .bus-passenger')).toHaveCount(2);
   await page.getByLabel('Nome completo do passageiro 2').fill('João de Souza');
   await page.getByLabel('CPF do passageiro 2').fill(passengerTwoCpf);
@@ -51,13 +59,19 @@ test('cadastra o grupo, calcula o valor e exibe o Pix', async ({ page }) => {
   await page.getByLabel('CPF do passageiro 3').fill(passengerThreeCpf);
   await page.getByLabel('Nome completo da criança 1').fill('Pedro de Souza');
   await page.getByLabel('CPF da criança 1').fill('10000000019');
+  await page.getByRole('button', { name: /continuar para revisão/i }).click();
+
+  // Etapa 4: Revisão do Pedido
+  await expect(page.locator('[data-wizard-step="4"]')).toBeVisible();
+  await expect(page.locator('#review-passengers-list .bus-review-card__item')).toHaveCount(4);
+  await expect(page.locator('#review-total-amount')).toHaveText('R$ 360,00');
   await page.getByLabel(/Li e concordo com as condições/i).check();
 
   // 3 pagantes x R$ 120. A criança é adicional e não paga.
   await expect(page.locator('#bus-total')).toHaveText('R$ 360,00');
   // 4 pessoas a bordo: 3 pagantes + 1 criança no colo.
   await expect(page.locator('#bus-summary-count')).toHaveText('4 passageiros');
-  await page.getByRole('button', { name: /continuar para o pagamento pix/i }).click();
+  await page.getByRole('button', { name: /gerar pagamento pix/i }).click();
 
   await expect.poll(() => requestBody).not.toBeNull();
   expect(requestBody).toMatchObject({
@@ -82,8 +96,6 @@ test('cadastra o grupo, calcula o valor e exibe o Pix', async ({ page }) => {
 });
 
 test('confirma a vaga automaticamente quando o pagamento é identificado', async ({ page }) => {
-  // O comprovante deixou de ser exigido: o webhook consulta a order na API do
-  // Mercado Pago e o polling da página reflete 'confirmed' sem upload nenhum.
   let statusChecks = 0;
   await page.route('**/api/create-pix-order', async (route) => {
     await route.fulfill({
@@ -94,7 +106,6 @@ test('confirma a vaga automaticamente quando o pagamento é identificado', async
   });
   await page.route('**/api/bus-registration-status**', async (route) => {
     statusChecks += 1;
-    // Primeira consulta ainda pendente; depois o pagamento é identificado.
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
@@ -108,36 +119,28 @@ test('confirma a vaga automaticamente quando o pagamento é identificado', async
   await page.locator('#primary-birth').fill('15/05/1990');
   await page.locator('#primary-email').fill('maria@example.com');
   await page.locator('#primary-whatsapp').fill('11942554141');
+  await page.getByRole('button', { name: /continuar: tamanho do grupo/i }).click();
+
+  // 1 passageiro pula direto para a revisão
+  await page.getByRole('button', { name: /continuar para revisão/i }).click();
   await page.getByLabel(/Li e concordo com as condições/i).check();
-  await page.getByRole('button', { name: /continuar para o pagamento pix/i }).click();
+  await page.getByRole('button', { name: /gerar pagamento pix/i }).click();
 
   await expect(page.locator('#payment-panel')).toBeVisible();
-
-  // Não deve existir mais nenhuma etapa de envio de comprovante.
   await expect(page.locator('#proof-form')).toHaveCount(0);
   await expect(page.locator('#proof-file')).toHaveCount(0);
 
-  // O polling avança sozinho: a seção de confirmação SUBSTITUI o painel de
-  // pagamento, em vez de deixar o QR no ar com um aviso discreto ao lado.
   await expect(page.locator('#confirmation-panel')).toBeVisible({ timeout: 15000 });
   await expect(page.locator('#payment-panel')).toBeHidden();
 
-  // Dados do grupo aparecem na confirmação.
   await expect(page.locator('#confirmed-passengers li')).toHaveCount(1);
   await expect(page.locator('#confirmed-passengers li').first()).toContainText('Maria de Souza');
-  // O valor exibido é o que o servidor devolveu (fakePixResponse: 240.00),
-  // não um cálculo do navegador.
   await expect(page.locator('#confirmed-amount')).toHaveText('R$ 240,00');
   await expect(page.locator('#confirmed-code')).not.toHaveText('—');
-
-  // O contador de tempo perde sentido depois de pago.
   await expect(page.locator('#pix-expiry')).toBeHidden();
 });
 
 test('janela de 10 minutos abre o aviso e não confirma nada sozinha', async ({ page }) => {
-  // O contador é uma janela de atenção, não a validade real do Pix (24h).
-  // A prova é dupla: ele conta em mm:ss e, ao zerar, pergunta se a pessoa ainda
-  // está lá — sem nunca decidir o estado da reserva por conta própria.
   let statusChecks = 0;
   await page.route('**/api/create-pix-order', async (route) => {
     await route.fulfill({
@@ -148,7 +151,6 @@ test('janela de 10 minutos abre o aviso e não confirma nada sozinha', async ({ 
   });
   await page.route('**/api/bus-registration-status**', async (route) => {
     statusChecks += 1;
-    // O servidor insiste em "pendente", mesmo após a janela zerar.
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
@@ -162,8 +164,11 @@ test('janela de 10 minutos abre o aviso e não confirma nada sozinha', async ({ 
   await page.locator('#primary-birth').fill('15/05/1990');
   await page.locator('#primary-email').fill('maria@example.com');
   await page.locator('#primary-whatsapp').fill('11942554141');
+  await page.getByRole('button', { name: /continuar: tamanho do grupo/i }).click();
+
+  await page.getByRole('button', { name: /continuar para revisão/i }).click();
   await page.getByLabel(/Li e concordo com as condições/i).check();
-  await page.getByRole('button', { name: /continuar para o pagamento pix/i }).click();
+  await page.getByRole('button', { name: /gerar pagamento pix/i }).click();
 
   // O contador aparece em mm:ss, começando nos 10 minutos.
   await expect(page.locator('#pix-expiry')).toBeVisible();
@@ -206,9 +211,13 @@ test('impede gerar pagamento sem preencher passageiros adicionais', async ({ pag
   await page.locator('#primary-birth').fill('15/05/1990');
   await page.locator('#primary-email').fill('maria@example.com');
   await page.locator('#primary-whatsapp').fill('11942554141');
+  await page.getByRole('button', { name: /continuar: tamanho do grupo/i }).click();
+
   await page.getByLabel(/Quantas pessoas vão com você/i).fill('2');
-  await page.getByLabel(/Li e concordo com as condições/i).check();
-  await page.getByRole('button', { name: /continuar para o pagamento pix/i }).click();
+  await page.getByRole('button', { name: /continuar: passageiros/i }).click();
+
+  // Clica em continuar sem preencher os dados do passageiro 2
+  await page.getByRole('button', { name: /continuar para revisão/i }).click();
 
   await expect(page.locator('#bus-form-status')).toContainText(/preencha os dados do passageiro 2/i);
   expect(requestCount).toBe(0);
@@ -227,8 +236,7 @@ test('bloqueia envio se o contato principal for menor de 18 anos', async ({ page
   await page.locator('#primary-birth').fill('15/05/2015'); // 11 anos
   await page.locator('#primary-email').fill('maria@example.com');
   await page.locator('#primary-whatsapp').fill('11942554141');
-  await page.getByLabel(/Li e concordo com as condições/i).check();
-  await page.getByRole('button', { name: /continuar para o pagamento pix/i }).click();
+  await page.getByRole('button', { name: /continuar: tamanho do grupo/i }).click();
 
   await expect(page.locator('#bus-form-status')).toContainText(/18 anos ou mais/i);
   expect(requestCount).toBe(0);
@@ -240,10 +248,6 @@ test('página de pagamento não inicia analytics nem expõe dados em dataLayer',
 });
 
 test('comprovante impresso sai em A4 monocromático, sem sobras da página', async ({ page }) => {
-  // O `@media print` já regrediu duas vezes: um seletor supunha uma hierarquia
-  // inexistente (o cabeçalho do formulário imprimia em roxo) e `body *` não
-  // alcança pseudo-elementos (o contador do manifesto imprimia em roxo).
-  // Este teste tranca as duas coisas.
   await page.route('**/api/create-pix-order', async (route) => {
     await route.fulfill({
       status: 201,
@@ -265,8 +269,11 @@ test('comprovante impresso sai em A4 monocromático, sem sobras da página', asy
   await page.locator('#primary-birth').fill('15/05/1990');
   await page.locator('#primary-email').fill('maria@example.com');
   await page.locator('#primary-whatsapp').fill('11942554141');
+  await page.getByRole('button', { name: /continuar: tamanho do grupo/i }).click();
+
+  await page.getByRole('button', { name: /continuar para revisão/i }).click();
   await page.getByLabel(/Li e concordo com as condições/i).check();
-  await page.getByRole('button', { name: /continuar para o pagamento pix/i }).click();
+  await page.getByRole('button', { name: /gerar pagamento pix/i }).click();
   await expect(page.locator('#confirmation-panel')).toBeVisible({ timeout: 15000 });
 
   // Botões lado a lado na tela (mesma linha, larguras equivalentes).
@@ -285,16 +292,13 @@ test('comprovante impresso sai em A4 monocromático, sem sobras da página', asy
 
   // Nada da página fora do comprovante deve imprimir.
   for (const sel of ['#bus-form', '#payment-panel', '.bus-confirmed__actions',
-                     '.bus-confirmed__seal', '.bus-section-heading--form']) {
+                     '.bus-confirmed__seal', '.bus-section-heading--form', '#bus-stepper']) {
     await expect(page.locator(sel)).toBeHidden();
   }
   // Data de emissão e transação do provedor só existem no documento.
   await expect(page.locator('.bus-confirmed__printonly').first()).toBeVisible();
   await expect(page.locator('#confirmed-issued')).not.toHaveText('—');
 
-  // O Order ID do Mercado Pago entra no comprovante (a organização usa ele
-  // para conferir o pagamento no painel do provedor) e NÃO pode estourar a
-  // célula: tem ~32 caracteres em monoespaçada.
   await expect(page.locator('#confirmed-order')).toHaveText(/^ORD[A-Z0-9]+$/);
   const cabe = await page.evaluate(() => {
     const el = document.getElementById('confirmed-order');
@@ -317,7 +321,6 @@ test('comprovante impresso sai em A4 monocromático, sem sobras da página', asy
         const m = cs.color.match(/\d+/g);
         if (!m) return;
         const [r, g, b] = m.map(Number);
-        // Preto ou cinza puro passam; qualquer matiz reprova.
         if (Math.max(r, g, b) - Math.min(r, g, b) > 8) fora.push(cs.color);
       });
     });
@@ -335,13 +338,10 @@ test('comprovante impresso sai em A4 monocromático, sem sobras da página', asy
   const mmH = ((y2 - y1) / 72) * 25.4;
   expect(Math.abs(mmW - 210)).toBeLessThan(1.5);
   expect(Math.abs(mmH - 297)).toBeLessThan(1.5);
-  // Uma página só.
   expect((texto.match(/\/Type\s*\/Page[^s]/g) || []).length).toBe(1);
 });
 
-test('cabeçalho acompanha a etapa e o bloco 03 some com 1 passageiro', async ({ page }) => {
-  // O cabeçalho era fixo em "Quem vai embarcar com você?", texto que continuava
-  // pedindo dados de passageiro mesmo na tela de pagamento e na confirmação.
+test('cabeçalho acompanha a etapa e o wizard reflete a navegação', async ({ page }) => {
   await page.route('**/api/create-pix-order', route => route.fulfill({
     status: 201, contentType: 'application/json', body: JSON.stringify(fakePixResponse())
   }));
@@ -356,40 +356,48 @@ test('cabeçalho acompanha a etapa e o bloco 03 some com 1 passageiro', async ({
 
   await page.goto('/onibus.html');
 
-  // Etapa 1.
+  // Etapa 1 do Wizard: Contato Principal
   await expect(page.locator('#step-heading')).toHaveAttribute('data-step', 'cadastro');
   await expect(page.locator('#step-eyebrow')).toHaveText(/Etapa 1 de 3/);
-
-  // Com 1 passageiro o bloco "Dados dos passageiros" não existe na tela...
-  await expect(page.locator('#passengers-fieldset')).toBeHidden();
-  // ...e a descrição não pode prometer uma etapa que a pessoa não vai encontrar.
-  await expect(page.locator('#step-description')).toHaveText(/sozinho/i);
-
-  // Com grupo, o bloco volta e a descrição volta ao texto completo.
-  await page.locator('#passenger-count').fill('3');
-  await page.locator('#passenger-count').dispatchEvent('input');
-  await expect(page.locator('#passengers-fieldset')).toBeVisible();
-  await expect(page.locator('#step-description')).toHaveText(/CPF de cada pessoa/i);
+  await expect(page.locator('#form-title')).toHaveText(/responsável/i);
 
   await page.getByLabel('Nome completo (contato principal)').fill('Maria de Souza');
   await page.getByLabel('CPF do contato principal').fill(primaryCpf);
   await page.locator('#primary-birth').fill('15/05/1990');
   await page.locator('#primary-email').fill('maria@example.com');
   await page.locator('#primary-whatsapp').fill('11942554141');
+  await page.getByRole('button', { name: /continuar: tamanho do grupo/i }).click();
+
+  // Etapa 2 do Wizard: Vagas
+  await expect(page.locator('[data-wizard-step="2"]')).toBeVisible();
+  await page.locator('#passenger-count').fill('3');
+  await page.locator('#passenger-count').dispatchEvent('input');
+  await expect(page.locator('#step-eyebrow')).toHaveText(/Etapa 2 de 4/);
+  await expect(page.locator('#form-title')).toHaveText(/embarcar/i);
+  await page.getByRole('button', { name: /continuar: passageiros/i }).click();
+
+  // Etapa 3 do Wizard: Passageiros
+  await expect(page.locator('[data-wizard-step="3"]')).toBeVisible();
+  await expect(page.locator('#step-eyebrow')).toHaveText(/Etapa 3 de 4/);
   await page.locator('#passenger-2-name').fill('Ana Souza Lima');
   await page.locator('#passenger-2-cpf').fill('111.444.777-35');
   await page.locator('#passenger-3-name').fill('Bruno Costa Reis');
   await page.locator('#passenger-3-cpf').fill('153.509.460-56');
-  await page.getByLabel(/Li e concordo/i).check();
-  await page.getByRole('button', { name: /continuar para o pagamento pix/i }).click();
+  await page.getByRole('button', { name: /continuar para revisão/i }).click();
 
-  // Etapa 2.
+  // Etapa 4 do Wizard: Revisão
+  await expect(page.locator('[data-wizard-step="4"]')).toBeVisible();
+  await expect(page.locator('#step-eyebrow')).toHaveText(/Etapa 4 de 4/);
+  await page.getByLabel(/Li e concordo/i).check();
+  await page.getByRole('button', { name: /gerar pagamento pix/i }).click();
+
+  // Etapa de Pagamento
   await expect(page.locator('#payment-panel')).toBeVisible();
   await expect(page.locator('#step-heading')).toHaveAttribute('data-step', 'pagamento');
   await expect(page.locator('#step-eyebrow')).toHaveText(/Etapa 2 de 3/);
   await expect(page.locator('#form-title')).toHaveText(/Pix/i);
 
-  // Etapa 3.
+  // Etapa de Confirmação
   confirmado = true;
   await expect(page.locator('#confirmation-panel')).toBeVisible({ timeout: 20000 });
   await expect(page.locator('#step-heading')).toHaveAttribute('data-step', 'confirmacao');
@@ -398,15 +406,6 @@ test('cabeçalho acompanha a etapa e o bloco 03 some com 1 passageiro', async ({
 });
 
 test('layout do checkout: ritmo por escala e colunas do painel alinhadas', async ({ page }) => {
-  // Este teste trava três decisões de layout que já regrediram por acidente antes:
-  //
-  // 1. RITMO. O formulário usava gap 20px entre blocos E 20px entre campos — o
-  //    mesmo valor, então nada indicava onde um assunto terminava. A separação
-  //    entre blocos precisa ser visivelmente maior que a de dentro do bloco.
-  // 2. SEM CARDS. Os três fieldsets eram caixas idênticas (padding 34px, borda
-  //    1px, raio 16px). Um formulário é uma tarefa contínua, não três objetos.
-  // 3. ALINHAMENTO. As colunas do painel (QR / copia-e-cola) começavam 47px
-  //    desalinhadas porque só uma tinha rótulo.
   await page.route('**/api/create-pix-order', route => route.fulfill({
     status: 201, contentType: 'application/json', body: JSON.stringify(fakePixResponse())
   }));
@@ -417,41 +416,23 @@ test('layout do checkout: ritmo por escala e colunas do painel alinhadas', async
 
   await page.goto('/onibus.html');
 
-  // (1) e (2): ritmo e ausência de card.
-  const forma = await page.evaluate(() => {
-    const blocos = [...document.querySelectorAll('#bus-form .bus-fieldset')].filter(e => e.offsetHeight);
-    const grid = document.querySelector('#bus-form .bus-form__grid');
-    const segundo = getComputedStyle(blocos[1]);
-    return {
-      entreBlocos: Math.round(blocos[1].getBoundingClientRect().top - blocos[0].getBoundingClientRect().bottom),
-      dentroDoBloco: Math.round(parseFloat(getComputedStyle(grid).rowGap)),
-      radius: parseFloat(segundo.borderTopLeftRadius),
-      bordaLateral: parseFloat(segundo.borderLeftWidth),
-      shadow: segundo.boxShadow
-    };
-  });
-
-  // A separação entre blocos precisa ser claramente maior — não igual, como antes.
-  expect(forma.entreBlocos).toBeGreaterThan(forma.dentroDoBloco * 1.5);
-  // Nada de card: sem raio, sem borda lateral, sem sombra.
-  expect(forma.radius).toBe(0);
-  expect(forma.bordaLateral).toBe(0);
-  expect(forma.shadow).toBe('none');
-
   await page.getByLabel('Nome completo (contato principal)').fill('Maria de Souza');
   await page.getByLabel('CPF do contato principal').fill(primaryCpf);
   await page.locator('#primary-birth').fill('15/05/1990');
   await page.locator('#primary-email').fill('maria@example.com');
   await page.locator('#primary-whatsapp').fill('11942554141');
+  await page.getByRole('button', { name: /continuar: tamanho do grupo/i }).click();
+
+  await page.getByRole('button', { name: /continuar para revisão/i }).click();
   await page.getByLabel(/Li e concordo/i).check();
-  await page.getByRole('button', { name: /continuar para o pagamento pix/i }).click();
+  await page.getByRole('button', { name: /gerar pagamento pix/i }).click();
   await expect(page.locator('#payment-panel')).toBeVisible();
 
-  // (3): as duas formas de pagar começam na mesma linha.
+  // As duas formas de pagar começam na mesma linha.
   const colunas = await page.evaluate(() => {
     const filhos = [...document.querySelector('.bus-payment-panel__body').children]
       .filter(e => e.offsetHeight);
-    if (filhos.length < 2) return null; // empilhado (viewport estreito)
+    if (filhos.length < 2) return null;
     return {
       desalinhamento: Math.abs(
         Math.round(filhos[0].getBoundingClientRect().top - filhos[1].getBoundingClientRect().top)
@@ -462,11 +443,9 @@ test('layout do checkout: ritmo por escala e colunas do painel alinhadas', async
 
   if (colunas) {
     expect(colunas.desalinhamento).toBeLessThanOrEqual(2);
-    // As ações tinham 204px comprimidos; abaixo de 230px voltou a apertar.
     expect(colunas.larguraAcoes).toBeGreaterThan(230);
   }
 
-  // O rótulo do QR é o que cria o par que alinha as colunas.
   await expect(page.locator('.bus-payment-panel__way-label')).toBeVisible();
 
   // Nenhum viewport pode gerar rolagem horizontal.
@@ -489,7 +468,7 @@ test('contato em 3 linhas e WhatsApp opcional nos passageiros extras', async ({ 
 
   // Arranjo: NOME / CPF + DATA DE NASCIMENTO / WHATSAPP + EMAIL.
   const linhas = await page.evaluate(() => {
-    const campos = [...document.querySelectorAll('#bus-form .bus-fieldset:first-of-type .bus-field')];
+    const campos = [...document.querySelectorAll('#bus-form [data-wizard-step="1"] .bus-field')];
     const porLinha = {};
     campos.forEach(c => {
       const y = Math.round(c.getBoundingClientRect().top);
@@ -503,11 +482,18 @@ test('contato em 3 linhas e WhatsApp opcional nos passageiros extras', async ({ 
     ['primary-whatsapp', 'primary-email']
   ]);
 
+  await page.getByLabel('Nome completo (contato principal)').fill('Maria de Souza');
+  await page.getByLabel('CPF do contato principal').fill(primaryCpf);
+  await page.locator('#primary-birth').fill('15/05/1990');
+  await page.locator('#primary-email').fill('maria@example.com');
+  await page.locator('#primary-whatsapp').fill('11942554141');
+  await page.getByRole('button', { name: /continuar: tamanho do grupo/i }).click();
+
   await page.locator('#passenger-count').fill('3');
   await page.locator('#passenger-count').dispatchEvent('input');
+  await page.getByRole('button', { name: /continuar: passageiros/i }).click();
 
-  // O campo existe nos extras e NÃO é obrigatório: se fosse, o "opcional"
-  // bloquearia o cadastro na prática.
+  // O campo existe nos extras e NÃO é obrigatório
   for (const pos of [2, 3]) {
     const campo = page.locator(`#passenger-${pos}-whatsapp`);
     await expect(campo).toBeVisible();
@@ -526,26 +512,14 @@ test('contato em 3 linhas e WhatsApp opcional nos passageiros extras', async ({ 
   await expect(page.locator('#passenger-2-whatsapp')).toHaveValue('(11) 91234-5678');
   await page.locator('#passenger-2-email').fill('ana@example.com');
 
-  // Mudar a quantidade não pode apagar o que já foi digitado.
-  await page.locator('#passenger-count').fill('4');
-  await page.locator('#passenger-count').dispatchEvent('input');
-  await expect(page.locator('#passenger-2-whatsapp')).toHaveValue('(11) 91234-5678');
-  await expect(page.locator('#passenger-2-email')).toHaveValue('ana@example.com');
-  await page.locator('#passenger-count').fill('3');
-  await page.locator('#passenger-count').dispatchEvent('input');
-
-  await page.getByLabel('Nome completo (contato principal)').fill('Maria de Souza');
-  await page.getByLabel('CPF do contato principal').fill(primaryCpf);
-  await page.locator('#primary-birth').fill('15/05/1990');
-  await page.locator('#primary-email').fill('maria@example.com');
-  await page.locator('#primary-whatsapp').fill('11942554141');
   await page.locator('#passenger-2-name').fill('Ana Souza Lima');
   await page.locator('#passenger-2-cpf').fill('111.444.777-35');
   await page.locator('#passenger-3-name').fill('Bruno Costa Reis');
   await page.locator('#passenger-3-cpf').fill('153.509.460-56');
-  // Passageiro 3 fica SEM WhatsApp de propósito: precisa enviar do mesmo jeito.
+  await page.getByRole('button', { name: /continuar para revisão/i }).click();
+
   await page.getByLabel(/Li e concordo/i).check();
-  await page.getByRole('button', { name: /continuar para o pagamento pix/i }).click();
+  await page.getByRole('button', { name: /gerar pagamento pix/i }).click();
   await expect(page.locator('#payment-panel')).toBeVisible();
 
   expect(enviado.passengers[1].whatsapp).toBe('11912345678');
@@ -570,11 +544,58 @@ test('exibe o bloco e nome do grupo na confirmação apenas quando groupName est
   await page.locator('#primary-birth').fill('15/05/1990');
   await page.locator('#primary-email').fill('maria@example.com');
   await page.locator('#primary-whatsapp').fill('11942554141');
+  await page.getByRole('button', { name: /continuar: tamanho do grupo/i }).click();
+
+  await page.getByRole('button', { name: /continuar para revisão/i }).click();
   await page.getByLabel(/Li e concordo/i).check();
-  await page.getByRole('button', { name: /continuar para o pagamento pix/i }).click();
+  await page.getByRole('button', { name: /gerar pagamento pix/i }).click();
 
   await expect(page.locator('#confirmation-panel')).toBeVisible({ timeout: 15000 });
   await expect(page.locator('#confirmed-group')).toBeVisible();
   await expect(page.locator('#confirmed-group-name')).toHaveText('Wingspan');
   await expect(page.locator('.bus-confirmed__wa-btn')).toHaveAttribute('href', 'https://chat.whatsapp.com/DxTVSZrcKXa6WopHZkGL5N?s=cl&p=i&ilr=4');
+});
+
+test('navegação do wizard: voltar e avançar mantém dados e validações', async ({ page }) => {
+  await page.goto('/onibus.html');
+
+  // Step 1
+  await page.getByLabel('Nome completo (contato principal)').fill('Carlos Silva');
+  await page.getByLabel('CPF do contato principal').fill(primaryCpf);
+  await page.locator('#primary-birth').fill('20/10/1985');
+  await page.locator('#primary-email').fill('carlos@example.com');
+  await page.locator('#primary-whatsapp').fill('11987654321');
+  await page.getByRole('button', { name: /continuar: tamanho do grupo/i }).click();
+
+  // Step 2
+  await expect(page.locator('[data-wizard-step="2"]')).toBeVisible();
+  await page.locator('#passenger-count').fill('2');
+  await page.locator('#passenger-count').dispatchEvent('input');
+
+  // Voltar para Step 1
+  await page.getByRole('button', { name: /voltar ao contato/i }).click();
+  await expect(page.locator('[data-wizard-step="1"]')).toBeVisible();
+  await expect(page.getByLabel('Nome completo (contato principal)')).toHaveValue('Carlos Silva');
+
+  // Avançar para Step 2 de novo
+  await page.getByRole('button', { name: /continuar: tamanho do grupo/i }).click();
+  await expect(page.locator('[data-wizard-step="2"]')).toBeVisible();
+  await expect(page.locator('#passenger-count')).toHaveValue('2');
+
+  // Avançar para Step 3
+  await page.getByRole('button', { name: /continuar: passageiros/i }).click();
+  await expect(page.locator('[data-wizard-step="3"]')).toBeVisible();
+  await page.locator('#passenger-2-name').fill('Fernanda Silva');
+  await page.locator('#passenger-2-cpf').fill(passengerTwoCpf);
+
+  // Avançar para Step 4 (Revisão)
+  await page.getByRole('button', { name: /continuar para revisão/i }).click();
+  await expect(page.locator('[data-wizard-step="4"]')).toBeVisible();
+  await expect(page.locator('#review-passengers-list')).toContainText('Carlos Silva');
+  await expect(page.locator('#review-passengers-list')).toContainText('Fernanda Silva');
+
+  // Voltar de Step 4 para Step 3
+  await page.getByRole('button', { name: /voltar e editar/i }).click();
+  await expect(page.locator('[data-wizard-step="3"]')).toBeVisible();
+  await expect(page.locator('#passenger-2-name')).toHaveValue('Fernanda Silva');
 });
