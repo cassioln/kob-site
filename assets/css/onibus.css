@@ -750,7 +750,7 @@
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  margin-top: var(--s-lg);
+  margin-top: calc(var(--s-lg) + 10px);
   padding-top: var(--s-md);
   border-top: 1px solid var(--line-light, rgba(90, 113, 132, 0.15));
 }
@@ -758,6 +758,12 @@
 .bus-wizard__nav--split {
   justify-content: space-between;
   gap: 16px;
+}
+
+@media (min-width: 769px) {
+  .bus-wizard__btn-next {
+    margin-top: 10px;
+  }
 }
 
 .bus-wizard__btn-back {
