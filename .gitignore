@@ -50,3 +50,6 @@ loop_finder/*
 .github/agents/
 .github/hooks/
 .github/skills/
+
+#Preview HTML emails
+.preview-email-*.html
