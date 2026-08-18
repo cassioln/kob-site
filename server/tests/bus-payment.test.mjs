@@ -9,6 +9,7 @@ const basePayload = {
   contact: {
     full_name: 'Maria de Souza',
     cpf: '52998224725',
+    birth_date: '1990-05-15',
     email: 'maria@example.com',
     whatsapp: '11942554141',
     is_minor: false
@@ -21,7 +22,7 @@ const basePayload = {
     { full_name: 'Ana de Souza', cpf: '15350946056', is_minor: false }
   ],
   children: [
-    { full_name: 'Pedro de Souza', cpf: '01234567890' }
+    { full_name: 'Pedro de Souza', cpf: '10000000019' }
   ],
   total_amount: '0.01'
 };
@@ -70,6 +71,7 @@ test('calcula o total no servidor e salva o cadastro antes de criar o Pix', asyn
   assert.equal(dependencies.calls.registration.amountCents, 36000);
   assert.equal(dependencies.calls.registration.passengers.length, 3);
   assert.equal(dependencies.calls.registration.children.length, 1);
+  assert.equal(dependencies.calls.registration.primaryBirthDate, '1990-05-15');
   assert.equal(dependencies.calls.payment.totalAmount, '360.00');
   assert.equal(dependencies.calls.payment.payerEmail, 'maria@example.com');
   assert.equal(dependencies.calls.payment.externalReference, dependencies.calls.registration.externalReference);
@@ -119,7 +121,7 @@ test('aceita 1 pagante com 1 criança no colo', async () => {
   payload.passenger_count = 1;
   payload.children_count = 1;
   payload.passengers = [payload.passengers[0]];
-  payload.children = [{ full_name: 'Pedro de Souza', cpf: '01234567890' }];
+  payload.children = [{ full_name: 'Pedro de Souza', cpf: '10000000019' }];
 
   const result = await createPixOrder({ payload, ...dependencies });
   assert.equal(result.totalAmount, '120.00');
@@ -146,19 +148,34 @@ test('recusa mais crianças que pagantes: cada criança precisa de um colo', asy
   assert.equal(dependencies.calls.payment, null);
 });
 
-test('rejeita criança de colo se o único pagante for menor (6 a 17 anos)', async () => {
+test('rejeita contato principal menor de 18 anos', async () => {
   const dependencies = fakeDependencies();
   const payload = structuredClone(basePayload);
-  payload.passenger_count = 1;
-  payload.children_count = 1;
-  payload.contact.full_name = 'Jovem Souza';
-  payload.contact.is_minor = true;
-  payload.passengers = [{ full_name: 'Jovem Souza', cpf: '52998224725', is_minor: true }];
-  payload.children = [{ full_name: 'Pedro de Souza', cpf: '10000000019' }];
+  payload.contact.birth_date = '2015-05-15'; // 11 anos
 
   await assert.rejects(
     () => createPixOrder({ payload, ...dependencies }),
-    /Crianças de colo só podem viajar acompanhadas por um pagante de 18 anos ou mais/i
+    /O contato principal \/ responsável financeiro deve ter 18 anos ou mais/i
+  );
+});
+
+test('rejeita crianças de colo além do limite de adultos pagantes no grupo', async () => {
+  const dependencies = fakeDependencies();
+  const payload = structuredClone(basePayload);
+  payload.passenger_count = 2;
+  payload.children_count = 2; // 1 adulto + 1 menor => máximo 1 criança de colo
+  payload.passengers = [
+    { full_name: 'Maria de Souza', cpf: '52998224725', is_minor: false },
+    { full_name: 'Jovem Souza', cpf: '11144477735', is_minor: true }
+  ];
+  payload.children = [
+    { full_name: 'Pedro de Souza', cpf: '10000000019' },
+    { full_name: 'Bia de Souza', cpf: '10000003700' }
+  ];
+
+  await assert.rejects(
+    () => createPixOrder({ payload, ...dependencies }),
+    /não podem passar do número de pagantes maiores de 18 anos/i
   );
 });
 
@@ -420,6 +437,7 @@ test('WhatsApp do passageiro é opcional, mas inválido é recusado', () => {
     contact: {
       full_name: 'Cassio Lima do Nascimento',
       cpf: '529.982.247-25',
+      birth_date: '1990-05-15',
       email: 'cassio@example.com',
       whatsapp: '(11) 98765-4321'
     },

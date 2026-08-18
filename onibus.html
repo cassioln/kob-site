@@ -194,11 +194,10 @@
                     inputmode="numeric" autocomplete="off" maxlength="14" placeholder="000.000.000-00" required>
                 </div>
                 <div class="bus-field">
-                  <label for="primary-age">Faixa etária <b aria-hidden="true">*</b></label>
-                  <select id="primary-age" aria-label="Faixa etária do contato principal" name="primary_age" required>
-                    <option value="adult" selected>18 anos ou mais</option>
-                    <option value="minor">6 a 17 anos</option>
-                  </select>
+                  <label for="primary-birth">Data de nascimento <b aria-hidden="true">*</b></label>
+                  <input id="primary-birth" aria-label="Data de nascimento do contato principal" name="primary_birth" type="text"
+                    inputmode="numeric" autocomplete="bday" maxlength="10" placeholder="DD/MM/AAAA" required>
+                  <small class="bus-field__hint">O responsável financeiro deve ter 18 anos ou mais.</small>
                 </div>
                 <div class="bus-field">
                   <label for="primary-whatsapp">WhatsApp <b aria-hidden="true">*</b></label>

@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS bus_registrations (
   external_reference TEXT NOT NULL UNIQUE,
   primary_name TEXT NOT NULL,
   primary_cpf TEXT NOT NULL,
+  primary_birth_date DATE,
   email TEXT NOT NULL,
   whatsapp TEXT NOT NULL,
   passenger_count INTEGER NOT NULL CHECK (passenger_count BETWEEN 1 AND 100),

@@ -44,14 +44,15 @@ export function createPostgresRepository(env = process.env) {
         await client.query('BEGIN');
         await client.query(
           `INSERT INTO bus_registrations
-            (id, external_reference, primary_name, primary_cpf, email, whatsapp,
+            (id, external_reference, primary_name, primary_cpf, primary_birth_date, email, whatsapp,
              passenger_count, children_count, amount_cents, currency, status)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, 'BRL', 'payment_pending')`,
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 'BRL', 'payment_pending')`,
           [
             record.id,
             record.externalReference,
             record.primaryName,
             record.primaryCpf,
+            record.primaryBirthDate || null,
             record.email,
             record.whatsapp,
             record.passengerCount,

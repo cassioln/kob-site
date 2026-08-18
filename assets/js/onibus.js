@@ -6,7 +6,7 @@
 
   var primaryName = document.getElementById('primary-name');
   var primaryCpf = document.getElementById('primary-cpf');
-  var primaryAge = document.getElementById('primary-age');
+  var primaryBirth = document.getElementById('primary-birth');
   var primaryEmail = document.getElementById('primary-email');
   var primaryWhatsapp = document.getElementById('primary-whatsapp');
   var passengerCount = document.getElementById('passenger-count');
@@ -73,6 +73,43 @@
     if (valueDigits.length > 6) return valueDigits.replace(/(\d{2})(\d{4})(\d{1,4})/, '($1) $2-$3');
     if (valueDigits.length > 2) return valueDigits.replace(/(\d{2})(\d{1,5})/, '($1) $2');
     return valueDigits;
+  }
+
+  function maskDate(value) {
+    var valueDigits = digits(value).slice(0, 8);
+    if (valueDigits.length > 4) return valueDigits.replace(/(\d{2})(\d{2})(\d{1,4})/, '$1/$2/$3');
+    if (valueDigits.length > 2) return valueDigits.replace(/(\d{2})(\d{1,2})/, '$1/$2');
+    return valueDigits;
+  }
+
+  function parseBirthDate(value) {
+    var val = String(value || '').trim();
+    var d, m, y;
+    var brMatch = val.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+    var isoMatch = val.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (brMatch) {
+      d = Number(brMatch[1]);
+      m = Number(brMatch[2]);
+      y = Number(brMatch[3]);
+    } else if (isoMatch) {
+      y = Number(isoMatch[1]);
+      m = Number(isoMatch[2]);
+      d = Number(isoMatch[3]);
+    } else {
+      return null;
+    }
+    var currentYear = new Date().getFullYear();
+    if (y < 1900 || y > currentYear || m < 1 || m > 12 || d < 1 || d > 31) return null;
+    var dt = new Date(y, m - 1, d);
+    if (dt.getFullYear() !== y || dt.getMonth() !== (m - 1) || dt.getDate() !== d) return null;
+    var today = new Date();
+    var age = today.getFullYear() - y;
+    var monthDiff = today.getMonth() - (m - 1);
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < d)) {
+      age--;
+    }
+    var iso = y + '-' + String(m).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+    return { age: age, iso: iso };
   }
 
   function validCpf(value) {
@@ -172,10 +209,7 @@
 
   function getAdultPayingCount() {
     var count = Math.max(1, Math.min(100, Number(passengerCount.value) || 1));
-    var adults = 0;
-    if (!primaryAge || primaryAge.value !== 'minor') {
-      adults++;
-    }
+    var adults = 1; // Contato principal é sempre 18+ anos
     for (var pos = 2; pos <= count; pos++) {
       var pField = document.getElementById('passenger-' + pos + '-age');
       var ageVal = pField ? pField.value : (savedPassengers[pos] ? savedPassengers[pos].age : 'adult');
@@ -344,6 +378,9 @@
     var name = normalizeFullName(primaryName.value);
     if (name.split(' ').length < 2) return invalid('Informe o nome completo do contato principal.', primaryName);
     if (!validCpf(primaryCpf.value)) return invalid('Informe um CPF válido para o contato principal.', primaryCpf);
+    var birthParsed = primaryBirth ? parseBirthDate(primaryBirth.value) : null;
+    if (!birthParsed) return invalid('Informe uma data de nascimento válida (DD/MM/AAAA) para o contato principal.', primaryBirth);
+    if (birthParsed.age < 18) return invalid('O contato principal / responsável financeiro deve ter 18 anos ou mais.', primaryBirth);
     if (!primaryEmail.validity.valid) return invalid('Informe um e-mail válido.', primaryEmail);
     if (digits(primaryWhatsapp.value).length !== 11) return invalid('Informe um WhatsApp válido com DDD.', primaryWhatsapp);
 
@@ -355,7 +392,7 @@
     var seenCpfs = {};
     seenCpfs[digits(primaryCpf.value)] = primaryCpf;
 
-    var adultCount = (primaryAge && primaryAge.value === 'minor') ? 0 : 1;
+    var adultCount = 1;
 
     for (var position = 2; position <= count; position += 1) {
       var nameField = document.getElementById('passenger-' + position + '-name');
@@ -420,14 +457,16 @@
   function getPayload() {
     var count = Number(passengerCount.value);
     var kids = Number(childrenCount.value || 0);
+    var birthParsed = primaryBirth ? parseBirthDate(primaryBirth.value) : null;
     var passengers = [{
       full_name: normalizeFullName(primaryName.value),
       cpf: digits(primaryCpf.value),
+      birth_date: birthParsed ? birthParsed.iso : '',
       // O passageiro 1 é o contato principal, então o WhatsApp e o E-mail são os do contato.
       whatsapp: digits(primaryWhatsapp.value),
       email: primaryEmail.value.trim(),
-      age_group: primaryAge ? primaryAge.value : 'adult',
-      is_minor: primaryAge ? primaryAge.value === 'minor' : false
+      age_group: 'adult',
+      is_minor: false
     }];
     for (var position = 2; position <= count; position += 1) {
       var waInput = document.getElementById('passenger-' + position + '-whatsapp');
@@ -460,10 +499,11 @@
       contact: {
         full_name: normalizeFullName(primaryName.value),
         cpf: digits(primaryCpf.value),
+        birth_date: birthParsed ? birthParsed.iso : '',
         email: primaryEmail.value.trim(),
         whatsapp: digits(primaryWhatsapp.value),
-        age_group: primaryAge ? primaryAge.value : 'adult',
-        is_minor: primaryAge ? primaryAge.value === 'minor' : false
+        age_group: 'adult',
+        is_minor: false
       },
       passenger_count: count,
       children_count: kids,
@@ -757,13 +797,10 @@
   }
 
   primaryCpf.addEventListener('input', function (event) { event.currentTarget.value = maskCpf(event.currentTarget.value); });
-  primaryWhatsapp.addEventListener('input', function (event) { event.currentTarget.value = maskWhatsapp(event.currentTarget.value); });
-  if (primaryAge) {
-    primaryAge.addEventListener('change', function () {
-      readPassengerValues();
-      updateSummary();
-    });
+  if (primaryBirth) {
+    primaryBirth.addEventListener('input', function (event) { event.currentTarget.value = maskDate(event.currentTarget.value); });
   }
+  primaryWhatsapp.addEventListener('input', function (event) { event.currentTarget.value = maskWhatsapp(event.currentTarget.value); });
   passengerCount.addEventListener('input', renderPassengers);
   childrenCount.addEventListener('input', function () {
     renderPassengers();

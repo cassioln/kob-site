@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS bus_registrations (
   external_reference     VARCHAR(191)    NOT NULL,
   primary_name           VARCHAR(255)    NOT NULL,
   primary_cpf            VARCHAR(14)     NOT NULL,
+  primary_birth_date     DATE            NULL,
   email                  VARCHAR(255)    NOT NULL,
   whatsapp               VARCHAR(32)     NOT NULL,
   passenger_count        INT             NOT NULL,

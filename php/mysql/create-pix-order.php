@@ -29,15 +29,16 @@ try {
     $pdo->beginTransaction();
     $insert = $pdo->prepare(
         'INSERT INTO bus_registrations
-            (id, external_reference, primary_name, primary_cpf, email, whatsapp,
+            (id, external_reference, primary_name, primary_cpf, primary_birth_date, email, whatsapp,
              passenger_count, children_count, amount_cents, currency, status)
-         VALUES (:id, :ref, :name, :cpf, :email, :whatsapp, :pax, :kids, :cents, \'BRL\', \'payment_pending\')'
+         VALUES (:id, :ref, :name, :cpf, :birth_date, :email, :whatsapp, :pax, :kids, :cents, \'BRL\', \'payment_pending\')'
     );
     $insert->execute([
         ':id' => $id,
         ':ref' => $externalReference,
         ':name' => $data['contact']['fullName'],
         ':cpf' => $data['contact']['cpf'],
+        ':birth_date' => $data['contact']['birthDate'] ?? null,
         ':email' => $data['contact']['email'],
         ':whatsapp' => $data['contact']['whatsapp'],
         ':pax' => $data['passengerCount'],

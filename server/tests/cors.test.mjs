@@ -26,6 +26,7 @@ const busPayload = {
   contact: {
     full_name: 'Maria de Souza',
     cpf: '52998224725',
+    birth_date: '1990-05-15',
     email: 'maria@example.com',
     whatsapp: '11942554141',
     is_minor: false
@@ -38,7 +39,7 @@ const busPayload = {
     { full_name: 'Ana de Souza', cpf: '15350946056', is_minor: false }
   ],
   children: [
-    { full_name: 'Pedro de Souza', cpf: '01234567890' }
+    { full_name: 'Pedro de Souza', cpf: '10000000019' }
   ],
   total_amount: '0.01'
 };

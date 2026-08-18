@@ -103,10 +103,43 @@ function normalize_whatsapp(mixed $value): string
     return $national;
 }
 
+function normalize_birth_date(mixed $value, string $label = 'Data de nascimento do contato principal'): string
+{
+    if (!is_string($value) || trim($value) === '') {
+        throw new ValidationError("{$label} é obrigatória.");
+    }
+    $raw = trim($value);
+    if (preg_match('/^(\d{2})\/(\d{2})\/(\d{4})$/', $raw, $matches)) {
+        $day = (int) $matches[1];
+        $month = (int) $matches[2];
+        $year = (int) $matches[3];
+    } elseif (preg_match('/^(\d{4})-(\d{2})-(\d{2})$/', $raw, $matches)) {
+        $year = (int) $matches[1];
+        $month = (int) $matches[2];
+        $day = (int) $matches[3];
+    } else {
+        throw new ValidationError("{$label} inválida.");
+    }
+
+    if (!checkdate($month, $day, $year) || $year < 1900 || $year > (int) date('Y')) {
+        throw new ValidationError("{$label} inválida.");
+    }
+
+    $birth = new DateTimeImmutable(sprintf('%04d-%02d-%02d', $year, $month, $day));
+    $today = new DateTimeImmutable('today');
+    $age = $birth->diff($today)->y;
+
+    if ($age < 18) {
+        throw new ValidationError('O contato principal / responsável financeiro deve ter 18 anos ou mais.');
+    }
+
+    return $birth->format('Y-m-d');
+}
+
 /**
  * Valida o payload inteiro e devolve dados já normalizados.
  *
- * @return array{contact: array{fullName: string, cpf: string, email: string, whatsapp: string}, passengerCount: int, childrenCount: int, passengers: list<array{position: int, fullName: string, cpf: string}>, amountCents: int}
+ * @return array{contact: array{fullName: string, cpf: string, birthDate: string, email: string, whatsapp: string, isMinor: bool}, passengerCount: int, childrenCount: int, adultCount: int, passengers: list<array{position: int, fullName: string, cpf: string, whatsapp: ?string, email: ?string, isMinor: bool}>, children: list<array{position: int, fullName: string, cpf: string}>, amountCents: int}
  */
 function validate_bus_payload(mixed $payload): array
 {
@@ -143,6 +176,9 @@ function validate_bus_payload(mixed $payload): array
         throw new ValidationError('Informe o nome completo do contato principal.');
     }
     $primaryCpf = normalize_cpf($contact['cpf'] ?? null, 'o contato principal');
+    $primaryBirthDate = normalize_birth_date(
+        $contact['birth_date'] ?? $contact['primary_birth_date'] ?? $payload['birth_date'] ?? $payload['primary_birth_date'] ?? null
+    );
     $email = normalize_email($contact['email'] ?? null);
     $whatsapp = normalize_whatsapp($contact['whatsapp'] ?? null);
 
@@ -171,12 +207,15 @@ function validate_bus_payload(mixed $payload): array
         }
         $seen[$cpf] = true;
 
-        // Faixa etária do pagante: 6 a 17 anos (is_minor = true) vs 18+ anos (is_minor = false).
+        // Faixa etária do pagante: o contato principal é sempre maior de 18 anos (comprovado pela data de nascimento).
+        // Demais passageiros: 6 a 17 anos (is_minor = true) vs 18+ anos (is_minor = false).
         // Pagantes de 6 a 17 anos NÃO podem levar criança de colo.
-        $isMinor = !empty($entry['is_minor'])
-            || ($entry['age_group'] ?? '') === 'minor'
-            || ($entry['age_group'] ?? '') === 'youth'
-            || ($entry['age_group'] ?? '') === '6_to_17';
+        $isMinor = ($position === 1)
+            ? false
+            : (!empty($entry['is_minor'])
+                || ($entry['age_group'] ?? '') === 'minor'
+                || ($entry['age_group'] ?? '') === 'youth'
+                || ($entry['age_group'] ?? '') === '6_to_17');
 
         if (!$isMinor) {
             $adultCount++;
@@ -238,46 +277,45 @@ function validate_bus_payload(mixed $payload): array
     }
 
     // Validação dos dados obrigatórios das crianças de colo (nome completo e CPF).
+    $rawChildrenList = $payload['children'] ?? [];
+    if (!is_array($rawChildrenList) || count($rawChildrenList) !== $childrenCount) {
+        throw new ValidationError('Informe os dados de todas as crianças de colo.');
+    }
+
     $children = [];
-    if ($childrenCount > 0) {
-        $rawChildrenList = $payload['children'] ?? [];
-        if (!is_array($rawChildrenList) || count($rawChildrenList) !== $childrenCount) {
-            throw new ValidationError('Informe o nome completo e o CPF de todas as crianças de até 5 anos.');
+    $childPos = $passengerCount;
+    foreach ($rawChildrenList as $entry) {
+        $childPos++;
+        if (!is_array($entry)) {
+            throw new ValidationError("Criança {$childPos} inválida.");
         }
-
-        $childIdx = 0;
-        foreach ($rawChildrenList as $childEntry) {
-            $childIdx++;
-            if (!is_array($childEntry)) {
-                throw new ValidationError("Dados da criança {$childIdx} inválidos.");
-            }
-            $childFullName = normalize_text($childEntry['full_name'] ?? null, "Nome completo da criança {$childIdx}", 3);
-            if (count(explode(' ', $childFullName)) < 2) {
-                throw new ValidationError("Informe o nome completo da criança {$childIdx}.");
-            }
-            $childCpf = normalize_cpf($childEntry['cpf'] ?? null, "a criança {$childIdx}");
-            if (isset($seen[$childCpf])) {
-                throw new ValidationError('Não repita o CPF de um passageiro ou criança.');
-            }
-            $seen[$childCpf] = true;
-
-            $children[] = [
-                'position' => $passengerCount + $childIdx,
-                'fullName' => $childFullName,
-                'cpf' => $childCpf,
-                'isMinor' => true,
-                'isChildLap' => true,
-            ];
+        $childName = normalize_text($entry['full_name'] ?? null, "Nome completo da criança", 3);
+        if (count(explode(' ', $childName)) < 2) {
+            throw new ValidationError("Informe o nome completo da criança.");
         }
+        $childCpf = normalize_cpf($entry['cpf'] ?? null, "a criança");
+        if (isset($seen[$childCpf])) {
+            throw new ValidationError('Não repita o CPF de um passageiro ou criança.');
+        }
+        $seen[$childCpf] = true;
+
+        $children[] = [
+            'position' => $childPos,
+            'fullName' => $childName,
+            'cpf' => $childCpf,
+            'isMinor' => true,
+            'isChildLap' => true,
+        ];
     }
 
     return [
         'contact' => [
             'fullName' => $primaryName,
             'cpf' => $primaryCpf,
+            'birthDate' => $primaryBirthDate,
             'email' => $email,
             'whatsapp' => $whatsapp,
-            'isMinor' => $passengers[0]['isMinor'],
+            'isMinor' => false,
         ],
         'passengerCount' => $passengerCount,
         'childrenCount' => $childrenCount,

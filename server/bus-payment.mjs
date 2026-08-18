@@ -77,6 +77,52 @@ function normalizeWhatsapp(value) {
   return national;
 }
 
+export function normalizeBirthDate(value, label = 'Data de nascimento do contato principal') {
+  if (typeof value !== 'string' || !value.trim()) {
+    throw new ValidationError(`${label} é obrigatória.`);
+  }
+  const raw = value.trim();
+  let day;
+  let month;
+  let year;
+  const brMatch = raw.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  const isoMatch = raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (brMatch) {
+    day = Number(brMatch[1]);
+    month = Number(brMatch[2]);
+    year = Number(brMatch[3]);
+  } else if (isoMatch) {
+    year = Number(isoMatch[1]);
+    month = Number(isoMatch[2]);
+    day = Number(isoMatch[3]);
+  } else {
+    throw new ValidationError(`${label} inválida.`);
+  }
+
+  const currentYear = new Date().getFullYear();
+  if (year < 1900 || year > currentYear || month < 1 || month > 12 || day < 1 || day > 31) {
+    throw new ValidationError(`${label} inválida.`);
+  }
+
+  const birth = new Date(year, month - 1, day);
+  if (birth.getFullYear() !== year || birth.getMonth() !== month - 1 || birth.getDate() !== day) {
+    throw new ValidationError(`${label} inválida.`);
+  }
+
+  const today = new Date();
+  let age = today.getFullYear() - birth.getFullYear();
+  const m = today.getMonth() - birth.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+    age--;
+  }
+
+  if (age < 18) {
+    throw new ValidationError('O contato principal / responsável financeiro deve ter 18 anos ou mais.');
+  }
+
+  return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+}
+
 export function validateBusPayload(payload) {
   requiredObject(payload, 'Cadastro');
   const contact = requiredObject(payload.contact, 'Contato principal');
@@ -98,6 +144,9 @@ export function validateBusPayload(payload) {
     throw new ValidationError('Informe o nome completo do contato principal.');
   }
   const primaryCpf = normalizeCpf(contact.cpf, 'CPF do contato principal');
+  const primaryBirthDate = normalizeBirthDate(
+    contact.birth_date || contact.primary_birth_date || contact.birthDate || payload.birth_date || payload.primary_birth_date
+  );
   const email = normalizeEmail(contact.email);
   const whatsapp = normalizeWhatsapp(contact.whatsapp);
 
@@ -112,10 +161,13 @@ export function validateBusPayload(payload) {
     }
     const cpf = normalizeCpf(entry.cpf, `CPF do passageiro ${index + 1}`);
 
-    const isMinor = Boolean(entry.is_minor)
-      || entry.age_group === 'minor'
-      || entry.age_group === 'youth'
-      || entry.age_group === '6_to_17';
+    // O contato principal (posição 1) é comprovadamente maior de 18 anos pela data de nascimento.
+    const isMinor = (index === 0)
+      ? false
+      : (Boolean(entry.is_minor)
+        || entry.age_group === 'minor'
+        || entry.age_group === 'youth'
+        || entry.age_group === '6_to_17');
 
     if (!isMinor) {
       adultCount++;
@@ -183,9 +235,10 @@ export function validateBusPayload(payload) {
     contact: {
       fullName: primaryName,
       cpf: primaryCpf,
+      birthDate: primaryBirthDate,
       email,
       whatsapp,
-      isMinor: passengers[0].isMinor
+      isMinor: false
     },
     passengerCount,
     childrenCount,
@@ -221,6 +274,7 @@ export async function createPixOrder({
     externalReference,
     primaryName: normalized.contact.fullName,
     primaryCpf: normalized.contact.cpf,
+    primaryBirthDate: normalized.contact.birthDate,
     email: normalized.contact.email,
     whatsapp: normalized.contact.whatsapp,
     passengerCount: normalized.passengerCount,
