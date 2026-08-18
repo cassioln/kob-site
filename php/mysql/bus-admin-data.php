@@ -78,7 +78,7 @@ try {
     $reservas = $q->fetchAll(PDO::FETCH_ASSOC);
 
     $qp = $pdo->query(
-        'SELECT registration_id, `position`, full_name, cpf, whatsapp, is_primary
+        'SELECT registration_id, `position`, full_name, cpf, whatsapp, is_primary, is_minor, is_child_lap
            FROM bus_passengers ORDER BY registration_id, `position`'
     );
     $porReserva = [];
@@ -90,6 +90,8 @@ try {
             'cpf_digitos' => preg_replace('/\D/', '', (string) $p['cpf']),
             'whatsapp' => ($p['whatsapp'] ?? '') !== '' ? bus_format_phone((string) $p['whatsapp']) : null,
             'responsavel' => (int) $p['is_primary'] === 1,
+            'menor' => (int) ($p['is_minor'] ?? 0) === 1,
+            'crianca_colo' => (int) ($p['is_child_lap'] ?? 0) === 1,
         ];
     }
 

@@ -29,8 +29,9 @@ CREATE TABLE IF NOT EXISTS bus_passengers (
   registration_id UUID NOT NULL REFERENCES bus_registrations(id) ON DELETE CASCADE,
   position SMALLINT NOT NULL CHECK (position >= 1),
   full_name TEXT NOT NULL,
-  cpf TEXT NOT NULL,
   is_primary BOOLEAN NOT NULL DEFAULT false,
+  is_minor BOOLEAN NOT NULL DEFAULT false,
+  is_child_lap BOOLEAN NOT NULL DEFAULT false,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   UNIQUE (registration_id, position),
   UNIQUE (registration_id, cpf)

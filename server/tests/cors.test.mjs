@@ -27,14 +27,18 @@ const busPayload = {
     full_name: 'Maria de Souza',
     cpf: '52998224725',
     email: 'maria@example.com',
-    whatsapp: '11942554141'
+    whatsapp: '11942554141',
+    is_minor: false
   },
   passenger_count: 3,
   children_count: 1,
   passengers: [
-    { full_name: 'Maria de Souza', cpf: '52998224725' },
-    { full_name: 'João de Souza', cpf: '11144477735' },
-    { full_name: 'Ana de Souza', cpf: '15350946056' }
+    { full_name: 'Maria de Souza', cpf: '52998224725', is_minor: false },
+    { full_name: 'João de Souza', cpf: '11144477735', is_minor: false },
+    { full_name: 'Ana de Souza', cpf: '15350946056', is_minor: false }
+  ],
+  children: [
+    { full_name: 'Pedro de Souza', cpf: '01234567890' }
   ],
   total_amount: '0.01'
 };

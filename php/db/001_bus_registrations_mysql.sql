@@ -118,6 +118,8 @@ CREATE TABLE IF NOT EXISTS bus_passengers (
   email           VARCHAR(255)     NULL,
   confirmation_email_sent_at DATETIME NULL COMMENT 'UTC',
   is_primary      TINYINT(1)       NOT NULL DEFAULT 0,
+  is_minor        TINYINT(1)       NOT NULL DEFAULT 0 COMMENT '1 para passageiro de 6 a 17 anos',
+  is_child_lap    TINYINT(1)       NOT NULL DEFAULT 0 COMMENT '1 para crianca de colo (0 a 5 anos)',
   created_at      DATETIME         NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'UTC',
 
   PRIMARY KEY (id),

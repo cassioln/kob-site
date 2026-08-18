@@ -46,8 +46,8 @@ try {
     ]);
 
     $insertPassenger = $pdo->prepare(
-        'INSERT INTO bus_passengers (registration_id, position, full_name, cpf, whatsapp, email, is_primary)
-         VALUES (:rid, :pos, :name, :cpf, :whatsapp, :email, :primary)'
+        'INSERT INTO bus_passengers (registration_id, position, full_name, cpf, whatsapp, email, is_primary, is_minor, is_child_lap)
+         VALUES (:rid, :pos, :name, :cpf, :whatsapp, :email, :primary, :minor, :child_lap)'
     );
     foreach ($data['passengers'] as $passenger) {
         // MySQL: booleano é TINYINT(1) — 1/0 com PARAM_INT, e não 'true'/'false'.
@@ -67,6 +67,8 @@ try {
             ($whatsappPassenger === null || $whatsappPassenger === '') ? PDO::PARAM_NULL : PDO::PARAM_STR
         );
         $insertPassenger->bindValue(':primary', $passenger['position'] === 1 ? 1 : 0, PDO::PARAM_INT);
+        $insertPassenger->bindValue(':minor', !empty($passenger['isMinor']) ? 1 : 0, PDO::PARAM_INT);
+        $insertPassenger->bindValue(':child_lap', 0, PDO::PARAM_INT);
 
         // E-mail do passageiro é opcional. O passageiro 1 é o contato principal,
         // então herda o e-mail da reserva: ele já é obrigatório no formulário e
@@ -80,6 +82,20 @@ try {
             ($emailPassenger === null || $emailPassenger === '') ? null : $emailPassenger,
             ($emailPassenger === null || $emailPassenger === '') ? PDO::PARAM_NULL : PDO::PARAM_STR
         );
+        $insertPassenger->execute();
+    }
+
+    // Crianças de colo (0 a 5 anos): gravadas em bus_passengers com is_child_lap = 1
+    foreach ($data['children'] as $child) {
+        $insertPassenger->bindValue(':rid', $id);
+        $insertPassenger->bindValue(':pos', $child['position'], PDO::PARAM_INT);
+        $insertPassenger->bindValue(':name', $child['fullName']);
+        $insertPassenger->bindValue(':cpf', $child['cpf']);
+        $insertPassenger->bindValue(':whatsapp', null, PDO::PARAM_NULL);
+        $insertPassenger->bindValue(':email', null, PDO::PARAM_NULL);
+        $insertPassenger->bindValue(':primary', 0, PDO::PARAM_INT);
+        $insertPassenger->bindValue(':minor', 1, PDO::PARAM_INT);
+        $insertPassenger->bindValue(':child_lap', 1, PDO::PARAM_INT);
         $insertPassenger->execute();
     }
     $pdo->commit();

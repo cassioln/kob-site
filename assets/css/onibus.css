@@ -685,6 +685,7 @@
 }
 
 .bus-field input,
+.bus-field select,
 .bus-payment-panel__copy textarea {
   width: 100%;
   min-height: 54px;
@@ -698,12 +699,23 @@
   transition: border-color var(--dur-state) var(--ease-quart), box-shadow var(--dur-state) var(--ease-quart), background var(--dur-state) var(--ease-quart);
 }
 
+.bus-field select {
+  padding-right: 38px;
+  background: #fbfdff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%235a7184' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") no-repeat right 14px center;
+  background-size: 16px;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+
 .bus-field input:hover,
+.bus-field select:hover,
 .bus-payment-panel__copy textarea:hover {
   border-color: rgba(123, 31, 162, 0.5);
 }
 
 .bus-field input:focus,
+.bus-field select:focus,
 .bus-payment-panel__copy textarea:focus {
   border-color: var(--action);
   outline: none;
@@ -711,7 +723,8 @@
   box-shadow: 0 0 0 4px rgba(123, 31, 162, 0.12);
 }
 
-.bus-field input[aria-invalid="true"] {
+.bus-field input[aria-invalid="true"],
+.bus-field select[aria-invalid="true"] {
   border-color: var(--kriativa-magenta);
 }
 
@@ -728,11 +741,25 @@
   gap: var(--s-md);
 }
 
+.bus-passengers--children {
+  margin-top: var(--s-md);
+}
+
+.bus-passengers--children:empty {
+  display: none;
+}
+
 .bus-passenger {
   padding: 20px;
   border: 1px dashed var(--line-mid);
   border-radius: var(--r-md);
   background: var(--bus-paper);
+}
+
+.bus-passenger--child {
+  border-style: solid;
+  border-color: rgba(0, 174, 239, 0.35);
+  background: #f3f9fe;
 }
 
 .bus-passenger__title {
@@ -751,6 +778,19 @@
   font-family: var(--font-body);
   font-size: 0.72rem;
   font-weight: 600;
+}
+
+.bus-passenger__tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(0, 174, 239, 0.12);
+  color: #00709e !important;
+  font-size: 0.72rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
 }
 
 .bus-consent {

@@ -69,7 +69,7 @@ try {
     $reservas = $q->fetchAll(PDO::FETCH_ASSOC);
 
     $qp = $pdo->query(
-        'SELECT registration_id, `position`, full_name, cpf, whatsapp, is_primary
+        'SELECT registration_id, `position`, full_name, cpf, whatsapp, is_primary, is_minor, is_child_lap
            FROM bus_passengers ORDER BY registration_id, `position`'
     );
     $porReserva = [];

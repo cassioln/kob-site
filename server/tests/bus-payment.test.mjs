@@ -10,14 +10,18 @@ const basePayload = {
     full_name: 'Maria de Souza',
     cpf: '52998224725',
     email: 'maria@example.com',
-    whatsapp: '11942554141'
+    whatsapp: '11942554141',
+    is_minor: false
   },
   passenger_count: 3,
   children_count: 1,
   passengers: [
-    { full_name: 'Maria de Souza', cpf: '52998224725' },
-    { full_name: 'João de Souza', cpf: '11144477735' },
-    { full_name: 'Ana de Souza', cpf: '15350946056' }
+    { full_name: 'Maria de Souza', cpf: '52998224725', is_minor: false },
+    { full_name: 'João de Souza', cpf: '11144477735', is_minor: false },
+    { full_name: 'Ana de Souza', cpf: '15350946056', is_minor: false }
+  ],
+  children: [
+    { full_name: 'Pedro de Souza', cpf: '01234567890' }
   ],
   total_amount: '0.01'
 };
@@ -65,6 +69,7 @@ test('calcula o total no servidor e salva o cadastro antes de criar o Pix', asyn
   // 3 pagantes x R$ 120. As crianças do basePayload são adicionais e não pagam.
   assert.equal(dependencies.calls.registration.amountCents, 36000);
   assert.equal(dependencies.calls.registration.passengers.length, 3);
+  assert.equal(dependencies.calls.registration.children.length, 1);
   assert.equal(dependencies.calls.payment.totalAmount, '360.00');
   assert.equal(dependencies.calls.payment.payerEmail, 'maria@example.com');
   assert.equal(dependencies.calls.payment.externalReference, dependencies.calls.registration.externalReference);
@@ -114,6 +119,7 @@ test('aceita 1 pagante com 1 criança no colo', async () => {
   payload.passenger_count = 1;
   payload.children_count = 1;
   payload.passengers = [payload.passengers[0]];
+  payload.children = [{ full_name: 'Pedro de Souza', cpf: '01234567890' }];
 
   const result = await createPixOrder({ payload, ...dependencies });
   assert.equal(result.totalAmount, '120.00');
@@ -121,18 +127,39 @@ test('aceita 1 pagante com 1 criança no colo', async () => {
 });
 
 test('recusa mais crianças que pagantes: cada criança precisa de um colo', async () => {
-  // 3 pagantes com 4 crianças deixaria uma criança sem colo disponível.
   const dependencies = fakeDependencies();
   const payload = structuredClone(basePayload);
   payload.passenger_count = 3;
   payload.children_count = 4;
+  payload.children = [
+    { full_name: 'Pedro de Souza', cpf: '10000000019' },
+    { full_name: 'Bia de Souza', cpf: '10000003700' },
+    { full_name: 'Leo de Souza', cpf: '10000007455' },
+    { full_name: 'Lia de Souza', cpf: '10000011134' }
+  ];
 
   await assert.rejects(
     () => createPixOrder({ payload, ...dependencies }),
-    /não podem passar do número de passageiros pagantes/i
+    /não podem passar do número de passageiros pagantes|não podem passar do número de pagantes/i
   );
   assert.equal(dependencies.calls.registration, null);
   assert.equal(dependencies.calls.payment, null);
+});
+
+test('rejeita criança de colo se o único pagante for menor (6 a 17 anos)', async () => {
+  const dependencies = fakeDependencies();
+  const payload = structuredClone(basePayload);
+  payload.passenger_count = 1;
+  payload.children_count = 1;
+  payload.contact.full_name = 'Jovem Souza';
+  payload.contact.is_minor = true;
+  payload.passengers = [{ full_name: 'Jovem Souza', cpf: '52998224725', is_minor: true }];
+  payload.children = [{ full_name: 'Pedro de Souza', cpf: '10000000019' }];
+
+  await assert.rejects(
+    () => createPixOrder({ payload, ...dependencies }),
+    /Crianças de colo só podem viajar acompanhadas por um pagante de 18 anos ou mais/i
+  );
 });
 
 test('aceita crianças iguais aos pagantes e cobra só os pagantes', async () => {
@@ -143,10 +170,16 @@ test('aceita crianças iguais aos pagantes e cobra só os pagantes', async () =>
   payload.passenger_count = 4;
   payload.children_count = 4;
   payload.passengers = [
-    { full_name: 'Maria de Souza', cpf: '52998224725' },
-    { full_name: 'Joao Souza', cpf: '11144477735' },
-    { full_name: 'Ana Souza', cpf: '15350946056' },
-    { full_name: 'Lucas Souza', cpf: '01234567890' }
+    { full_name: 'Maria de Souza', cpf: '52998224725', is_minor: false },
+    { full_name: 'Joao Souza', cpf: '11144477735', is_minor: false },
+    { full_name: 'Ana Souza', cpf: '15350946056', is_minor: false },
+    { full_name: 'Lucas Souza', cpf: '01234567890', is_minor: false }
+  ];
+  payload.children = [
+    { full_name: 'Pedro de Souza', cpf: '10000000019' },
+    { full_name: 'Bia de Souza', cpf: '10000003700' },
+    { full_name: 'Leo de Souza', cpf: '10000007455' },
+    { full_name: 'Lia de Souza', cpf: '10000011134' }
   ];
 
   const result = await createPixOrder({ payload, ...dependencies });

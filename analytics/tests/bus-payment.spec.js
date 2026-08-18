@@ -48,6 +48,8 @@ test('cadastra o grupo, calcula o valor e exibe o Pix', async ({ page }) => {
   await page.getByLabel('CPF do passageiro 2').fill(passengerTwoCpf);
   await page.getByLabel('Nome completo do passageiro 3').fill('Ana de Souza');
   await page.getByLabel('CPF do passageiro 3').fill(passengerThreeCpf);
+  await page.getByLabel('Nome completo da criança 1').fill('Pedro de Souza');
+  await page.getByLabel('CPF da criança 1').fill('01234567890');
   await page.getByLabel(/Li e concordo com as condições/i).check();
 
   // 3 pagantes x R$ 120. A criança é adicional e não paga.
@@ -68,6 +70,7 @@ test('cadastra o grupo, calcula o valor e exibe o Pix', async ({ page }) => {
     }
   });
   expect(requestBody.passengers).toHaveLength(3);
+  expect(requestBody.children).toHaveLength(1);
   expect(requestBody).not.toHaveProperty('total_amount');
 
   await expect(page.locator('#payment-panel')).toBeVisible();
@@ -456,20 +459,20 @@ test('contato em 3 linhas e WhatsApp opcional nos passageiros extras', async ({ 
 
   await page.goto('/onibus.html');
 
-  // Arranjo pedido: NOME / CPF + WHATSAPP / EMAIL.
+  // Arranjo: NOME / CPF + FAIXA ETÁRIA / WHATSAPP + EMAIL.
   const linhas = await page.evaluate(() => {
     const campos = [...document.querySelectorAll('#bus-form .bus-fieldset:first-of-type .bus-field')];
     const porLinha = {};
     campos.forEach(c => {
       const y = Math.round(c.getBoundingClientRect().top);
-      (porLinha[y] ||= []).push(c.querySelector('input')?.id);
+      (porLinha[y] ||= []).push(c.querySelector('input, select')?.id);
     });
     return Object.keys(porLinha).sort((a, b) => a - b).map(y => porLinha[y]);
   });
   expect(linhas).toEqual([
     ['primary-name'],
-    ['primary-cpf', 'primary-whatsapp'],
-    ['primary-email']
+    ['primary-cpf', 'primary-age'],
+    ['primary-whatsapp', 'primary-email']
   ]);
 
   await page.locator('#passenger-count').fill('3');

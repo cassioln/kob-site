@@ -194,13 +194,18 @@
                     inputmode="numeric" autocomplete="off" maxlength="14" placeholder="000.000.000-00" required>
                 </div>
                 <div class="bus-field">
+                  <label for="primary-age">Faixa etária <b aria-hidden="true">*</b></label>
+                  <select id="primary-age" aria-label="Faixa etária do contato principal" name="primary_age" required>
+                    <option value="adult" selected>18 anos ou mais</option>
+                    <option value="minor">6 a 17 anos</option>
+                  </select>
+                </div>
+                <div class="bus-field">
                   <label for="primary-whatsapp">WhatsApp <b aria-hidden="true">*</b></label>
                   <input id="primary-whatsapp" aria-label="WhatsApp" name="whatsapp" type="tel" inputmode="tel"
                     autocomplete="tel" maxlength="15" placeholder="(11) 90000-0000" required>
                 </div>
-                <!-- E-mail em linha própria: endereços longos ficam ilegíveis num
-                     campo de meia largura, e é por ele que o comprovante chega. -->
-                <div class="bus-field bus-field--wide">
+                <div class="bus-field">
                   <label for="primary-email">E-mail <b aria-hidden="true">*</b></label>
                   <input id="primary-email" aria-label="E-mail" name="email" type="email" autocomplete="email" required>
                 </div>
@@ -218,18 +223,19 @@
                   <small class="bus-field__hint">O contato principal entra nessa quantidade.</small>
                 </div>
                 <div class="bus-field">
-                  <label for="children-count">Crianças de até 5 anos</label>
-                  <input id="children-count" aria-label="Crianças de até 5 anos" name="children_count" type="number"
+                  <label for="children-count">Crianças de até 5 anos (colo)</label>
+                  <input id="children-count" aria-label="Crianças de até 5 anos (colo)" name="children_count" type="number"
                     inputmode="numeric" min="0" max="1" value="0">
-                  <small class="bus-field__hint">Viajam no colo de um responsável, sem assento individual.</small>
+                  <small id="children-hint" class="bus-field__hint">Viajam no colo de um pagante de 18 anos ou mais (máximo de 1 por adulto). Sem cobrança.</small>
                 </div>
               </div>
             </fieldset>
 
-            <fieldset class="bus-fieldset bus-fieldset--passengers" id="passengers-fieldset">
+            <fieldset class="bus-fieldset bus-fieldset--passengers" id="passengers-fieldset" hidden>
               <legend><span>03</span> Dados dos passageiros</legend>
-              <p class="bus-fieldset__note">O passageiro 1 é o contato principal. Preencha os demais campos abaixo.</p>
+              <p class="bus-fieldset__note" id="passengers-note">O passageiro 1 é o contato principal. Preencha os demais campos abaixo.</p>
               <div id="passenger-fields" class="bus-passengers" aria-live="polite"></div>
+              <div id="children-fields" class="bus-passengers" aria-live="polite"></div>
             </fieldset>
 
             <label class="bus-consent" for="bus-terms">

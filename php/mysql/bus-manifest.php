@@ -47,7 +47,7 @@ try {
                 r.mercadopago_order_id,
                 DATE_FORMAT(CONVERT_TZ(r.paid_at, "+00:00", "-03:00"), "%d/%m/%Y %H:%i") AS pago_em,
                 p.`position`, p.full_name AS passageiro, p.cpf AS passageiro_cpf,
-                p.whatsapp AS passageiro_whatsapp, p.is_primary
+                p.whatsapp AS passageiro_whatsapp, p.is_primary, p.is_minor, p.is_child_lap
            FROM bus_registrations r
            JOIN bus_passengers p ON p.registration_id = r.id
           WHERE r.status = "confirmed"
@@ -84,6 +84,8 @@ try {
                 ? bus_format_phone((string) $l['passageiro_whatsapp'])
                 : null,
             'responsavel' => (int) $l['is_primary'] === 1,
+            'menor' => (int) ($l['is_minor'] ?? 0) === 1,
+            'crianca_colo' => (int) ($l['is_child_lap'] ?? 0) === 1,
         ];
     }
     $grupos = array_values($grupos);

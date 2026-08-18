@@ -101,9 +101,8 @@ export function validateBusPayload(payload) {
   const email = normalizeEmail(contact.email);
   const whatsapp = normalizeWhatsapp(contact.whatsapp);
 
-  if (!Array.isArray(payload.passengers) || payload.passengers.length !== passengerCount) {
-    throw new ValidationError('Informe os dados de todos os passageiros.');
-  }
+  const cpfs = new Set();
+  let adultCount = 0;
 
   const passengers = payload.passengers.map((passenger, index) => {
     const entry = requiredObject(passenger, `Passageiro ${index + 1}`);
@@ -112,6 +111,18 @@ export function validateBusPayload(payload) {
       throw new ValidationError(`Informe o nome completo do passageiro ${index + 1}.`);
     }
     const cpf = normalizeCpf(entry.cpf, `CPF do passageiro ${index + 1}`);
+
+    const isMinor = Boolean(entry.is_minor)
+      || entry.age_group === 'minor'
+      || entry.age_group === 'youth'
+      || entry.age_group === '6_to_17';
+
+    if (!isMinor) {
+      adultCount++;
+    }
+
+    if (cpfs.has(cpf)) throw new ValidationError('Não repita o CPF de um passageiro.');
+    cpfs.add(cpf);
 
     // WhatsApp do passageiro é OPCIONAL (só o do contato principal é exigido).
     // Vazio vira null; preenchido é validado com o mesmo rigor — aceitar número
@@ -125,29 +136,62 @@ export function validateBusPayload(payload) {
       }
     }
 
-    return { position: index + 1, fullName, cpf, whatsapp: passengerWhatsapp };
+    return { position: index + 1, fullName, cpf, whatsapp: passengerWhatsapp, isMinor };
   });
 
   if (passengers[0].fullName !== primaryName || passengers[0].cpf !== primaryCpf) {
     throw new ValidationError('O passageiro 1 deve ser o contato principal.');
   }
 
-  const cpfs = new Set();
-  passengers.forEach((passenger) => {
-    if (cpfs.has(passenger.cpf)) throw new ValidationError('Não repita o CPF de um passageiro.');
-    cpfs.add(passenger.cpf);
-  });
+  if (childrenCount > 0) {
+    if (adultCount === 0) {
+      throw new ValidationError('Crianças de colo só podem viajar acompanhadas por um pagante de 18 anos ou mais.');
+    }
+    if (childrenCount > adultCount) {
+      throw new ValidationError('As crianças de até 5 anos não podem passar do número de pagantes maiores de 18 anos.');
+    }
+  }
+
+  const children = [];
+  if (childrenCount > 0) {
+    const rawChildrenList = Array.isArray(payload.children) ? payload.children : [];
+    if (rawChildrenList.length !== childrenCount) {
+      throw new ValidationError('Informe o nome completo e o CPF de todas as crianças de até 5 anos.');
+    }
+    rawChildrenList.forEach((childEntry, childIndex) => {
+      const child = requiredObject(childEntry, `Criança de colo ${childIndex + 1}`);
+      const fullName = normalizeText(child.full_name, `Nome completo da criança ${childIndex + 1}`, 3);
+      if (fullName.split(' ').length < 2) {
+        throw new ValidationError(`Informe o nome completo da criança ${childIndex + 1}.`);
+      }
+      const cpf = normalizeCpf(child.cpf, `CPF da criança ${childIndex + 1}`);
+      if (cpfs.has(cpf)) {
+        throw new ValidationError('Não repita o CPF de um passageiro ou criança.');
+      }
+      cpfs.add(cpf);
+      children.push({
+        position: passengerCount + childIndex + 1,
+        fullName,
+        cpf,
+        isMinor: true,
+        isChildLap: true
+      });
+    });
+  }
 
   return {
     contact: {
       fullName: primaryName,
       cpf: primaryCpf,
       email,
-      whatsapp
+      whatsapp,
+      isMinor: passengers[0].isMinor
     },
     passengerCount,
     childrenCount,
-    passengers
+    adultCount,
+    passengers,
+    children
   };
 }
 
@@ -182,7 +226,8 @@ export async function createPixOrder({
     passengerCount: normalized.passengerCount,
     childrenCount: normalized.childrenCount,
     amountCents,
-    passengers: normalized.passengers
+    passengers: normalized.passengers,
+    children: normalized.children
   });
 
   let payment;

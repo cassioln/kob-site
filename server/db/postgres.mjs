@@ -62,10 +62,36 @@ export function createPostgresRepository(env = process.env) {
         for (const passenger of record.passengers) {
           await client.query(
             `INSERT INTO bus_passengers
-              (registration_id, position, full_name, cpf, is_primary)
-             VALUES ($1, $2, $3, $4, $5)`,
-            [record.id, passenger.position, passenger.fullName, passenger.cpf, passenger.position === 1]
+              (registration_id, position, full_name, cpf, is_primary, is_minor, is_child_lap)
+             VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+            [
+              record.id,
+              passenger.position,
+              passenger.fullName,
+              passenger.cpf,
+              passenger.position === 1,
+              Boolean(passenger.isMinor),
+              false
+            ]
           );
+        }
+        if (Array.isArray(record.children)) {
+          for (const child of record.children) {
+            await client.query(
+              `INSERT INTO bus_passengers
+                (registration_id, position, full_name, cpf, is_primary, is_minor, is_child_lap)
+               VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+              [
+                record.id,
+                child.position,
+                child.fullName,
+                child.cpf,
+                false,
+                true,
+                true
+              ]
+            );
+          }
         }
         await client.query('COMMIT');
         return { id: record.id, externalReference: record.externalReference };

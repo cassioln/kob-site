@@ -154,6 +154,8 @@ function validate_bus_payload(mixed $payload): array
     $passengers = [];
     $seen = [];
     $position = 0;
+    $adultCount = 0;
+
     foreach ($rawPassengers as $entry) {
         $position++;
         if (!is_array($entry)) {
@@ -168,6 +170,17 @@ function validate_bus_payload(mixed $payload): array
             throw new ValidationError('Não repita o CPF de um passageiro.');
         }
         $seen[$cpf] = true;
+
+        // Faixa etária do pagante: 6 a 17 anos (is_minor = true) vs 18+ anos (is_minor = false).
+        // Pagantes de 6 a 17 anos NÃO podem levar criança de colo.
+        $isMinor = !empty($entry['is_minor'])
+            || ($entry['age_group'] ?? '') === 'minor'
+            || ($entry['age_group'] ?? '') === 'youth'
+            || ($entry['age_group'] ?? '') === '6_to_17';
+
+        if (!$isMinor) {
+            $adultCount++;
+        }
 
         // WhatsApp do passageiro é OPCIONAL: serve para a organização falar
         // direto com quem embarca, quando a pessoa quiser informar. Vazio passa
@@ -204,11 +217,58 @@ function validate_bus_payload(mixed $payload): array
             'cpf' => $cpf,
             'whatsapp' => $whatsappPassenger,
             'email' => $emailPassenger,
+            'isMinor' => $isMinor,
         ];
     }
 
     if ($passengers[0]['fullName'] !== $primaryName || $passengers[0]['cpf'] !== $primaryCpf) {
         throw new ValidationError('O passageiro 1 deve ser o contato principal.');
+    }
+
+    // Regra de crianças de colo (0 a 5 anos):
+    // Crianças viajam no colo de um pagante de 18 anos ou mais. Pagantes de 6 a 17 anos
+    // não podem levar criança no colo. Logo, crianças <= adultos pagantes.
+    if ($childrenCount > 0) {
+        if ($adultCount === 0) {
+            throw new ValidationError('Crianças de colo só podem viajar acompanhadas por um pagante de 18 anos ou mais.');
+        }
+        if ($childrenCount > $adultCount) {
+            throw new ValidationError('As crianças de até 5 anos não podem passar do número de pagantes maiores de 18 anos.');
+        }
+    }
+
+    // Validação dos dados obrigatórios das crianças de colo (nome completo e CPF).
+    $children = [];
+    if ($childrenCount > 0) {
+        $rawChildrenList = $payload['children'] ?? [];
+        if (!is_array($rawChildrenList) || count($rawChildrenList) !== $childrenCount) {
+            throw new ValidationError('Informe o nome completo e o CPF de todas as crianças de até 5 anos.');
+        }
+
+        $childIdx = 0;
+        foreach ($rawChildrenList as $childEntry) {
+            $childIdx++;
+            if (!is_array($childEntry)) {
+                throw new ValidationError("Dados da criança {$childIdx} inválidos.");
+            }
+            $childFullName = normalize_text($childEntry['full_name'] ?? null, "Nome completo da criança {$childIdx}", 3);
+            if (count(explode(' ', $childFullName)) < 2) {
+                throw new ValidationError("Informe o nome completo da criança {$childIdx}.");
+            }
+            $childCpf = normalize_cpf($childEntry['cpf'] ?? null, "a criança {$childIdx}");
+            if (isset($seen[$childCpf])) {
+                throw new ValidationError('Não repita o CPF de um passageiro ou criança.');
+            }
+            $seen[$childCpf] = true;
+
+            $children[] = [
+                'position' => $passengerCount + $childIdx,
+                'fullName' => $childFullName,
+                'cpf' => $childCpf,
+                'isMinor' => true,
+                'isChildLap' => true,
+            ];
+        }
     }
 
     return [
@@ -217,11 +277,14 @@ function validate_bus_payload(mixed $payload): array
             'cpf' => $primaryCpf,
             'email' => $email,
             'whatsapp' => $whatsapp,
+            'isMinor' => $passengers[0]['isMinor'],
         ],
         'passengerCount' => $passengerCount,
         'childrenCount' => $childrenCount,
+        'adultCount' => $adultCount,
         'passengers' => $passengers,
-        // Criancas de ate 5 anos sao adicionais e NAO pagam: o valor cobre
+        'children' => $children,
+        // Crianças de até 5 anos são adicionais e NÃO pagam: o valor cobre
         // exatamente o grupo informado em passenger_count.
         'amountCents' => $passengerCount * BUS_PRICE_CENTS,
     ];

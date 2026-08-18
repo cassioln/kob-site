@@ -188,6 +188,9 @@
         pos.classList.add('tabela__posicao--responsavel');
         pos.textContent = '★';
         pos.setAttribute('title', 'Contato responsável pela reserva');
+      } else if (p.crianca_colo) {
+        pos.textContent = '•';
+        pos.setAttribute('title', 'Criança de até 5 anos (colo)');
       } else {
         pos.textContent = '–';
         pos.setAttribute('aria-hidden', 'true');
@@ -196,6 +199,18 @@
       nome.className = 'tabela__nome';
       nome.textContent = ' ' + p.nome;
       linhaNome.append(pos, nome);
+
+      if (p.crianca_colo) {
+        var tagColo = document.createElement('span');
+        tagColo.className = 'tabela__tag-colo';
+        tagColo.textContent = 'Colo (0 a 5 anos)';
+        linhaNome.appendChild(tagColo);
+      } else if (p.menor) {
+        var tagMenor = document.createElement('span');
+        tagMenor.className = 'tabela__tag-menor';
+        tagMenor.textContent = '6 a 17 anos';
+        linhaNome.appendChild(tagMenor);
+      }
 
       if (p.responsavel) {
         // O badge "★ Responsável" saiu: a estrela antes do nome já diz isso, e
