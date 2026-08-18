@@ -196,7 +196,8 @@
       var wrapper = document.createElement('div');
       wrapper.className = 'bus-passenger bus-passenger--child';
       wrapper.dataset.childPosition = idx;
-      wrapper.innerHTML = '<div class="bus-passenger__title"><span>Criança de colo ' + idx + ' (até 5 anos)</span><small class="bus-passenger__tag">No colo · Sem cobrança</small></div>'
+      var babyIcon = '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 12h.01"/><path d="M15 12h.01"/><path d="M10 16c.5.3 1.2.5 2 .5s1.5-.2 2-.5"/><path d="M19 6.3a9 9 0 0 1 1.8 3.9 2 2 0 0 1 0 3.6 9 9 0 0 1-17.6 0 2 2 0 0 1 0-3.6A9 9 0 0 1 12 3c2 0 3.5 1.1 3.5 2.5s-.9 2.5-2 2.5c-.8 0-1.5-.4-1.5-1"/></svg>';
+      wrapper.innerHTML = '<div class="bus-passenger__title"><span>Criança de colo ' + idx + ' (até 5 anos)</span><small class="bus-passenger__tag">' + babyIcon + 'Cortesia</small></div>'
         + '<div class="bus-form__grid">'
         + '<div class="bus-field bus-field--wide"><label for="child-' + idx + '-name">Nome completo da criança ' + idx + ' <b aria-hidden="true">*</b></label>'
         + '<input id="child-' + idx + '-name" aria-label="Nome completo da criança ' + idx + '" data-child-name type="text" autocomplete="off" minlength="3" required></div>'
