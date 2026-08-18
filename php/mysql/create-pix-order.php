@@ -6,6 +6,7 @@ declare(strict_types=1);
 require dirname(__DIR__) . '/lib/validation.php';
 require __DIR__ . '/lib/db.php';
 require dirname(__DIR__) . '/lib/mercadopago.php';
+require __DIR__ . '/lib/pix-mailer.php';
 
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
     json_response(405, ['error' => 'Método não permitido.']);
@@ -137,6 +138,15 @@ try {
         ':payment' => $payment['paymentId'],
         ':id' => $id,
     ]);
+
+    // Enviar e-mail de "Pagamento Pendente" em background/try-catch
+    try {
+        $config = bus_config();
+        bus_send_pix_email($pdo, $config, $id, $payment);
+    } catch (Throwable $e) {
+        log_failure('pix-email-send', $e);
+        // Oculta a falha do e-mail do frontend para não interromper a tela de pagamento do usuário.
+    }
 
     // Só dados públicos. Nada de CPF, e-mail ou WhatsApp na resposta.
     json_response(201, [
