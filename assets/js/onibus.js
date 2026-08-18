@@ -12,6 +12,8 @@
 
   // Elementos da Etapa 2 (Grupo e Passageiros)
   var soloTraveler = document.getElementById('solo-traveler');
+  var soloTravelerLabel = document.querySelector('.bus-solo-checkbox');
+  var groupDivider = document.querySelector('.bus-group-divider');
   var btnOpenAddPassenger = document.getElementById('btn-open-add-passenger');
   var groupMainView = document.getElementById('group-main-view');
   var groupPassengersContainer = document.getElementById('group-passengers-container');
@@ -324,9 +326,13 @@
     if (addedPassengers.length > 0) {
       soloTraveler.checked = false;
       soloTraveler.disabled = true;
+      if (soloTravelerLabel) soloTravelerLabel.hidden = true;
+      if (groupDivider) groupDivider.hidden = true;
       btnOpenAddPassenger.disabled = false;
       if (groupPassengersContainer) groupPassengersContainer.hidden = false;
     } else {
+      if (soloTravelerLabel) soloTravelerLabel.hidden = false;
+      if (groupDivider) groupDivider.hidden = false;
       soloTraveler.disabled = false;
       if (soloTraveler.checked) {
         btnOpenAddPassenger.disabled = true;

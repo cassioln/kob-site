@@ -794,6 +794,11 @@
   border-radius: var(--r-md);
 }
 
+.bus-solo-checkbox[hidden],
+.bus-group-divider[hidden] {
+  display: none !important;
+}
+
 .bus-solo-checkbox {
   display: flex;
   align-items: flex-start;
