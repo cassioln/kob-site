@@ -137,8 +137,7 @@ function bus_boarding_pdf(array $reservas, ?array $logo = null): string
 
     foreach ($reservas as $indice => $r) {
         // Altura do bloco: cabeçalho da reserva + uma linha por passageiro.
-        $alturaBloco = 26 + (count($r['passageiros']) * EMBARQUE_LINHA)
-            + ($r['criancas'] > 0 ? 13 : 0) + 12;
+        $alturaBloco = 26 + (count($r['passageiros']) * EMBARQUE_LINHA) + 12;
 
         // Quebra de página ANTES do bloco, nunca no meio: um grupo partido entre
         // duas folhas é o erro que faz a organização contar passageiro duas vezes.
@@ -184,6 +183,7 @@ function bus_boarding_pdf(array $reservas, ?array $logo = null): string
 
         foreach ($ordenados as $p) {
             $eResp = !empty($p['responsavel']);
+            $eColo = !empty($p['crianca_colo']);
 
             // Quadrado de conferência: a lista é usada com caneta na mão.
             $blocos[] = ['tipo' => 'retangulo', 'x' => $esq, 'y' => $y - 2,
@@ -199,24 +199,21 @@ function bus_boarding_pdf(array $reservas, ?array $logo = null): string
                 $blocos[] = ['tipo' => 'texto',
                              'x' => $esq + 16 + pdf_largura_texto($prefixo . $nome, 9.5, true),
                              'y' => $y, 'texto' => $tag, 'tamanho' => 7];
+            } elseif ($eColo) {
+                $tag = 'colo (0 a 5 anos)';
+                $blocos[] = ['tipo' => 'texto',
+                             'x' => $esq + 16 + pdf_largura_texto($prefixo . $nome, 9.5, false),
+                             'y' => $y, 'texto' => $tag, 'tamanho' => 7];
             }
 
             $blocos[] = ['tipo' => 'texto', 'x' => $colCpf, 'y' => $y,
                          'texto' => $p['cpf'] !== '' ? $p['cpf'] : '-', 'tamanho' => 9];
 
-            $tel = ($p['whatsapp'] ?? '') !== '' ? (string) $p['whatsapp'] : 'nao informado';
+            $tel = ($p['whatsapp'] ?? '') !== '' ? (string) $p['whatsapp'] : 'N/A';
             $blocos[] = ['tipo' => 'texto', 'x' => $colTel, 'y' => $y, 'texto' => $tel,
                          'tamanho' => 9];
 
             $y -= EMBARQUE_LINHA;
-        }
-
-        if ($r['criancas'] > 0) {
-            $blocos[] = ['tipo' => 'texto', 'x' => $esq + 14, 'y' => $y,
-                         'texto' => '+ ' . $r['criancas']
-                             . ' crianca(s) de ate 5 anos, no colo de um responsavel.',
-                         'tamanho' => 8];
-            $y -= 13;
         }
 
         // Separador entre blocos, exceto depois do último.

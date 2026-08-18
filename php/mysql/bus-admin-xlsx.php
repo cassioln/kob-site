@@ -146,14 +146,14 @@ try {
                 $faixaEtaria = '6 a 17 anos';
             }
 
-            $whatsappPassageiro = '';
+            $whatsappPassageiro = 'N/A';
             if ($isChildLap) {
                 $whatsappPassageiro = 'N/A';
             } elseif (($p['whatsapp'] ?? '') !== '') {
                 $whatsappPassageiro = bus_format_phone((string) $p['whatsapp']);
             }
 
-            $emailPassageiro = '';
+            $emailPassageiro = 'N/A';
             if ($isChildLap) {
                 $emailPassageiro = 'N/A';
             } elseif ((string) ($p['email'] ?? '') !== '') {
