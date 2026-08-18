@@ -638,7 +638,7 @@
   color: var(--ink-faint, #6f8294);
   font-weight: 800;
   font-size: 0.85rem;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s cubic-bezier(0.16, 1, 0.3, 1), color 0.3s ease, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
   box-shadow: 0 2px 6px rgba(15, 39, 66, 0.06);
 }
 
@@ -651,7 +651,7 @@
   font-weight: 700;
   letter-spacing: 0.02em;
   color: var(--ink-faint, #6f8294);
-  transition: color 0.2s ease;
+  transition: color 0.25s ease;
 }
 
 /* Item Ativo */
@@ -659,8 +659,18 @@
   border-color: var(--action);
   background: var(--action);
   color: #ffffff;
-  box-shadow: 0 0 0 4px rgba(123, 31, 162, 0.18), 0 4px 10px rgba(123, 31, 162, 0.25);
-  transform: scale(1.08);
+  box-shadow: 0 0 0 4px rgba(123, 31, 162, 0.18), 0 4px 12px rgba(123, 31, 162, 0.28);
+  transform: scale(1.1);
+  animation: busStepperPulse 2s ease-in-out infinite;
+}
+
+@keyframes busStepperPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 4px rgba(123, 31, 162, 0.18), 0 4px 12px rgba(123, 31, 162, 0.28);
+  }
+  50% {
+    box-shadow: 0 0 0 7px rgba(123, 31, 162, 0.1), 0 6px 16px rgba(123, 31, 162, 0.35);
+  }
 }
 
 .bus-stepper__item.is-active .bus-stepper__label {
@@ -673,6 +683,7 @@
   border-color: var(--ocean-cyan);
   background: var(--ocean-cyan);
   color: #032b43;
+  transform: scale(1);
 }
 
 .bus-stepper__item.is-completed .bus-stepper__num {
@@ -682,6 +693,18 @@
 .bus-stepper__item.is-completed .bus-stepper__check {
   display: block;
   stroke: #032b43;
+  animation: busCheckPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes busCheckPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .bus-stepper__item.is-completed .bus-stepper__label {
@@ -691,17 +714,17 @@
 /* Step container transitions */
 .bus-wizard-step {
   display: block;
-  animation: busStepFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: busStepSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .bus-wizard-step[hidden] {
   display: none !important;
 }
 
-@keyframes busStepFadeIn {
+@keyframes busStepSlideIn {
   from {
     opacity: 0;
-    transform: translateY(6px);
+    transform: translateY(10px);
   }
 
   to {
@@ -836,7 +859,16 @@
   font-weight: 800;
   font-size: 0.92rem;
   border-radius: var(--r-sm);
-  transition: all 0.2s ease;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease, opacity 0.2s ease;
+}
+
+.bus-btn-add-group:not([disabled]):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(123, 31, 162, 0.18);
+}
+
+.bus-btn-add-group:not([disabled]):active {
+  transform: translateY(0) scale(0.98);
 }
 
 .bus-btn-add-group:disabled {
@@ -851,9 +883,9 @@
   border: 2px dashed var(--action);
 }
 
-.btn--outline-primary:hover:not(:disabled) {
-  background: rgba(123, 31, 162, 0.06);
-  border-style: solid;
+.btn--outline-primary:hover {
+  background: rgba(123, 31, 162, 0.05);
+  border-color: var(--action);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(123, 31, 162, 0.12);
 }
@@ -1037,6 +1069,11 @@
   object-fit: contain;
   flex-shrink: 0;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.bus-passenger--child:hover .bus-passenger__meeple-img {
+  transform: scale(1.1) rotate(4deg);
 }
 
 .bus-passenger__child-data {
@@ -1079,7 +1116,19 @@
   background: #ffffff;
   border: 1px solid var(--action);
   box-shadow: 0 4px 16px rgba(123, 31, 162, 0.1);
-  animation: busStepFadeIn 0.25s ease-out;
+  animation: busSubstepPanelEntrance 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes busSubstepPanelEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .bus-substep-panel__header {
@@ -1102,11 +1151,28 @@
 .bus-substep-panel__btn-cancel {
   padding: 6px 12px;
   font-size: 0.82rem;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.bus-substep-panel__btn-cancel:hover {
+  transform: translateY(-1px);
 }
 
 .bus-substep {
   display: block;
-  animation: busStepFadeIn 0.25s ease-out;
+  animation: busSubstepFade 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes busSubstepFade {
+  from {
+    opacity: 0;
+    transform: translateX(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .bus-substep[hidden] {
@@ -1563,6 +1629,28 @@
   font-size: 0.86rem;
   font-weight: 700;
   text-align: right;
+  transition: opacity 0.2s ease;
+}
+
+.bus-form__status:not(:empty) {
+  animation: busStatusNotice 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes busStatusNotice {
+  0% {
+    opacity: 0;
+    transform: translateX(6px);
+  }
+  25% {
+    transform: translateX(-4px);
+  }
+  50% {
+    transform: translateX(2px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .bus-payment-panel__status {
@@ -1599,6 +1687,16 @@
 .bus-form__submit {
   width: 100%;
   margin-top: 4px;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease, opacity 0.2s ease;
+}
+
+.bus-form__submit:not([disabled]):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(123, 31, 162, 0.32);
+}
+
+.bus-form__submit:not([disabled]):active {
+  transform: translateY(0) scale(0.98);
 }
 
 .bus-form__submit[disabled] {
@@ -1719,6 +1817,19 @@
   border-radius: var(--r-lg);
   background: var(--surface-card);
   box-shadow: 0 2px 8px rgba(8, 47, 87, 0.12);
+  animation: busPaymentReveal 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes busPaymentReveal {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.99);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .bus-payment-panel[hidden] {
@@ -3047,4 +3158,23 @@
 #still-here-cancel:focus-visible {
   color: var(--kriativa-magenta);
   transform: none;
+}
+
+/* ============================================================================
+   Acessibilidade: Redução de movimento nas animações do Checkout
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .bus-stepper__badge,
+  .bus-stepper__item.is-active .bus-stepper__badge,
+  .bus-wizard-step,
+  .bus-substep-panel,
+  .bus-substep,
+  .bus-passenger,
+  .bus-passenger--added,
+  .bus-form__status:not(:empty),
+  .bus-payment-panel {
+    animation: none !important;
+    transition: opacity 0.15s linear, color 0.15s linear, background-color 0.15s linear !important;
+    transform: none !important;
+  }
 }
