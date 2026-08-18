@@ -545,6 +545,7 @@
 .bus-checkout {
   color: var(--bus-ink);
   background: #eaf2fa;
+  min-height: clamp(740px, 85vh, 980px);
 }
 
 .bus-checkout__grid {
@@ -556,6 +557,7 @@
 
 .bus-form-column {
   min-width: 0;
+  min-height: 520px;
 }
 
 .bus-section-heading--form {
@@ -713,12 +715,18 @@
 
 /* Step container transitions */
 .bus-wizard-step {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  min-height: 480px;
   animation: busStepSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .bus-wizard-step[hidden] {
   display: none !important;
+}
+
+.bus-wizard-step .bus-wizard__nav {
+  margin-top: auto;
 }
 
 @keyframes busStepSlideIn {
