@@ -747,14 +747,15 @@
 
 /* Wizard Navigation Buttons */
 .bus-wizard__nav {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
   margin-top: var(--s-lg);
   padding-top: var(--s-md);
   border-top: 1px solid var(--line-light, rgba(90, 113, 132, 0.15));
 }
 
 .bus-wizard__nav--split {
-  display: flex;
-  align-items: center;
   justify-content: space-between;
   gap: 16px;
 }
