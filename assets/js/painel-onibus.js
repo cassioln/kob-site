@@ -160,9 +160,11 @@
         if (totalPessoas > 1) {
           var qtdDiv = document.createElement('div');
           qtdDiv.className = 'tabela__qtd-reserva';
-          var textoQtd = (r.pagantes === 1 ? '1 pessoa' : r.pagantes + ' pessoas');
+          var textoQtd;
           if (r.criancas > 0) {
-            textoQtd += ' + ' + r.criancas + ' colo';
+            textoQtd = (r.pagantes || 0) + ' + ' + r.criancas + ' colo';
+          } else {
+            textoQtd = (r.pagantes === 1 ? '1 pessoa' : r.pagantes + ' pessoas');
           }
           qtdDiv.textContent = textoQtd;
           blocoReserva.appendChild(qtdDiv);

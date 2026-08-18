@@ -1697,36 +1697,34 @@
 }
 
 .bus-confirmed__manifest-header {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  display: block;
+  width: 100%;
+  margin-bottom: 12px;
 }
 
 @keyframes groupBadgeGlow {
   0% {
-    box-shadow: 0 0 0 0 rgba(0, 174, 239, 0.35);
+    box-shadow: 0 0 0 0 rgba(223, 22, 131, 0.35);
   }
 
   50% {
-    box-shadow: 0 0 0 6px rgba(0, 174, 239, 0);
+    box-shadow: 0 0 0 6px rgba(223, 22, 131, 0);
   }
 
   100% {
-    box-shadow: 0 0 0 0 rgba(0, 174, 239, 0);
+    box-shadow: 0 0 0 0 rgba(223, 22, 131, 0);
   }
 }
 
 @keyframes groupBadgeEntrance {
   0% {
     opacity: 0;
-    transform: scale(0.92) translateY(6px);
+    transform: scale(0.95) translateY(6px);
   }
 
   60% {
     opacity: 1;
-    transform: scale(1.03) translateY(0);
+    transform: scale(1.01) translateY(0);
   }
 
   100% {
@@ -1736,11 +1734,13 @@
 }
 
 .bus-confirmed__group-badge {
-  display: inline-flex;
+  display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-start;
+  text-align: left;
   gap: 2px;
-  width: fit-content;
+  width: 100%;
+  max-width: 100%;
 }
 
 .bus-confirmed__group-badge:not([hidden]) {
@@ -1755,7 +1755,7 @@
 
 .bus-confirmed__group-badge-label {
   color: var(--ink-muted, #5a7184);
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -1763,13 +1763,19 @@
 
 .bus-confirmed__group-badge strong,
 #confirmed-group-name {
-  color: #00709e;
+  display: block;
+  width: 100%;
+  color: var(--kriativa-magenta, #df1683);
   font-family: var(--font-display, inherit);
-  font-size: 1.15rem;
+  font-size: clamp(1.8rem, 6vw, 4rem);
   font-weight: 800;
-  letter-spacing: 0.04em;
-  line-height: 1.1;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
   text-transform: uppercase;
+  white-space: nowrap;
+  word-break: keep-all;
+  overflow: hidden;
+  text-overflow: clip;
 }
 
 .bus-confirmed__group-text {

@@ -380,8 +380,30 @@
   // que é consultado só com o UUID e continua devolvendo apenas o status.
   var confirmedSnapshot = null;
 
+  function fitGroupName() {
+    if (!confirmedGroupName || !confirmedGroupBadge || confirmedGroupBadge.hidden) return;
+    var containerWidth = confirmedGroupBadge.clientWidth || (confirmedGroupBadge.parentElement ? confirmedGroupBadge.parentElement.clientWidth : 0);
+    if (!containerWidth || containerWidth <= 0) return;
+
+    // Inicia no tamanho máximo de 4rem para medição de transbordamento
+    confirmedGroupName.style.fontSize = '4rem';
+    var textWidth = confirmedGroupName.scrollWidth;
+
+    if (textWidth > containerWidth) {
+      var ratio = containerWidth / textWidth;
+      var newRem = Math.max(1.1, Math.min(4.0, 4.0 * ratio * 0.96));
+      confirmedGroupName.style.fontSize = newRem.toFixed(2) + 'rem';
+    }
+  }
+
+  window.addEventListener('resize', fitGroupName, { passive: true });
+
   function showConfirmation(data) {
     setStep('confirmacao');
+    setConfirmedData(confirmedSnapshot, data);
+  }
+
+  function setConfirmedData(confirmedSnapshot, data) {
     stopExpiryCountdown();
     closeStillHereDialog();
     window.clearTimeout(statusTimer);
@@ -445,6 +467,9 @@
     }
     if (confirmedGroupBadge) {
       confirmedGroupBadge.hidden = gName.length === 0;
+      if (gName.length > 0) {
+        requestAnimationFrame(fitGroupName);
+      }
     }
     if (confirmedGroup) {
       confirmedGroup.hidden = gName.length === 0;
