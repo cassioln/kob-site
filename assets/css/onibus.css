@@ -300,13 +300,13 @@
       rgba(255, 255, 255, 0.28) 48%,
       rgba(254, 179, 44, 0.14) 65%,
       transparent 100%);
-  opacity: 0.45;
+  opacity: 0.1;
   mix-blend-mode: overlay;
   transition: opacity var(--dur-state) ease;
 }
 
 .bus-hero__ticket:hover .bus-hero__ticket-shine {
-  opacity: 0.8;
+  opacity: 0.4;
 }
 
 .bus-hero__ticket-notch {

@@ -51,5 +51,10 @@ loop_finder/*
 .github/hooks/
 .github/skills/
 
-#Preview HTML emails
+# Preview HTML emails
 .preview-email-*.html
+
+# Configurações de MCP locais com credenciais
+.agents/
+.cursor/
+

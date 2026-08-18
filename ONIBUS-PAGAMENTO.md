@@ -288,11 +288,14 @@ arquivo chegar ao host por upload manual ou por mudança no workflow, a
 proteção não depende só da lista de exclusão.
 
 ### Segredos: nada a configurar no GitHub
-
+ 
 Os secrets do Actions (`FTP_HOST`, `FTP_USER`, `FTP_PASSWORD`) servem apenas ao
-transporte. As credenciais de runtime são lidas de `~/kob-config/bus-secrets.php`,
+transporte. As credenciais de runtime do PHP são lidas de `bus-secrets.php`,
 fora do document root — um secret de Actions **não** vira variável de ambiente
-na Locaweb. Por isso `DB_KOB_PASSWORD` não tinha efeito algum e foi removido.
+na Locaweb.
+- **Ambiente Local**: `../kob-config/bus-secrets.php` (em `/Users/cassio/GitHubPessoal/kob-config/bus-secrets.php`, pasta irmã do repositório) ou `.env`.
+- **Em Produção**: `~/kob-config/bus-secrets.php` (na raiz do usuário da Locaweb, fora de `public_html`).
+Por isso `DB_KOB_PASSWORD` não tinha efeito algum no GitHub e foi removido de lá.
 
 ## Runtime: decidido — PHP 8.0 + MySQL na Locaweb
 
