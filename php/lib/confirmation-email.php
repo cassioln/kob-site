@@ -72,101 +72,86 @@ function bus_confirmation_email_html(array $dados): string
 
     $linhasFatos = '';
     foreach ($fatos as $i => [$rotulo, $valor]) {
-        $borda = $i === 0 ? '' : 'border-top:1px solid rgba(13,41,78,0.12);';
+        $borda = $i === 0 ? '' : 'border-top:1px solid rgba(255,255,255,0.09);';
         // Código e transação usam monoespaçada. `word-break:break-all` só aqui:
         // o Order ID tem 32 caracteres sem espaço e, sem poder quebrar, impunha
         // largura mínima que estourava a tela em aparelho estreito.
         $mono = str_contains($rotulo, 'Transação') || str_contains($rotulo, 'Código')
             ? 'font-family:\'Courier New\',Courier,monospace;letter-spacing:0.06em;word-break:break-all;'
             : '';
-        // Escapa rótulo e valor. `orderId` vem de API externa (Mercado Pago),
-        // então não é dado que controlamos: confiar no formato dele quebraria o
-        // invariante "todo dado dinâmico passa pelo escaper", documentado em
-        // email-parts.php. O rótulo "Rota" traz `&rarr;` de propósito, e é o
-        // único caso, então ele é montado depois do escape.
+        $destaque = str_contains($rotulo, 'Valor') || str_contains($rotulo, 'Código');
+        $corValor = $destaque ? 'color:#29c3f5;font-weight:700;' : 'color:#ffffff;';
         $rotuloSeguro = $rotulo === 'Rota' ? $rotulo : $e($rotulo);
         $valorSeguro = $rotulo === 'Rota' ? $valor : $e($valor);
         $linhasFatos .= '
             <tr>
-              <td style="' . $borda . 'padding:13px 0;font:400 13px/1.4 Arial,Helvetica,sans-serif;color:rgba(13,34,66,0.72);">'
+              <td style="' . $borda . 'padding:10px 0;font:400 13px/1.4 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.65);">'
                 . $rotuloSeguro . '</td>
-              <td style="' . $borda . 'padding:13px 0;font:700 14px/1.4 Arial,Helvetica,sans-serif;color:#0d2242;text-align:right;' . $mono . '">'
+              <td style="' . $borda . 'padding:10px 0;font:700 14px/1.4 Arial,Helvetica,sans-serif;' . $corValor . 'text-align:right;' . $mono . '">'
                 . $valorSeguro . '</td>
             </tr>';
     }
 
-    return '<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Reserva confirmada &mdash; Kriativos On Board 2026</title>
-</head>
-<body style="margin:0;padding:0;background:#041d3a;">
-  <!-- Preheader: primeira linha que aparece na lista de mensagens. -->
-  <div style="display:none;max-height:0;overflow:hidden;opacity:0;font-size:1px;line-height:1px;color:#041d3a;">
-    Sua vaga no ônibus fretado está garantida. Código ' . $e($dados['code']) . '. ' . str_repeat('&zwnj;&nbsp;&#847; ', 20) . '
-  </div>
+    $html = bus_email_abertura(
+        'Sua vaga no ônibus fretado está garantida. Código ' . $dados['code'] . '.'
+    );
 
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#041d3a;">
-    <tr>
-      <td align="center" style="padding:32px 16px;">
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;">
+    $html .= bus_email_cabecalho(
+        'Kriativos On Board 2026',
+        'Transporte fretado'
+    );
 
-          <!-- Cabeçalho padronizado com os outros e-mails da reserva: logo
-               centralizado no topo, título e subtítulo abaixo. O logo vem por URL
-               absoluta porque `cid:` inline depende do cliente montar o
-               multipart/related, e Gmail no navegador costuma bloquear. -->
+    // Mensagem principal
+    $html .= '
           <tr>
-            <td style="padding:0 0 22px;text-align:center;">
-              <img src="' . BUS_EMAIL_LOGO . '" alt="Kriativos On Board" width="168"
-                   style="display:inline-block;width:168px;max-width:60%;height:auto;border:0;">
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:0 0 6px;text-align:center;font:700 24px/1.25 Arial,Helvetica,sans-serif;color:#ffffff;">
-              Kriativos On Board 2026
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:0 0 26px;text-align:center;font:400 14px/1.5 Arial,Helvetica,sans-serif;color:#29c3f5;">
-              Transporte fretado
-            </td>
-          </tr>
-
-          <!-- Bloco principal -->
-          <tr>
-            <td style="background:#082f57;border-radius:16px;padding:36px 32px;">
-              <p style="margin:0 0 10px;font:700 11px/1.4 Arial,Helvetica,sans-serif;color:#29c3f5;letter-spacing:0.14em;text-transform:uppercase;">
+            <td style="padding:0 0 20px;">
+              <p style="margin:0 0 8px;font:700 11px/1.4 Arial,Helvetica,sans-serif;color:#29c3f5;letter-spacing:0.14em;text-transform:uppercase;">
                 Pagamento confirmado
               </p>
-              <h1 style="margin:0 0 14px;font:700 30px/1.1 Arial,Helvetica,sans-serif;color:#ffffff;">
+              <h1 style="margin:0 0 12px;font:700 26px/1.2 Arial,Helvetica,sans-serif;color:#ffffff;">
                 ' . ($primeiroNome !== '' ? $e($primeiroNome) . ', sua vaga' : 'Sua vaga') . ' está garantida.
               </h1>
               <p style="margin:0;font:400 15px/1.6 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.82);">
                 Recebemos seu Pix e os assentos já estão reservados. Guarde o comprovante em anexo:
                 é ele que identifica seu grupo no embarque.
               </p>
+            </td>
+          </tr>';
 
-              <!-- Manifesto -->
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:28px 0 0;">
+    // Bloco do Grupo (posicionado antes da lista de passageiros)
+    $html .= bus_email_bloco_grupo($dados['groupName'] ?? null);
+
+    // Manifesto: Quem embarca
+    $html .= '
+          <tr>
+            <td style="padding:0 0 22px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+                     style="background:rgba(255,255,255,0.05);border-radius:12px;border:1px solid rgba(255,255,255,0.12);">
                 <tr>
-                  <td colspan="3" style="padding:0 0 6px;font:700 11px/1.4 Arial,Helvetica,sans-serif;color:#ffffff;letter-spacing:0.12em;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,0.24);">
-                    Quem embarca
+                  <td style="padding:18px 20px;">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td colspan="3" style="padding:0 0 8px;font:700 12px/1.4 Arial,Helvetica,sans-serif;color:#ffffff;letter-spacing:0.12em;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,0.2);">
+                          Quem embarca
+                        </td>
+                      </tr>
+                      ' . $linhasManifesto . $linhaCriancas . '
+                    </table>
                   </td>
                 </tr>
-                ' . $linhasManifesto . $linhaCriancas . '
               </table>
             </td>
-          </tr>
+          </tr>';
 
-          <!-- Dados da reserva -->
+    // Dados da reserva
+    $html .= '
           <tr>
-            <td style="padding:16px 0 0;">
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#ffffff;border-radius:16px;">
+            <td style="padding:0 0 22px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+                     style="background:rgba(255,255,255,0.05);border-radius:12px;border:1px solid rgba(255,255,255,0.12);">
                 <tr>
-                  <td style="padding:28px 32px;">
-                    <p style="margin:0 0 16px;font:700 11px/1.4 Arial,Helvetica,sans-serif;color:#7b1fa2;letter-spacing:0.12em;text-transform:uppercase;">
+                  <td style="padding:18px 20px;">
+                    <p style="margin:0 0 10px;font:700 12px/1.4 Arial,Helvetica,sans-serif;color:#29c3f5;letter-spacing:0.12em;text-transform:uppercase;">
                       Dados da reserva
                     </p>
                     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
@@ -176,74 +161,59 @@ function bus_confirmation_email_html(array $dados): string
                 </tr>
               </table>
             </td>
-          </tr>
+          </tr>';
 
-          <!-- Próximos passos -->
+    // Próximos passos
+    $html .= '
           <tr>
-            <td style="padding:16px 0 0;">
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#ffffff;border-radius:16px;">
+            <td style="padding:0 0 22px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+                     style="background:rgba(255,255,255,0.05);border-radius:12px;border:1px solid rgba(255,255,255,0.12);">
                 <tr>
-                  <td style="padding:28px 32px;">
-                    <p style="margin:0 0 14px;font:700 11px/1.4 Arial,Helvetica,sans-serif;color:#7b1fa2;letter-spacing:0.12em;text-transform:uppercase;">
+                  <td style="padding:18px 20px;">
+                    <p style="margin:0 0 12px;font:700 12px/1.4 Arial,Helvetica,sans-serif;color:#29c3f5;letter-spacing:0.12em;text-transform:uppercase;">
                       Próximos passos
                     </p>
-                    <p style="margin:0 0 12px;font:400 14px/1.6 Arial,Helvetica,sans-serif;color:rgba(13,34,66,0.86);">
-                      <strong style="color:#0d2242;">1.</strong> Guarde o PDF em anexo. Ele vale como comprovante e pode
-                      ser mostrado no celular.
+                    <p style="margin:0 0 10px;font:400 13px/1.6 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.85);">
+                      <strong style="color:#ffffff;">1.</strong> Guarde o PDF em anexo. Ele vale como comprovante e pode ser mostrado no celular.
                     </p>
-                    <p style="margin:0 0 12px;font:400 14px/1.6 Arial,Helvetica,sans-serif;color:rgba(13,34,66,0.86);">
-                      <strong style="color:#0d2242;">2.</strong> Avisaremos o horário e o ponto exato de embarque na
-                      Barra Funda pelo WhatsApp do contato principal.
+                    <p style="margin:0 0 10px;font:400 13px/1.6 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.85);">
+                      <strong style="color:#ffffff;">2.</strong> Avisaremos o horário e o ponto exato de embarque na Barra Funda pelo WhatsApp.
                     </p>
-                    <p style="margin:0;font:400 14px/1.6 Arial,Helvetica,sans-serif;color:rgba(13,34,66,0.86);">
-                      <strong style="color:#0d2242;">3.</strong> Chegue com 30 minutos de antecedência no dia da viagem.
+                    <p style="margin:0;font:400 13px/1.6 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.85);">
+                      <strong style="color:#ffffff;">3.</strong> Chegue com 30 minutos de antecedência no dia da viagem.
                     </p>
                   </td>
                 </tr>
               </table>
             </td>
-          </tr>
+          </tr>';
 
-          ' . bus_email_bloco_grupo($dados['groupName'] ?? null) . '
-
-          <!-- Aviso de contratação. Fica sobre o fundo escuro do corpo do
-               e-mail, então o texto é claro; um fundo translúcido claro aqui
-               deixaria texto claro sobre claro em clientes que ignoram rgba. -->
+    // Aviso de contratação
+    $html .= '
           <tr>
-            <td style="padding:16px 0 0;">
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#082f57;border-radius:16px;">
+            <td style="padding:0 0 18px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+                     style="background:rgba(255,255,255,0.04);border-radius:10px;border:1px solid rgba(255,255,255,0.08);">
                 <tr>
-                  <td style="padding:22px 28px;font:400 13px/1.6 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.82);border-left:0;">
-                    O ônibus só será contratado se o número mínimo de passageiros for atingido. Caso isso
-                    não aconteça, o valor é devolvido integralmente.
+                  <td style="padding:14px 18px;font:400 12px/1.6 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.72);">
+                    O ônibus só será contratado se o número mínimo de passageiros for atingido. Caso isso não aconteça, o valor é devolvido integralmente.
                   </td>
                 </tr>
               </table>
             </td>
           </tr>
-
-          <!-- Rodapé -->
           <tr>
-            <td style="padding:26px 4px 0;">
-              <!-- Só o convite a responder. O canal de WhatsApp já está no botão
-                   do grupo oficial, acima: repetir um número aqui daria duas
-                   rotas para a mesma coisa e competiria com o botão, que é a ação
-                   que queremos que a pessoa tome. -->
-              <p style="margin:0 0 10px;font:400 13px/1.6 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.72);">
-                Ficou com alguma dúvida? Responda este e-mail que a gente te ajuda.
-              </p>
-              <p style="margin:0;font:400 11px/1.6 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.45);">
-                Emitido em ' . $e($dados['issuedAt']) . ' &middot; Kriativos On Board 2026
-              </p>
+            <td style="padding:0 0 4px;text-align:center;font:400 13px/1.6 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.72);">
+              Ficou com alguma dúvida? Responda este e-mail que a gente te ajuda.
             </td>
-          </tr>
+          </tr>';
 
-        </table>
-      </td>
-    </tr>
-  </table>
-</body>
-</html>';
+    $html .= bus_email_fechamento(
+        'Emitido em ' . $e($dados['issuedAt']) . ' &middot; Kriativos On Board 2026'
+    );
+
+    return $html;
 }
 
 /**

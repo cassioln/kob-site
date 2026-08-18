@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Preview dos E-mails — Kriativos On Board 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Montserrat', -apple-system, sans-serif;
+      background: #031427;
+      color: #ffffff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      background: #041d3a;
+      border-bottom: 1px solid rgba(41, 195, 245, 0.2);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .brand-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #29c3f5;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .brand-title span {
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+    .tabs {
+      display: flex;
+      gap: 8px;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 4px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: rgba(255, 255, 255, 0.7);
+      padding: 8px 16px;
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .tab-btn:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .tab-btn.active {
+      background: #00aeef;
+      color: #041d3a;
+      font-weight: 700;
+    }
+    .device-toggles {
+      display: flex;
+      gap: 6px;
+    }
+    .device-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .device-btn.active {
+      border-color: #29c3f5;
+      background: rgba(41, 195, 245, 0.2);
+      color: #29c3f5;
+    }
+    main {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 30px 20px;
+      background: #020d1a;
+      overflow-y: auto;
+    }
+    .preview-frame-container {
+      width: 100%;
+      max-width: 660px;
+      transition: max-width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      background: #000000;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.1);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .preview-frame-container.mobile {
+      max-width: 390px;
+    }
+    .frame-bar {
+      background: #08213d;
+      padding: 10px 16px;
+      font-size: 0.78rem;
+      color: rgba(255, 255, 255, 0.6);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .frame-bar strong {
+      color: #29c3f5;
+    }
+    iframe {
+      width: 100%;
+      height: 820px;
+      border: none;
+      background: #041d3a;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand-title">
+      🚢 Kriativos On Board
+      <span>Visualizador de Templates de E-mail</span>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('preview-email-confirmacao.html', 'E-mail 1: Confirmação do Comprador / Contato Principal', this)">
+        1. Comprador (Principal)
+      </button>
+      <button class="tab-btn" onclick="switchTab('preview-email-passageiro.html', 'E-mail 2: Notificação do Passageiro Adicional', this)">
+        2. Passageiro Adicional
+      </button>
+      <button class="tab-btn" onclick="switchTab('preview-email-admin.html', 'E-mail 3: Notificação Administrativa (Interno)', this)">
+        3. Administrativo
+      </button>
+    </div>
+
+    <div class="device-toggles">
+      <button class="device-btn active" id="btn-desktop" onclick="setDevice('desktop')">
+        🖥️ Desktop (600px)
+      </button>
+      <button class="device-btn" id="btn-mobile" onclick="setDevice('mobile')">
+        📱 Mobile (390px)
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <div class="preview-frame-container" id="frame-wrap">
+      <div class="frame-bar">
+        <span id="email-description">E-mail 1: Confirmação do Comprador / Contato Principal</span>
+        <a id="direct-link" href="preview-email-confirmacao.html" target="_blank" style="color:#29c3f5;text-decoration:none;font-weight:600;">Abrir isolado ↗</a>
+      </div>
+      <iframe id="preview-iframe" src="preview-email-confirmacao.html" title="Visualizador de E-mail"></iframe>
+    </div>
+  </main>
+
+  <script>
+    function switchTab(url, title, btn) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('preview-iframe').src = url;
+      document.getElementById('email-description').textContent = title;
+      document.getElementById('direct-link').href = url;
+    }
+
+    function setDevice(device) {
+      const container = document.getElementById('frame-wrap');
+      const btnDesktop = document.getElementById('btn-desktop');
+      const btnMobile = document.getElementById('btn-mobile');
+      if (device === 'mobile') {
+        container.classList.add('mobile');
+        btnMobile.classList.add('active');
+        btnDesktop.classList.remove('active');
+      } else {
+        container.classList.remove('mobile');
+        btnDesktop.classList.add('active');
+        btnMobile.classList.remove('active');
+      }
+    }
+  </script>
+
+</body>
+</html>
