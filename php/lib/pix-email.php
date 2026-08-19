@@ -119,6 +119,20 @@ function bus_pix_email_html(array $dados): string
                 </tr>
               </table>
             </td>
+          </tr>
+          <tr>
+            <td style="padding:0 0 22px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+                     style="background:rgba(41,195,245,0.08);border:1px solid rgba(41,195,245,0.22);border-radius:10px;">
+                <tr>
+                  <td style="padding:14px 18px;text-align:center;">
+                    <p style="margin:0;font:400 13px/1.5 Arial,Helvetica,sans-serif;color:#ffffff;">
+                      💡 <strong>Já realizou o pagamento?</strong> Desconsidere este e-mail. A confirmação oficial da sua vaga e os comprovantes chegarão automaticamente em instantes.
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
           </tr>';
 
 
@@ -157,8 +171,8 @@ function bus_pix_email_html(array $dados): string
     $html .= '
           <tr>
             <td style="padding:20px 0 0;border-top:1px solid rgba(255,255,255,0.12);text-align:center;">
-              <p style="margin:0;font:400 12px/1.5 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.5);">
-                Se você já realizou o pagamento, pode desconsiderar este e-mail. A confirmação oficial chegará em breve.
+              <p style="margin:0;font:400 12px/1.5 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.6);">
+                Caso você já tenha concluído a transferência pelo aplicativo do banco, pode desconsiderar esta mensagem.
               </p>
             </td>
           </tr>';
@@ -182,6 +196,8 @@ function bus_pix_email_text(array $dados): string
     $linhas[] = '';
     $linhas[] = 'CÓDIGO PIX COPIA E COLA:';
     $linhas[] = $dados['qrCode'];
+    $linhas[] = '';
+    $linhas[] = 'AVISO: Se você já realizou o pagamento, desconsidere este e-mail. A confirmação oficial chegará em instantes.';
     $linhas[] = '';
     $linhas[] = 'Resumo da reserva:';
     $linhas[] = '- Valor a pagar: R$ ' . str_replace('.', ',', $dados['amount']);
