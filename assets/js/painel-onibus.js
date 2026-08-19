@@ -520,73 +520,52 @@
 
       header.append(headerLeft, headerCenter, headerRight);
 
-      // --- CORPO DO ÔNIBUS (HORIZONTAL) ---
-      var corpo = document.createElement('div');
-      corpo.className = 'onibus-card__corpo';
+      // --- PLANTA BAIXA HORIZONTAL DO ÔNIBUS ---
+      var plantaHorizontal = document.createElement('div');
+      plantaHorizontal.className = 'onibus-planta-horizontal';
 
-      // 1. Mini-Planta Visual dos 46 Assentos
-      var plantaContainer = document.createElement('div');
-      plantaContainer.className = 'onibus-planta-container';
-
-      var plantaHeader = document.createElement('div');
-      plantaHeader.className = 'onibus-planta-header';
-      plantaHeader.innerHTML = '<span>Mapa de Assentos</span><span>' + ocupados + '/' + maxL + '</span>';
-
-      var planta = document.createElement('div');
-      planta.className = 'onibus-planta';
-      planta.title = 'Planta de assentos do Ônibus ' + busNum;
-
-      var qtdDesenhada = 0;
-      var fileiras = Math.ceil(maxL / 4);
-      for (var f = 0; f < fileiras; f++) {
-        var linhaAssentos = document.createElement('div');
-        linhaAssentos.className = 'planta-fileira';
-        for (var c = 0; c < 4; c++) {
-          if (qtdDesenhada >= maxL) break;
-          var assento = document.createElement('div');
-          assento.className = 'planta-assento';
-          if (qtdDesenhada < ocupados) {
-            assento.classList.add('ocupado');
-            if (info.vip_inclusos && qtdDesenhada < info.vip_inclusos) {
-              assento.classList.add('vip');
-              assento.title = 'Lugar VIP da Organização';
-            }
-          }
-          linhaAssentos.appendChild(assento);
-          // Corredor central
-          if (c === 1) {
-            var corredor = document.createElement('div');
-            corredor.style.width = '8px';
-            linhaAssentos.appendChild(corredor);
-          }
-          qtdDesenhada++;
-        }
-        planta.appendChild(linhaAssentos);
-      }
-
-      var plantaLegenda = document.createElement('div');
-      plantaLegenda.className = 'onibus-planta-legenda';
-      plantaLegenda.innerHTML = `
-        <span class="planta-legenda-item"><span class="planta-legenda-dot planta-legenda-dot--ocupado"></span> Ocup.</span>
-        <span class="planta-legenda-item"><span class="planta-legenda-dot planta-legenda-dot--vip"></span> VIP</span>
-        <span class="planta-legenda-item"><span class="planta-legenda-dot planta-legenda-dot--livre"></span> Livre</span>
+      // 1. Cockpit / Frente do Ônibus
+      var cockpit = document.createElement('div');
+      cockpit.className = 'onibus-planta__cockpit';
+      cockpit.title = 'Frente do Ônibus · Cabine do Motorista';
+      cockpit.innerHTML = `
+        <div class="onibus-planta__parabrisa"></div>
+        <div class="onibus-planta__volante">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <circle cx="12" cy="12" r="3"></circle>
+            <line x1="12" y1="2" x2="12" y2="9"></line>
+            <line x1="2" y1="12" x2="9" y2="12"></line>
+            <line x1="15" y1="12" x2="22" y2="12"></line>
+          </svg>
+          <span>FRENTE</span>
+        </div>
+        <div class="onibus-planta__porta">
+          <span>🚪 Entrada</span>
+        </div>
       `;
 
-      plantaContainer.append(plantaHeader, planta, plantaLegenda);
+      // 2. Salão / Cabine de Passageiros
+      var cabine = document.createElement('div');
+      cabine.className = 'onibus-planta__cabine';
 
-      // 2. Salão de Passageiros (Baia de Grupos)
-      var salaoGrupos = document.createElement('div');
-      salaoGrupos.className = 'onibus-salao-grupos';
+      var cabineHeader = document.createElement('div');
+      cabineHeader.className = 'onibus-planta__cabine-header';
 
-      var salaoHeader = document.createElement('div');
-      salaoHeader.className = 'onibus-salao-header';
+      var janelaSuperior = document.createElement('div');
+      janelaSuperior.className = 'onibus-planta__faixa-janelas';
+      janelaSuperior.innerHTML = '<span class="onibus-janela"></span><span class="onibus-janela"></span><span class="onibus-janela"></span><span class="onibus-janela"></span><span class="onibus-janela"></span><span class="onibus-janela"></span>';
+
+      var statusCabine = document.createElement('div');
+      statusCabine.className = 'onibus-planta__status-cabine';
       var numGrupos = (info.reservas && info.reservas.length) ? info.reservas.length : 0;
-      salaoHeader.innerHTML = '<span>Área de Embarque &middot; ' + plural(numGrupos, 'reserva alocada', 'reservas alocadas') + '</span><span>' + plural(ocupados, 'pessoa a bordo', 'pessoas a bordo') + '</span>';
+      statusCabine.innerHTML = '<span><strong>Planta Baixa Horizontal</strong> &middot; ' + maxL + ' assentos totais</span><span>' + plural(numGrupos, 'reserva alocada', 'reservas alocadas') + ' &middot; ' + plural(ocupados, 'pessoa a bordo', 'pessoas a bordo') + '</span>';
 
-      salaoGrupos.appendChild(salaoHeader);
+      cabineHeader.append(janelaSuperior, statusCabine);
+      cabine.appendChild(cabineHeader);
 
-      var gruposGrid = document.createElement('div');
-      gruposGrid.className = 'onibus-grupos-grid';
+      var assentosGrid = document.createElement('div');
+      assentosGrid.className = 'onibus-planta__assentos-grid';
 
       if (info.reservas && info.reservas.length) {
         info.reservas.forEach(function (r) {
@@ -702,26 +681,59 @@
           itemBottom.append(tamTag, selectMover);
           item.appendChild(itemBottom);
 
-          gruposGrid.appendChild(item);
+          assentosGrid.appendChild(item);
         });
+
+        // Bloco de Vagas Livres se ainda houver vagas disponíveis no ônibus
+        if (vagasRestantes > 0) {
+          var slotLivres = document.createElement('div');
+          slotLivres.className = 'onibus-vagas-livres-slot';
+          slotLivres.innerHTML = `
+            <div class="onibus-vagas-livres-icone">💺</div>
+            <div class="onibus-vagas-livres-info">
+              <strong>` + (vagasRestantes === 1 ? '1 Assento Livre' : vagasRestantes + ' Assentos Livres') + `</strong>
+              <span>Espaço disponível neste ônibus. Arraste grupos ou use a opção "Mover…" para alocar pessoas aqui.</span>
+            </div>
+          `;
+          assentosGrid.appendChild(slotLivres);
+        }
       } else {
         var vazioHint = document.createElement('div');
         vazioHint.style.font = '400 13px/1.5 system-ui, -apple-system, sans-serif';
         vazioHint.style.color = 'var(--p-tinta-fraca)';
-        vazioHint.style.padding = '32px 16px';
+        vazioHint.style.padding = '36px 16px';
         vazioHint.style.textAlign = 'center';
-        vazioHint.style.border = '1px dashed var(--p-linha-forte)';
-        vazioHint.style.borderRadius = '10px';
-        vazioHint.style.background = 'var(--p-superficie)';
+        vazioHint.style.border = '2px dashed #cbd5e1';
+        vazioHint.style.borderRadius = '12px';
+        vazioHint.style.background = '#f8fafc';
         vazioHint.style.gridColumn = '1 / -1';
-        vazioHint.textContent = '🚍 Cabine vazia. Arraste grupos ou use a opção "Mover…" em qualquer reserva para alocar pessoas neste ônibus.';
-        gruposGrid.appendChild(vazioHint);
+        vazioHint.textContent = '🚍 Cabine vazia (46 vagas livres). Arraste grupos para cá ou use a opção "Mover…" em qualquer reserva para alocar pessoas neste ônibus.';
+        assentosGrid.appendChild(vazioHint);
       }
 
-      salaoGrupos.appendChild(gruposGrid);
+      cabine.appendChild(assentosGrid);
 
-      corpo.append(plantaContainer, salaoGrupos);
-      card.append(header, corpo);
+      var janelaInferior = document.createElement('div');
+      janelaInferior.className = 'onibus-planta__faixa-janelas';
+      janelaInferior.innerHTML = '<span class="onibus-janela"></span><span class="onibus-janela"></span><span class="onibus-janela"></span><span class="onibus-janela"></span><span class="onibus-janela"></span><span class="onibus-janela"></span>';
+      cabine.appendChild(janelaInferior);
+
+      // 3. Traseira do Ônibus (WC / Motor)
+      var traseira = document.createElement('div');
+      traseira.className = 'onibus-planta__traseira';
+      traseira.title = 'Traseira do Ônibus · WC a Bordo';
+      traseira.innerHTML = `
+        <div class="onibus-planta__wc" title="Sanitário a Bordo">
+          <span style="font-size: 16px;">🚻</span>
+          <span>WC</span>
+        </div>
+        <div class="onibus-planta__motor">
+          <span>MOTOR</span>
+        </div>
+      `;
+
+      plantaHorizontal.append(cockpit, cabine, traseira);
+      card.append(header, plantaHorizontal);
 
       el.frotaContainer.appendChild(card);
     });
