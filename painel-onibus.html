@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,13 +10,13 @@
   <link rel="icon" href="assets/images/brand/favicon.png">
   <link rel="stylesheet" href="assets/css/painel-onibus.css?v=20260818-20-na">
 </head>
+
 <body class="painel">
 
   <header class="painel__topo">
     <!-- Logo à esquerda. É âncora para a home, não decoração. -->
     <a class="painel__logo" href="index.html" aria-label="Kriativos On Board">
-      <img src="assets/images/brand/kriativos-on-board-logo.webp" alt="Kriativos On Board"
-           width="1200" height="735">
+      <img src="assets/images/brand/kriativos-on-board-logo.webp" alt="Kriativos On Board" width="1200" height="735">
     </a>
     <div class="painel__titulo-bloco">
       <h1 class="painel__titulo-principal">Painel de gestão &middot; Reservas</h1>
@@ -89,13 +90,14 @@
         <div class="campo-busca">
           <label class="visualmente-oculto" for="busca">Buscar por nome, CPF, código, e-mail ou telefone</label>
           <input id="busca" type="search" placeholder="Buscar por nome, CPF, código, e-mail ou telefone"
-                 autocomplete="off" spellcheck="false">
+            autocomplete="off" spellcheck="false">
         </div>
 
         <div class="filtro" role="group" aria-label="Filtrar por status do pagamento">
           <button class="filtro__opcao" type="button" data-filtro="pago" aria-pressed="true">Pago</button>
           <button class="filtro__opcao" type="button" data-filtro="pendente" aria-pressed="false">Pendente</button>
-          <button class="filtro__opcao" type="button" data-filtro="falha" aria-pressed="false">Cancelado/Falha</button>
+          <button class="filtro__opcao" type="button" data-filtro="falha" aria-pressed="false">Cancelados /
+            Falhas</button>
           <button class="filtro__opcao" type="button" data-filtro="todas" aria-pressed="false">Todos</button>
         </div>
 
@@ -157,4 +159,5 @@
 
   <script defer src="assets/js/painel-onibus.js?v=20260818-20-na"></script>
 </body>
+
 </html>
