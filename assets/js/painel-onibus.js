@@ -310,14 +310,17 @@
   // ---- renderização frota ------------------------------------------------
   
   function renderizarFrota() {
-    if (!estado.frota || !estado.frota.onibus) return;
+    if (!estado.frota || !Array.isArray(estado.frota.onibus)) return;
     var onibusList = estado.frota.onibus;
     el.frotaContainer.replaceChildren();
 
+    var maxL = Number(estado.frota.capacidade || 46);
+    var minL = Number(estado.frota.minimo || 40);
+
     // Renderiza cada onibus
-    Object.keys(onibusList).forEach(function (busNum) {
-      var info = onibusList[busNum];
-      var maxL = 46; // capacidade
+    onibusList.forEach(function (info) {
+      var busNum = Number(info.numero || 1);
+      var ocupados = Number(info.ocupados || 0);
 
       var card = document.createElement('div');
       card.className = 'onibus-card';
@@ -349,7 +352,7 @@
       
       var badge = document.createElement('span');
       badge.className = 'onibus-card__badge';
-      if (info.fechado) {
+      if (info.fechado || ocupados >= minL) {
         badge.classList.add('onibus-card__badge--contratado');
         badge.textContent = 'Contratado';
       } else {
@@ -374,11 +377,15 @@
           if (qtdDesenhada >= maxL) break;
           var assento = document.createElement('div');
           assento.className = 'planta-assento';
-          if (qtdDesenhada < info.ocupados) {
+          if (qtdDesenhada < ocupados) {
             assento.classList.add('ocupado');
+            if (info.vip_inclusos && qtdDesenhada < info.vip_inclusos) {
+              assento.title = 'Lugar VIP / Organização';
+              assento.style.filter = 'hue-rotate(90deg)';
+            }
           }
           linhaAssentos.appendChild(assento);
-          // Adiciona corredor
+          // Adiciona corredor central
           if (c === 1) {
             var corredor = document.createElement('div');
             corredor.style.width = '10px';
@@ -425,6 +432,16 @@
           item.append(infoGrupo, tamSpan);
           listaGrupos.appendChild(item);
         });
+      } else {
+        var vazioHint = document.createElement('div');
+        vazioHint.style.font = '400 12px/1.4 Arial,Helvetica,sans-serif';
+        vazioHint.style.color = 'var(--text-dim, #71717a)';
+        vazioHint.style.padding = '12px 8px';
+        vazioHint.style.textAlign = 'center';
+        vazioHint.style.border = '1px dashed var(--b-med, #3f3f46)';
+        vazioHint.style.borderRadius = '8px';
+        vazioHint.textContent = 'Arraste grupos de passageiros para cá';
+        listaGrupos.appendChild(vazioHint);
       }
 
       corpo.append(planta, listaGrupos);
@@ -437,7 +454,7 @@
       barWrap.className = 'progresso-bar';
       var barFill = document.createElement('div');
       barFill.className = 'progresso-bar__fill';
-      var perc = Math.min(100, Math.round((info.ocupados / maxL) * 100));
+      var perc = Math.min(100, Math.round((ocupados / maxL) * 100));
       barFill.style.transform = 'scaleX(' + (perc / 100) + ')';
       var mark = document.createElement('div');
       mark.className = 'progresso-bar__marker';
@@ -446,10 +463,15 @@
       var tx = document.createElement('div');
       tx.className = 'progresso-texto';
       var txLeft = document.createElement('span');
-      txLeft.textContent = info.ocupados + ' de ' + maxL + ' ocupados';
+      var txtOcupados = ocupados + ' de ' + maxL + ' ocupados';
+      if (info.vip_inclusos > 0) {
+        txtOcupados += ' (' + info.vip_inclusos + ' VIPs)';
+      }
+      txLeft.textContent = txtOcupados;
+
       var txRight = document.createElement('span');
-      var faltaFechamento = Math.max(0, 40 - info.ocupados);
-      if (info.fechado) {
+      var faltaFechamento = Math.max(0, minL - ocupados);
+      if (info.fechado || ocupados >= minL) {
         txRight.textContent = 'Mínimo atingido';
         txRight.style.color = 'var(--p-ok)';
       } else {
@@ -463,9 +485,10 @@
     });
     
     // Config do VIP
-    if (el.vipInput.value !== String(estado.frota.vip_seats)) {
+    if (document.activeElement !== el.vipInput) {
        el.vipInput.value = estado.frota.vip_seats || 0;
        el.vipSalvar.disabled = true;
+       el.vipSalvar.textContent = 'Salvar';
     }
   }
 
@@ -476,12 +499,17 @@
     fd.append('registration_id', reservaId);
     fd.append('bus_number', destinoBusNum);
     
-    fetch('api/bus-fleet-assign.php?token=' + encodeURIComponent(estado.token), {
+    fetch('api/bus-fleet-assign?token=' + encodeURIComponent(estado.token), {
       method: 'POST',
+      headers: {
+        'X-Admin-Token': estado.token
+      },
       body: fd
     }).then(function(resp) {
-      if (!resp.ok) throw new Error('Erro ao mover');
-      return resp.json();
+      return resp.json().then(function(data) {
+        if (!resp.ok) throw new Error(data.error || 'Erro ao mover passageiros');
+        return data;
+      });
     }).then(function() {
       // Recarrega tudo para manter as totalizacoes sincronizadas
       carregar();
@@ -499,12 +527,17 @@
     var fd = new FormData();
     fd.append('vip_seats', el.vipInput.value);
     
-    fetch('api/bus-settings-update.php?token=' + encodeURIComponent(estado.token), {
+    fetch('api/bus-settings-update?token=' + encodeURIComponent(estado.token), {
       method: 'POST',
+      headers: {
+        'X-Admin-Token': estado.token
+      },
       body: fd
     }).then(function(resp) {
-      if (!resp.ok) throw new Error('Erro ao salvar');
-      return resp.json();
+      return resp.json().then(function(data) {
+        if (!resp.ok) throw new Error(data.error || 'Erro ao salvar vagas VIP');
+        return data;
+      });
     }).then(function() {
       carregar(); // refresh
     }).catch(function(err) {
@@ -614,6 +647,12 @@
         el.vipSalvar.disabled = false;
       } else {
         el.vipSalvar.disabled = true;
+      }
+    });
+    el.vipInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        salvarVips();
       }
     });
   }

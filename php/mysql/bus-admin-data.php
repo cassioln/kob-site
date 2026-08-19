@@ -133,19 +133,38 @@ try {
         'vip_seats' => 0,
     ];
 
-    $q_settings = $pdo->query("SELECT setting_value FROM bus_settings WHERE setting_key = 'vip_seats'");
-    $setting_vip = $q_settings->fetch(PDO::FETCH_ASSOC);
-    if ($setting_vip) {
-        $resumo['vip_seats'] = (int) $setting_vip['setting_value'];
+    // Garantir que a tabela bus_settings e a coluna bus_number existam
+    try {
+        $pdo->exec("
+            CREATE TABLE IF NOT EXISTS bus_settings (
+                setting_key VARCHAR(64) PRIMARY KEY,
+                setting_value TEXT NOT NULL,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+        ");
+        $pdo->exec("INSERT IGNORE INTO bus_settings (setting_key, setting_value) VALUES ('vip_seats', '0')");
+    } catch (Throwable $e) {
+        // ignora
     }
 
-    $frota = [
-        'capacidade' => 46,
-        'minimo' => 40,
-        'vip_seats' => $resumo['vip_seats'],
-        'onibus' => [],
-    ];
-    $ocupacaoPorOnibus = [];
+    try {
+        $pdo->exec("ALTER TABLE bus_registrations ADD COLUMN bus_number INT NULL AFTER confirmation_email_sent_at");
+    } catch (Throwable $e) {
+        // coluna já existe
+    }
+
+    try {
+        $q_settings = $pdo->query("SELECT setting_value FROM bus_settings WHERE setting_key = 'vip_seats'");
+        $setting_vip = $q_settings ? $q_settings->fetch(PDO::FETCH_ASSOC) : null;
+        if ($setting_vip) {
+            $resumo['vip_seats'] = (int) $setting_vip['setting_value'];
+        }
+    } catch (Throwable $e) {
+        $resumo['vip_seats'] = 0;
+    }
+
+    $porOnibus = [];
+    $maxBusNum = 3;
 
     foreach ($reservas as $r) {
         $st = bus_status_painel((string) $r['status']);
@@ -161,15 +180,38 @@ try {
                     $resumo['sem_telefone']++;
                 }
             }
-            if ($r['bus_number'] !== null) {
-                $bNum = (int) $r['bus_number'];
-                if (!isset($ocupacaoPorOnibus[$bNum])) {
-                    $ocupacaoPorOnibus[$bNum] = ['numero' => $bNum, 'pagantes' => 0, 'criancas' => 0, 'total' => 0];
-                }
-                $ocupacaoPorOnibus[$bNum]['pagantes'] += (int) $r['passenger_count'];
-                $ocupacaoPorOnibus[$bNum]['criancas'] += (int) $r['children_count'];
-                $ocupacaoPorOnibus[$bNum]['total'] += ((int) $r['passenger_count'] + (int) $r['children_count']);
+
+            $bNum = ($r['bus_number'] !== null && (int) $r['bus_number'] > 0) ? (int) $r['bus_number'] : 1;
+            if ($bNum > $maxBusNum) {
+                $maxBusNum = $bNum;
             }
+
+            if (!isset($porOnibus[$bNum])) {
+                $porOnibus[$bNum] = [
+                    'numero' => $bNum,
+                    'pagantes' => 0,
+                    'criancas' => 0,
+                    'total' => 0,
+                    'reservas' => [],
+                ];
+            }
+
+            $paxCount = (int) $r['passenger_count'];
+            $childCount = (int) $r['children_count'];
+            $grupoTotal = $paxCount + $childCount;
+
+            $porOnibus[$bNum]['pagantes'] += $paxCount;
+            $porOnibus[$bNum]['criancas'] += $childCount;
+            $porOnibus[$bNum]['total'] += $grupoTotal;
+            $porOnibus[$bNum]['reservas'][] = [
+                'id' => $r['id'],
+                'code' => strtoupper(substr((string) $r['id'], 0, 8)),
+                'grupo' => ($r['group_name'] ?? '') !== '' ? $r['group_name'] : null,
+                'responsavel' => $r['primary_name'],
+                'pagantes' => $paxCount,
+                'criancas' => $childCount,
+                'total' => $grupoTotal,
+            ];
         } elseif ($st['chave'] === 'pendente') {
             $resumo['reservas_pendentes']++;
         } else {
@@ -186,9 +228,6 @@ try {
                 continue;
             }
 
-            // Entre as outras reservas do mesmo CPF, pega a MAIS RECENTE que
-            // veio depois desta. "Depois" importa: uma reserva anterior também
-            // cancelada não é a tentativa nova.
             $candidatas = [];
             foreach ($ondeAparece[$p['cpf_digitos']] ?? [] as $outra) {
                 if ($outra['registro'] === $r['id']) {
@@ -241,8 +280,34 @@ try {
     $resumo['total_a_bordo'] = $resumo['pagantes'] + $resumo['criancas_no_colo'] + $resumo['vip_seats'];
     $resumo['receita'] = number_format($resumo['receita_centavos'] / 100, 2, ',', '.');
 
-    ksort($ocupacaoPorOnibus);
-    $frota['onibus'] = array_values($ocupacaoPorOnibus);
+    // Constrói a lista de ônibus (exibe sempre no mínimo 3 ônibus)
+    $listaOnibus = [];
+    $totalBusesToShow = max(3, $maxBusNum);
+    $vipCount = $resumo['vip_seats'];
+
+    for ($i = 1; $i <= $totalBusesToShow; $i++) {
+        $busData = $porOnibus[$i] ?? [
+            'numero' => $i,
+            'pagantes' => 0,
+            'criancas' => 0,
+            'total' => 0,
+            'reservas' => [],
+        ];
+
+        // Lugares VIP contam na ocupação do Ônibus 1
+        $ocupados = $busData['total'] + ($i === 1 ? $vipCount : 0);
+        $busData['ocupados'] = $ocupados;
+        $busData['vip_inclusos'] = ($i === 1 ? $vipCount : 0);
+        $busData['fechado'] = $ocupados >= 40;
+        $listaOnibus[] = $busData;
+    }
+
+    $frota = [
+        'capacidade' => 46,
+        'minimo' => 40,
+        'vip_seats' => $vipCount,
+        'onibus' => $listaOnibus,
+    ];
 
     echo json_encode([
         'gerado_em' => gmdate('c'),
@@ -253,5 +318,5 @@ try {
 } catch (Throwable $e) {
     log_failure('bus-admin-data', $e);
     http_response_code(503);
-    echo json_encode(['error' => 'Não foi possível carregar os dados agora.']);
+    echo json_encode(['error' => 'Não foi possível carregar os dados agora: ' . $e->getMessage()]);
 }

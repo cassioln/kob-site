@@ -59,6 +59,9 @@ RewriteRule ^api/bus-manifest/?$              php/mysql/bus-manifest.php [QSA,L]
 RewriteRule ^api/bus-admin-data/?$            php/mysql/bus-admin-data.php [QSA,L]
 # Exportacao .xlsx do painel. Mesmo token do manifest.
 RewriteRule ^api/bus-admin-xlsx/?$            php/mysql/bus-admin-xlsx.php [QSA,L]
+# Configuracoes e alocacao de frota do painel
+RewriteRule ^api/bus-settings-update/?$       php/mysql/bus-settings-update.php [QSA,L]
+RewriteRule ^api/bus-fleet-assign/?$          php/mysql/bus-fleet-assign.php [QSA,L]
 RewriteRule ^api/bus-payment-proof/?$         php/mysql/bus-payment-proof.php [QSA,L]
 RewriteRule ^api/mercadopago-webhook/?$       php/mysql/mercadopago-webhook.php [QSA,L]
 

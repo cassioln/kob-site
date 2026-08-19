@@ -7,10 +7,12 @@ require_once __DIR__ . '/lib/db.php';
 
 $config = bus_config();
 $tokenEsperado = $config['manifest_token'] ?? '';
+$tokenRecebido = (string) ($_GET['token'] ?? ($_SERVER['HTTP_X_ADMIN_TOKEN'] ?? ''));
 
 if (
     !is_string($tokenEsperado) || $tokenEsperado === ''
-    || !hash_equals($tokenEsperado, (string) ($_SERVER['HTTP_X_ADMIN_TOKEN'] ?? ''))
+    || $tokenRecebido === ''
+    || !hash_equals($tokenEsperado, $tokenRecebido)
 ) {
     json_response(403, ['error' => 'Acesso negado.']);
     exit;
@@ -24,23 +26,42 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 try {
     $body = read_json_body();
     
-    if (!isset($body['key']) || !is_string($body['key']) || $body['key'] !== 'vip_seats') {
-        throw new ValidationError('Chave de configuração inválida.');
+    $valueRaw = $_POST['vip_seats'] ?? ($body['vip_seats'] ?? ($body['value'] ?? null));
+    if ($valueRaw === null) {
+        throw new ValidationError('Quantidade de vagas VIP não informada.');
     }
     
-    $value = (int) ($body['value'] ?? 0);
+    $value = (int) $valueRaw;
     if ($value < 0 || $value > 200) {
-        throw new ValidationError('Quantidade de vagas inválida.');
+        throw new ValidationError('Quantidade de vagas inválida (mínimo 0, máximo 200).');
     }
 
     $pdo = bus_pdo();
-    $stmt = $pdo->prepare('UPDATE bus_settings SET setting_value = ? WHERE setting_key = ?');
-    $stmt->execute([(string) $value, $body['key']]);
 
-    json_response(200, ['success' => true]);
+    // Garantir que a tabela bus_settings existe
+    try {
+        $pdo->exec("
+            CREATE TABLE IF NOT EXISTS bus_settings (
+                setting_key VARCHAR(64) PRIMARY KEY,
+                setting_value TEXT NOT NULL,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+        ");
+    } catch (Throwable $e) {
+        // ignora se já existe
+    }
+
+    $stmt = $pdo->prepare('
+        INSERT INTO bus_settings (setting_key, setting_value) 
+        VALUES ("vip_seats", ?)
+        ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)
+    ');
+    $stmt->execute([(string) $value]);
+
+    json_response(200, ['success' => true, 'vip_seats' => $value]);
 } catch (ValidationError $e) {
     json_response(400, ['error' => $e->getMessage()]);
 } catch (Throwable $e) {
     log_failure('bus-settings-update', $e);
-    json_response(503, ['error' => 'Erro interno ao atualizar configuração.']);
+    json_response(500, ['error' => 'Erro interno ao atualizar configuração: ' . $e->getMessage()]);
 }
