@@ -97,7 +97,7 @@ function bus_pix_email_html(array $dados): string
                 ' . $e($primeiroNome) . ', sua reserva está quase lá.
               </h1>
               <p style="margin:0;font:400 15px/1.6 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.82);">
-                Seu código Pix foi gerado com sucesso. Escaneie o QR Code ou copie a chave abaixo no app do seu banco para confirmar suas vagas. <strong>Vence em 30 minutos.</strong>
+                Seu código Pix foi gerado com sucesso. Escaneie o QR Code ou copie a chave abaixo no app do seu banco para confirmar suas vagas. <strong>Vence em 24 horas.</strong>
               </p>
             </td>
           </tr>
@@ -177,7 +177,7 @@ function bus_pix_email_text(array $dados): string
     $linhas[] = 'PAGAMENTO PENDENTE';
     $linhas[] = $primeiroNome . ', sua reserva está quase lá.';
     $linhas[] = '';
-    $linhas[] = 'Seu código Pix foi gerado com sucesso. Copie a chave abaixo no app do seu banco para confirmar suas vagas. Vence em 30 minutos.';
+    $linhas[] = 'Seu código Pix foi gerado com sucesso. Copie a chave abaixo no app do seu banco para confirmar suas vagas. Vence em 24 horas.';
     $linhas[] = '';
     $linhas[] = 'CÓDIGO PIX COPIA E COLA:';
     $linhas[] = $dados['qrCode'];
