@@ -504,6 +504,30 @@
       el.frotaContainer.appendChild(card);
     });
     
+    var btnAdd = document.createElement('button');
+    btnAdd.type = 'button';
+    btnAdd.innerHTML = '+ Adicionar Ônibus Vazio';
+    btnAdd.style.border = '2px dashed var(--b-med, #3f3f46)';
+    btnAdd.style.background = 'transparent';
+    btnAdd.style.borderRadius = '12px';
+    btnAdd.style.color = 'var(--text-dim, #71717a)';
+    btnAdd.style.cursor = 'pointer';
+    btnAdd.style.display = 'flex';
+    btnAdd.style.alignItems = 'center';
+    btnAdd.style.justifyContent = 'center';
+    btnAdd.style.minHeight = '200px';
+    btnAdd.style.fontWeight = 'bold';
+    btnAdd.style.fontSize = '14px';
+    btnAdd.style.transition = 'all 0.2s';
+    btnAdd.onmouseover = function() { btnAdd.style.borderColor = 'var(--text-dim, #71717a)'; btnAdd.style.color = 'var(--text-main, #fff)'; };
+    btnAdd.onmouseout = function() { btnAdd.style.borderColor = 'var(--b-med, #3f3f46)'; btnAdd.style.color = 'var(--text-dim, #71717a)'; };
+    btnAdd.onclick = function() {
+      var novoBusNum = onibusList.length > 0 ? Math.max.apply(null, onibusList.map(function(o) { return Number(o.numero); })) + 1 : 1;
+      onibusList.push({ numero: novoBusNum, ocupados: 0, vip_inclusos: 0, reservas: [] });
+      renderizarFrota();
+    };
+    el.frotaContainer.appendChild(btnAdd);
+    
     // Config do VIP
     if (document.activeElement !== el.vipInput) {
        el.vipInput.value = estado.frota.vip_seats || 0;

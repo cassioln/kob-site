@@ -172,8 +172,137 @@ try {
     $resumo['vip_seats'] = $vipCount;
 
     $porOnibus = [];
-    $maxBusNum = 3;
+    $maxBusNum = 1; // start with at least 1
+    $vipsSemFixo = [];
 
+    // 1. Inicializa $porOnibus com VIPs que JÁ têm onibus fixo
+    for ($i = 1; $i <= $vipCount; $i++) {
+        $vipId = 'vip_' . $i;
+        if (isset($vipAssignments[$vipId])) {
+            $bNum = (int) $vipAssignments[$vipId];
+            if ($bNum < 1) $bNum = 1;
+            if ($bNum > $maxBusNum) $maxBusNum = $bNum;
+            
+            if (!isset($porOnibus[$bNum])) {
+                $porOnibus[$bNum] = [ 'numero' => $bNum, 'pagantes' => 0, 'criancas' => 0, 'total' => 0, 'reservas' => [] ];
+            }
+            $porOnibus[$bNum]['total'] += 1;
+            $porOnibus[$bNum]['reservas'][] = [ 'id' => $vipId, 'code' => 'VIP ' . $i, 'grupo' => 'Lugar VIP', 'responsavel' => 'Reserva VIP', 'pagantes' => 1, 'criancas' => 0, 'total' => 1, 'is_vip' => true ];
+        } else {
+            $vipsSemFixo[] = $i;
+        }
+    }
+
+    // 2. Primeira passagem nas reservas para identificar fixos e separar sem fixo
+    $reservasSemFixoIndices = [];
+    foreach ($reservas as $idx => $r) {
+        $st = bus_status_painel((string) $r['status']);
+        if ($st['chave'] === 'pago') {
+            if ($r['bus_number'] === null) {
+                $reservasSemFixoIndices[] = $idx;
+            } else {
+                $bNum = (int) $r['bus_number'];
+                if ($bNum < 1) $bNum = 1;
+                if ($bNum > $maxBusNum) $maxBusNum = $bNum;
+                
+                if (!isset($porOnibus[$bNum])) {
+                    $porOnibus[$bNum] = [ 'numero' => $bNum, 'pagantes' => 0, 'criancas' => 0, 'total' => 0, 'reservas' => [] ];
+                }
+                
+                $paxCount = (int) $r['passenger_count'];
+                $childCount = (int) $r['children_count'];
+                $grupoTotal = $paxCount + $childCount;
+
+                $porOnibus[$bNum]['pagantes'] += $paxCount;
+                $porOnibus[$bNum]['criancas'] += $childCount;
+                $porOnibus[$bNum]['total'] += $grupoTotal;
+                $porOnibus[$bNum]['reservas'][] = [
+                    'id' => $r['id'],
+                    'code' => strtoupper(substr((string) $r['id'], 0, 8)),
+                    'grupo' => ($r['group_name'] ?? '') !== '' ? $r['group_name'] : null,
+                    'responsavel' => $r['primary_name'],
+                    'pagantes' => $paxCount,
+                    'criancas' => $childCount,
+                    'total' => $grupoTotal,
+                ];
+            }
+        }
+    }
+
+    // 3. Processa reservas pagas sem ônibus fixo (ordem cronológica)
+    usort($reservasSemFixoIndices, function($a, $b) use ($reservas) {
+        return strcmp($reservas[$a]['created_at'], $reservas[$b]['created_at']);
+    });
+
+    foreach ($reservasSemFixoIndices as $idx) {
+        $r = $reservas[$idx];
+        $paxCount = (int) $r['passenger_count'];
+        $childCount = (int) $r['children_count'];
+        $grupoTotal = $paxCount + $childCount;
+        
+        $bNum = 1;
+        while (true) {
+            $ocupadosBusAtual = isset($porOnibus[$bNum]) ? $porOnibus[$bNum]['total'] : 0;
+            if ($ocupadosBusAtual + $grupoTotal <= 46) {
+                break;
+            }
+            $bNum++;
+        }
+        
+        // Fixa no banco de dados
+        $pdo->prepare("UPDATE bus_registrations SET bus_number = ? WHERE id = ?")->execute([$bNum, $r['id']]);
+        $reservas[$idx]['bus_number'] = $bNum; // atualiza na memória
+        
+        if ($bNum > $maxBusNum) $maxBusNum = $bNum;
+        
+        if (!isset($porOnibus[$bNum])) {
+            $porOnibus[$bNum] = [ 'numero' => $bNum, 'pagantes' => 0, 'criancas' => 0, 'total' => 0, 'reservas' => [] ];
+        }
+        $porOnibus[$bNum]['pagantes'] += $paxCount;
+        $porOnibus[$bNum]['criancas'] += $childCount;
+        $porOnibus[$bNum]['total'] += $grupoTotal;
+        $porOnibus[$bNum]['reservas'][] = [
+            'id' => $r['id'],
+            'code' => strtoupper(substr((string) $r['id'], 0, 8)),
+            'grupo' => ($r['group_name'] ?? '') !== '' ? $r['group_name'] : null,
+            'responsavel' => $r['primary_name'],
+            'pagantes' => $paxCount,
+            'criancas' => $childCount,
+            'total' => $grupoTotal,
+        ];
+    }
+
+    // 4. Injeta VIPs sem posição fixa nos ônibus com vaga
+    foreach ($vipsSemFixo as $i) {
+        $vipId = 'vip_' . $i;
+        $bNum = 1;
+        while (true) {
+            $ocupadosBusAtual = isset($porOnibus[$bNum]) ? $porOnibus[$bNum]['total'] : 0;
+            if ($ocupadosBusAtual + 1 <= 46) {
+                break;
+            }
+            $bNum++;
+        }
+        
+        if ($bNum > $maxBusNum) $maxBusNum = $bNum;
+        
+        if (!isset($porOnibus[$bNum])) {
+            $porOnibus[$bNum] = [ 'numero' => $bNum, 'pagantes' => 0, 'criancas' => 0, 'total' => 0, 'reservas' => [] ];
+        }
+        $porOnibus[$bNum]['total'] += 1;
+        $porOnibus[$bNum]['reservas'][] = [
+            'id' => $vipId,
+            'code' => 'VIP ' . $i,
+            'grupo' => 'Lugar VIP',
+            'responsavel' => 'Reserva VIP',
+            'pagantes' => 1,
+            'criancas' => 0,
+            'total' => 1,
+            'is_vip' => true
+        ];
+    }
+
+    // 5. Segunda passagem para montar $lista com as métricas globais
     foreach ($reservas as $r) {
         $st = bus_status_painel((string) $r['status']);
         $passageiros = $porReserva[$r['id']] ?? [];
@@ -188,38 +317,6 @@ try {
                     $resumo['sem_telefone']++;
                 }
             }
-
-            $bNum = ($r['bus_number'] !== null && (int) $r['bus_number'] > 0) ? (int) $r['bus_number'] : 1;
-            if ($bNum > $maxBusNum) {
-                $maxBusNum = $bNum;
-            }
-
-            if (!isset($porOnibus[$bNum])) {
-                $porOnibus[$bNum] = [
-                    'numero' => $bNum,
-                    'pagantes' => 0,
-                    'criancas' => 0,
-                    'total' => 0,
-                    'reservas' => [],
-                ];
-            }
-
-            $paxCount = (int) $r['passenger_count'];
-            $childCount = (int) $r['children_count'];
-            $grupoTotal = $paxCount + $childCount;
-
-            $porOnibus[$bNum]['pagantes'] += $paxCount;
-            $porOnibus[$bNum]['criancas'] += $childCount;
-            $porOnibus[$bNum]['total'] += $grupoTotal;
-            $porOnibus[$bNum]['reservas'][] = [
-                'id' => $r['id'],
-                'code' => strtoupper(substr((string) $r['id'], 0, 8)),
-                'grupo' => ($r['group_name'] ?? '') !== '' ? $r['group_name'] : null,
-                'responsavel' => $r['primary_name'],
-                'pagantes' => $paxCount,
-                'criancas' => $childCount,
-                'total' => $grupoTotal,
-            ];
         } elseif ($st['chave'] === 'pendente') {
             $resumo['reservas_pendentes']++;
         } else {
@@ -285,58 +382,10 @@ try {
         ];
     }
 
-    $resumo['total_a_bordo'] = $resumo['pagantes'] + $resumo['criancas_no_colo'] + $resumo['vip_seats'];
-    $resumo['receita'] = number_format($resumo['receita_centavos'] / 100, 2, ',', '.');
-
-    // Injetar VIPs nos respectivos ônibus
-    for ($i = 1; $i <= $vipCount; $i++) {
-        $vipId = 'vip_' . $i;
-        
-        if (isset($vipAssignments[$vipId])) {
-            $bNum = (int) $vipAssignments[$vipId];
-            if ($bNum < 1) $bNum = 1;
-        } else {
-            // Se o VIP não foi posicionado manualmente, coloca no primeiro ônibus com vaga (limite 46)
-            $bNum = 1;
-            while (true) {
-                $ocupadosBusAtual = isset($porOnibus[$bNum]) ? $porOnibus[$bNum]['total'] : 0;
-                if ($ocupadosBusAtual < 46) {
-                    break;
-                }
-                $bNum++;
-            }
-        }
-        
-        if ($bNum > $maxBusNum) {
-            $maxBusNum = $bNum;
-        }
-
-        if (!isset($porOnibus[$bNum])) {
-            $porOnibus[$bNum] = [
-                'numero' => $bNum,
-                'pagantes' => 0,
-                'criancas' => 0,
-                'total' => 0,
-                'reservas' => [],
-            ];
-        }
-
-        $porOnibus[$bNum]['total'] += 1;
-        $porOnibus[$bNum]['reservas'][] = [
-            'id' => $vipId,
-            'code' => 'VIP ' . $i,
-            'grupo' => 'Lugar VIP',
-            'responsavel' => 'Reserva VIP',
-            'pagantes' => 1,
-            'criancas' => 0,
-            'total' => 1,
-            'is_vip' => true
-        ];
-    }
 
     // Constrói a lista de ônibus (exibe sempre no mínimo 3 ônibus)
     $listaOnibus = [];
-    $totalBusesToShow = max(3, $maxBusNum);
+    $totalBusesToShow = $maxBusNum;
 
     for ($i = 1; $i <= $totalBusesToShow; $i++) {
         $busData = $porOnibus[$i] ?? [
