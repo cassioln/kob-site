@@ -115,28 +115,7 @@ function bus_pix_email_html(array $dados): string
             </td>
           </tr>';
 
-    // Bloco do Grupo manual sem dizer "confirmado"
-    if (!empty($dados['groupName'])) {
-        $nomeUpper = function_exists('mb_strtoupper') ? mb_strtoupper($dados['groupName'], 'UTF-8') : strtoupper($dados['groupName']);
-        $html .= '
-          <tr>
-            <td style="padding:0 0 18px;">
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
-                     style="background:#072b4f;border:1px solid #144573;border-radius:12px;">
-                <tr>
-                  <td style="padding:18px 20px;text-align:center;">
-                    <p style="margin:0 0 10px;font:700 15px/1.3 Arial,Helvetica,sans-serif;color:#ffffff;">
-                      Viajando com o grupo:
-                    </p>
-                    <p style="margin:0;font:800 22px/1.2 Arial,Helvetica,sans-serif;color:#29c3f5;letter-spacing:0.04em;text-transform:uppercase;">
-                      ' . $e($nomeUpper) . '
-                    </p>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>';
-    }
+
 
     // Manifesto: Quem embarca
     $html .= '
@@ -202,10 +181,7 @@ function bus_pix_email_text(array $dados): string
     $linhas[] = '- Valor a pagar: R$ ' . str_replace('.', ',', $dados['amount']);
     $linhas[] = '- Passageiros: ' . $dados['passengerCount'];
     $linhas[] = '- Rota: Barra Funda (SP) -> Porto de Santos';
-    if (!empty($dados['groupName'])) {
-        $linhas[] = '';
-        $linhas[] = 'Viajando com o grupo: ' . $dados['groupName'];
-    }
+
     
     $linhas[] = '';
     $linhas[] = 'Passageiros:';
