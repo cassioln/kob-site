@@ -1935,8 +1935,17 @@
 }
 
 .bus-payment-panel__notice-icon {
-  font-size: 1.15rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0099cc;
   line-height: 1;
+}
+
+.bus-payment-panel__notice-icon svg {
+  width: 18px;
+  height: 18px;
+  display: block;
 }
 
 .bus-payment-panel__notice-pulse {
