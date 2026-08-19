@@ -270,6 +270,12 @@
       var nomeGrupo = (primeiro && r.grupo) ? r.grupo : '';
       celula('Grupo', nomeGrupo, 'tabela__grupo');
 
+      var nomeOnibus = '';
+      if (primeiro) {
+          nomeOnibus = r.bus_number ? 'Ônibus ' + r.bus_number : '—';
+      }
+      celula('Ônibus', nomeOnibus, 'tabela__onibus');
+
       celula('Status', primeiro ? badge(r.status_rotulo, r.status_tom) : null);
 
       celula('Pago em', primeiro ? (r.pago_em || '—') : '', 'tabela__num');
