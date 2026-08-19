@@ -20,6 +20,34 @@ function bus_pix_email_html(array $dados): string
     $e = static fn (string $v): string => htmlspecialchars($v, ENT_QUOTES, 'UTF-8');
     $primeiroNome = explode(' ', trim($dados['contactName']))[0] ?? '';
 
+    // Manifesto: cada linha com nome e, quando houver, telefone.
+    $linhasManifesto = '';
+    foreach ($dados['passengers'] as $i => $p) {
+        $numero = $i + 1;
+        $telefone = ($p['whatsapp'] ?? '') !== '' ? bus_format_phone((string) $p['whatsapp']) : '';
+        $borda = $i === 0 ? '' : 'border-top:1px solid rgba(255,255,255,0.12);';
+        $linhasManifesto .= '
+            <tr>
+              <td style="' . $borda . 'padding:10px 0;font:700 13px/1.3 Arial,Helvetica,sans-serif;color:#29c3f5;width:26px;vertical-align:top;">'
+                . $numero . '.</td>
+              <td style="' . $borda . 'padding:10px 0;font:400 14px/1.4 Arial,Helvetica,sans-serif;color:#ffffff;vertical-align:top;">'
+                . $e($p['name']) . '</td>
+              <td style="' . $borda . 'padding:10px 0;font:400 12px/1.4 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.72);text-align:right;white-space:nowrap;vertical-align:top;">'
+                . ($telefone !== '' ? $e($telefone) : '&mdash;') . '</td>
+            </tr>';
+    }
+
+    $linhaCriancas = '';
+    if ($dados['childrenCount'] > 0) {
+        $plural = $dados['childrenCount'] === 1 ? 'criança' : 'crianças';
+        $linhaCriancas = '
+            <tr>
+              <td colspan="3" style="padding:14px 0 0;font:400 13px/1.5 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.72);">
+                + ' . $dados['childrenCount'] . ' ' . $plural . ' de até 5 anos, sem cobrança, no colo de um responsável.
+              </td>
+            </tr>';
+    }
+
     // Tabela de dados da reserva.
     $fatos = [
         ['Valor a pagar', 'R$ ' . str_replace('.', ',', $dados['amount'])],
@@ -85,7 +113,54 @@ function bus_pix_email_html(array $dados): string
                 </tr>
               </table>
             </td>
-          </tr>
+          </tr>';
+
+    // Bloco do Grupo manual sem dizer "confirmado"
+    if (!empty($dados['groupName'])) {
+        $nomeUpper = function_exists('mb_strtoupper') ? mb_strtoupper($dados['groupName'], 'UTF-8') : strtoupper($dados['groupName']);
+        $html .= '
+          <tr>
+            <td style="padding:0 0 18px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+                     style="background:#072b4f;border:1px solid #144573;border-radius:12px;">
+                <tr>
+                  <td style="padding:18px 20px;text-align:center;">
+                    <p style="margin:0 0 10px;font:700 15px/1.3 Arial,Helvetica,sans-serif;color:#ffffff;">
+                      Viajando com o grupo:
+                    </p>
+                    <p style="margin:0;font:800 22px/1.2 Arial,Helvetica,sans-serif;color:#29c3f5;letter-spacing:0.04em;text-transform:uppercase;">
+                      ' . $e($nomeUpper) . '
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>';
+    }
+
+    // Manifesto: Quem embarca
+    $html .= '
+          <tr>
+            <td style="padding:0 0 22px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+                     style="background:rgba(255,255,255,0.05);border-radius:12px;border:1px solid rgba(255,255,255,0.12);">
+                <tr>
+                  <td style="padding:18px 20px;">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td colspan="3" style="padding:0 0 8px;font:700 12px/1.4 Arial,Helvetica,sans-serif;color:#ffffff;letter-spacing:0.12em;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,0.2);">
+                          Quem embarca
+                        </td>
+                      </tr>
+                      ' . $linhasManifesto . $linhaCriancas . '
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>';
+
+    $html .= '
           <tr>
             <td style="padding:0 0 26px;">
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
@@ -93,8 +168,6 @@ function bus_pix_email_html(array $dados): string
               </table>
             </td>
           </tr>';
-
-    $html .= bus_email_bloco_grupo($dados['groupName'] ?? null);
 
     $html .= '
           <tr>
@@ -131,8 +204,15 @@ function bus_pix_email_text(array $dados): string
     $linhas[] = '- Rota: Barra Funda (SP) -> Porto de Santos';
     if (!empty($dados['groupName'])) {
         $linhas[] = '';
-        $linhas[] = 'Grupo: ' . $dados['groupName'];
+        $linhas[] = 'Viajando com o grupo: ' . $dados['groupName'];
     }
+    
+    $linhas[] = '';
+    $linhas[] = 'Passageiros:';
+    foreach ($dados['passengers'] as $i => $p) {
+        $linhas[] = ($i + 1) . '. ' . $p['name'] . (!empty($p['whatsapp']) ? ' (' . $p['whatsapp'] . ')' : '');
+    }
+
     $linhas[] = '';
     $linhas[] = 'Se você já realizou o pagamento, desconsidere esta mensagem.';
     
