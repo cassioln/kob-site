@@ -368,6 +368,9 @@
     el.rSemTelefone.textContent = resumo.sem_telefone;
   }
 
+  // Objeto temporário para rastrear o que está sendo arrastado e validar vagas em tempo real
+  var itemArrastando = null;
+
   // ---- renderização frota ------------------------------------------------
   
   function renderizarFrota() {
@@ -387,20 +390,53 @@
       card.className = 'onibus-card';
       card.dataset.bus = busNum;
 
-      // Eventos de drag and drop na dropzone (o card inteiro funciona como dropzone)
+      // Eventos de drag and drop na dropzone com validação dinâmica de vagas
       card.addEventListener('dragover', function (ev) {
         ev.preventDefault();
-        card.classList.add('drag-over');
+        if (!itemArrastando) return;
+
+        var totalDoItem = itemArrastando.total || 1;
+        var mesmoOnibus = (itemArrastando.origemBus === busNum);
+
+        // Se já está no ônibus, é neutro; se vem de outro ônibus, checa se cabe
+        if (mesmoOnibus) {
+          card.classList.add('drag-over');
+          card.classList.remove('drag-error');
+          ev.dataTransfer.dropEffect = 'move';
+        } else if (ocupados + totalDoItem > maxL) {
+          card.classList.add('drag-error');
+          card.classList.remove('drag-over');
+          ev.dataTransfer.dropEffect = 'none';
+        } else {
+          card.classList.add('drag-over');
+          card.classList.remove('drag-error');
+          ev.dataTransfer.dropEffect = 'move';
+        }
       });
-      card.addEventListener('dragleave', function () {
+
+      card.addEventListener('dragleave', function (ev) {
+        // Evita piscar se o cursor apenas se mover sobre elementos filhos
+        if (ev.relatedTarget && card.contains(ev.relatedTarget)) return;
         card.classList.remove('drag-over');
         card.classList.remove('drag-error');
       });
+
       card.addEventListener('drop', function (ev) {
         ev.preventDefault();
         card.classList.remove('drag-over');
+        card.classList.remove('drag-error');
         var rId = ev.dataTransfer.getData('text/plain');
         if (!rId) return;
+
+        if (itemArrastando && itemArrastando.origemBus !== busNum) {
+          var totalDoItem = itemArrastando.total || 1;
+          if (ocupados + totalDoItem > maxL) {
+            var vagasRestantes = Math.max(0, maxL - ocupados);
+            mostrarAlertaModal('Ônibus Lotado', 'O Ônibus ' + busNum + ' não tem vagas suficientes (' + (vagasRestantes === 1 ? '1 vaga restante' : vagasRestantes + ' vagas restantes') + ') para acomodar este grupo de ' + (totalDoItem === 1 ? '1 pessoa' : totalDoItem + ' pessoas') + '.', 'erro');
+            return;
+          }
+        }
+
         moverParaOnibus(rId, busNum);
       });
 
@@ -415,10 +451,10 @@
       badge.className = 'onibus-card__badge';
       if (info.fechado || ocupados >= minL) {
         badge.classList.add('onibus-card__badge--contratado');
-        badge.textContent = 'Contratado';
+        badge.textContent = ocupados >= maxL ? 'Lotado (' + ocupados + '/' + maxL + ')' : 'Contratado (' + ocupados + '/' + maxL + ')';
       } else {
         badge.classList.add('onibus-card__badge--provisorio');
-        badge.textContent = 'Em aberto';
+        badge.textContent = 'Em aberto (' + ocupados + '/' + minL + ')';
       }
       header.append(titulo, badge);
 
@@ -428,6 +464,7 @@
       
       var planta = document.createElement('div');
       planta.className = 'onibus-planta';
+      planta.title = 'Planta de assentos (Capacidade: ' + maxL + ' lugares)';
       
       var qtdDesenhada = 0;
       var fileiras = Math.ceil(maxL / 4);
@@ -449,7 +486,7 @@
           // Adiciona corredor central
           if (c === 1) {
             var corredor = document.createElement('div');
-            corredor.style.width = '10px';
+            corredor.style.width = '6px';
             linhaAssentos.appendChild(corredor);
           }
           qtdDesenhada++;
@@ -469,20 +506,30 @@
           
           item.addEventListener('dragstart', function (ev) {
             ev.dataTransfer.setData('text/plain', r.id);
+            itemArrastando = { id: r.id, total: Number(r.total || 1), origemBus: busNum };
             item.classList.add('dragging');
           });
           item.addEventListener('dragend', function () {
+            itemArrastando = null;
             item.classList.remove('dragging');
+            document.querySelectorAll('.onibus-card').forEach(function(c) {
+              c.classList.remove('drag-over', 'drag-error');
+            });
           });
 
           var infoGrupo = document.createElement('div');
+          infoGrupo.className = 'grupo-item__info';
+
           var nomeSpan = document.createElement('span');
           nomeSpan.className = 'grupo-item__nome';
           nomeSpan.textContent = r.grupo || r.responsavel;
+          
           var descSpan = document.createElement('span');
           descSpan.className = 'grupo-item__responsavel';
           if (r.grupo) {
              descSpan.textContent = 'Resp: ' + r.responsavel;
+          } else {
+             descSpan.textContent = r.code || 'Reserva';
           }
           
           if (r.is_vip) {
@@ -500,22 +547,71 @@
 
           infoGrupo.append(nomeSpan, descSpan);
 
+          var acoesGrupo = document.createElement('div');
+          acoesGrupo.className = 'grupo-item__acoes';
+
           var tamSpan = document.createElement('span');
           tamSpan.className = 'grupo-item__tamanho';
-          tamSpan.textContent = r.total + ' pax';
+          if (r.is_vip) {
+            tamSpan.textContent = '1 VIP';
+          } else {
+            tamSpan.textContent = r.total === 1 ? '1 pessoa' : r.total + ' pessoas';
+          }
+
+          // Seletor de atalho rápido para mover (ideal para telas touch ou cliques rápidos)
+          var selectMover = document.createElement('select');
+          selectMover.className = 'grupo-item__select-mover';
+          selectMover.title = 'Mover para outro ônibus';
+          selectMover.setAttribute('aria-label', 'Mover para outro ônibus');
           
-          item.append(infoGrupo, tamSpan);
+          var optPadrao = document.createElement('option');
+          optPadrao.value = '';
+          optPadrao.textContent = 'Mover…';
+          optPadrao.disabled = true;
+          optPadrao.selected = true;
+          selectMover.appendChild(optPadrao);
+
+          onibusList.forEach(function (outro) {
+            var numOutro = Number(outro.numero);
+            if (numOutro !== busNum) {
+              var opt = document.createElement('option');
+              opt.value = numOutro;
+              var vagasLivres = Math.max(0, maxL - Number(outro.ocupados || 0));
+              opt.textContent = 'Ônibus ' + numOutro + ' (' + vagasLivres + ' vagas)';
+              selectMover.appendChild(opt);
+            }
+          });
+
+          selectMover.addEventListener('change', function () {
+            if (!this.value) return;
+            var novoBus = Number(this.value);
+            var destInfo = onibusList.find(function (o) { return Number(o.numero) === novoBus; });
+            var ocupadosDest = destInfo ? Number(destInfo.ocupados || 0) : 0;
+            var totalDoItem = Number(r.total || 1);
+            if (ocupadosDest + totalDoItem > maxL) {
+              var vagasRestantes = Math.max(0, maxL - ocupadosDest);
+              mostrarAlertaModal('Ônibus Lotado', 'O Ônibus ' + novoBus + ' não tem vagas suficientes (' + (vagasRestantes === 1 ? '1 vaga restante' : vagasRestantes + ' vagas restantes') + ') para acomodar este grupo de ' + (totalDoItem === 1 ? '1 pessoa' : totalDoItem + ' pessoas') + '.', 'erro');
+              this.value = '';
+              return;
+            }
+            moverParaOnibus(r.id, novoBus);
+          });
+
+          acoesGrupo.append(tamSpan, selectMover);
+
+          item.append(infoGrupo, acoesGrupo);
           listaGrupos.appendChild(item);
         });
       } else {
         var vazioHint = document.createElement('div');
-        vazioHint.style.font = '400 12px/1.4 Arial,Helvetica,sans-serif';
-        vazioHint.style.color = 'var(--text-dim, #71717a)';
-        vazioHint.style.padding = '12px 8px';
+        vazioHint.style.font = '400 12px/1.4 system-ui, -apple-system, sans-serif';
+        vazioHint.style.color = 'var(--p-tinta-fraca)';
+        vazioHint.style.padding = '24px 12px';
         vazioHint.style.textAlign = 'center';
-        vazioHint.style.border = '1px dashed var(--b-med, #3f3f46)';
+        vazioHint.style.border = '1px dashed var(--p-linha-forte)';
         vazioHint.style.borderRadius = '8px';
-        vazioHint.textContent = 'Arraste grupos de passageiros para cá';
+        vazioHint.style.background = 'var(--p-fundo)';
+        vazioHint.textContent = 'Arraste grupos de passageiros para cá ou use o botão Mover';
         listaGrupos.appendChild(vazioHint);
       }
 
@@ -529,10 +625,16 @@
       barWrap.className = 'progresso-bar';
       var barFill = document.createElement('div');
       barFill.className = 'progresso-bar__fill';
+      if (ocupados >= maxL) {
+        barFill.classList.add('progresso-bar__fill--cheio');
+      } else if (ocupados >= minL) {
+        barFill.classList.add('progresso-bar__fill--ok');
+      }
       var perc = Math.min(100, Math.round((ocupados / maxL) * 100));
       barFill.style.transform = 'scaleX(' + (perc / 100) + ')';
       var mark = document.createElement('div');
       mark.className = 'progresso-bar__marker';
+      mark.title = 'Meta de viabilidade: 40 lugares';
       barWrap.append(barFill, mark);
 
       var tx = document.createElement('div');
@@ -540,7 +642,7 @@
       var txLeft = document.createElement('span');
       var txtOcupados = ocupados + ' de ' + maxL + ' ocupados';
       if (info.vip_inclusos > 0) {
-        txtOcupados += ' (' + info.vip_inclusos + ' VIPs)';
+        txtOcupados += ' (' + info.vip_inclusos + ' VIP)';
       }
       txLeft.textContent = txtOcupados;
 
@@ -549,6 +651,7 @@
       if (info.fechado || ocupados >= minL) {
         txRight.textContent = 'Mínimo atingido';
         txRight.style.color = 'var(--p-ok)';
+        txRight.style.fontWeight = '600';
       } else {
         txRight.textContent = 'Faltam ' + faltaFechamento + ' p/ fechar';
       }
@@ -559,23 +662,20 @@
       el.frotaContainer.appendChild(card);
     });
     
+    // Card para Adicionar Ônibus Vazio
     var btnAdd = document.createElement('button');
     btnAdd.type = 'button';
-    btnAdd.innerHTML = '+ Adicionar Ônibus Vazio';
-    btnAdd.style.border = '2px dashed var(--b-med, #3f3f46)';
-    btnAdd.style.background = 'transparent';
-    btnAdd.style.borderRadius = '12px';
-    btnAdd.style.color = 'var(--text-dim, #71717a)';
-    btnAdd.style.cursor = 'pointer';
-    btnAdd.style.display = 'flex';
-    btnAdd.style.alignItems = 'center';
-    btnAdd.style.justifyContent = 'center';
-    btnAdd.style.minHeight = '200px';
-    btnAdd.style.fontWeight = 'bold';
-    btnAdd.style.fontSize = '14px';
-    btnAdd.style.transition = 'all 0.2s';
-    btnAdd.onmouseover = function() { btnAdd.style.borderColor = 'var(--text-dim, #71717a)'; btnAdd.style.color = 'var(--text-main, #fff)'; };
-    btnAdd.onmouseout = function() { btnAdd.style.borderColor = 'var(--b-med, #3f3f46)'; btnAdd.style.color = 'var(--text-dim, #71717a)'; };
+    btnAdd.className = 'onibus-card onibus-card--adicionar';
+    btnAdd.innerHTML = `
+      <div class="onibus-card--adicionar-icone">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+      </div>
+      <h4 class="onibus-card--adicionar-titulo">+ Adicionar Ônibus Vazio</h4>
+      <p class="onibus-card--adicionar-desc">Cria um novo ônibus para balancear grupos e organizar a frota.</p>
+    `;
     btnAdd.onclick = function() {
       var novoBusNum = onibusList.length > 0 ? Math.max.apply(null, onibusList.map(function(o) { return Number(o.numero); })) + 1 : 1;
       onibusList.push({ numero: novoBusNum, ocupados: 0, vip_inclusos: 0, reservas: [] });
