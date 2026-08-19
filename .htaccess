@@ -24,11 +24,11 @@ RewriteEngine On
 RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
 RewriteRule ^ https://%1%{REQUEST_URI} [L,R=301]
 
-# ---- Subdominio onibus.kriativosonboard.com.br ----
+# ---- Subdominio busao.kriativosonboard.com.br (e onibus.kriativosonboard.com.br) ----
 # Serve onibus.html diretamente ao acessar a raiz do subdominio, mantendo a URL limpa
-RewriteCond %{HTTP_HOST} ^onibus\.kriativosonboard\.com\.br$ [NC]
+RewriteCond %{HTTP_HOST} ^(busao|onibus)\.kriativosonboard\.com\.br$ [NC]
 RewriteRule ^$ onibus.html [L]
-RewriteCond %{HTTP_HOST} ^onibus\.kriativosonboard\.com\.br$ [NC]
+RewriteCond %{HTTP_HOST} ^(busao|onibus)\.kriativosonboard\.com\.br$ [NC]
 RewriteRule ^index\.html$ onibus.html [L]
 
 # ---- API do onibus fretado ----
