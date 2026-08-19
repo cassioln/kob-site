@@ -224,6 +224,7 @@ try {
                     'pagantes' => $paxCount,
                     'criancas' => $childCount,
                     'total' => $grupoTotal,
+                    'passageiros' => array_map(static fn ($p) => $p['nome'], $porReserva[$r['id']] ?? []),
                 ];
             }
         }
@@ -269,6 +270,7 @@ try {
             'pagantes' => $paxCount,
             'criancas' => $childCount,
             'total' => $grupoTotal,
+            'passageiros' => array_map(static fn ($p) => $p['nome'], $porReserva[$r['id']] ?? []),
         ];
     }
 

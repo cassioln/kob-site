@@ -1157,54 +1157,77 @@
   line-height: 1.4;
 }
 
-/* Grid da frota */
+/* Grid da frota - layout horizontal em lista empilhada */
 .frota-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: var(--p-6);
-  align-items: stretch;
+  width: 100%;
 }
 
 .onibus-card {
   background: var(--p-superficie);
-  border-radius: var(--p-raio);
+  border-radius: 16px;
   border: 1px solid var(--p-linha);
-  box-shadow: var(--p-sombra);
+  box-shadow: 0 4px 20px rgba(13, 34, 66, 0.05);
   display: flex;
   flex-direction: column;
   overflow: hidden;
   position: relative;
-  transition: border-color var(--p-transicao), box-shadow var(--p-transicao), transform var(--p-transicao);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .onibus-card.drag-over {
   border-color: var(--p-acao);
-  box-shadow: 0 0 0 3px var(--p-acao-fraca), 0 8px 24px rgba(123, 31, 162, 0.12);
-  background: var(--p-superficie-2);
-  transform: scale(1.008);
+  box-shadow: 0 0 0 3px var(--p-acao-fraca), 0 8px 30px rgba(123, 31, 162, 0.15);
+  background: #fbf9fd;
+  transform: scale(1.004);
 }
 
 .onibus-card.drag-error {
   border-color: var(--p-falha);
-  box-shadow: 0 0 0 3px var(--p-falha-fundo), 0 8px 24px rgba(163, 35, 43, 0.12);
+  box-shadow: 0 0 0 3px var(--p-falha-fundo), 0 8px 30px rgba(163, 35, 43, 0.15);
   background: #fff8f8;
-  transform: scale(0.995);
+  transform: scale(0.998);
 }
 
+/* Header horizontal do Ônibus */
 .onibus-card__header {
-  padding: var(--p-3) var(--p-4);
+  padding: 14px 20px;
   border-bottom: 1px solid var(--p-linha);
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 16px;
   background: var(--p-fundo);
+  flex-wrap: wrap;
+}
+
+.onibus-card__header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .onibus-card__titulo {
   margin: 0;
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 700;
   color: var(--p-tinta);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.onibus-card__header-center {
+  flex: 1 1 280px;
+  max-width: 480px;
+}
+
+.onibus-card__header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .onibus-card__badge {
@@ -1212,52 +1235,87 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  padding: 3px 9px;
+  padding: 4px 10px;
   border-radius: 20px;
 }
 .onibus-card__badge--contratado {
   background: var(--p-ok-fundo);
   color: var(--p-ok);
-  border: 1px solid rgba(15, 122, 74, 0.15);
+  border: 1px solid rgba(15, 122, 74, 0.2);
 }
 .onibus-card__badge--provisorio {
   background: var(--p-espera-fundo);
   color: var(--p-espera);
-  border: 1px solid rgba(138, 90, 0, 0.15);
+  border: 1px solid rgba(138, 90, 0, 0.2);
 }
 
+.onibus-card__vagas-badge {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--p-tinta-media);
+  background: var(--p-superficie);
+  border: 1px solid var(--p-linha);
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+/* Corpo Horizontal do Ônibus (Planta + Salão de Passageiros) */
 .onibus-card__corpo {
-  display: flex;
-  flex: 1;
-  padding: var(--p-4);
-  gap: var(--p-4);
-  min-height: 380px;
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 20px;
+  padding: 20px;
+  background: #ffffff;
+  align-items: stretch;
 }
 
-/* Planta Baixa Visual */
+@media (max-width: 960px) {
+  .onibus-card__corpo {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Painel Lateral / Mini-Planta de Assentos do Ônibus */
+.onibus-planta-container {
+  background: #f1f5f9;
+  border: 1px solid #d8e2ee;
+  border-radius: 14px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.onibus-planta-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--p-tinta);
+}
+
 .onibus-planta {
-  width: 84px;
-  flex-shrink: 0;
-  background: #eef2f8;
-  border: 1px solid #d3dce8;
-  border-radius: 14px 14px 6px 6px;
-  padding: 14px 6px 8px;
+  background: #ffffff;
+  border: 1px solid #cbd6e2;
+  border-radius: 12px 12px 6px 6px;
+  padding: 12px 8px 8px;
   position: relative;
   display: flex;
   flex-direction: column;
   gap: 4px;
-  box-shadow: inset 0 1px 3px rgba(0,0,0,0.04);
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.03);
 }
 
 .onibus-planta::before {
   content: '';
   position: absolute;
   top: 4px;
-  left: 10px;
-  right: 10px;
-  height: 6px;
-  background: #b5c4d6;
-  border-radius: 4px;
+  left: 14px;
+  right: 14px;
+  height: 4px;
+  background: #94a3b8;
+  border-radius: 2px;
 }
 
 .planta-fileira {
@@ -1266,51 +1324,101 @@
   gap: 4px;
 }
 
-/* Os assentos 2+2 com corredor no meio */
 .planta-assento {
-  width: 13px;
-  height: 13px;
-  background: #ffffff;
+  width: 14px;
+  height: 14px;
+  background: #f8fafc;
   border: 1px solid #cbd6e2;
   border-radius: 3px;
   transition: all 0.15s ease;
 }
+
 .planta-assento.ocupado {
-  background: #2b3e58;
-  border-color: #1a293c;
+  background: #1e293b;
+  border-color: #0f172a;
 }
 
-/* Lado de fora - lista de grupos drag/drop */
-.onibus-grupos {
-  flex: 1;
+.planta-assento.vip {
+  background: #eab308;
+  border-color: #ca8a04;
+}
+
+.onibus-planta-legenda {
+  display: flex;
+  justify-content: space-around;
+  font-size: 11px;
+  color: var(--p-tinta-fraca);
+  padding-top: 6px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.planta-legenda-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.planta-legenda-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+}
+.planta-legenda-dot--ocupado { background: #1e293b; }
+.planta-legenda-dot--vip { background: #eab308; }
+.planta-legenda-dot--livre { background: #ffffff; border: 1px solid #cbd6e2; }
+
+/* Compartimento do Salão de Passageiros (Dropzone dos Grupos) */
+.onibus-salao-grupos {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 16px;
+  min-height: 260px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  overflow-y: auto;
-  max-height: 440px;
-  padding-right: 2px;
+  gap: 12px;
+  transition: background-color 0.2s, border-color 0.2s;
 }
 
-.grupo-item {
-  background: var(--p-superficie);
-  border: 1px solid var(--p-linha);
-  border-radius: 8px;
-  padding: 8px 10px;
-  font-size: 13px;
-  cursor: grab;
-  user-select: none;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+.onibus-salao-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--p-tinta-media);
+}
+
+.onibus-grupos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 12px;
+  align-items: start;
+}
+
+/* Card Individual de Grupo / Reserva */
+.grupo-item {
+  background: #ffffff;
+  border: 1px solid var(--p-linha);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 13px;
+  cursor: grab;
+  user-select: none;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+  display: flex;
+  flex-direction: column;
   gap: 8px;
-  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+  transition: all 0.18s ease;
+  position: relative;
 }
 
 .grupo-item:hover {
   border-color: var(--p-linha-forte);
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(13, 34, 66, 0.08);
+  transform: translateY(-2px);
 }
 
 .grupo-item:active {
@@ -1319,50 +1427,89 @@
 
 .grupo-item.dragging {
   opacity: 0.4;
-  transform: scale(0.97);
+  transform: scale(0.96);
   box-shadow: none;
 }
 
-.grupo-item__info {
-  flex: 1;
-  min-width: 0;
-}
-
-.grupo-item__nome {
-  font-weight: 600;
-  font-size: 13px;
-  color: var(--p-tinta);
-  display: block;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.grupo-item__responsavel {
-  color: var(--p-tinta-fraca);
-  font-size: 11.5px;
-  display: block;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  margin-top: 1px;
-}
-
-.grupo-item__acoes {
+.grupo-item__top {
   display: flex;
-  align-items: center;
-  gap: 6px;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.grupo-item__titulo {
+  font-weight: 700;
+  font-size: 13.5px;
+  color: var(--p-tinta);
+  line-height: 1.3;
+  word-break: break-word;
+}
+
+.grupo-item__code {
+  font-size: 10.5px;
+  font-family: ui-monospace, monospace;
+  font-weight: 700;
+  color: var(--p-tinta-fraca);
+  background: var(--p-fundo);
+  border: 1px solid var(--p-linha);
+  padding: 1px 6px;
+  border-radius: 4px;
   flex-shrink: 0;
 }
 
-.grupo-item__tamanho {
+.grupo-item__responsavel {
+  font-size: 12px;
+  color: var(--p-tinta-media);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.grupo-item__passageiros-lista {
+  font-size: 11.5px;
+  color: var(--p-tinta-fraca);
+  line-height: 1.35;
+  background: #f8fafc;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid #edf2f7;
+  max-height: 52px;
+  overflow-y: auto;
+}
+
+.grupo-item__bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding-top: 6px;
+  border-top: 1px solid var(--p-superficie-2);
+}
+
+.grupo-item__tag-tamanho {
   font-weight: 700;
   background: var(--p-superficie-2);
   color: var(--p-tinta);
   border: 1px solid var(--p-linha);
-  padding: 2px 7px;
+  padding: 3px 8px;
   border-radius: 12px;
   font-size: 11px;
-  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.grupo-item--vip {
+  background: #fefce8;
+  border-color: #fef08a;
+}
+.grupo-item--vip:hover {
+  border-color: #fde047;
+}
+
+.grupo-item--vip .grupo-item__titulo {
+  color: #a16207;
 }
 
 .grupo-item__select-mover {
@@ -1373,7 +1520,7 @@
   background: var(--p-fundo);
   border: 1px solid var(--p-linha);
   border-radius: 6px;
-  padding: 2px 4px;
+  padding: 3px 6px;
   cursor: pointer;
   outline: none;
   transition: all 0.15s ease;
@@ -1390,16 +1537,16 @@
 .onibus-card--adicionar {
   border: 2px dashed var(--p-linha-forte);
   background: transparent;
-  border-radius: var(--p-raio);
-  padding: var(--p-6) var(--p-4);
+  border-radius: 16px;
+  padding: 24px 20px;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 16px;
   cursor: pointer;
-  min-height: 420px;
-  text-align: center;
+  min-height: 90px;
+  text-align: left;
   color: var(--p-tinta-media);
   transition: all 0.2s ease;
 }
@@ -1410,7 +1557,7 @@
   background: rgba(123, 31, 162, 0.03);
   color: var(--p-acao);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(123, 31, 162, 0.08);
+  box-shadow: 0 4px 16px rgba(123, 31, 162, 0.08);
 }
 
 .onibus-card--adicionar-icone {
@@ -1423,6 +1570,7 @@
   align-items: center;
   justify-content: center;
   color: inherit;
+  flex-shrink: 0;
   transition: all 0.2s ease;
 }
 
@@ -1430,6 +1578,12 @@
   background: var(--p-acao-fraca);
   border-color: var(--p-acao);
   color: var(--p-acao);
+}
+
+.onibus-card--adicionar-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .onibus-card--adicionar-titulo {
@@ -1443,17 +1597,10 @@
   font-size: 12px;
   color: var(--p-tinta-fraca);
   margin: 0;
-  max-width: 220px;
   line-height: 1.4;
 }
 
 /* ProgressBar no card */
-.onibus-progresso {
-  padding: var(--p-3) var(--p-4);
-  background: var(--p-fundo);
-  border-top: 1px solid var(--p-linha);
-}
-
 .progresso-bar {
   height: 8px;
   background: var(--p-linha);

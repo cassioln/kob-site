@@ -381,10 +381,11 @@
     var maxL = Number(estado.frota.capacidade || 46);
     var minL = Number(estado.frota.minimo || 40);
 
-    // Renderiza cada onibus
+    // Renderiza cada onibus como uma linha horizontal completa (veículo)
     onibusList.forEach(function (info) {
       var busNum = Number(info.numero || 1);
       var ocupados = Number(info.ocupados || 0);
+      var vagasRestantes = Math.max(0, maxL - ocupados);
 
       var card = document.createElement('div');
       card.className = 'onibus-card';
@@ -398,7 +399,6 @@
         var totalDoItem = itemArrastando.total || 1;
         var mesmoOnibus = (itemArrastando.origemBus === busNum);
 
-        // Se já está no ônibus, é neutro; se vem de outro ônibus, checa se cabe
         if (mesmoOnibus) {
           card.classList.add('drag-over');
           card.classList.remove('drag-error');
@@ -415,7 +415,6 @@
       });
 
       card.addEventListener('dragleave', function (ev) {
-        // Evita piscar se o cursor apenas se mover sobre elementos filhos
         if (ev.relatedTarget && card.contains(ev.relatedTarget)) return;
         card.classList.remove('drag-over');
         card.classList.remove('drag-error');
@@ -431,8 +430,8 @@
         if (itemArrastando && itemArrastando.origemBus !== busNum) {
           var totalDoItem = itemArrastando.total || 1;
           if (ocupados + totalDoItem > maxL) {
-            var vagasRestantes = Math.max(0, maxL - ocupados);
-            mostrarAlertaModal('Ônibus Lotado', 'O Ônibus ' + busNum + ' não tem vagas suficientes (' + (vagasRestantes === 1 ? '1 vaga restante' : vagasRestantes + ' vagas restantes') + ') para acomodar este grupo de ' + (totalDoItem === 1 ? '1 pessoa' : totalDoItem + ' pessoas') + '.', 'erro');
+            var vagasRestantesMsg = Math.max(0, maxL - ocupados);
+            mostrarAlertaModal('Ônibus Lotado', 'O Ônibus ' + busNum + ' não tem vagas suficientes (' + (vagasRestantesMsg === 1 ? '1 vaga restante' : vagasRestantesMsg + ' vagas restantes') + ') para acomodar este grupo de ' + (totalDoItem === 1 ? '1 pessoa' : totalDoItem + ' pessoas') + '.', 'erro');
             return;
           }
         }
@@ -440,13 +439,18 @@
         moverParaOnibus(rId, busNum);
       });
 
-      // Cabecalho
+      // --- HEADER DO ÔNIBUS ---
       var header = document.createElement('div');
       header.className = 'onibus-card__header';
+      
+      // Esquerda: Título e Badge de Status
+      var headerLeft = document.createElement('div');
+      headerLeft.className = 'onibus-card__header-left';
+      
       var titulo = document.createElement('h3');
       titulo.className = 'onibus-card__titulo';
-      titulo.textContent = 'Ônibus ' + busNum;
-      
+      titulo.innerHTML = '🚍 Ônibus ' + busNum;
+
       var badge = document.createElement('span');
       badge.className = 'onibus-card__badge';
       if (info.fechado || ocupados >= minL) {
@@ -456,171 +460,12 @@
         badge.classList.add('onibus-card__badge--provisorio');
         badge.textContent = 'Em aberto (' + ocupados + '/' + minL + ')';
       }
-      header.append(titulo, badge);
+      headerLeft.append(titulo, badge);
 
-      // Corpo (planta + lista de grupos)
-      var corpo = document.createElement('div');
-      corpo.className = 'onibus-card__corpo';
-      
-      var planta = document.createElement('div');
-      planta.className = 'onibus-planta';
-      planta.title = 'Planta de assentos (Capacidade: ' + maxL + ' lugares)';
-      
-      var qtdDesenhada = 0;
-      var fileiras = Math.ceil(maxL / 4);
-      for (var f = 0; f < fileiras; f++) {
-        var linhaAssentos = document.createElement('div');
-        linhaAssentos.className = 'planta-fileira';
-        for (var c = 0; c < 4; c++) {
-          if (qtdDesenhada >= maxL) break;
-          var assento = document.createElement('div');
-          assento.className = 'planta-assento';
-          if (qtdDesenhada < ocupados) {
-            assento.classList.add('ocupado');
-            if (info.vip_inclusos && qtdDesenhada < info.vip_inclusos) {
-              assento.title = 'Lugar VIP / Organização';
-              assento.style.filter = 'hue-rotate(90deg)';
-            }
-          }
-          linhaAssentos.appendChild(assento);
-          // Adiciona corredor central
-          if (c === 1) {
-            var corredor = document.createElement('div');
-            corredor.style.width = '6px';
-            linhaAssentos.appendChild(corredor);
-          }
-          qtdDesenhada++;
-        }
-        planta.appendChild(linhaAssentos);
-      }
+      // Centro: Barra de Progresso com Marcador de 40
+      var headerCenter = document.createElement('div');
+      headerCenter.className = 'onibus-card__header-center';
 
-      var listaGrupos = document.createElement('div');
-      listaGrupos.className = 'onibus-grupos';
-      
-      if (info.reservas && info.reservas.length) {
-        info.reservas.forEach(function (r) {
-          var item = document.createElement('div');
-          item.className = 'grupo-item';
-          item.draggable = true;
-          item.dataset.reserva = r.id;
-          
-          item.addEventListener('dragstart', function (ev) {
-            ev.dataTransfer.setData('text/plain', r.id);
-            itemArrastando = { id: r.id, total: Number(r.total || 1), origemBus: busNum };
-            item.classList.add('dragging');
-          });
-          item.addEventListener('dragend', function () {
-            itemArrastando = null;
-            item.classList.remove('dragging');
-            document.querySelectorAll('.onibus-card').forEach(function(c) {
-              c.classList.remove('drag-over', 'drag-error');
-            });
-          });
-
-          var infoGrupo = document.createElement('div');
-          infoGrupo.className = 'grupo-item__info';
-
-          var nomeSpan = document.createElement('span');
-          nomeSpan.className = 'grupo-item__nome';
-          nomeSpan.textContent = r.grupo || r.responsavel;
-          
-          var descSpan = document.createElement('span');
-          descSpan.className = 'grupo-item__responsavel';
-          if (r.grupo) {
-             descSpan.textContent = 'Resp: ' + r.responsavel;
-          } else {
-             descSpan.textContent = r.code || 'Reserva';
-          }
-          
-          if (r.is_vip) {
-            item.style.backgroundColor = '#fefce8';
-            item.style.borderColor = '#fef08a';
-            nomeSpan.style.color = '#a16207';
-            nomeSpan.style.display = 'flex';
-            nomeSpan.style.alignItems = 'center';
-            nomeSpan.style.gap = '4px';
-            var estrela = document.createElement('span');
-            estrela.textContent = '★';
-            estrela.style.color = '#eab308';
-            nomeSpan.prepend(estrela);
-          }
-
-          infoGrupo.append(nomeSpan, descSpan);
-
-          var acoesGrupo = document.createElement('div');
-          acoesGrupo.className = 'grupo-item__acoes';
-
-          var tamSpan = document.createElement('span');
-          tamSpan.className = 'grupo-item__tamanho';
-          if (r.is_vip) {
-            tamSpan.textContent = '1 VIP';
-          } else {
-            tamSpan.textContent = r.total === 1 ? '1 pessoa' : r.total + ' pessoas';
-          }
-
-          // Seletor de atalho rápido para mover (ideal para telas touch ou cliques rápidos)
-          var selectMover = document.createElement('select');
-          selectMover.className = 'grupo-item__select-mover';
-          selectMover.title = 'Mover para outro ônibus';
-          selectMover.setAttribute('aria-label', 'Mover para outro ônibus');
-          
-          var optPadrao = document.createElement('option');
-          optPadrao.value = '';
-          optPadrao.textContent = 'Mover…';
-          optPadrao.disabled = true;
-          optPadrao.selected = true;
-          selectMover.appendChild(optPadrao);
-
-          onibusList.forEach(function (outro) {
-            var numOutro = Number(outro.numero);
-            if (numOutro !== busNum) {
-              var opt = document.createElement('option');
-              opt.value = numOutro;
-              var vagasLivres = Math.max(0, maxL - Number(outro.ocupados || 0));
-              opt.textContent = 'Ônibus ' + numOutro + ' (' + vagasLivres + ' vagas)';
-              selectMover.appendChild(opt);
-            }
-          });
-
-          selectMover.addEventListener('change', function () {
-            if (!this.value) return;
-            var novoBus = Number(this.value);
-            var destInfo = onibusList.find(function (o) { return Number(o.numero) === novoBus; });
-            var ocupadosDest = destInfo ? Number(destInfo.ocupados || 0) : 0;
-            var totalDoItem = Number(r.total || 1);
-            if (ocupadosDest + totalDoItem > maxL) {
-              var vagasRestantes = Math.max(0, maxL - ocupadosDest);
-              mostrarAlertaModal('Ônibus Lotado', 'O Ônibus ' + novoBus + ' não tem vagas suficientes (' + (vagasRestantes === 1 ? '1 vaga restante' : vagasRestantes + ' vagas restantes') + ') para acomodar este grupo de ' + (totalDoItem === 1 ? '1 pessoa' : totalDoItem + ' pessoas') + '.', 'erro');
-              this.value = '';
-              return;
-            }
-            moverParaOnibus(r.id, novoBus);
-          });
-
-          acoesGrupo.append(tamSpan, selectMover);
-
-          item.append(infoGrupo, acoesGrupo);
-          listaGrupos.appendChild(item);
-        });
-      } else {
-        var vazioHint = document.createElement('div');
-        vazioHint.style.font = '400 12px/1.4 system-ui, -apple-system, sans-serif';
-        vazioHint.style.color = 'var(--p-tinta-fraca)';
-        vazioHint.style.padding = '24px 12px';
-        vazioHint.style.textAlign = 'center';
-        vazioHint.style.border = '1px dashed var(--p-linha-forte)';
-        vazioHint.style.borderRadius = '8px';
-        vazioHint.style.background = 'var(--p-fundo)';
-        vazioHint.textContent = 'Arraste grupos de passageiros para cá ou use o botão Mover';
-        listaGrupos.appendChild(vazioHint);
-      }
-
-      corpo.append(planta, listaGrupos);
-
-      // Rodape / ProgressBar
-      var rodape = document.createElement('div');
-      rodape.className = 'onibus-progresso';
-      
       var barWrap = document.createElement('div');
       barWrap.className = 'progresso-bar';
       var barFill = document.createElement('div');
@@ -632,9 +477,10 @@
       }
       var perc = Math.min(100, Math.round((ocupados / maxL) * 100));
       barFill.style.transform = 'scaleX(' + (perc / 100) + ')';
+      
       var mark = document.createElement('div');
       mark.className = 'progresso-bar__marker';
-      mark.title = 'Meta de viabilidade: 40 lugares';
+      mark.title = 'Meta de viabilidade: 40 assentos';
       barWrap.append(barFill, mark);
 
       var tx = document.createElement('div');
@@ -649,32 +495,253 @@
       var txRight = document.createElement('span');
       var faltaFechamento = Math.max(0, minL - ocupados);
       if (info.fechado || ocupados >= minL) {
-        txRight.textContent = 'Mínimo atingido';
+        txRight.textContent = 'Meta atingida';
         txRight.style.color = 'var(--p-ok)';
         txRight.style.fontWeight = '600';
       } else {
-        txRight.textContent = 'Faltam ' + faltaFechamento + ' p/ fechar';
+        txRight.textContent = 'Faltam ' + faltaFechamento + ' p/ meta';
       }
       tx.append(txLeft, txRight);
-      rodape.append(barWrap, tx);
+      headerCenter.append(barWrap, tx);
 
-      card.append(header, corpo, rodape);
+      // Direita: Badge com vagas livres
+      var headerRight = document.createElement('div');
+      headerRight.className = 'onibus-card__header-right';
+      
+      var vagasBadge = document.createElement('span');
+      vagasBadge.className = 'onibus-card__vagas-badge';
+      if (vagasRestantes === 0) {
+        vagasBadge.textContent = '0 vagas livres';
+        vagasBadge.style.color = 'var(--p-falha)';
+      } else {
+        vagasBadge.textContent = vagasRestantes === 1 ? '1 vaga livre' : vagasRestantes + ' vagas livres';
+      }
+      headerRight.appendChild(vagasBadge);
+
+      header.append(headerLeft, headerCenter, headerRight);
+
+      // --- CORPO DO ÔNIBUS (HORIZONTAL) ---
+      var corpo = document.createElement('div');
+      corpo.className = 'onibus-card__corpo';
+
+      // 1. Mini-Planta Visual dos 46 Assentos
+      var plantaContainer = document.createElement('div');
+      plantaContainer.className = 'onibus-planta-container';
+
+      var plantaHeader = document.createElement('div');
+      plantaHeader.className = 'onibus-planta-header';
+      plantaHeader.innerHTML = '<span>Mapa de Assentos</span><span>' + ocupados + '/' + maxL + '</span>';
+
+      var planta = document.createElement('div');
+      planta.className = 'onibus-planta';
+      planta.title = 'Planta de assentos do Ônibus ' + busNum;
+
+      var qtdDesenhada = 0;
+      var fileiras = Math.ceil(maxL / 4);
+      for (var f = 0; f < fileiras; f++) {
+        var linhaAssentos = document.createElement('div');
+        linhaAssentos.className = 'planta-fileira';
+        for (var c = 0; c < 4; c++) {
+          if (qtdDesenhada >= maxL) break;
+          var assento = document.createElement('div');
+          assento.className = 'planta-assento';
+          if (qtdDesenhada < ocupados) {
+            assento.classList.add('ocupado');
+            if (info.vip_inclusos && qtdDesenhada < info.vip_inclusos) {
+              assento.classList.add('vip');
+              assento.title = 'Lugar VIP da Organização';
+            }
+          }
+          linhaAssentos.appendChild(assento);
+          // Corredor central
+          if (c === 1) {
+            var corredor = document.createElement('div');
+            corredor.style.width = '8px';
+            linhaAssentos.appendChild(corredor);
+          }
+          qtdDesenhada++;
+        }
+        planta.appendChild(linhaAssentos);
+      }
+
+      var plantaLegenda = document.createElement('div');
+      plantaLegenda.className = 'onibus-planta-legenda';
+      plantaLegenda.innerHTML = `
+        <span class="planta-legenda-item"><span class="planta-legenda-dot planta-legenda-dot--ocupado"></span> Ocup.</span>
+        <span class="planta-legenda-item"><span class="planta-legenda-dot planta-legenda-dot--vip"></span> VIP</span>
+        <span class="planta-legenda-item"><span class="planta-legenda-dot planta-legenda-dot--livre"></span> Livre</span>
+      `;
+
+      plantaContainer.append(plantaHeader, planta, plantaLegenda);
+
+      // 2. Salão de Passageiros (Baia de Grupos)
+      var salaoGrupos = document.createElement('div');
+      salaoGrupos.className = 'onibus-salao-grupos';
+
+      var salaoHeader = document.createElement('div');
+      salaoHeader.className = 'onibus-salao-header';
+      var numGrupos = (info.reservas && info.reservas.length) ? info.reservas.length : 0;
+      salaoHeader.innerHTML = '<span>Área de Embarque &middot; ' + plural(numGrupos, 'reserva alocada', 'reservas alocadas') + '</span><span>' + plural(ocupados, 'pessoa a bordo', 'pessoas a bordo') + '</span>';
+
+      salaoGrupos.appendChild(salaoHeader);
+
+      var gruposGrid = document.createElement('div');
+      gruposGrid.className = 'onibus-grupos-grid';
+
+      if (info.reservas && info.reservas.length) {
+        info.reservas.forEach(function (r) {
+          var item = document.createElement('div');
+          item.className = 'grupo-item' + (r.is_vip ? ' grupo-item--vip' : '');
+          item.draggable = true;
+          item.dataset.reserva = r.id;
+
+          item.addEventListener('dragstart', function (ev) {
+            ev.dataTransfer.setData('text/plain', r.id);
+            itemArrastando = { id: r.id, total: Number(r.total || 1), origemBus: busNum };
+            item.classList.add('dragging');
+          });
+          item.addEventListener('dragend', function () {
+            itemArrastando = null;
+            item.classList.remove('dragging');
+            document.querySelectorAll('.onibus-card').forEach(function(c) {
+              c.classList.remove('drag-over', 'drag-error');
+            });
+          });
+
+          // Topo do card: Nome do Grupo / Responsável + Código
+          var itemTop = document.createElement('div');
+          itemTop.className = 'grupo-item__top';
+
+          var tituloGrupo = document.createElement('div');
+          tituloGrupo.className = 'grupo-item__titulo';
+          if (r.is_vip) {
+            tituloGrupo.innerHTML = '★ Lugar VIP da Organização';
+          } else if (r.grupo) {
+            tituloGrupo.textContent = r.grupo;
+          } else {
+            tituloGrupo.textContent = r.responsavel;
+          }
+
+          var codeTag = document.createElement('span');
+          codeTag.className = 'grupo-item__code';
+          codeTag.textContent = '#' + (r.code || 'RESERVA');
+
+          itemTop.append(tituloGrupo, codeTag);
+          item.appendChild(itemTop);
+
+          // Subtítulo do Responsável (quando há nome de grupo)
+          if (!r.is_vip && r.grupo && r.responsavel) {
+            var respEl = document.createElement('div');
+            respEl.className = 'grupo-item__responsavel';
+            respEl.textContent = '👤 Resp: ' + r.responsavel;
+            item.appendChild(respEl);
+          }
+
+          // Lista detalhada de nomes de passageiros (quando houver)
+          if (!r.is_vip && Array.isArray(r.passageiros) && r.passageiros.length > 1) {
+            var passList = document.createElement('div');
+            passList.className = 'grupo-item__passageiros-lista';
+            passList.title = 'Passageiros do grupo';
+            passList.textContent = 'Passageiros: ' + r.passageiros.join(', ');
+            item.appendChild(passList);
+          }
+
+          // Rodapé do card: Badge de Pessoas e Seletor Mover
+          var itemBottom = document.createElement('div');
+          itemBottom.className = 'grupo-item__bottom';
+
+          var tamTag = document.createElement('span');
+          tamTag.className = 'grupo-item__tag-tamanho';
+          if (r.is_vip) {
+            tamTag.textContent = '1 VIP';
+          } else {
+            var labelPax = (r.pagantes || r.total) + ' pag.';
+            if (r.criancas > 0) labelPax += ' + ' + r.criancas + ' colo';
+            tamTag.textContent = labelPax + ' (' + (r.total === 1 ? '1 pessoa' : r.total + ' pessoas') + ')';
+          }
+
+          // Seletor Mover para outro ônibus
+          var selectMover = document.createElement('select');
+          selectMover.className = 'grupo-item__select-mover';
+          selectMover.title = 'Mover para outro ônibus';
+          selectMover.setAttribute('aria-label', 'Mover para outro ônibus');
+
+          var optPadrao = document.createElement('option');
+          optPadrao.value = '';
+          optPadrao.textContent = 'Mover…';
+          optPadrao.disabled = true;
+          optPadrao.selected = true;
+          selectMover.appendChild(optPadrao);
+
+          onibusList.forEach(function (outro) {
+            var numOutro = Number(outro.numero);
+            if (numOutro !== busNum) {
+              var opt = document.createElement('option');
+              opt.value = numOutro;
+              var vagasLivresOutro = Math.max(0, maxL - Number(outro.ocupados || 0));
+              opt.textContent = 'Ônibus ' + numOutro + ' (' + vagasLivresOutro + ' vagas)';
+              selectMover.appendChild(opt);
+            }
+          });
+
+          selectMover.addEventListener('change', function () {
+            if (!this.value) return;
+            var novoBus = Number(this.value);
+            var destInfo = onibusList.find(function (o) { return Number(o.numero) === novoBus; });
+            var ocupadosDest = destInfo ? Number(destInfo.ocupados || 0) : 0;
+            var totalDoItem = Number(r.total || 1);
+            if (ocupadosDest + totalDoItem > maxL) {
+              var vagasRestantesMsg = Math.max(0, maxL - ocupadosDest);
+              mostrarAlertaModal('Ônibus Lotado', 'O Ônibus ' + novoBus + ' não tem vagas suficientes (' + (vagasRestantesMsg === 1 ? '1 vaga restante' : vagasRestantesMsg + ' vagas restantes') + ') para acomodar este grupo de ' + (totalDoItem === 1 ? '1 pessoa' : totalDoItem + ' pessoas') + '.', 'erro');
+              this.value = '';
+              return;
+            }
+            moverParaOnibus(r.id, novoBus);
+          });
+
+          itemBottom.append(tamTag, selectMover);
+          item.appendChild(itemBottom);
+
+          gruposGrid.appendChild(item);
+        });
+      } else {
+        var vazioHint = document.createElement('div');
+        vazioHint.style.font = '400 13px/1.5 system-ui, -apple-system, sans-serif';
+        vazioHint.style.color = 'var(--p-tinta-fraca)';
+        vazioHint.style.padding = '32px 16px';
+        vazioHint.style.textAlign = 'center';
+        vazioHint.style.border = '1px dashed var(--p-linha-forte)';
+        vazioHint.style.borderRadius = '10px';
+        vazioHint.style.background = 'var(--p-superficie)';
+        vazioHint.style.gridColumn = '1 / -1';
+        vazioHint.textContent = '🚍 Cabine vazia. Arraste grupos ou use a opção "Mover…" em qualquer reserva para alocar pessoas neste ônibus.';
+        gruposGrid.appendChild(vazioHint);
+      }
+
+      salaoGrupos.appendChild(gruposGrid);
+
+      corpo.append(plantaContainer, salaoGrupos);
+      card.append(header, corpo);
+
       el.frotaContainer.appendChild(card);
     });
-    
-    // Card para Adicionar Ônibus Vazio
+
+    // Card Horizontal para Adicionar Ônibus Vazio
+    var nextBusNum = onibusList.length > 0 ? Math.max.apply(null, onibusList.map(function(o) { return Number(o.numero); })) + 1 : 1;
     var btnAdd = document.createElement('button');
     btnAdd.type = 'button';
     btnAdd.className = 'onibus-card onibus-card--adicionar';
     btnAdd.innerHTML = `
       <div class="onibus-card--adicionar-icone">
-        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="12" y1="5" x2="12" y2="19"></line>
           <line x1="5" y1="12" x2="19" y2="12"></line>
         </svg>
       </div>
-      <h4 class="onibus-card--adicionar-titulo">+ Adicionar Ônibus Vazio</h4>
-      <p class="onibus-card--adicionar-desc">Cria um novo ônibus para balancear grupos e organizar a frota.</p>
+      <div class="onibus-card--adicionar-texto">
+        <h4 class="onibus-card--adicionar-titulo">+ Adicionar Ônibus Vazio à Frota (Ônibus ` + nextBusNum + `)</h4>
+        <p class="onibus-card--adicionar-desc">Cria uma nova cabine para balancear grupos e organizar os assentos da viagem.</p>
+      </div>
     `;
     btnAdd.onclick = function() {
       var novoBusNum = onibusList.length > 0 ? Math.max.apply(null, onibusList.map(function(o) { return Number(o.numero); })) + 1 : 1;
@@ -682,7 +749,7 @@
       renderizarFrota();
     };
     el.frotaContainer.appendChild(btnAdd);
-    
+
     // Config do VIP
     if (document.activeElement !== el.vipInput) {
        el.vipInput.value = estado.frota.vip_seats || 0;

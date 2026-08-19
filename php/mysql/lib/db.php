@@ -123,12 +123,8 @@ function bus_pdo(): PDO
     // time_zone='+00:00' porque as colunas DATETIME do schema são declaradas
     // como UTC (MySQL não tem tipo com timezone). Usar '-03:00' aqui gravaria
     // horário de Brasília em coluna documentada como UTC — 3h de divergência.
-    if (defined('PDO::MYSQL_ATTR_INIT_COMMAND')) {
-        $options[constant('PDO::MYSQL_ATTR_INIT_COMMAND')] =
-            "SET sql_mode='STRICT_ALL_TABLES,NO_ENGINE_SUBSTITUTION', time_zone='+00:00'";
-    }
-
     $pdo = new PDO($dsn, $config['db_user'], $config['db_password'], $options);
+    $pdo->exec("SET sql_mode='STRICT_ALL_TABLES,NO_ENGINE_SUBSTITUTION', time_zone='+00:00'");
 
     return $pdo;
 }
