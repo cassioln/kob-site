@@ -173,12 +173,12 @@ try {
                     $code,
                     [
                         'tipo' => 'texto',
-                        'valor' => $r['bus_number'] !== null ? 'Ônibus ' . $r['bus_number'] : '—',
+                        'v' => $r['bus_number'] !== null ? 'Ônibus ' . $r['bus_number'] : '—',
                         'estilo' => 'texto',
                     ],
                     [
                         'tipo' => 'numero',
-                        'valor' => $p['position'] ?? 1,
+                        'v' => $p['position'] ?? 1,
                         'estilo' => 'centralizado',
                     ],
                     (string) $p['full_name'],
