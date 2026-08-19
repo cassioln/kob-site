@@ -153,15 +153,23 @@ try {
         // coluna já existe
     }
 
+    $vipCount = 0;
+    $vipAssignments = [];
     try {
-        $q_settings = $pdo->query("SELECT setting_value FROM bus_settings WHERE setting_key = 'vip_seats'");
-        $setting_vip = $q_settings ? $q_settings->fetch(PDO::FETCH_ASSOC) : null;
-        if ($setting_vip) {
-            $resumo['vip_seats'] = (int) $setting_vip['setting_value'];
+        $q_settings = $pdo->query("SELECT setting_key, setting_value FROM bus_settings WHERE setting_key IN ('vip_seats', 'vip_assignments')");
+        if ($q_settings) {
+            foreach ($q_settings->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                if ($row['setting_key'] === 'vip_seats') {
+                    $vipCount = (int) $row['setting_value'];
+                } elseif ($row['setting_key'] === 'vip_assignments') {
+                    $vipAssignments = json_decode($row['setting_value'], true) ?: [];
+                }
+            }
         }
     } catch (Throwable $e) {
-        $resumo['vip_seats'] = 0;
+        // ignora
     }
+    $resumo['vip_seats'] = $vipCount;
 
     $porOnibus = [];
     $maxBusNum = 3;
@@ -280,10 +288,42 @@ try {
     $resumo['total_a_bordo'] = $resumo['pagantes'] + $resumo['criancas_no_colo'] + $resumo['vip_seats'];
     $resumo['receita'] = number_format($resumo['receita_centavos'] / 100, 2, ',', '.');
 
+    // Injetar VIPs nos respectivos ônibus
+    for ($i = 1; $i <= $vipCount; $i++) {
+        $vipId = 'vip_' . $i;
+        $bNum = isset($vipAssignments[$vipId]) ? (int) $vipAssignments[$vipId] : 1;
+        if ($bNum < 1) $bNum = 1;
+        
+        if ($bNum > $maxBusNum) {
+            $maxBusNum = $bNum;
+        }
+
+        if (!isset($porOnibus[$bNum])) {
+            $porOnibus[$bNum] = [
+                'numero' => $bNum,
+                'pagantes' => 0,
+                'criancas' => 0,
+                'total' => 0,
+                'reservas' => [],
+            ];
+        }
+
+        $porOnibus[$bNum]['total'] += 1;
+        $porOnibus[$bNum]['reservas'][] = [
+            'id' => $vipId,
+            'code' => 'VIP ' . $i,
+            'grupo' => 'Lugar VIP',
+            'responsavel' => 'Reserva VIP',
+            'pagantes' => 1,
+            'criancas' => 0,
+            'total' => 1,
+            'is_vip' => true
+        ];
+    }
+
     // Constrói a lista de ônibus (exibe sempre no mínimo 3 ônibus)
     $listaOnibus = [];
     $totalBusesToShow = max(3, $maxBusNum);
-    $vipCount = $resumo['vip_seats'];
 
     for ($i = 1; $i <= $totalBusesToShow; $i++) {
         $busData = $porOnibus[$i] ?? [
@@ -294,10 +334,17 @@ try {
             'reservas' => [],
         ];
 
-        // Lugares VIP contam na ocupação do Ônibus 1
-        $ocupados = $busData['total'] + ($i === 1 ? $vipCount : 0);
+        // O total do ônibus já soma pagantes + criancas + VIPs
+        $vipsNoOnibus = 0;
+        foreach ($busData['reservas'] as $r) {
+            if (!empty($r['is_vip'])) {
+                $vipsNoOnibus++;
+            }
+        }
+
+        $ocupados = $busData['total'];
         $busData['ocupados'] = $ocupados;
-        $busData['vip_inclusos'] = ($i === 1 ? $vipCount : 0);
+        $busData['vip_inclusos'] = $vipsNoOnibus;
         $busData['fechado'] = $ocupados >= 40;
         $listaOnibus[] = $busData;
     }

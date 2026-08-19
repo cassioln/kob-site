@@ -423,6 +423,20 @@
           if (r.grupo) {
              descSpan.textContent = 'Resp: ' + r.responsavel;
           }
+          
+          if (r.is_vip) {
+            item.style.backgroundColor = '#fefce8';
+            item.style.borderColor = '#fef08a';
+            nomeSpan.style.color = '#a16207';
+            nomeSpan.style.display = 'flex';
+            nomeSpan.style.alignItems = 'center';
+            nomeSpan.style.gap = '4px';
+            var estrela = document.createElement('span');
+            estrela.textContent = '★';
+            estrela.style.color = '#eab308';
+            nomeSpan.prepend(estrela);
+          }
+
           infoGrupo.append(nomeSpan, descSpan);
 
           var tamSpan = document.createElement('span');

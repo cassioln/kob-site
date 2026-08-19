@@ -39,7 +39,69 @@ try {
 
     $pdo = bus_pdo();
     
-    // Validar se a reserva existe e está confirmada
+    // Tratamento para VIPs (IDs virtuais vip_1, vip_2 etc)
+    if (str_starts_with($registrationId, 'vip_')) {
+        $q_settings = $pdo->query("SELECT setting_key, setting_value FROM bus_settings WHERE setting_key IN ('vip_seats', 'vip_assignments')");
+        $vipCount = 0;
+        $vipAssignments = [];
+        if ($q_settings) {
+            foreach ($q_settings->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                if ($row['setting_key'] === 'vip_seats') {
+                    $vipCount = (int) $row['setting_value'];
+                } elseif ($row['setting_key'] === 'vip_assignments') {
+                    $vipAssignments = json_decode($row['setting_value'], true) ?: [];
+                }
+            }
+        }
+        
+        $vipNumber = (int) substr($registrationId, 4);
+        if ($vipNumber < 1 || $vipNumber > $vipCount) {
+            throw new ValidationError('VIP não encontrado.');
+        }
+
+        $tamanhoReserva = 1;
+        
+        if ($bus_number !== null) {
+            $stmtBus = $pdo->prepare('
+                SELECT SUM(passenger_count + children_count) AS ocupacao 
+                  FROM bus_registrations 
+                 WHERE status = "confirmed" AND bus_number = ?
+            ');
+            $stmtBus->execute([$bus_number]);
+            $ocupacaoAtual = (int) $stmtBus->fetchColumn();
+
+            foreach ($vipAssignments as $vId => $bNum) {
+                if ($vId !== $registrationId && (int)$bNum === $bus_number) {
+                    $ocupacaoAtual++;
+                }
+            }
+            if ($bus_number === 1) {
+                for ($i = 1; $i <= $vipCount; $i++) {
+                    $vId = 'vip_' . $i;
+                    if ($vId !== $registrationId && !isset($vipAssignments[$vId])) {
+                        $ocupacaoAtual++;
+                    }
+                }
+            }
+
+            if ($ocupacaoAtual + $tamanhoReserva > 46) {
+                throw new ValidationError('O Ônibus ' . $bus_number . ' não tem capacidade suficiente (' . (46 - $ocupacaoAtual) . ' vagas restantes).');
+            }
+        }
+
+        $vipAssignments[$registrationId] = $bus_number !== null ? $bus_number : 1;
+        $stmtUpdate = $pdo->prepare('
+            INSERT INTO bus_settings (setting_key, setting_value) 
+            VALUES ("vip_assignments", ?)
+            ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)
+        ');
+        $stmtUpdate->execute([json_encode($vipAssignments)]);
+        
+        json_response(200, ['success' => true, 'bus_number' => $bus_number]);
+        exit;
+    }
+
+    // Tratamento para Reservas Reais
     $stmt = $pdo->prepare('SELECT status, passenger_count, children_count FROM bus_registrations WHERE id = ?');
     $stmt->execute([$registrationId]);
     $reserva = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -64,10 +126,31 @@ try {
         $stmtBus->execute([$bus_number, $registrationId]);
         $ocupacaoAtual = (int) $stmtBus->fetchColumn();
 
+        // Adiciona VIPs que estao no onibus destino
+        $q_settings = $pdo->query("SELECT setting_key, setting_value FROM bus_settings WHERE setting_key IN ('vip_seats', 'vip_assignments')");
+        $vipCount = 0;
+        $vipAssignments = [];
+        if ($q_settings) {
+            foreach ($q_settings->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                if ($row['setting_key'] === 'vip_seats') {
+                    $vipCount = (int) $row['setting_value'];
+                } elseif ($row['setting_key'] === 'vip_assignments') {
+                    $vipAssignments = json_decode($row['setting_value'], true) ?: [];
+                }
+            }
+        }
+        foreach ($vipAssignments as $vId => $bNum) {
+            if ((int)$bNum === $bus_number) {
+                $ocupacaoAtual++;
+            }
+        }
         if ($bus_number === 1) {
-            $qVip = $pdo->query("SELECT setting_value FROM bus_settings WHERE setting_key = 'vip_seats'");
-            $vipSeats = (int) ($qVip ? $qVip->fetchColumn() : 0);
-            $ocupacaoAtual += $vipSeats;
+            for ($i = 1; $i <= $vipCount; $i++) {
+                $vId = 'vip_' . $i;
+                if (!isset($vipAssignments[$vId])) {
+                    $ocupacaoAtual++;
+                }
+            }
         }
         
         if ($ocupacaoAtual + $tamanhoReserva > 46) {
