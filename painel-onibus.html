@@ -205,7 +205,21 @@
     </div>
   </footer>
 
-  <script defer src="assets/js/painel-onibus.js?v=20260818-20-na"></script>
+  <!-- Modal de Alerta / Erro / Aviso -->
+  <dialog id="painel-alerta-dialog" class="bus-dialog" aria-labelledby="painel-dialog-titulo">
+    <div class="bus-dialog__header">
+      <div id="painel-dialog-icone" class="bus-dialog__badge-icone bus-dialog__badge-icone--erro">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+      </div>
+      <h2 id="painel-dialog-titulo">Aviso</h2>
+    </div>
+    <p id="painel-dialog-mensagem">Mensagem descritiva do aviso.</p>
+    <div class="bus-dialog__actions">
+      <button id="painel-dialog-fechar" class="botao botao--primario" type="button" autofocus>Entendido</button>
+    </div>
+  </dialog>
+
+  <script defer src="assets/js/painel-onibus.js?v=20260819-modal"></script>
 </body>
 
 </html>

@@ -43,13 +43,17 @@
     conteudosAba: document.querySelectorAll('.painel-aba-conteudo'),
     frotaContainer: document.getElementById('frota-onibus-container'),
     vipInput: document.getElementById('vip-input'),
-    vipSalvar: document.getElementById('salvar-vip')
+    vipSalvar: document.getElementById('salvar-vip'),
+    alertaDialog: document.getElementById('painel-alerta-dialog'),
+    dialogTitulo: document.getElementById('painel-dialog-titulo'),
+    dialogMensagem: document.getElementById('painel-dialog-mensagem'),
+    dialogIcone: document.getElementById('painel-dialog-icone'),
+    dialogFechar: document.getElementById('painel-dialog-fechar')
   };
 
   var estado = {
     reservas: [],
     filtro: 'pago',
-    busca: '',
     busca: '',
     token: '',
     frota: null
@@ -61,6 +65,57 @@
   var grupoRealcado = null;
 
   // ---- utilidades ---------------------------------------------------------
+
+  function mostrarAlertaModal(titulo, mensagem, tipo) {
+    tipo = tipo || 'erro';
+    var dialog = el.alertaDialog || document.getElementById('painel-alerta-dialog');
+    if (!dialog) {
+      alert((titulo ? titulo + ': ' : '') + mensagem);
+      return;
+    }
+
+    var tituloEl = el.dialogTitulo || document.getElementById('painel-dialog-titulo');
+    var msgEl = el.dialogMensagem || document.getElementById('painel-dialog-mensagem');
+    var iconeEl = el.dialogIcone || document.getElementById('painel-dialog-icone');
+    var btnFechar = el.dialogFechar || document.getElementById('painel-dialog-fechar');
+
+    if (tituloEl) tituloEl.textContent = titulo || 'Aviso';
+    if (msgEl) msgEl.textContent = mensagem || '';
+
+    if (iconeEl) {
+      iconeEl.className = 'bus-dialog__badge-icone bus-dialog__badge-icone--' + (tipo === 'ok' ? 'ok' : (tipo === 'aviso' ? 'aviso' : 'erro'));
+      if (tipo === 'ok') {
+        iconeEl.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>';
+      } else if (tipo === 'aviso') {
+        iconeEl.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>';
+      } else {
+        iconeEl.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>';
+      }
+    }
+
+    if (btnFechar) {
+      btnFechar.onclick = function () {
+        dialog.close();
+      };
+    }
+
+    // Fechar ao clicar no backdrop
+    dialog.onclick = function (e) {
+      if (e.target === dialog) {
+        dialog.close();
+      }
+    };
+
+    if (typeof dialog.showModal === 'function') {
+      try {
+        dialog.showModal();
+      } catch (err) {
+        dialog.setAttribute('open', '');
+      }
+    } else {
+      dialog.setAttribute('open', '');
+    }
+  }
 
   function mostrar(secao) {
     [el.carregando, el.estadoLogin, el.erro, el.vazio, el.dados].forEach(function (s) {
@@ -558,7 +613,7 @@
       // Recarrega tudo para manter as totalizacoes sincronizadas
       carregar();
     }).catch(function(err) {
-      alert('Falha ao mover passageiros: ' + err.message);
+      mostrarAlertaModal('Não foi possível mover passageiros', err.message, 'erro');
     }).finally(function() {
       el.frotaContainer.style.opacity = '1';
     });
@@ -585,7 +640,7 @@
     }).then(function() {
       carregar(); // refresh
     }).catch(function(err) {
-      alert('Falha ao atualizar lugares VIP: ' + err.message);
+      mostrarAlertaModal('Não foi possível atualizar VIPs', err.message, 'erro');
       el.vipSalvar.disabled = false;
     }).finally(function() {
       el.vipSalvar.textContent = 'Salvar';
