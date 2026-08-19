@@ -24,6 +24,13 @@ RewriteEngine On
 RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
 RewriteRule ^ https://%1%{REQUEST_URI} [L,R=301]
 
+# ---- Subdominio onibus.kriativosonboard.com.br ----
+# Serve onibus.html diretamente ao acessar a raiz do subdominio, mantendo a URL limpa
+RewriteCond %{HTTP_HOST} ^onibus\.kriativosonboard\.com\.br$ [NC]
+RewriteRule ^$ onibus.html [L]
+RewriteCond %{HTTP_HOST} ^onibus\.kriativosonboard\.com\.br$ [NC]
+RewriteRule ^index\.html$ onibus.html [L]
+
 # ---- API do onibus fretado ----
 # O frontend (assets/js/onibus.js) chama /api/<endpoint>. Os arquivos reais
 # ficam em php/mysql/. Sem estas regras as rotas retornam 404, porque o host

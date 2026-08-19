@@ -1648,14 +1648,16 @@
 }
 
 .bus-consent a {
-  color: var(--cyan, #29c3f5);
+  color: #0066cc;
   text-decoration: underline;
   text-underline-offset: 2px;
-  transition: color 0.15s ease;
+  font-weight: 500;
+  transition: color 0.15s ease, text-decoration-color 0.15s ease;
 }
 
 .bus-consent a:hover {
-  color: #ffffff;
+  color: #003866;
+  text-decoration-color: #003866;
 }
 
 .bus-form__status {
