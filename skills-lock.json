@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "lgpd-brasil": {
+      "source": "ericbsantana/llm-skills",
+      "sourceType": "github",
+      "skillPath": "skills/lgpd-brasil/SKILL.md",
+      "computedHash": "69380adee56dcf4c216638dbd6048ec99dbbf793a586a791b29d3f4866435083"
+    }
+  }
+}
