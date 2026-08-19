@@ -1647,6 +1647,17 @@
   accent-color: var(--action);
 }
 
+.bus-consent a {
+  color: var(--cyan, #29c3f5);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color 0.15s ease;
+}
+
+.bus-consent a:hover {
+  color: #ffffff;
+}
+
 .bus-form__status {
   min-height: 1.5em;
   color: var(--kriativa-magenta);
