@@ -159,10 +159,9 @@ function bus_boarding_pdf(array $reservas, ?array $logo = null): string
                      'negrito' => true, 'espacamento' => 0.5];
 
         $meta = sprintf(
-            '%d pagante(s)%s - %s',
+            '%d pagante(s)%s',
             $r['pagantes'],
-            $r['criancas'] > 0 ? ' + ' . $r['criancas'] . ' colo' : '',
-            'R$ ' . $r['valor']
+            $r['criancas'] > 0 ? ' + ' . $r['criancas'] . ' colo' : ''
         );
         $blocos[] = ['tipo' => 'texto', 'x' => $dir - pdf_largura_texto($meta, 9) - 2, 'y' => $y,
                      'texto' => $meta, 'tamanho' => 9];
