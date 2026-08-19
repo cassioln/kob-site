@@ -95,22 +95,21 @@ function bus_passenger_email_html(array $dados, string $nomePassageiro): string
                 <tr>
                   <td style="padding:18px 20px;">
                     <p style="margin:0 0 14px;font:700 12px/1.4 Arial,Helvetica,sans-serif;color:#29c3f5;letter-spacing:0.12em;text-transform:uppercase;">
-                      Informações de Embarque &amp; Pontualidade
+                      Próximos Passos &amp; Instruções de Viagem
                     </p>
-                    <p style="margin:0 0 8px;font:400 13px/1.65 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.9);">
-                      <strong style="color:#ffffff;">Local de Encontro:</strong> Rua Tagipuru, altura do número 552 — Barra Funda — SP (atrás do Memorial da América Latina).
+                    
+                    <p style="margin:0 0 12px;font:400 13px/1.65 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.9);">
+                      <strong style="color:#ffffff;">1. Ponto de Encontro:</strong> Rua Tagipuru, altura do nº 552 — Barra Funda — SP (atrás do Memorial da América Latina).
                     </p>
-                    <p style="margin:0 0 8px;font:400 13px/1.65 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.9);">
-                      <strong style="color:#ffffff;">Horário de Chegada:</strong> <span style="color:#29c3f5;font-weight:700;">06:00 hrs</span> (chegue com antecedência para conferência da lista e acomodação de bagagens).
+                    <p style="margin:0 0 12px;font:400 13px/1.65 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.9);">
+                      <strong style="color:#ffffff;">2. Horário de Encontro &amp; Saída:</strong> Chegada às <strong style="color:#29c3f5;">06h00</strong>. A saída do ônibus será às <strong style="color:#feb32c;">06h30</strong>, com tolerância máxima de 10 minutos (saída final às 06h40). Após esse horário, seguiremos viagem e o ônibus não poderá aguardar passageiros ausentes.
                     </p>
-                    <p style="margin:0 0 14px;font:400 13px/1.65 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.9);">
-                      <strong style="color:#ffffff;">Saída do Ônibus:</strong> <span style="color:#feb32c;font-weight:700;">06:20 hrs</span> (tolerância máxima de 10 minutos &mdash; saída final às 06:30 hrs impreterivelmente).
+                    <p style="margin:0 0 12px;font:400 13px/1.65 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.9);">
+                      <strong style="color:#ffffff;">3. Chegue com Antecedência:</strong> Programe-se para estar no local às 06h00 para conferência da lista e acomodação de bagagens.
                     </p>
-                    <div style="padding:12px 14px;background:rgba(254,179,44,0.1);border-left:3px solid #feb32c;border-radius:4px;">
-                      <p style="margin:0;font:400 12px/1.5 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.9);">
-                        <strong style="color:#feb32c;">Atenção importante:</strong> O ônibus não aguardará além do horário limite e <strong>não nos responsabilizamos por passageiros que perderem o transporte por atraso</strong>. Planeje sua ida até o ponto de encontro com antecedência!
-                      </p>
-                    </div>
+                    <p style="margin:0;font:400 13px/1.65 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.9);">
+                      <strong style="color:#ffffff;">4. Assentos Livres &amp; Integração:</strong> Os assentos não são exclusivos nem numerados. A ocupação é livre por ordem de chegada. Aproveite para ir conhecendo a turma e fazendo novas amizades no trajeto! <em>(Válido para ida e volta; você não necessariamente retornará no mesmo assento em que foi).</em>
+                    </p>
                   </td>
                 </tr>
               </table>
@@ -164,12 +163,11 @@ function bus_passenger_email_text(array $dados, string $nomePassageiro): string
     }
 
     $linhas[] = '';
-    $linhas[] = 'INFORMACOES DE EMBARQUE E PONTUALIDADE';
-    $linhas[] = 'Saida de Sao Paulo (Barra Funda) com destino ao Porto de Santos.';
-    $linhas[] = '- Local de Encontro: Rua Tagipuru, altura do numero 552 - Barra Funda - SP (atras do Memorial da America Latina)';
-    $linhas[] = '- Horario de Chegada: 06:00 hrs';
-    $linhas[] = '- Saida do Onibus: 06:20 hrs (Tolerancia maxima de 10 minutos - saida final as 06:30 hrs impreterivelmente)';
-    $linhas[] = '- IMPORTANTE: Devido a janela rigida de embarque no navio no Porto de Santos, o onibus nao aguardara alem da tolerancia e nao nos responsabilizamos por passageiros que perderem o transporte. Planeje sua chegada com antecedencia!';
+    $linhas[] = 'PROXIMOS PASSOS E INSTRUCOES DE VIAGEM';
+    $linhas[] = '1. Ponto de Encontro: Rua Tagipuru, altura do numero 552 - Barra Funda - SP (atras do Memorial da America Latina)';
+    $linhas[] = '2. Horario de Encontro: 06h00. Saida do onibus: 06h30 (tolerancia maxima de 10 minutos). Apos esse horario, seguiremos viagem e o onibus nao podera aguardar.';
+    $linhas[] = '3. Chegue com antecedencia e programe-se para estar no local as 06h00.';
+    $linhas[] = '4. Os assentos nao sao exclusivos. Os lugares serao ocupados por ordem de chegada, de forma livre. Aproveite para ir conhecendo os outros participantes durante o trajeto! Essa regra vale para ida e volta.';
     $linhas[] = '';
     $linhas[] = 'Ficou com alguma duvida? Responda este e-mail que a gente te ajuda.';
 

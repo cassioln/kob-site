@@ -619,19 +619,41 @@
               </div>
 
               <!-- Bloco de adesão ao grupo oficial de WhatsApp do fretado, exibido apenas para grupos com nome -->
-              <div id="confirmed-group" class="bus-confirmed__group" hidden>
-                <h3>Sua vaga está garantida!</h3>
-                <p class="bus-confirmed__group-text">Junte-se ao grupo exclusivo do fretado oficial no WhatsApp para
-                  receber avisos de embarque, tirar dúvidas e já combinar as primeiras jogatinas da viagem com a
-                  comunidade!</p>
-                <div class="bus-confirmed__group-action-row">
-                  <a class="btn bus-confirmed__wa-btn"
-                    href="https://chat.whatsapp.com/DxTVSZrcKXa6WopHZkGL5N?s=cl&amp;p=i&amp;ilr=4" target="_blank"
-                    rel="noopener">
-                    <svg viewBox="0 0 24 24" aria-hidden="true">
+              <h2 class="bus-confirmed__title" id="confirmed-title">Reserva Confirmada!</h2>
+              <p class="bus-confirmed__lead">Seu pagamento foi identificado e suas vagas estão garantidas.</p>
+
+              <div class="bus-confirmed__card">
+                <div class="bus-confirmed__code-label">Código da Reserva</div>
+                <div class="bus-confirmed__code" id="confirmed-code">KOB-0000</div>
+
+                <div class="bus-confirmed__group-wrapper" id="confirmed-group-wrapper" hidden>
+                  <div class="bus-confirmed__group-label">Seu Grupo</div>
+                  <div class="bus-confirmed__group-name" id="confirmed-group-name"></div>
+                </div>
+
+                <div class="bus-confirmed__details">
+                  <div class="bus-confirmed__detail">
+                    <span>Passageiros</span>
+                    <strong id="confirmed-passengers-count">1 pessoa</strong>
+                  </div>
+                  <div class="bus-confirmed__detail">
+                    <span>Total Pago</span>
+                    <strong id="confirmed-total-paid">R$ 120,00</strong>
+                  </div>
+                  <div class="bus-confirmed__detail">
+                    <span>Status</span>
+                    <strong class="bus-badge bus-badge--paid">Pago</strong>
+                  </div>
+                </div>
+
+                <div class="bus-confirmed__group-cta">
+                  <p class="bus-confirmed__group-text">Entre no grupo oficial do WhatsApp do fretado para receber
+                    informações em tempo real sobre a viagem:</p>
+                  <a class="btn btn--whatsapp bus-confirmed__whatsapp-btn" id="confirmed-whatsapp-btn" href="#"
+                    target="_blank" rel="noopener noreferrer">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
                       <path
-                        d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.71.306 1.263.489 1.694.625.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413">
-                      </path>
+                        d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.888 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.456 5.711 1.456h.005c6.554 0 11.89-5.336 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
                     </svg>
                     <span>Entrar no Grupo Oficial do Fretado</span>
                   </a>
@@ -642,11 +664,11 @@
               <div class="bus-confirmed__next">
                 <h3>O que acontece agora</h3>
                 <ul>
-                  <li>Guarde o código da reserva e o comprovante em PDF enviado para o seu e-mail.</li>
-                  <li><strong>Local de Encontro:</strong> Rua Tagipuru, altura do número 552 — Barra Funda — SP (atrás do Memorial da América Latina).</li>
-                  <li><strong>Horário de Chegada:</strong> 06:00 hrs (para conferência da lista e acomodação de bagagens).</li>
-                  <li><strong>Saída do Ônibus:</strong> 06:20 hrs (tolerância máxima de 10 minutos &mdash; saída final às 06:30 hrs).</li>
-                  <li><strong>Atenção:</strong> Devido ao cronograma rígido do porto e do navio, o ônibus não aguardará além da tolerância e não nos responsabilizamos por atrasos. Planeje seu trajeto com antecedência!</li>
+                  <li><strong>1. Comprovante de Reserva:</strong> Guarde o PDF enviado para o seu e-mail. Ele vale como comprovante oficial e pode ser apresentado pelo celular no embarque.</li>
+                  <li><strong>2. Ponto de Encontro &amp; Horários:</strong> Encontro às <strong>06h00</strong>, na Rua Tagipuru, altura do nº 552 – Barra Funda – SP (atrás do Memorial da América Latina).<br>
+                  A saída do ônibus será pontualmente às <strong>06h30</strong>, com tolerância máxima de 10 minutos (saída final às 06h40). Após esse horário limite, precisaremos seguir viagem e o ônibus não poderá aguardar passageiros atrasados.</li>
+                  <li><strong>3. Programe-se com Antecedência:</strong> Chegue para estar no local às 06h00 para conferência da lista e acomodação de bagagens.</li>
+                  <li><strong>4. Assentos Livres &amp; Integração:</strong> Os assentos não são exclusivos nem numerados. A ocupação é livre por ordem de chegada. Aproveite o trajeto para ir conhecendo os outros participantes e já começar a diversão! <em>(Válido para ida e volta; você não necessariamente retornará no mesmo assento em que foi).</em></li>
                 </ul>
               </div>
 
@@ -762,7 +784,7 @@
             </div>
             <div class="bus-reassurance__content">
               <h3>Transporte completo de ida e volta</h3>
-              <p>O valor de <strong>R$ 120,00</strong> cobre ida e volta (Barra Funda ⇄ Porto de Santos) com bagagem incluída. <strong>Encontro:</strong> 06:00 hrs | <strong>Saída:</strong> 06:20 hrs (tolerância máx: 10 min &mdash; Rua Tagipuru, 552).</p>
+              <p>O valor de <strong>R$ 120,00</strong> cobre ida e volta (Barra Funda ⇄ Porto de Santos) com bagagem incluída. <strong>Encontro:</strong> 06:00 hrs | <strong>Saída:</strong> 06:30 hrs (tolerância máx: 10 min &mdash; Rua Tagipuru, 552).</p>
             </div>
           </article>
         </div>
