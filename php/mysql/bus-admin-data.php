@@ -291,8 +291,21 @@ try {
     // Injetar VIPs nos respectivos ônibus
     for ($i = 1; $i <= $vipCount; $i++) {
         $vipId = 'vip_' . $i;
-        $bNum = isset($vipAssignments[$vipId]) ? (int) $vipAssignments[$vipId] : 1;
-        if ($bNum < 1) $bNum = 1;
+        
+        if (isset($vipAssignments[$vipId])) {
+            $bNum = (int) $vipAssignments[$vipId];
+            if ($bNum < 1) $bNum = 1;
+        } else {
+            // Se o VIP não foi posicionado manualmente, coloca no primeiro ônibus com vaga (limite 46)
+            $bNum = 1;
+            while (true) {
+                $ocupadosBusAtual = isset($porOnibus[$bNum]) ? $porOnibus[$bNum]['total'] : 0;
+                if ($ocupadosBusAtual < 46) {
+                    break;
+                }
+                $bNum++;
+            }
+        }
         
         if ($bNum > $maxBusNum) {
             $maxBusNum = $bNum;
