@@ -44,14 +44,14 @@ try {
     $q = $pdo->query(
         'SELECT r.id, r.primary_name, r.email, r.whatsapp AS contato_whatsapp,
                 r.passenger_count, r.children_count, r.group_name, r.amount_cents,
-                r.mercadopago_order_id,
+                r.mercadopago_order_id, r.bus_number,
                 DATE_FORMAT(CONVERT_TZ(r.paid_at, "+00:00", "-03:00"), "%d/%m/%Y %H:%i") AS pago_em,
                 p.`position`, p.full_name AS passageiro, p.cpf AS passageiro_cpf,
                 p.whatsapp AS passageiro_whatsapp, p.is_primary, p.is_minor, p.is_child_lap
            FROM bus_registrations r
            JOIN bus_passengers p ON p.registration_id = r.id
           WHERE r.status = "confirmed"
-          ORDER BY r.paid_at, r.id, p.`position`'
+          ORDER BY r.bus_number, r.paid_at, r.id, p.`position`'
     );
     $linhas = $q->fetchAll(PDO::FETCH_ASSOC);
 
@@ -73,6 +73,7 @@ try {
                 'valor' => number_format(((int) $l['amount_cents']) / 100, 2, ',', '.'),
                 'pago_em' => $l['pago_em'],
                 'order_id' => $l['mercadopago_order_id'],
+                'bus_number' => $l['bus_number'] !== null ? (int) $l['bus_number'] : null,
                 'passageiros' => [],
             ];
         }

@@ -1032,3 +1032,306 @@
     color: #000000 !important;
   }
 }
+
+/* ==========================================================================
+   Abas
+   ========================================================================== */
+.painel-abas {
+  display: flex;
+  gap: var(--p-4);
+  border-bottom: 1px solid var(--p-linha);
+  margin-bottom: var(--p-5);
+}
+
+.painel-abas__botao {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: var(--p-2) var(--p-1);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--p-tinta-fraca);
+  cursor: pointer;
+  transition: color var(--p-transicao), border-color var(--p-transicao);
+}
+
+.painel-abas__botao:hover {
+  color: var(--p-tinta);
+}
+
+.painel-abas__botao.ativo {
+  color: var(--p-acao);
+  border-bottom-color: var(--p-acao);
+}
+
+.painel-aba-conteudo {
+  display: none;
+}
+.painel-aba-conteudo.ativa {
+  display: block;
+}
+
+/* ==========================================================================
+   Aba Frota
+   ========================================================================== */
+.frota-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--p-6);
+  margin-bottom: var(--p-6);
+  flex-wrap: wrap;
+}
+
+.frota-header__titulo {
+  font-size: 20px;
+  margin: 0 0 var(--p-2);
+  color: var(--p-tinta);
+}
+
+.frota-header__subtitulo {
+  margin: 0;
+  color: var(--p-tinta-media);
+  max-width: 600px;
+}
+
+.frota-header__vip {
+  background: var(--p-superficie);
+  padding: var(--p-4);
+  border-radius: var(--p-raio);
+  border: 1px solid var(--p-linha);
+  box-shadow: var(--p-sombra);
+  min-width: 320px;
+}
+
+.frota-vip-label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: var(--p-2);
+}
+
+.frota-vip-controle {
+  display: flex;
+  gap: var(--p-2);
+  margin-bottom: var(--p-2);
+}
+
+.frota-vip-input {
+  width: 100px;
+  padding: var(--p-2);
+  border: 1px solid var(--p-linha-forte);
+  border-radius: var(--p-raio-p);
+  font-family: inherit;
+  font-size: 16px;
+  text-align: right;
+}
+
+.frota-vip-ajuda {
+  margin: 0;
+  font-size: 12px;
+  color: var(--p-tinta-fraca);
+}
+
+/* Grid da frota */
+.frota-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: var(--p-6);
+  align-items: start;
+}
+
+.onibus-card {
+  background: var(--p-superficie);
+  border-radius: var(--p-raio);
+  border: 1px solid var(--p-linha);
+  box-shadow: var(--p-sombra);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: border-color var(--p-transicao), box-shadow var(--p-transicao);
+}
+
+.onibus-card.drag-over {
+  border-color: var(--p-acao);
+  box-shadow: 0 0 0 2px var(--p-acao-fraca);
+  background: var(--p-superficie-2);
+}
+
+.onibus-card.drag-error {
+  border-color: var(--p-falha);
+  box-shadow: 0 0 0 2px var(--p-falha-fundo);
+}
+
+.onibus-card__header {
+  padding: var(--p-4);
+  border-bottom: 1px solid var(--p-linha);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--p-fundo);
+}
+
+.onibus-card__titulo {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.onibus-card__badge {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  border-radius: 20px;
+}
+.onibus-card__badge--contratado {
+  background: var(--p-ok-fundo);
+  color: var(--p-ok);
+}
+.onibus-card__badge--provisorio {
+  background: var(--p-espera-fundo);
+  color: var(--p-espera);
+}
+
+.onibus-card__corpo {
+  display: flex;
+  flex: 1;
+  padding: var(--p-4);
+  gap: var(--p-4);
+  min-height: 400px;
+}
+
+/* Planta Baixa Visual */
+.onibus-planta {
+  width: 90px;
+  flex-shrink: 0;
+  background: #eaedf3; /* Carcaça cinza claro */
+  border-radius: 12px 12px 4px 4px; /* Frente arredondada */
+  padding: 16px 8px 8px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.onibus-planta::before {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 10px;
+  right: 10px;
+  height: 12px;
+  background: #ccd4e0;
+  border-radius: 6px 6px 2px 2px;
+}
+
+.planta-fileira {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+/* Os assentos 2+2 com corredor no meio (no SVG ou div) */
+.planta-assento {
+  width: 14px;
+  height: 14px;
+  background: #ffffff;
+  border: 1px solid #c2ccdc;
+  border-radius: 3px;
+}
+.planta-assento.ocupado {
+  background: var(--p-tinta-media);
+  border-color: var(--p-tinta);
+}
+
+/* Lado de fora - lista de grupos drag/drop */
+.onibus-grupos {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-2);
+}
+
+.grupo-item {
+  background: var(--p-superficie);
+  border: 1px solid var(--p-linha-forte);
+  border-radius: var(--p-raio-p);
+  padding: var(--p-2) var(--p-3);
+  font-size: 13px;
+  cursor: grab;
+  user-select: none;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.grupo-item:active {
+  cursor: grabbing;
+}
+
+.grupo-item.dragging {
+  opacity: 0.5;
+}
+
+.grupo-item__nome {
+  font-weight: 500;
+  display: block;
+}
+.grupo-item__responsavel {
+  color: var(--p-tinta-fraca);
+  font-size: 12px;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
+}
+.grupo-item__tamanho {
+  font-weight: 600;
+  background: var(--p-fundo);
+  padding: 2px 6px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+/* ProgressBar no card */
+.onibus-progresso {
+  padding: var(--p-3) var(--p-4);
+  background: var(--p-fundo);
+  border-top: 1px solid var(--p-linha);
+}
+
+.progresso-bar {
+  height: 8px;
+  background: var(--p-linha);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+  margin-bottom: var(--p-1);
+}
+
+.progresso-bar__fill {
+  height: 100%;
+  width: 100%;
+  background: var(--p-acao);
+  transform-origin: left;
+  transition: transform var(--p-transicao);
+}
+
+.progresso-bar__marker {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 87%; /* 40/46 = 86.9% */
+  width: 2px;
+  background: #ffffff;
+  z-index: 1;
+}
+
+.progresso-texto {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--p-tinta-media);
+}

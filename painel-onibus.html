@@ -67,10 +67,17 @@
 
     <div id="painel-dados" hidden>
 
-      <!-- Resumo em cards. Números reais, não métricas decorativas. -->
-      <section class="resumo" aria-labelledby="resumo-titulo">
-        <h2 id="resumo-titulo" class="visualmente-oculto">Resumo das reservas</h2>
-        <dl class="resumo__grade">
+      <!-- Abas de navegação -->
+      <nav class="painel-abas" aria-label="Navegação do painel">
+        <button class="painel-abas__botao ativo" data-aba="reservas" type="button">Reservas</button>
+        <button class="painel-abas__botao" data-aba="frota" type="button">Planejamento de Frota</button>
+      </nav>
+
+      <!-- ABA: RESERVAS -->
+      <div id="aba-reservas" class="painel-aba-conteudo ativa">
+        <section class="resumo" aria-labelledby="resumo-titulo">
+          <h2 id="resumo-titulo" class="visualmente-oculto">Resumo das reservas</h2>
+          <dl class="resumo__grade">
           <div class="resumo__item">
             <dt>A bordo</dt>
             <dd id="r-total">—</dd>
@@ -146,6 +153,32 @@
           <button id="limpar-busca" class="link-botao" type="button">Limpar busca</button>
         </p>
       </section>
+      </div> <!-- /ABA RESERVAS -->
+
+      <!-- ABA: FROTA -->
+      <div id="aba-frota" class="painel-aba-conteudo" hidden>
+        
+        <header class="frota-header">
+          <div class="frota-header__info">
+            <h2 class="frota-header__titulo">Distribuição de Passageiros</h2>
+            <p class="frota-header__subtitulo">Cada ônibus comporta 46 pessoas. O mínimo para fechar um ônibus é 40 (podendo usar até 6 lugares flexíveis do anterior).</p>
+          </div>
+          <div class="frota-header__vip">
+            <label for="vip-input" class="frota-vip-label">Reserva de Lugares (VIPs da Organização):</label>
+            <div class="frota-vip-controle">
+              <input type="number" id="vip-input" min="0" max="200" value="0" class="frota-vip-input" aria-describedby="vip-help">
+              <button id="salvar-vip" class="botao botao--secundario botao--pequeno" type="button" disabled>Salvar</button>
+            </div>
+            <p id="vip-help" class="frota-vip-ajuda">Estas vagas contam para o fechamento do ônibus, mas não aparecem na lista de embarque.</p>
+          </div>
+        </header>
+
+        <!-- Container onde o JS vai renderizar os ônibus -->
+        <section id="frota-onibus-container" class="frota-grid" aria-label="Lista de Ônibus">
+           <!-- Renderizado via JS -->
+        </section>
+
+      </div> <!-- /ABA FROTA -->
 
       <p class="painel__rodape">
         Dados atualizados em <span id="atualizado-em">—</span>.

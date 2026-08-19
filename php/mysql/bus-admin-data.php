@@ -69,7 +69,7 @@ try {
     $q = $pdo->query(
         'SELECT r.id, r.primary_name, r.primary_cpf, r.email, r.whatsapp, r.status,
                 r.status_detail, r.passenger_count, r.children_count, r.group_name, r.amount_cents,
-                r.mercadopago_order_id, r.confirmation_email_sent_at, r.created_at,
+                r.mercadopago_order_id, r.confirmation_email_sent_at, r.created_at, r.bus_number,
                 DATE_FORMAT(CONVERT_TZ(r.created_at, "+00:00", "-03:00"), "%d/%m/%Y %H:%i") AS criado_em,
                 DATE_FORMAT(CONVERT_TZ(r.paid_at, "+00:00", "-03:00"), "%d/%m/%Y %H:%i") AS pago_em
            FROM bus_registrations r
@@ -130,7 +130,22 @@ try {
         'total_a_bordo' => 0,
         'receita_centavos' => 0,
         'sem_telefone' => 0,
+        'vip_seats' => 0,
     ];
+
+    $q_settings = $pdo->query("SELECT setting_value FROM bus_settings WHERE setting_key = 'vip_seats'");
+    $setting_vip = $q_settings->fetch(PDO::FETCH_ASSOC);
+    if ($setting_vip) {
+        $resumo['vip_seats'] = (int) $setting_vip['setting_value'];
+    }
+
+    $frota = [
+        'capacidade' => 46,
+        'minimo' => 40,
+        'vip_seats' => $resumo['vip_seats'],
+        'onibus' => [],
+    ];
+    $ocupacaoPorOnibus = [];
 
     foreach ($reservas as $r) {
         $st = bus_status_painel((string) $r['status']);
@@ -145,6 +160,15 @@ try {
                 if ($p['whatsapp'] === null) {
                     $resumo['sem_telefone']++;
                 }
+            }
+            if ($r['bus_number'] !== null) {
+                $bNum = (int) $r['bus_number'];
+                if (!isset($ocupacaoPorOnibus[$bNum])) {
+                    $ocupacaoPorOnibus[$bNum] = ['numero' => $bNum, 'pagantes' => 0, 'criancas' => 0, 'total' => 0];
+                }
+                $ocupacaoPorOnibus[$bNum]['pagantes'] += (int) $r['passenger_count'];
+                $ocupacaoPorOnibus[$bNum]['criancas'] += (int) $r['children_count'];
+                $ocupacaoPorOnibus[$bNum]['total'] += ((int) $r['passenger_count'] + (int) $r['children_count']);
             }
         } elseif ($st['chave'] === 'pendente') {
             $resumo['reservas_pendentes']++;
@@ -209,16 +233,21 @@ try {
             'pago_em' => $r['pago_em'],
             'order_id' => $r['mercadopago_order_id'],
             'email_enviado' => !empty($r['confirmation_email_sent_at']),
+            'bus_number' => $r['bus_number'] !== null ? (int) $r['bus_number'] : null,
             'passageiros' => $passageiros,
         ];
     }
 
-    $resumo['total_a_bordo'] = $resumo['pagantes'] + $resumo['criancas_no_colo'];
+    $resumo['total_a_bordo'] = $resumo['pagantes'] + $resumo['criancas_no_colo'] + $resumo['vip_seats'];
     $resumo['receita'] = number_format($resumo['receita_centavos'] / 100, 2, ',', '.');
+
+    ksort($ocupacaoPorOnibus);
+    $frota['onibus'] = array_values($ocupacaoPorOnibus);
 
     echo json_encode([
         'gerado_em' => gmdate('c'),
         'resumo' => $resumo,
+        'frota' => $frota,
         'reservas' => $lista,
     ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 } catch (Throwable $e) {

@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 // validation.php é agnóstica de banco: reaproveitamos a lib existente.
 require_once dirname(__DIR__) . '/lib/validation.php';
-require_once __DIR__ . '/lib/db.php';
+require_once dirname(__DIR__) . '/lib/db.php';
 require_once dirname(__DIR__) . '/lib/mercadopago.php';
 require_once __DIR__ . '/lib/confirmation-mailer.php';
-require_once __DIR__ . '/lib/group-assign.php';
+require_once __DIR__ . '/lib/group-names.php';
+require_once __DIR__ . '/lib/bus-fleet.php';
 
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'GET') {
     json_response(405, ['error' => 'Método não permitido.']);
@@ -98,13 +99,19 @@ function reconcile_pending_registration(PDO $pdo, array $registration): ?array
     // página aberta esperando ver a vaga confirmada.
     if ($status === 'confirmed') {
         // Nome do grupo ANTES do e-mail: a mensagem precisa citar o nome, e
-        // atribuir depois faria o primeiro e-mail sair sem ele.
+        // atribuir depois faria o primeiro e-mail sair sem o nome.
         try {
             bus_garantir_nome_grupo($pdo, (string) $registration['id']);
         } catch (Throwable $grupoError) {
             // Nome de grupo é apelido, não requisito de embarque: se falhar, a
             // reserva segue confirmada e o e-mail sai sem o nome.
             log_failure('group-name', $grupoError);
+        }
+
+        try {
+            bus_assign_fleet($pdo, (string) $registration['id']);
+        } catch (Throwable $fleetError) {
+            log_failure('bus-fleet', $fleetError);
         }
 
         try {

@@ -8,7 +8,8 @@ require_once __DIR__ . '/lib/db.php';
 require_once dirname(__DIR__) . '/lib/mercadopago.php';
 require_once dirname(__DIR__) . '/lib/mp-signature.php';
 require_once __DIR__ . '/lib/confirmation-mailer.php';
-require_once __DIR__ . '/lib/group-assign.php';
+require_once __DIR__ . '/lib/group-names.php';
+require_once __DIR__ . '/lib/bus-fleet.php';
 
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
     json_response(405, ['error' => 'Método não permitido.']);
@@ -109,6 +110,12 @@ try {
             // Apelido do grupo não é requisito de embarque: se falhar, a reserva
             // segue confirmada e o e-mail sai sem o nome.
             log_failure('group-name', $grupoError);
+        }
+
+        try {
+            bus_assign_fleet($pdo, (string) $registration['id']);
+        } catch (Throwable $fleetError) {
+            log_failure('bus-fleet', $fleetError);
         }
 
         try {

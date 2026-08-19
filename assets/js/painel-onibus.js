@@ -38,14 +38,21 @@
     rReservas: document.getElementById('r-reservas'),
     rPendentes: document.getElementById('r-pendentes'),
     rReceita: document.getElementById('r-receita'),
-    rSemTelefone: document.getElementById('r-sem-telefone')
+    rSemTelefone: document.getElementById('r-sem-telefone'),
+    abas: document.querySelectorAll('.painel-abas__botao'),
+    conteudosAba: document.querySelectorAll('.painel-aba-conteudo'),
+    frotaContainer: document.getElementById('frota-onibus-container'),
+    vipInput: document.getElementById('vip-input'),
+    vipSalvar: document.getElementById('salvar-vip')
   };
 
   var estado = {
     reservas: [],
     filtro: 'pago',
     busca: '',
-    token: ''
+    busca: '',
+    token: '',
+    frota: null
   };
 
   // Número do grupo atualmente realçado. Guardado fora do handler para o
@@ -300,6 +307,214 @@
     el.rSemTelefone.textContent = resumo.sem_telefone;
   }
 
+  // ---- renderização frota ------------------------------------------------
+  
+  function renderizarFrota() {
+    if (!estado.frota || !estado.frota.onibus) return;
+    var onibusList = estado.frota.onibus;
+    el.frotaContainer.replaceChildren();
+
+    // Renderiza cada onibus
+    Object.keys(onibusList).forEach(function (busNum) {
+      var info = onibusList[busNum];
+      var maxL = 46; // capacidade
+
+      var card = document.createElement('div');
+      card.className = 'onibus-card';
+      card.dataset.bus = busNum;
+
+      // Eventos de drag and drop na dropzone (o card inteiro funciona como dropzone)
+      card.addEventListener('dragover', function (ev) {
+        ev.preventDefault();
+        card.classList.add('drag-over');
+      });
+      card.addEventListener('dragleave', function () {
+        card.classList.remove('drag-over');
+        card.classList.remove('drag-error');
+      });
+      card.addEventListener('drop', function (ev) {
+        ev.preventDefault();
+        card.classList.remove('drag-over');
+        var rId = ev.dataTransfer.getData('text/plain');
+        if (!rId) return;
+        moverParaOnibus(rId, busNum);
+      });
+
+      // Cabecalho
+      var header = document.createElement('div');
+      header.className = 'onibus-card__header';
+      var titulo = document.createElement('h3');
+      titulo.className = 'onibus-card__titulo';
+      titulo.textContent = 'Ônibus ' + busNum;
+      
+      var badge = document.createElement('span');
+      badge.className = 'onibus-card__badge';
+      if (info.fechado) {
+        badge.classList.add('onibus-card__badge--contratado');
+        badge.textContent = 'Contratado';
+      } else {
+        badge.classList.add('onibus-card__badge--provisorio');
+        badge.textContent = 'Em aberto';
+      }
+      header.append(titulo, badge);
+
+      // Corpo (planta + lista de grupos)
+      var corpo = document.createElement('div');
+      corpo.className = 'onibus-card__corpo';
+      
+      var planta = document.createElement('div');
+      planta.className = 'onibus-planta';
+      
+      var qtdDesenhada = 0;
+      var fileiras = Math.ceil(maxL / 4);
+      for (var f = 0; f < fileiras; f++) {
+        var linhaAssentos = document.createElement('div');
+        linhaAssentos.className = 'planta-fileira';
+        for (var c = 0; c < 4; c++) {
+          if (qtdDesenhada >= maxL) break;
+          var assento = document.createElement('div');
+          assento.className = 'planta-assento';
+          if (qtdDesenhada < info.ocupados) {
+            assento.classList.add('ocupado');
+          }
+          linhaAssentos.appendChild(assento);
+          // Adiciona corredor
+          if (c === 1) {
+            var corredor = document.createElement('div');
+            corredor.style.width = '10px';
+            linhaAssentos.appendChild(corredor);
+          }
+          qtdDesenhada++;
+        }
+        planta.appendChild(linhaAssentos);
+      }
+
+      var listaGrupos = document.createElement('div');
+      listaGrupos.className = 'onibus-grupos';
+      
+      if (info.reservas && info.reservas.length) {
+        info.reservas.forEach(function (r) {
+          var item = document.createElement('div');
+          item.className = 'grupo-item';
+          item.draggable = true;
+          item.dataset.reserva = r.id;
+          
+          item.addEventListener('dragstart', function (ev) {
+            ev.dataTransfer.setData('text/plain', r.id);
+            item.classList.add('dragging');
+          });
+          item.addEventListener('dragend', function () {
+            item.classList.remove('dragging');
+          });
+
+          var infoGrupo = document.createElement('div');
+          var nomeSpan = document.createElement('span');
+          nomeSpan.className = 'grupo-item__nome';
+          nomeSpan.textContent = r.grupo || r.responsavel;
+          var descSpan = document.createElement('span');
+          descSpan.className = 'grupo-item__responsavel';
+          if (r.grupo) {
+             descSpan.textContent = 'Resp: ' + r.responsavel;
+          }
+          infoGrupo.append(nomeSpan, descSpan);
+
+          var tamSpan = document.createElement('span');
+          tamSpan.className = 'grupo-item__tamanho';
+          tamSpan.textContent = r.total + ' pax';
+          
+          item.append(infoGrupo, tamSpan);
+          listaGrupos.appendChild(item);
+        });
+      }
+
+      corpo.append(planta, listaGrupos);
+
+      // Rodape / ProgressBar
+      var rodape = document.createElement('div');
+      rodape.className = 'onibus-progresso';
+      
+      var barWrap = document.createElement('div');
+      barWrap.className = 'progresso-bar';
+      var barFill = document.createElement('div');
+      barFill.className = 'progresso-bar__fill';
+      var perc = Math.min(100, Math.round((info.ocupados / maxL) * 100));
+      barFill.style.transform = 'scaleX(' + (perc / 100) + ')';
+      var mark = document.createElement('div');
+      mark.className = 'progresso-bar__marker';
+      barWrap.append(barFill, mark);
+
+      var tx = document.createElement('div');
+      tx.className = 'progresso-texto';
+      var txLeft = document.createElement('span');
+      txLeft.textContent = info.ocupados + ' de ' + maxL + ' ocupados';
+      var txRight = document.createElement('span');
+      var faltaFechamento = Math.max(0, 40 - info.ocupados);
+      if (info.fechado) {
+        txRight.textContent = 'Mínimo atingido';
+        txRight.style.color = 'var(--p-ok)';
+      } else {
+        txRight.textContent = 'Faltam ' + faltaFechamento + ' p/ fechar';
+      }
+      tx.append(txLeft, txRight);
+      rodape.append(barWrap, tx);
+
+      card.append(header, corpo, rodape);
+      el.frotaContainer.appendChild(card);
+    });
+    
+    // Config do VIP
+    if (el.vipInput.value !== String(estado.frota.vip_seats)) {
+       el.vipInput.value = estado.frota.vip_seats || 0;
+       el.vipSalvar.disabled = true;
+    }
+  }
+
+  function moverParaOnibus(reservaId, destinoBusNum) {
+    if (!estado.token) return;
+    el.frotaContainer.style.opacity = '0.5';
+    var fd = new FormData();
+    fd.append('registration_id', reservaId);
+    fd.append('bus_number', destinoBusNum);
+    
+    fetch('api/bus-fleet-assign.php?token=' + encodeURIComponent(estado.token), {
+      method: 'POST',
+      body: fd
+    }).then(function(resp) {
+      if (!resp.ok) throw new Error('Erro ao mover');
+      return resp.json();
+    }).then(function() {
+      // Recarrega tudo para manter as totalizacoes sincronizadas
+      carregar();
+    }).catch(function(err) {
+      alert('Falha ao mover passageiros: ' + err.message);
+    }).finally(function() {
+      el.frotaContainer.style.opacity = '1';
+    });
+  }
+
+  function salvarVips() {
+    if (!estado.token) return;
+    el.vipSalvar.disabled = true;
+    el.vipSalvar.textContent = '...';
+    var fd = new FormData();
+    fd.append('vip_seats', el.vipInput.value);
+    
+    fetch('api/bus-settings-update.php?token=' + encodeURIComponent(estado.token), {
+      method: 'POST',
+      body: fd
+    }).then(function(resp) {
+      if (!resp.ok) throw new Error('Erro ao salvar');
+      return resp.json();
+    }).then(function() {
+      carregar(); // refresh
+    }).catch(function(err) {
+      alert('Falha ao atualizar lugares VIP: ' + err.message);
+      el.vipSalvar.disabled = false;
+    }).finally(function() {
+      el.vipSalvar.textContent = 'Salvar';
+    });
+  }
+
   // ---- exportação Excel ---------------------------------------------------
 
   /**
@@ -340,6 +555,7 @@
       })
       .then(function (dados) {
         estado.reservas = dados.reservas || [];
+        estado.frota = dados.frota || null;
         renderizarResumo(dados.resumo);
 
         if (!estado.reservas.length) {
@@ -353,6 +569,7 @@
         });
 
         renderizar();
+        renderizarFrota();
         mostrar(el.dados);
       })
       .catch(function (erro) {
@@ -372,6 +589,38 @@
   }
 
   // ---- eventos -----------------------------------------------------------
+
+  el.abas.forEach(function (botao) {
+    botao.addEventListener('click', function () {
+      var alvo = botao.dataset.aba;
+      el.abas.forEach(function(b) { b.classList.remove('ativo'); });
+      botao.classList.add('ativo');
+
+      el.conteudosAba.forEach(function(c) {
+        if (c.id === 'aba-' + alvo) {
+          c.hidden = false;
+          c.classList.add('ativa');
+        } else {
+          c.hidden = true;
+          c.classList.remove('ativa');
+        }
+      });
+    });
+  });
+
+  if (el.vipInput) {
+    el.vipInput.addEventListener('input', function() {
+      if (estado.frota && el.vipInput.value !== String(estado.frota.vip_seats)) {
+        el.vipSalvar.disabled = false;
+      } else {
+        el.vipSalvar.disabled = true;
+      }
+    });
+  }
+  
+  if (el.vipSalvar) {
+    el.vipSalvar.addEventListener('click', salvarVips);
+  }
 
   el.busca.addEventListener('input', function (ev) {
     estado.busca = ev.currentTarget.value;

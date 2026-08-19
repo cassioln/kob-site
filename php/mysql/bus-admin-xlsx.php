@@ -60,11 +60,11 @@ try {
     $q = $pdo->query(
         'SELECT r.id, r.primary_name, r.email, r.whatsapp, r.status,
                 r.passenger_count, r.children_count, r.group_name, r.amount_cents,
-                r.mercadopago_order_id,
+                r.mercadopago_order_id, r.bus_number,
                 DATE_FORMAT(CONVERT_TZ(r.paid_at, "+00:00", "-03:00"), "%d/%m/%Y %H:%i") AS pago_em,
                 DATE_FORMAT(CONVERT_TZ(r.created_at, "+00:00", "-03:00"), "%d/%m/%Y %H:%i") AS criado_em
            FROM bus_registrations r
-          ORDER BY r.created_at DESC'
+          ORDER BY r.bus_number ASC, r.created_at DESC'
     );
     $reservas = $q->fetchAll(PDO::FETCH_ASSOC);
 
@@ -79,6 +79,7 @@ try {
 
     $colunas = [
         ['titulo' => 'Reserva', 'largura' => 13],
+        ['titulo' => 'Ônibus', 'largura' => 12],
         ['titulo' => 'Nº', 'largura' => 5],
         ['titulo' => 'Passageiro', 'largura' => 30],
         ['titulo' => 'CPF', 'largura' => 16],
@@ -170,7 +171,16 @@ try {
                 'estilo' => $responsavel ? 'responsavel' : ($primeiro ? 'grupo' : 'normal'),
                 'celulas' => [
                     $code,
-                    (string) $p['position'],
+                    [
+                        'tipo' => 'texto',
+                        'valor' => $r['bus_number'] !== null ? 'Ônibus ' . $r['bus_number'] : '—',
+                        'estilo' => 'texto',
+                    ],
+                    [
+                        'tipo' => 'numero',
+                        'valor' => $p['position'] ?? 1,
+                        'estilo' => 'centralizado',
+                    ],
                     (string) $p['full_name'],
                     bus_format_cpf((string) ($p['cpf'] ?? '')),
                     $faixaEtaria,
