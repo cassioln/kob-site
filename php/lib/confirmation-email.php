@@ -65,7 +65,7 @@ function bus_confirmation_email_html(array $dados): string
         ['Valor pago', 'R$ ' . str_replace('.', ',', $dados['amount'])],
         ['Passageiros pagantes', (string) $dados['passengerCount']],
         ['Rota', 'Barra Funda (SP) &rarr; Porto de Santos'],
-        ['Encontro do grupo', '06:00 hrs &middot; Rua Tagipuru, 552 (Barra Funda)'],
+        ['Encontro do grupo', '06:00 hrs (Saída: 06:20) &middot; Rua Tagipuru, 552 (Barra Funda)'],
     ];
     if (!empty($dados['orderId'])) {
         $fatos[] = ['Transação (Mercado Pago)', $dados['orderId']];
@@ -119,32 +119,24 @@ function bus_confirmation_email_html(array $dados): string
             </td>
           </tr>';
 
-    // Bloco do Grupo (posicionado antes da lista de passageiros)
+    // Bloco do grupo + botão de WhatsApp
     $html .= bus_email_bloco_grupo($dados['groupName'] ?? null);
 
-    // Manifesto: Quem embarca
+    // Passageiros
     $html .= '
           <tr>
-            <td style="padding:0 0 22px;">
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
-                     style="background:rgba(255,255,255,0.05);border-radius:12px;border:1px solid rgba(255,255,255,0.12);">
-                <tr>
-                  <td style="padding:18px 20px;">
-                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-                      <tr>
-                        <td colspan="3" style="padding:0 0 8px;font:700 12px/1.4 Arial,Helvetica,sans-serif;color:#ffffff;letter-spacing:0.12em;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,0.2);">
-                          Quem embarca
-                        </td>
-                      </tr>
-                      ' . $linhasManifesto . $linhaCriancas . '
-                    </table>
-                  </td>
-                </tr>
+            <td style="padding:0 0 24px;">
+              <p style="margin:0 0 12px;font:700 12px/1.4 Arial,Helvetica,sans-serif;color:#29c3f5;letter-spacing:0.12em;text-transform:uppercase;">
+                Quem embarca com você
+              </p>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                ' . $linhasPassageiros . '
+                ' . $linhaCriancas . '
               </table>
             </td>
           </tr>';
 
-    // Resumo da reserva
+    // Fatos da reserva
     $html .= '
           <tr>
             <td style="padding:0 0 26px;">
@@ -154,7 +146,7 @@ function bus_confirmation_email_html(array $dados): string
             </td>
           </tr>';
 
-    // Próximos passos
+    // Próximos passos e regras de embarque / pontualidade
     $html .= '
           <tr>
             <td style="padding:0 0 22px;">
@@ -162,18 +154,25 @@ function bus_confirmation_email_html(array $dados): string
                      style="background:rgba(255,255,255,0.05);border-radius:12px;border:1px solid rgba(255,255,255,0.12);">
                 <tr>
                   <td style="padding:18px 20px;">
-                    <p style="margin:0 0 12px;font:700 12px/1.4 Arial,Helvetica,sans-serif;color:#29c3f5;letter-spacing:0.12em;text-transform:uppercase;">
-                      Próximos passos
+                    <p style="margin:0 0 14px;font:700 12px/1.4 Arial,Helvetica,sans-serif;color:#29c3f5;letter-spacing:0.12em;text-transform:uppercase;">
+                      Informações de Embarque &amp; Pontualidade
                     </p>
-                    <p style="margin:0 0 10px;font:400 13px/1.6 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.85);">
-                      <strong style="color:#ffffff;">1.</strong> Guarde o PDF em anexo. Ele vale como comprovante e pode ser mostrado no celular.
+                    
+                    <p style="margin:0 0 8px;font:400 13px/1.6 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.9);">
+                      <strong style="color:#ffffff;">Local de Encontro:</strong> Rua Tagipuru, altura do número 552 — Barra Funda — SP (atrás do Memorial da América Latina).
                     </p>
-                    <p style="margin:0 0 10px;font:400 13px/1.6 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.85);">
-                      <strong style="color:#ffffff;">2.</strong> <strong style="color:#ffffff;">Horário de encontro:</strong> 06:00 hrs (Rua Tagipuru, altura do número 552 - Barra Funda - SP, atrás do Memorial da América Latina).
+                    <p style="margin:0 0 8px;font:400 13px/1.6 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.9);">
+                      <strong style="color:#ffffff;">Horário de Chegada:</strong> <span style="color:#29c3f5;font-weight:700;">06:00 hrs</span> (chegue com antecedência para conferência da lista e acomodação de bagagens).
                     </p>
-                    <p style="margin:0;font:400 13px/1.6 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.85);">
-                      <strong style="color:#ffffff;">3.</strong> Chegue com 30 minutos de antecedência no dia da viagem.
+                    <p style="margin:0 0 14px;font:400 13px/1.6 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.9);">
+                      <strong style="color:#ffffff;">Saída do Ônibus:</strong> <span style="color:#feb32c;font-weight:700;">06:20 hrs</span> (tolerância máxima de 10 minutos &mdash; saída final impreterível às 06:30 hrs).
                     </p>
+
+                    <div style="padding:12px 14px;background:rgba(254,179,44,0.1);border-left:3px solid #feb32c;border-radius:4px;">
+                      <p style="margin:0;font:400 12px/1.5 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.9);">
+                        <strong style="color:#feb32c;">Atenção importante:</strong> Devido à janela rígida de embarque no navio no Porto de Santos e às normas rodoviárias, <strong>o ônibus não aguardará além da tolerância</strong> e <strong>não nos responsabilizamos por passageiros que perderem o transporte por atraso</strong>. Planeje seu deslocamento!
+                      </p>
+                    </div>
                   </td>
                 </tr>
               </table>
@@ -188,7 +187,7 @@ function bus_confirmation_email_html(array $dados): string
                      style="background:rgba(255,255,255,0.04);border-radius:10px;border:1px solid rgba(255,255,255,0.08);">
                 <tr>
                   <td style="padding:14px 18px;font:400 12px/1.6 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.72);">
-                    O ônibus só será contratado se o número mínimo de passageiros for atingido. Caso isso não aconteça, o valor é devolvido integralmente.
+                    O ônibus só será contratado se o número mínimo de passageiros for atingido. Caso isso não aconteça, 100% do valor é devolvido integralmente via Pix.
                   </td>
                 </tr>
               </table>
@@ -209,9 +208,6 @@ function bus_confirmation_email_html(array $dados): string
 
 /**
  * Versão em texto puro.
- *
- * Não é opcional: mensagem só-HTML tem pontuação de spam maior, e alguns
- * clientes (relógios, leitores de tela em modo texto) mostram só esta parte.
  */
 function bus_confirmation_email_text(array $dados): string
 {
@@ -233,7 +229,7 @@ function bus_confirmation_email_text(array $dados): string
         $linhas[] = 'Criancas de ate 5 anos: ' . $dados['childrenCount'] . ' (nao pagantes, no colo)';
     }
     $linhas[] = 'Rota: Barra Funda (SP) -> Porto de Santos';
-    $linhas[] = 'Encontro: 06:00 hrs (Rua Tagipuru, altura do numero 552 - Barra Funda - SP, atras do Memorial da America Latina)';
+    $linhas[] = 'Encontro: 06:00 hrs (Saida: 06:20 hrs) - Rua Tagipuru, 552 (Barra Funda)';
     if (!empty($dados['orderId'])) {
         $linhas[] = 'Transacao: ' . $dados['orderId'];
     }
@@ -244,10 +240,11 @@ function bus_confirmation_email_text(array $dados): string
         $linhas[] = ($i + 1) . '. ' . $p['name'] . $telefone;
     }
     $linhas[] = '';
-    $linhas[] = 'PROXIMOS PASSOS';
-    $linhas[] = '1. Guarde o PDF em anexo.';
-    $linhas[] = '2. Horario de encontro: 06:00 hrs (Rua Tagipuru, altura do numero 552 - Barra Funda - SP, atras do Memorial da America Latina).';
-    $linhas[] = '3. Chegue com 30 minutos de antecedencia.';
+    $linhas[] = 'INFORMACOES DE EMBARQUE E PONTUALIDADE';
+    $linhas[] = '- Local de Encontro: Rua Tagipuru, altura do numero 552 - Barra Funda - SP (atras do Memorial da America Latina)';
+    $linhas[] = '- Horario de Chegada: 06:00 hrs';
+    $linhas[] = '- Saida do Onibus: 06:20 hrs (Tolerancia maxima de 10 minutos - saida final as 06:30 hrs impreterivelmente)';
+    $linhas[] = '- IMPORTANTE: Devido ao cronograma rigido de embarque no navio no Porto de Santos, o onibus nao aguardara alem da tolerancia e nao nos responsabilizamos por atrasos ou passageiros que perderem o transporte. Chegue com antecedencia!';
     $linhas[] = '';
     $linhas[] = 'O onibus so sera contratado se o minimo de passageiros for atingido.';
     $linhas[] = 'Caso contrario, o valor e devolvido integralmente.';

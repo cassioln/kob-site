@@ -58,7 +58,7 @@ function bus_pix_email_html(array $dados): string
         ['Valor a pagar', 'R$ ' . str_replace('.', ',', $dados['amount'])],
         ['Passageiros', (string) $dados['passengerCount']],
         ['Rota', 'Barra Funda (SP) &rarr; Porto de Santos'],
-        ['Encontro do grupo', '06:00 hrs &middot; Rua Tagipuru, 552 (Barra Funda)'],
+        ['Encontro do grupo', '06:00 hrs (Saída: 06:20) &middot; Rua Tagipuru, 552 (Barra Funda)'],
     ];
 
     $linhasFatos = '';
