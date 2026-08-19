@@ -26,12 +26,21 @@ function bus_send_pix_email(PDO $pdo, array $config, string $registrationId, arr
 
     $amount = number_format($reg['amount_cents'] / 100, 2, '.', '');
 
+    $qp = $pdo->prepare(
+        'SELECT full_name as name, cpf, whatsapp, is_child_lap
+           FROM bus_passengers
+          WHERE registration_id = :id ORDER BY `position`'
+    );
+    $qp->execute([':id' => $registrationId]);
+    $passengers = $qp->fetchAll(PDO::FETCH_ASSOC);
+
     $dados = [
         'contactName' => $reg['primary_name'],
         'amount' => $amount,
         'passengerCount' => (int) $reg['passenger_count'],
         'childrenCount' => (int) $reg['children_count'],
         'groupName' => $reg['group_name'] ?: null,
+        'passengers' => $passengers,
         'qrCode' => $payment['qrCode'],
         'qrCodeBase64' => $payment['qrCodeBase64'] ?? '',
     ];

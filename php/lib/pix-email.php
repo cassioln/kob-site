@@ -22,19 +22,24 @@ function bus_pix_email_html(array $dados): string
 
     // Manifesto: cada linha com nome e, quando houver, telefone.
     $linhasManifesto = '';
+    $numero = 1;
     foreach ($dados['passengers'] as $i => $p) {
-        $numero = $i + 1;
+        if (!empty($p['is_child_lap'])) continue;
+        
         $telefone = ($p['whatsapp'] ?? '') !== '' ? bus_format_phone((string) $p['whatsapp']) : '';
-        $borda = $i === 0 ? '' : 'border-top:1px solid rgba(255,255,255,0.12);';
+        $cpf = preg_replace('/(\d{3})(\d{3})(\d{3})(\d{2})/', '$1.$2.$3-$4', $p['cpf'] ?? '');
+        $borda = $numero === 1 ? '' : 'border-top:1px solid rgba(255,255,255,0.12);';
+        
         $linhasManifesto .= '
             <tr>
               <td style="' . $borda . 'padding:10px 0;font:700 13px/1.3 Arial,Helvetica,sans-serif;color:#29c3f5;width:26px;vertical-align:top;">'
                 . $numero . '.</td>
               <td style="' . $borda . 'padding:10px 0;font:400 14px/1.4 Arial,Helvetica,sans-serif;color:#ffffff;vertical-align:top;">'
-                . $e($p['name']) . '</td>
+                . $e($p['name']) . '<br><span style="font-size:12px;color:rgba(255,255,255,0.6);">CPF: ' . $e($cpf) . '</span></td>
               <td style="' . $borda . 'padding:10px 0;font:400 12px/1.4 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.72);text-align:right;white-space:nowrap;vertical-align:top;">'
                 . ($telefone !== '' ? $e($telefone) : '&mdash;') . '</td>
             </tr>';
+        $numero++;
     }
 
     $linhaCriancas = '';
@@ -128,7 +133,7 @@ function bus_pix_email_html(array $dados): string
                     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                       <tr>
                         <td colspan="3" style="padding:0 0 8px;font:700 12px/1.4 Arial,Helvetica,sans-serif;color:#ffffff;letter-spacing:0.12em;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,0.2);">
-                          Quem embarca
+                          Passageiros informados
                         </td>
                       </tr>
                       ' . $linhasManifesto . $linhaCriancas . '
@@ -184,9 +189,15 @@ function bus_pix_email_text(array $dados): string
 
     
     $linhas[] = '';
-    $linhas[] = 'Passageiros:';
-    foreach ($dados['passengers'] as $i => $p) {
-        $linhas[] = ($i + 1) . '. ' . $p['name'] . (!empty($p['whatsapp']) ? ' (' . $p['whatsapp'] . ')' : '');
+    $linhas[] = 'Passageiros informados:';
+    $numero = 1;
+    foreach ($dados['passengers'] as $p) {
+        if (!empty($p['is_child_lap'])) continue;
+        
+        $t = ($p['whatsapp'] ?? '') !== '' ? bus_format_phone((string) $p['whatsapp']) : 'sem telefone';
+        $cpf = preg_replace('/(\d{3})(\d{3})(\d{3})(\d{2})/', '$1.$2.$3-$4', $p['cpf'] ?? '');
+        $linhas[] = $numero . '. ' . $p['name'] . ' (CPF: ' . $cpf . ' | ' . $t . ')';
+        $numero++;
     }
 
     $linhas[] = '';
