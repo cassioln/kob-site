@@ -495,16 +495,16 @@
   function moverParaOnibus(reservaId, destinoBusNum) {
     if (!estado.token) return;
     el.frotaContainer.style.opacity = '0.5';
-    var fd = new FormData();
-    fd.append('registration_id', reservaId);
-    fd.append('bus_number', destinoBusNum);
-    
     fetch('api/bus-fleet-assign?token=' + encodeURIComponent(estado.token), {
       method: 'POST',
       headers: {
-        'X-Admin-Token': estado.token
+        'X-Admin-Token': estado.token,
+        'Content-Type': 'application/json'
       },
-      body: fd
+      body: JSON.stringify({
+        registration_id: reservaId,
+        bus_number: destinoBusNum
+      })
     }).then(function(resp) {
       return resp.json().then(function(data) {
         if (!resp.ok) throw new Error(data.error || 'Erro ao mover passageiros');
@@ -524,15 +524,15 @@
     if (!estado.token) return;
     el.vipSalvar.disabled = true;
     el.vipSalvar.textContent = '...';
-    var fd = new FormData();
-    fd.append('vip_seats', el.vipInput.value);
-    
     fetch('api/bus-settings-update?token=' + encodeURIComponent(estado.token), {
       method: 'POST',
       headers: {
-        'X-Admin-Token': estado.token
+        'X-Admin-Token': estado.token,
+        'Content-Type': 'application/json'
       },
-      body: fd
+      body: JSON.stringify({
+        vip_seats: el.vipInput.value
+      })
     }).then(function(resp) {
       return resp.json().then(function(data) {
         if (!resp.ok) throw new Error(data.error || 'Erro ao salvar vagas VIP');
