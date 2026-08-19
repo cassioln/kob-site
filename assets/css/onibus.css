@@ -2193,8 +2193,8 @@
 
 .bus-reassurance__cards {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(20px, 3vw, 32px);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(20px, 2.5vw, 32px);
 }
 
 .bus-reassurance__card {
@@ -2202,7 +2202,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--s-md);
-  padding: clamp(24px, 3.5vw, 36px);
+  padding: clamp(24px, 3vw, 32px);
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--r-lg);
@@ -2236,15 +2236,15 @@
 }
 
 .bus-reassurance__icon--shield {
-  /* background: rgba(0, 174, 239, 0.15); */
   color: var(--ocean-cyan);
-  /* border: 1px solid rgba(0, 174, 239, 0.3); */
+}
+
+.bus-reassurance__icon--transfer {
+  color: #c47cb6;
 }
 
 .bus-reassurance__icon--route {
-  /* background: rgba(254, 179, 44, 0.15); */
   color: var(--sunset-gold);
-  /* border: 1px solid rgba(254, 179, 44, 0.3); */
 }
 
 .bus-reassurance__content {
