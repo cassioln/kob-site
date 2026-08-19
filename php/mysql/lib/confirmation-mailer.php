@@ -274,11 +274,19 @@ function bus_send_confirmation_email(PDO $pdo, array $config, string $registrati
     // ---- 3. Notificação administrativa -------------------------------------
     if (!$prep['jaEnviadoAdmin']) {
         try {
+            $valorFormatado = number_format((float) $dados['amount'], 2, ',', '.');
+            $assuntoAdmin = sprintf(
+                '[Fretado KOB] Novo Pagamento: R$ %s - Reserva %s (%s)',
+                $valorFormatado,
+                $dados['code'],
+                $dados['contactName']
+            );
+
             bus_enviar_com_retry(
                 $config,
                 BUS_EMAIL_ADMIN,
                 'Administrativo Kriativos On Board',
-                'Pagamento Confirmado - Reserva ' . $dados['code'],
+                $assuntoAdmin,
                 bus_admin_email_html($dados),
                 bus_admin_email_text($dados)
             );
