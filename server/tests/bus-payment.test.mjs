@@ -67,15 +67,15 @@ test('calcula o total no servidor e salva o cadastro antes de criar o Pix', asyn
     ...dependencies
   });
 
-  // 3 pagantes x R$ 1,20. As crianças do basePayload são adicionais e não pagam.
-  assert.equal(dependencies.calls.registration.amountCents, 360);
+  // 3 pagantes x R$ 120,00. As crianças do basePayload são adicionais e não pagam.
+  assert.equal(dependencies.calls.registration.amountCents, 36000);
   assert.equal(dependencies.calls.registration.passengers.length, 3);
   assert.equal(dependencies.calls.registration.children.length, 1);
   assert.equal(dependencies.calls.registration.primaryBirthDate, '1990-05-15');
-  assert.equal(dependencies.calls.payment.totalAmount, '3.60');
+  assert.equal(dependencies.calls.payment.totalAmount, '360.00');
   assert.equal(dependencies.calls.payment.payerEmail, 'maria@example.com');
   assert.equal(dependencies.calls.payment.externalReference, dependencies.calls.registration.externalReference);
-  assert.equal(result.totalAmount, '3.60');
+  assert.equal(result.totalAmount, '360.00');
   assert.equal(result.orderId, 'ORD01TESTBUS2026');
   assert.equal(result.registrationId, dependencies.calls.registration.id);
   assert.ok(!Object.hasOwn(result, 'cpf'));
@@ -124,7 +124,7 @@ test('aceita 1 pagante com 1 criança no colo', async () => {
   payload.children = [{ full_name: 'Pedro de Souza', cpf: '10000000019' }];
 
   const result = await createPixOrder({ payload, ...dependencies });
-  assert.equal(result.totalAmount, '1.20');
+  assert.equal(result.totalAmount, '120.00');
   assert.notEqual(dependencies.calls.registration, null);
 });
 
@@ -200,7 +200,7 @@ test('aceita crianças iguais aos pagantes e cobra só os pagantes', async () =>
   ];
 
   const result = await createPixOrder({ payload, ...dependencies });
-  assert.equal(result.totalAmount, '4.80');
+  assert.equal(result.totalAmount, '480.00');
   assert.notEqual(dependencies.calls.registration, null);
 });
 
@@ -260,7 +260,7 @@ test('adaptador HTTP retorna apenas o contrato público do Pix', async () => {
   });
 
   assert.equal(result.statusCode, 201);
-  assert.equal(result.body.totalAmount, '3.60');
+  assert.equal(result.body.totalAmount, '360.00');
   assert.equal(result.body.qrCode, '00020126580014br.gov.bcb.pix0136test-code');
   assert.equal(Object.hasOwn(result.body, 'cpf'), false);
   assert.equal(Object.hasOwn(result.body, 'email'), false);
@@ -395,7 +395,7 @@ test('sandbox envia APRO em payer.first_name; produção preserva o nome real', 
     };
     await createMercadoPagoOrder({
       accessToken: 'token-de-teste',
-      totalAmount: '3.60',
+      totalAmount: '360.00',
       externalReference: 'ext_1',
       payerEmail: 'maria@example.com',
       idempotencyKey: 'idem-1',
@@ -424,8 +424,8 @@ test('sandbox envia APRO em payer.first_name; produção preserva o nome real', 
   assert.equal(producao.statement_descriptor, undefined);
   assert.equal(producao.transactions.payments[0].statement_descriptor, undefined);
   assert.equal(producao.items[0].quantity, 3);
-  // 3.60 / 3 passageiros = 1.20 por passagem.
-  assert.equal(producao.items[0].unit_price, '1.20');
+  // 360.00 / 3 passageiros = 120.00 por passagem.
+  assert.equal(producao.items[0].unit_price, '120.00');
   assert.ok(producao.items[0].title);
 });
 

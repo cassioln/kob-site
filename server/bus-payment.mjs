@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 
-export const BUS_PRICE_CENTS = 120;
+export const BUS_PRICE_CENTS = 12000;
 export const MAX_PASSENGERS = 100;
 
 export class ValidationError extends Error {

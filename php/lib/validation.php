@@ -9,7 +9,7 @@ declare(strict_types=1);
  * nunca aceito do navegador.
  */
 
-const BUS_PRICE_CENTS = 120;
+const BUS_PRICE_CENTS = 12000;
 const BUS_MAX_PASSENGERS = 100;
 
 final class ValidationError extends RuntimeException

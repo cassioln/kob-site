@@ -105,7 +105,7 @@
   // Estado
   var currentStep = 'cadastro';
   var currentWizardStep = 1;
-  var priceCents = 120;
+  var priceCents = 12000;
   var statusTimer = null;
   var expiryTimer = null;
   var activeRegistrationId = null;
