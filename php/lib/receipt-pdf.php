@@ -60,6 +60,8 @@ function bus_receipt_pdf(array $dados): string
         $linhas[] = ['Crianças de até 5 anos', $dados['childrenCount'] . ' (não pagante, no colo)'];
     }
     $linhas[] = ['Rota', 'Barra Funda (SP) — Porto de Santos'];
+    $linhas[] = ['Encontro do grupo', '06:00 hrs — Barra Funda - SP'];
+    $linhas[] = ['Local de encontro', 'Rua Tagipuru, alt. 552 (atrás Memorial)'];
     if (!empty($dados['orderId'])) {
         $linhas[] = ['Transação (Mercado Pago)', $dados['orderId']];
     }

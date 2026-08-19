@@ -97,11 +97,15 @@ function bus_passenger_email_html(array $dados, string $nomePassageiro): string
                     <p style="margin:0 0 8px;font:700 13px/1.4 Arial,Helvetica,sans-serif;color:#ffffff;">
                       O fretado
                     </p>
+                    <p style="margin:0 0 8px;font:400 13px/1.65 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.76);">
+                      Saída de São Paulo (Barra Funda) com destino ao Porto de Santos.
+                    </p>
+                    <p style="margin:0 0 8px;font:400 13px/1.65 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.9);">
+                      <strong>Horário de encontro na Barra Funda:</strong> 06:00 hrs<br>
+                      <strong>Local:</strong> Rua Tagipuru, altura do número 552 - Barra Funda - SP (atrás do Memorial da América Latina).
+                    </p>
                     <p style="margin:0;font:400 13px/1.65 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.76);">
-                      Saída do Terminal Barra Funda, em São Paulo, com destino ao Porto de Santos,
-                      no dia do embarque. Chegue ao ponto de encontro com 30 minutos de
-                      antecedência. O horário exato é confirmado pela organização no grupo do
-                      WhatsApp.
+                      Chegue ao ponto de encontro com 30 minutos de antecedência.
                     </p>
                   </td>
                 </tr>
@@ -157,9 +161,10 @@ function bus_passenger_email_text(array $dados, string $nomePassageiro): string
 
     $linhas[] = '';
     $linhas[] = 'O FRETADO';
-    $linhas[] = 'Saida do Terminal Barra Funda, em Sao Paulo, com destino ao Porto de';
-    $linhas[] = 'Santos, no dia do embarque. Chegue com 30 minutos de antecedencia.';
-    $linhas[] = 'O horario exato e confirmado pela organizacao no grupo do WhatsApp.';
+    $linhas[] = 'Saida de Sao Paulo (Barra Funda) com destino ao Porto de Santos.';
+    $linhas[] = 'Horario de encontro Barra Funda: 06:00 hrs';
+    $linhas[] = 'Local: Rua Tagipuru, altura do numero 552 - Barra Funda - SP (atras do Memorial da America Latina)';
+    $linhas[] = 'Chegue com 30 minutos de antecedencia.';
     $linhas[] = '';
     $linhas[] = 'Ficou com alguma duvida? Responda este e-mail que a gente te ajuda.';
 

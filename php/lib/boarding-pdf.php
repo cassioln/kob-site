@@ -82,8 +82,8 @@ function bus_boarding_pdf(array $reservas, ?array $logo = null): string
         $blocos[] = ['tipo' => 'texto', 'x' => $esq + 122, 'y' => $y - 14,
                      'texto' => 'Lista de Embarque', 'tamanho' => 19, 'negrito' => true];
         $blocos[] = ['tipo' => 'texto', 'x' => $esq + 122, 'y' => $y - 30,
-                     'texto' => 'Transporte fretado - Barra Funda (SP) ao Porto de Santos',
-                     'tamanho' => 9];
+                     'texto' => 'Fretado Barra Funda -> Santos | Encontro: 06:00 (Rua Tagipuru, 552 - atras Memorial)',
+                     'tamanho' => 8.5];
 
         $emitido = 'Gerado em ' . gmdate('d/m/Y \à\s H:i', time() - 3 * 3600);
         $blocos[] = ['tipo' => 'texto', 'x' => $dir - pdf_largura_texto($emitido, 8) - 2,

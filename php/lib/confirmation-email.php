@@ -65,6 +65,7 @@ function bus_confirmation_email_html(array $dados): string
         ['Valor pago', 'R$ ' . str_replace('.', ',', $dados['amount'])],
         ['Passageiros pagantes', (string) $dados['passengerCount']],
         ['Rota', 'Barra Funda (SP) &rarr; Porto de Santos'],
+        ['Encontro do grupo', '06:00 hrs &middot; Rua Tagipuru, 552 (Barra Funda)'],
     ];
     if (!empty($dados['orderId'])) {
         $fatos[] = ['Transação (Mercado Pago)', $dados['orderId']];
@@ -81,11 +82,11 @@ function bus_confirmation_email_html(array $dados): string
             : '';
         $destaque = str_contains($rotulo, 'Valor') || str_contains($rotulo, 'Código');
         $corValor = $destaque ? 'color:#29c3f5;font-weight:700;' : 'color:#ffffff;';
-        $rotuloSeguro = $rotulo === 'Rota' ? $rotulo : $e($rotulo);
-        $valorSeguro = $rotulo === 'Rota' ? $valor : $e($valor);
+        $rotuloSeguro = in_array($rotulo, ['Rota', 'Encontro do grupo'], true) ? $rotulo : $e($rotulo);
+        $valorSeguro = in_array($rotulo, ['Rota', 'Encontro do grupo'], true) ? $valor : $e($valor);
         $linhasFatos .= '
             <tr>
-              <td style="' . $borda . 'padding:10px 0;font:400 13px/1.4 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.65);">'
+              <td style="' . $borda . 'padding:10px 0;font:400 13px/1.4 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.72);">'
                 . $rotuloSeguro . '</td>
               <td style="' . $borda . 'padding:10px 0;font:700 14px/1.4 Arial,Helvetica,sans-serif;' . $corValor . 'text-align:right;' . $mono . '">'
                 . $valorSeguro . '</td>
@@ -143,22 +144,12 @@ function bus_confirmation_email_html(array $dados): string
             </td>
           </tr>';
 
-    // Dados da reserva
+    // Resumo da reserva
     $html .= '
           <tr>
-            <td style="padding:0 0 22px;">
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
-                     style="background:rgba(255,255,255,0.05);border-radius:12px;border:1px solid rgba(255,255,255,0.12);">
-                <tr>
-                  <td style="padding:18px 20px;">
-                    <p style="margin:0 0 10px;font:700 12px/1.4 Arial,Helvetica,sans-serif;color:#29c3f5;letter-spacing:0.12em;text-transform:uppercase;">
-                      Dados da reserva
-                    </p>
-                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-                      ' . $linhasFatos . '
-                    </table>
-                  </td>
-                </tr>
+            <td style="padding:0 0 26px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                ' . $linhasFatos . '
               </table>
             </td>
           </tr>';
@@ -178,7 +169,7 @@ function bus_confirmation_email_html(array $dados): string
                       <strong style="color:#ffffff;">1.</strong> Guarde o PDF em anexo. Ele vale como comprovante e pode ser mostrado no celular.
                     </p>
                     <p style="margin:0 0 10px;font:400 13px/1.6 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.85);">
-                      <strong style="color:#ffffff;">2.</strong> Avisaremos o horário e o ponto exato de embarque na Barra Funda pelo WhatsApp.
+                      <strong style="color:#ffffff;">2.</strong> <strong style="color:#ffffff;">Horário de encontro:</strong> 06:00 hrs (Rua Tagipuru, altura do número 552 - Barra Funda - SP, atrás do Memorial da América Latina).
                     </p>
                     <p style="margin:0;font:400 13px/1.6 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.85);">
                       <strong style="color:#ffffff;">3.</strong> Chegue com 30 minutos de antecedência no dia da viagem.
@@ -242,6 +233,7 @@ function bus_confirmation_email_text(array $dados): string
         $linhas[] = 'Criancas de ate 5 anos: ' . $dados['childrenCount'] . ' (nao pagantes, no colo)';
     }
     $linhas[] = 'Rota: Barra Funda (SP) -> Porto de Santos';
+    $linhas[] = 'Encontro: 06:00 hrs (Rua Tagipuru, altura do numero 552 - Barra Funda - SP, atras do Memorial da America Latina)';
     if (!empty($dados['orderId'])) {
         $linhas[] = 'Transacao: ' . $dados['orderId'];
     }
@@ -254,7 +246,7 @@ function bus_confirmation_email_text(array $dados): string
     $linhas[] = '';
     $linhas[] = 'PROXIMOS PASSOS';
     $linhas[] = '1. Guarde o PDF em anexo.';
-    $linhas[] = '2. Avisaremos horario e ponto de embarque pelo WhatsApp.';
+    $linhas[] = '2. Horario de encontro: 06:00 hrs (Rua Tagipuru, altura do numero 552 - Barra Funda - SP, atras do Memorial da America Latina).';
     $linhas[] = '3. Chegue com 30 minutos de antecedencia.';
     $linhas[] = '';
     $linhas[] = 'O onibus so sera contratado se o minimo de passageiros for atingido.';

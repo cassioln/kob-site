@@ -58,6 +58,7 @@ function bus_pix_email_html(array $dados): string
         ['Valor a pagar', 'R$ ' . str_replace('.', ',', $dados['amount'])],
         ['Passageiros', (string) $dados['passengerCount']],
         ['Rota', 'Barra Funda (SP) &rarr; Porto de Santos'],
+        ['Encontro do grupo', '06:00 hrs &middot; Rua Tagipuru, 552 (Barra Funda)'],
     ];
 
     $linhasFatos = '';
@@ -65,8 +66,8 @@ function bus_pix_email_html(array $dados): string
         $borda = $i === 0 ? '' : 'border-top:1px solid rgba(255,255,255,0.09);';
         $destaque = str_contains($rotulo, 'Valor');
         $corValor = $destaque ? 'color:#29c3f5;font-weight:700;' : 'color:#ffffff;';
-        $rotuloSeguro = $rotulo === 'Rota' ? $rotulo : $e($rotulo);
-        $valorSeguro = $rotulo === 'Rota' ? $valor : $e($valor);
+        $rotuloSeguro = in_array($rotulo, ['Rota', 'Encontro do grupo'], true) ? $rotulo : $e($rotulo);
+        $valorSeguro = in_array($rotulo, ['Rota', 'Encontro do grupo'], true) ? $valor : $e($valor);
         $linhasFatos .= '
             <tr>
               <td style="' . $borda . 'padding:10px 0;font:400 13px/1.4 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.65);">'
@@ -186,6 +187,7 @@ function bus_pix_email_text(array $dados): string
     $linhas[] = '- Valor a pagar: R$ ' . str_replace('.', ',', $dados['amount']);
     $linhas[] = '- Passageiros: ' . $dados['passengerCount'];
     $linhas[] = '- Rota: Barra Funda (SP) -> Porto de Santos';
+    $linhas[] = '- Encontro do grupo Barra Funda: 06:00 hrs (Rua Tagipuru, altura do numero 552 - Barra Funda - SP, atras do Memorial da America Latina)';
 
     
     $linhas[] = '';
