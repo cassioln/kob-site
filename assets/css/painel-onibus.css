@@ -109,6 +109,12 @@
   border-bottom: 1px solid var(--p-linha);
 }
 
+.painel__acoes-topo {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+}
+
 .painel__titulo-bloco {
   display: flex;
   flex-direction: column;
@@ -203,6 +209,24 @@
   border-radius: var(--p-raio-p);
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 0.875em;
+}
+
+.painel__estado--login {
+  max-width: 440px;
+  text-align: center;
+}
+
+.painel__login-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-3);
+  text-align: left;
+}
+
+.painel__erro-texto {
+  color: var(--p-falha);
+  font-size: 0.875rem;
+  font-weight: 500;
 }
 
 /* Skeleton em vez de spinner: mostra a FORMA do que vem, então a página não
@@ -401,6 +425,11 @@
 .botao--discreto:hover {
   border-color: var(--p-tinta-fraca);
   background: var(--p-superficie-2);
+}
+
+.botao--pequeno {
+  padding: 6px var(--p-3);
+  font-size: 0.8125rem;
 }
 
 .botao[aria-busy="true"],

@@ -14,7 +14,11 @@
 
   var el = {
     carregando: document.getElementById('estado-carregando'),
-    semAcesso: document.getElementById('estado-sem-acesso'),
+    estadoLogin: document.getElementById('estado-login'),
+    loginForm: document.getElementById('form-login'),
+    tokenInput: document.getElementById('token-input'),
+    erroLogin: document.getElementById('erro-login'),
+    botaoSair: document.getElementById('botao-sair'),
     erro: document.getElementById('estado-erro'),
     erroDetalhe: document.getElementById('erro-detalhe'),
     vazio: document.getElementById('estado-vazio'),
@@ -52,9 +56,12 @@
   // ---- utilidades ---------------------------------------------------------
 
   function mostrar(secao) {
-    [el.carregando, el.semAcesso, el.erro, el.vazio, el.dados].forEach(function (s) {
+    [el.carregando, el.estadoLogin, el.erro, el.vazio, el.dados].forEach(function (s) {
       if (s) s.hidden = s !== secao;
     });
+    if (el.botaoSair) {
+      el.botaoSair.hidden = (secao !== el.dados && secao !== el.vazio);
+    }
   }
 
   function plural(n, singular, pluralForma) {
@@ -315,7 +322,7 @@
 
   function carregar() {
     if (!estado.token) {
-      mostrar(el.semAcesso);
+      mostrar(el.estadoLogin);
       return;
     }
 
@@ -350,7 +357,10 @@
       })
       .catch(function (erro) {
         if (erro && erro.semAcesso) {
-          mostrar(el.semAcesso);
+          estado.token = '';
+          localStorage.removeItem('kob_admin_token');
+          if (el.erroLogin) el.erroLogin.hidden = false;
+          mostrar(el.estadoLogin);
           return;
         }
         el.erroDetalhe.textContent = 'Detalhe técnico: ' + erro.message;
@@ -427,13 +437,45 @@
     if (tr) realcarGrupo(tr.dataset.grupo);
   });
 
-  // O token vem na URL. Sai do histórico depois de lido, para o link não vazar
-  // em captura de tela da barra de endereço nem no histórico do navegador.
-  var params = new URLSearchParams(window.location.search);
-  estado.token = params.get('token') || '';
-  if (estado.token && window.history.replaceState) {
-    window.history.replaceState({}, '', window.location.pathname);
+  // Lógica de Login
+  if (el.loginForm) {
+    el.loginForm.addEventListener('submit', function (ev) {
+      ev.preventDefault();
+      estado.token = el.tokenInput.value.trim();
+      if (estado.token) {
+        el.erroLogin.hidden = true;
+        localStorage.setItem('kob_admin_token', estado.token);
+        mostrar(el.carregando);
+        carregar();
+      }
+    });
   }
 
-  carregar();
+  if (el.botaoSair) {
+    el.botaoSair.addEventListener('click', function () {
+      estado.token = '';
+      localStorage.removeItem('kob_admin_token');
+      if (el.tokenInput) el.tokenInput.value = '';
+      mostrar(el.estadoLogin);
+    });
+  }
+
+  // O token fica salvo no navegador. Permite ler da URL como fallback.
+  estado.token = localStorage.getItem('kob_admin_token') || '';
+  if (!estado.token) {
+    var params = new URLSearchParams(window.location.search);
+    estado.token = params.get('token') || '';
+    if (estado.token) {
+      localStorage.setItem('kob_admin_token', estado.token);
+      if (window.history.replaceState) {
+        window.history.replaceState({}, '', window.location.pathname);
+      }
+    }
+  }
+
+  if (!estado.token) {
+    mostrar(el.estadoLogin);
+  } else {
+    carregar();
+  }
 })();

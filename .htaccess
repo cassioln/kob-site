@@ -31,6 +31,13 @@ RewriteRule ^$ onibus.html [L]
 RewriteCond %{HTTP_HOST} ^(busao|onibus)\.kriativosonboard\.com\.br$ [NC]
 RewriteRule ^index\.html$ onibus.html [L]
 
+# ---- Subdominio painel.kriativosonboard.com.br ----
+# Serve painel-onibus.html na raiz do subdominio painel
+RewriteCond %{HTTP_HOST} ^painel\.kriativosonboard\.com\.br$ [NC]
+RewriteRule ^$ painel-onibus.html [L]
+RewriteCond %{HTTP_HOST} ^painel\.kriativosonboard\.com\.br$ [NC]
+RewriteRule ^index\.html$ painel-onibus.html [L]
+
 # ---- API do onibus fretado ----
 # O frontend (assets/js/onibus.js) chama /api/<endpoint>. Os arquivos reais
 # ficam em php/mysql/. Sem estas regras as rotas retornam 404, porque o host

@@ -8,7 +8,7 @@
   <meta name="robots" content="noindex, nofollow, noarchive">
   <title>Painel de gestão · Reservas · Kriativos On Board 2026</title>
   <link rel="icon" href="assets/images/brand/favicon.png">
-  <link rel="stylesheet" href="assets/css/painel-onibus.css?v=20260818-20-na">
+  <link rel="stylesheet" href="assets/css/painel-onibus.css?v=20260819-login">
 </head>
 
 <body class="painel">
@@ -22,6 +22,9 @@
       <h1 class="painel__titulo-principal">Painel de gestão &middot; Reservas</h1>
       <p class="painel__subtitulo">Transporte fretado &middot; Kriativos On Board 2026</p>
     </div>
+    <div class="painel__acoes-topo">
+      <button type="button" id="botao-sair" class="botao botao--secundario botao--pequeno" hidden>Sair</button>
+    </div>
   </header>
 
   <main class="painel__conteudo" id="conteudo">
@@ -33,13 +36,19 @@
       <p class="painel__estado-texto">Carregando reservas…</p>
     </section>
 
-    <section id="estado-sem-acesso" class="painel__estado painel__estado--aviso" hidden>
-      <h2 class="painel__estado-titulo">Este painel precisa de um link com chave de acesso</h2>
-      <p class="painel__estado-texto">
-        A lista traz nome, CPF, telefone e e-mail dos passageiros, então o acesso é feito por
-        um link próprio. Peça o link completo a quem administra o site &mdash; ele termina
-        com <code>?token=…</code>
-      </p>
+    <section id="estado-login" class="painel__estado painel__estado--login" hidden>
+      <form id="form-login" class="painel__login-form">
+        <h2 class="painel__estado-titulo">Acesso Restrito</h2>
+        <p class="painel__estado-texto">
+          Insira a chave de acesso para visualizar o painel de reservas.
+        </p>
+        <div class="campo-busca">
+          <label class="visualmente-oculto" for="token-input">Chave de acesso</label>
+          <input id="token-input" type="password" placeholder="Chave de acesso" required autocomplete="current-password">
+        </div>
+        <p id="erro-login" class="painel__estado-texto painel__erro-texto" hidden>Chave inválida. Tente novamente.</p>
+        <button type="submit" class="botao botao--primario">Entrar no painel</button>
+      </form>
     </section>
 
     <section id="estado-erro" class="painel__estado painel__estado--aviso" hidden>
