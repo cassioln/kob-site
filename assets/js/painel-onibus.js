@@ -903,10 +903,13 @@
           var infoTrigger = document.createElement('button');
           infoTrigger.type = 'button';
           infoTrigger.className = 'grupo-item__info-trigger';
+          if (r.is_vip) infoTrigger.classList.add('grupo-item__info-trigger--vip');
           infoTrigger.setAttribute('aria-label', 'Ver informações do grupo');
           infoTrigger.setAttribute('aria-describedby', infoId);
           infoTrigger.title = 'Ver informações do grupo';
-          infoTrigger.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none"></circle><circle cx="12" cy="8" r="1.6" fill="currentColor" stroke="none"></circle><rect x="10.3" y="11" width="3.4" height="7" rx="1.7" fill="currentColor" stroke="none"></rect></svg>';
+          infoTrigger.innerHTML = r.is_vip
+            ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="currentColor" stroke="none"></path></svg>'
+            : '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none"></circle><circle cx="12" cy="8" r="1.6" fill="currentColor" stroke="none"></circle><rect x="10.3" y="11" width="3.4" height="7" rx="1.7" fill="currentColor" stroke="none"></rect></svg>';
           infoTrigger.addEventListener('mousedown', function (ev) {
             ev.stopPropagation();
           });
@@ -1110,6 +1113,12 @@
           moverMenu.appendChild(moverOpcoes);
           moverMenu.addEventListener('toggle', function () {
             item.classList.toggle('grupo-item--menu-aberto', moverMenu.open);
+          });
+          moverMenu.addEventListener('focusout', function (ev) {
+            var proximoFoco = ev.relatedTarget;
+            if (!proximoFoco || !moverMenu.contains(proximoFoco)) {
+              moverMenu.open = false;
+            }
           });
           moverTrigger.addEventListener('click', function () {
             document.querySelectorAll('.grupo-item__mover[open]').forEach(function (aberto) {
@@ -2004,6 +2013,12 @@
   el.recarregar.addEventListener('click', carregar);
   el.tentarNovamente.addEventListener('click', carregar);
   el.exportar.addEventListener('click', exportarExcel);
+
+  document.addEventListener('click', function (ev) {
+    document.querySelectorAll('.grupo-item__mover[open]').forEach(function (menu) {
+      if (!menu.contains(ev.target)) menu.open = false;
+    });
+  });
 
   // Realce por RESERVA, não por linha. Feito em JS e não com `tr:hover` puro
   // porque CSS não tem seletor de irmão anterior: `:hover` numa linha do meio do

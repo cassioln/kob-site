@@ -1869,6 +1869,15 @@
   stroke: none;
 }
 
+.grupo-item__info-trigger--vip {
+  color: #64748b;
+}
+
+.grupo-item__info-trigger--vip svg {
+  fill: currentColor;
+  filter: drop-shadow(0 1px 1px rgba(100, 116, 139, 0.3));
+}
+
 .grupo-item__info-trigger:hover,
 .grupo-item__info-trigger:focus-visible {
   color: var(--p-acao);
@@ -3738,14 +3747,18 @@
 }
 
 .bus-dialog__badge-icone--vip {
-  background: #fff0c4;
-  color: #c87900;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border-radius: 0;
+  color: #d97706;
 }
 
 .bus-dialog__badge-icone--vip svg {
-  width: 20px;
-  height: 20px;
+  width: 28px;
+  height: 28px;
   fill: currentColor;
+  filter: drop-shadow(0 1px 2px rgba(217, 119, 6, 0.45));
 }
 
 .vip-formularios {
@@ -3806,8 +3819,7 @@
   gap: 5px;
 }
 
-.vip-formulario__campo--nome,
-.vip-formulario__campo--onibus {
+.vip-formulario__campo--nome {
   grid-column: 1 / -1;
 }
 
