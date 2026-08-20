@@ -23,6 +23,11 @@ function expect_same(mixed $expected, mixed $actual, string $message): void
 
 expect_same(1, bus_fleet_seat_count(1, 1), 'criança de colo não deve consumir assento');
 expect_same(2, bus_fleet_seat_count(2, 3), 'a capacidade deve considerar apenas pagantes');
+expect_same(
+    ['vip_1' => 1],
+    bus_fleet_filter_legacy_vip_assignments(['vip_1' => 1, 'vip_2' => 1, 'vip_lixo' => 1], 1),
+    'atribuições VIP legadas fora da quantidade ativa não podem consumir vaga'
+);
 
 function snapshot(array $groups, array $vipOccupancy = []): array
 {
