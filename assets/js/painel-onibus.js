@@ -12,6 +12,8 @@
   var API = 'api/bus-admin-data';
   var API_LISTA = 'api/bus-manifest';
   var API_AUTO_BALANCE = 'api/bus-fleet-auto-balance';
+  var API_VIP_CREATE = 'api/bus-vip-create';
+  var API_VIP_DELETE = 'api/bus-vip-delete';
   var MEEPLE_PATH_D = 'M256 54.99c-27 0-46.418 14.287-57.633 32.23-10.03 16.047-14.203 34.66-15.017 50.962-30.608 15.135-64.515 30.394-91.815 45.994-14.32 8.183-26.805 16.414-36.203 25.26C45.934 218.28 39 228.24 39 239.99c0 5 2.44 9.075 5.19 12.065 2.754 2.99 6.054 5.312 9.812 7.48 7.515 4.336 16.99 7.95 27.412 11.076 15.483 4.646 32.823 8.1 47.9 9.577-14.996 25.84-34.953 49.574-52.447 72.315C56.65 378.785 39 403.99 39 431.99c0 4-.044 7.123.31 10.26.355 3.137 1.256 7.053 4.41 10.156 3.155 3.104 7.017 3.938 10.163 4.28 3.146.345 6.315.304 10.38.304h111.542c8.097 0 14.026.492 20.125-3.43 6.1-3.92 8.324-9.275 12.67-17.275l.088-.16.08-.166s9.723-19.77 21.324-39.388c5.8-9.808 12.097-19.576 17.574-26.498 2.74-3.46 5.304-6.204 7.15-7.754.564-.472.82-.56 1.184-.76.363.2.62.288 1.184.76 1.846 1.55 4.41 4.294 7.15 7.754 5.477 6.922 11.774 16.69 17.574 26.498 11.6 19.618 21.324 39.387 21.324 39.387l.08.165.088.16c4.346 8 6.55 13.323 12.61 17.254 6.058 3.93 11.974 3.45 19.957 3.45H448c4 0 7.12.043 10.244-.304 3.123-.347 6.998-1.21 10.12-4.332 3.12-3.122 3.984-6.997 4.33-10.12.348-3.122.306-6.244.306-10.244 0-28-17.65-53.205-37.867-79.488-17.493-22.74-37.45-46.474-52.447-72.315 15.077-1.478 32.417-4.93 47.9-9.576 10.422-3.125 19.897-6.74 27.412-11.075 3.758-2.168 7.058-4.49 9.81-7.48 2.753-2.99 5.192-7.065 5.192-12.065 0-11.75-6.934-21.71-16.332-30.554-9.398-8.846-21.883-17.077-36.203-25.26-27.3-15.6-61.207-30.86-91.815-45.994-.814-16.3-4.988-34.915-15.017-50.96C302.418 69.276 283 54.99 256 54.99z';
 
   var isLocalhost = Boolean(
@@ -59,13 +61,20 @@
     frotaOtimizacaoAplicar: document.getElementById('frota-otimizacao-aplicar'),
     frotaSemOnibus: document.getElementById('frota-sem-onibus'),
     frotaSemOnibusLista: document.querySelector('#frota-sem-onibus .frota-sem-onibus__lista'),
-    vipInput: document.getElementById('vip-input'),
-    vipSalvar: document.getElementById('salvar-vip'),
+    vipAdicionar: document.getElementById('adicionar-vip'),
+    vipDialog: document.getElementById('painel-vip-dialog'),
+    vipForm: document.getElementById('form-vip'),
+    vipFormularios: document.getElementById('vip-formularios'),
+    vipFormErro: document.getElementById('vip-form-erro'),
+    vipCancelar: document.getElementById('vip-cancelar'),
+    vipAdicionarOutro: document.getElementById('vip-adicionar-outro'),
+    vipConfirmar: document.getElementById('vip-confirmar'),
     alertaDialog: document.getElementById('painel-alerta-dialog'),
     dialogTitulo: document.getElementById('painel-dialog-titulo'),
     dialogMensagem: document.getElementById('painel-dialog-mensagem'),
     dialogIcone: document.getElementById('painel-dialog-icone'),
-    dialogFechar: document.getElementById('painel-dialog-fechar')
+    dialogFechar: document.getElementById('painel-dialog-fechar'),
+    dialogConfirmar: document.getElementById('painel-dialog-confirmar')
   };
 
   var estado = {
@@ -74,7 +83,9 @@
     busca: '',
     token: '',
     frota: null,
-    frotaBalancePreview: null
+    frotaBalancePreview: null,
+    vipDrafts: [],
+    vipEnviando: false
   };
 
   // Número do grupo atualmente realçado. Guardado fora do handler para o
@@ -97,6 +108,7 @@
     var msgEl = el.dialogMensagem || document.getElementById('painel-dialog-mensagem');
     var iconeEl = el.dialogIcone || document.getElementById('painel-dialog-icone');
     var btnFechar = el.dialogFechar || document.getElementById('painel-dialog-fechar');
+    var btnConfirmar = el.dialogConfirmar || document.getElementById('painel-dialog-confirmar');
 
     if (tituloEl) tituloEl.textContent = titulo || 'Aviso';
     if (msgEl) msgEl.textContent = mensagem || '';
@@ -113,9 +125,14 @@
     }
 
     if (btnFechar) {
+      btnFechar.textContent = 'Entendido';
       btnFechar.onclick = function () {
         dialog.close();
       };
+    }
+    if (btnConfirmar) {
+      btnConfirmar.hidden = true;
+      btnConfirmar.onclick = null;
     }
 
     // Fechar ao clicar no backdrop
@@ -134,6 +151,63 @@
     } else {
       dialog.setAttribute('open', '');
     }
+  }
+
+  function mostrarConfirmacaoModal(titulo, mensagem, rotuloConfirmar) {
+    var dialog = el.alertaDialog || document.getElementById('painel-alerta-dialog');
+    if (!dialog) return Promise.resolve(window.confirm((titulo ? titulo + ': ' : '') + mensagem));
+
+    var tituloEl = el.dialogTitulo || document.getElementById('painel-dialog-titulo');
+    var msgEl = el.dialogMensagem || document.getElementById('painel-dialog-mensagem');
+    var iconeEl = el.dialogIcone || document.getElementById('painel-dialog-icone');
+    var btnFechar = el.dialogFechar || document.getElementById('painel-dialog-fechar');
+    var btnConfirmar = el.dialogConfirmar || document.getElementById('painel-dialog-confirmar');
+
+    if (tituloEl) tituloEl.textContent = titulo || 'Confirmar ação';
+    if (msgEl) msgEl.textContent = mensagem || '';
+    if (iconeEl) {
+      iconeEl.className = 'bus-dialog__badge-icone bus-dialog__badge-icone--aviso';
+      iconeEl.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>';
+    }
+
+    return new Promise(function (resolve) {
+      var resolvido = false;
+      var encerrar = function (resultado) {
+        if (resolvido) return;
+        resolvido = true;
+        if (btnConfirmar) btnConfirmar.hidden = true;
+        if (btnFechar) btnFechar.textContent = 'Entendido';
+        if (dialog.open) dialog.close();
+        resolve(resultado);
+      };
+
+      if (btnFechar) {
+        btnFechar.textContent = 'Cancelar';
+        btnFechar.onclick = function () { encerrar(false); };
+      }
+      if (btnConfirmar) {
+        btnConfirmar.hidden = false;
+        btnConfirmar.textContent = rotuloConfirmar || 'Confirmar';
+        btnConfirmar.onclick = function () { encerrar(true); };
+      }
+      dialog.onclick = function (e) {
+        if (e.target === dialog) encerrar(false);
+      };
+      dialog.oncancel = function (e) {
+        e.preventDefault();
+        encerrar(false);
+      };
+
+      if (typeof dialog.showModal === 'function') {
+        try {
+          dialog.showModal();
+        } catch (err) {
+          dialog.setAttribute('open', '');
+        }
+      } else {
+        dialog.setAttribute('open', '');
+      }
+    });
   }
 
   function mostrar(secao) {
@@ -156,6 +230,20 @@
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#039;');
+  }
+
+  function formatarCpf(cpf) {
+    var digitos = String(cpf || '').replace(/\D/g, '').slice(0, 11);
+    if (digitos.length > 9) {
+      return digitos.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2})/, '$1.$2.$3-$4');
+    }
+    if (digitos.length > 6) {
+      return digitos.replace(/(\d{3})(\d{3})(\d{1,3})/, '$1.$2.$3');
+    }
+    if (digitos.length > 3) {
+      return digitos.replace(/(\d{3})(\d{1,3})/, '$1.$2');
+    }
+    return digitos;
   }
 
   function badge(rotulo, tom) {
@@ -241,6 +329,7 @@
       var primeiro = linha.primeiroDoGrupo;
       if (primeiro) grupoAtual++;
       var tr = document.createElement('tr');
+      if (r.is_vip) tr.classList.add('tabela__linha--vip');
       if (primeiro) tr.dataset.grupoInicio = 'true';
       tr.dataset.grupo = String(grupoAtual);
 
@@ -373,13 +462,13 @@
 
       var nomeOnibus = '';
       if (primeiro) {
-        nomeOnibus = r.bus_number ? 'Ônibus ' + r.bus_number : '—';
+        nomeOnibus = r.bus_number ? 'Ônibus ' + r.bus_number : (r.is_vip ? 'Sem ônibus confirmado' : '—');
       }
       celula('Ônibus', nomeOnibus, 'tabela__onibus');
 
       celula('Status', primeiro ? badge(r.status_rotulo, r.status_tom) : null);
 
-      celula('Pago em', primeiro ? (r.pago_em || '—') : '', 'tabela__num');
+      celula('Pago em', primeiro ? (r.is_vip ? '' : (r.pago_em || '—')) : '', 'tabela__num');
 
       el.corpo.appendChild(tr);
     });
@@ -426,6 +515,13 @@
     return Math.max(0, Number(assentos || 0));
   }
 
+  function assentosOcupadosDoOnibus(onibus) {
+    if (!onibus) return 0;
+    return Math.max(0, Number(onibus.assentos_ocupados !== undefined
+      ? onibus.assentos_ocupados
+      : (onibus.ocupados || 0)));
+  }
+
   function renderizarFrota() {
     if (!estado.frota || !Array.isArray(estado.frota.onibus)) return;
     var onibusList = estado.frota.onibus;
@@ -437,8 +533,10 @@
     // Renderiza cada onibus como uma linha horizontal completa (veículo)
     onibusList.forEach(function (info) {
       var busNum = Number(info.numero || 1);
-      var ocupados = Number(info.ocupados || 0);
-      var vagasRestantes = Math.max(0, maxL - ocupados);
+      var ocupados = assentosOcupadosDoOnibus(info);
+      var vagasRestantes = info.vagas_livres !== undefined
+        ? Math.max(0, Number(info.vagas_livres || 0))
+        : Math.max(0, maxL - ocupados);
       var vipsNoBus = Number(info.vip_inclusos || 0);
 
       var card = document.createElement('div');
@@ -457,7 +555,7 @@
           card.classList.add('drag-over');
           card.classList.remove('drag-error');
           ev.dataTransfer.dropEffect = 'move';
-        } else if (ocupados + assentosDoItem > maxL) {
+        } else if (vagasRestantes < assentosDoItem) {
           card.classList.add('drag-error');
           card.classList.remove('drag-over');
           ev.dataTransfer.dropEffect = 'none';
@@ -483,7 +581,7 @@
 
         if (itemArrastando && itemArrastando.origemBus !== busNum) {
           var assentosDoItem = itemArrastando.assentos || 1;
-          if (ocupados + assentosDoItem > maxL) {
+          if (vagasRestantes < assentosDoItem) {
             var vagasRestantesMsg = Math.max(0, maxL - ocupados);
             var pessoasDoItem = itemArrastando.pessoas || assentosDoItem;
             mostrarAlertaModal('Ônibus Lotado', 'O Ônibus ' + busNum + ' não tem vagas suficientes (' + (vagasRestantesMsg === 1 ? '1 vaga restante' : vagasRestantesMsg + ' vagas restantes') + ') para acomodar este grupo de ' + (pessoasDoItem === 1 ? '1 pessoa' : pessoasDoItem + ' pessoas') + ' (' + assentosDoItem + (assentosDoItem === 1 ? ' assento).' : ' assentos).'), 'erro');
@@ -730,7 +828,9 @@
           var tituloGrupo = document.createElement('div');
           tituloGrupo.className = 'grupo-item__titulo';
           if (r.is_vip) {
-            tituloGrupo.innerHTML = '★ Lugar VIP da Organização';
+            var nomeVip = r.responsavel || 'Reserva VIP';
+            tituloGrupo.textContent = '★ ' + nomeVip;
+            tituloGrupo.title = nomeVip;
           } else if (r.grupo) {
             tituloGrupo.textContent = r.grupo;
             tituloGrupo.title = r.grupo;
@@ -802,6 +902,21 @@
           });
           tituloGrupoWrap.append(infoTrigger, tituloGrupo);
           itemTop.append(tituloGrupoWrap, codeTag);
+          if (r.is_vip && !String(r.id || '').startsWith('vip_')) {
+            var removerVip = document.createElement('button');
+            removerVip.type = 'button';
+            removerVip.className = 'grupo-item__vip-remover';
+            removerVip.setAttribute('aria-label', 'Remover reserva VIP de ' + (r.responsavel || 'VIP'));
+            removerVip.title = 'Remover reserva VIP';
+            removerVip.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path></svg>';
+            removerVip.addEventListener('mousedown', function (ev) { ev.stopPropagation(); });
+            removerVip.addEventListener('click', function (ev) {
+              ev.preventDefault();
+              ev.stopPropagation();
+              removerReservaVip(r);
+            });
+            itemTop.appendChild(removerVip);
+          }
           item.appendChild(itemTop);
 
           // Rodapé do card: Representação Visual por Meeples + Seletor Mover
@@ -905,10 +1020,13 @@
 
               var novoBus = Number(valor);
               var destInfo = onibusList.find(function (o) { return Number(o.numero) === novoBus; });
-              var ocupadosDest = destInfo ? Number(destInfo.ocupados || 0) : 0;
+              var ocupadosDest = assentosOcupadosDoOnibus(destInfo);
+              var vagasDest = destInfo && destInfo.vagas_livres !== undefined
+                ? Math.max(0, Number(destInfo.vagas_livres || 0))
+                : Math.max(0, maxL - ocupadosDest);
               var assentosDoItem = Math.max(1, assentosDaReserva(r));
-              if (ocupadosDest + assentosDoItem > maxL) {
-                var vagasRestantesMsg = Math.max(0, maxL - ocupadosDest);
+              if (vagasDest < assentosDoItem) {
+                var vagasRestantesMsg = vagasDest;
                 var pessoasDoItem = Math.max(1, Number(r.total || r.pagantes || 1));
                 mostrarAlertaModal('Ônibus Lotado', 'O Ônibus ' + novoBus + ' não tem vagas suficientes (' + (vagasRestantesMsg === 1 ? '1 vaga restante' : vagasRestantesMsg + ' vagas restantes') + ') para acomodar este grupo de ' + (pessoasDoItem === 1 ? '1 pessoa' : pessoasDoItem + ' pessoas') + ' (' + assentosDoItem + (assentosDoItem === 1 ? ' assento).' : ' assentos).'), 'erro');
                 return;
@@ -921,7 +1039,9 @@
           onibusList.forEach(function (outro) {
             var numOutro = Number(outro.numero);
             if (numOutro !== busNum) {
-              var vagasLivresOutro = Math.max(0, maxL - Number(outro.ocupados || 0));
+              var vagasLivresOutro = outro.vagas_livres !== undefined
+                ? Math.max(0, Number(outro.vagas_livres || 0))
+                : Math.max(0, maxL - assentosOcupadosDoOnibus(outro));
               adicionarOpcaoMover(numOutro, 'Ônibus ' + numOutro, vagasLivresOutro + (vagasLivresOutro === 1 ? ' vaga livre' : ' vagas livres'), 'onibus');
             }
           });
@@ -952,7 +1072,7 @@
           tooltip.id = infoId;
           tooltip.setAttribute('role', 'tooltip');
           if (r.is_vip) {
-            tooltip.innerHTML = '<div class="grupo-item__tooltip-resp">★ Lugar VIP da Organização</div><div class="grupo-item__tooltip-pax">1 vaga reservada para a equipe</div>';
+            tooltip.innerHTML = '<div class="grupo-item__tooltip-resp">★ ' + escapeHtml(r.responsavel || 'Reserva VIP') + '</div><div class="grupo-item__tooltip-pax">1 vaga reservada para a equipe</div>';
           } else {
             var nomeResp = r.responsavel || r.grupo || 'Participante';
             var htmlTooltip = '<div class="grupo-item__tooltip-resp"><strong>Contato principal:</strong> ' + escapeHtml(nomeResp) + '</div>';
@@ -1044,13 +1164,6 @@
       renderizarFrota();
     };
     el.frotaContainer.appendChild(btnAdd);
-
-    // Config do VIP
-    if (document.activeElement !== el.vipInput) {
-      el.vipInput.value = estado.frota.vip_seats || 0;
-      el.vipSalvar.disabled = true;
-      el.vipSalvar.textContent = 'Salvar';
-    }
 
     renderizarSemOnibusConfirmado();
   }
@@ -1336,7 +1449,11 @@
       (estado.frota.onibus || []).forEach(function (onibus) {
         var option = document.createElement('option');
         option.value = onibus.numero;
-        option.textContent = 'Ônibus ' + onibus.numero + ' (' + Math.max(0, capacidade - Number(onibus.ocupados || 0)) + ' vagas)';
+        var vagasOnibus = onibus.vagas_livres !== undefined
+          ? Math.max(0, Number(onibus.vagas_livres || 0))
+          : Math.max(0, capacidade - assentosOcupadosDoOnibus(onibus));
+        option.textContent = 'Ônibus ' + onibus.numero + ' (' + vagasOnibus + (vagasOnibus === 1 ? ' vaga)' : ' vagas)');
+        option.disabled = vagasOnibus < Math.max(1, Number(item.pagantes || 0));
         select.appendChild(option);
       });
       select.addEventListener('change', function () {
@@ -1346,6 +1463,17 @@
         moverParaOnibus(item.id, destino);
       });
       rightSide.appendChild(select);
+
+      if (item.is_vip && !String(item.id || '').startsWith('vip_')) {
+        var removerEspera = document.createElement('button');
+        removerEspera.type = 'button';
+        removerEspera.className = 'frota-sem-onibus__remover-vip';
+        removerEspera.setAttribute('aria-label', 'Remover reserva VIP de ' + (item.contato || 'VIP'));
+        removerEspera.title = 'Remover reserva VIP';
+        removerEspera.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path></svg>';
+        removerEspera.addEventListener('click', function () { removerReservaVip(item); });
+        rightSide.appendChild(removerEspera);
+      }
 
       topRow.append(infoLeft, rightSide);
 
@@ -1367,6 +1495,37 @@
 
       linha.append(topRow, bottomRow);
       el.frotaSemOnibusLista.appendChild(linha);
+    });
+  }
+
+  function removerReservaVip(reserva) {
+    var nome = reserva && reserva.responsavel ? reserva.responsavel : 'esta pessoa';
+    mostrarConfirmacaoModal(
+      'Remover reserva VIP?',
+      'A reserva VIP de ' + nome + ' será removida da frota e da tabela de controle.',
+      'Remover VIP'
+    ).then(function (confirmado) {
+      if (!confirmado || !estado.token) return;
+      el.frotaContainer.style.opacity = '0.5';
+      fetch(API_VIP_DELETE + '?token=' + encodeURIComponent(estado.token), {
+        method: 'POST',
+        headers: {
+          'X-Admin-Token': estado.token,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ registration_id: reserva.id })
+      }).then(function (resp) {
+        return resp.json().then(function (data) {
+          if (!resp.ok) throw new Error(data.error || 'Erro ao remover reserva VIP');
+          return data;
+        });
+      }).then(function () {
+        carregar();
+      }).catch(function (err) {
+        mostrarAlertaModal('Não foi possível remover a reserva VIP', err.message, 'erro');
+      }).finally(function () {
+        el.frotaContainer.style.opacity = '1';
+      });
     });
   }
 
@@ -1398,31 +1557,207 @@
     });
   }
 
-  function salvarVips() {
-    if (!estado.token) return;
-    el.vipSalvar.disabled = true;
-    el.vipSalvar.textContent = '...';
-    fetch('api/bus-settings-update?token=' + encodeURIComponent(estado.token), {
+  function novoVipRascunho() {
+    return { full_name: '', cpf: '', whatsapp: '', email: '', bus_number: '' };
+  }
+
+  function erroVipForm(mensagem) {
+    if (!el.vipFormErro) return;
+    el.vipFormErro.textContent = mensagem || '';
+    el.vipFormErro.hidden = !mensagem;
+  }
+
+  function renderizarFormulariosVip(focarIndice) {
+    if (!el.vipFormularios) return;
+    el.vipFormularios.replaceChildren();
+    var onibus = estado.frota && Array.isArray(estado.frota.onibus) ? estado.frota.onibus : [];
+
+    estado.vipDrafts.forEach(function (draft, index) {
+      var fieldset = document.createElement('fieldset');
+      fieldset.className = 'vip-formulario';
+      fieldset.setAttribute('aria-label', 'Dados do VIP ' + (index + 1));
+      var header = document.createElement('div');
+      header.className = 'vip-formulario__cabecalho';
+      var legend = document.createElement('span');
+      legend.className = 'vip-formulario__numero';
+      legend.textContent = 'VIP ' + (index + 1);
+      header.appendChild(legend);
+
+      if (estado.vipDrafts.length > 1) {
+        var remover = document.createElement('button');
+        remover.type = 'button';
+        remover.className = 'vip-formulario__remover';
+        remover.textContent = 'Remover formulário';
+        remover.addEventListener('click', function () {
+          estado.vipDrafts.splice(index, 1);
+          renderizarFormulariosVip(Math.max(0, index - 1));
+        });
+        header.appendChild(remover);
+      }
+      fieldset.appendChild(header);
+
+      var grid = document.createElement('div');
+      grid.className = 'vip-formulario__grid';
+      var campos = [
+        { key: 'full_name', label: 'Nome *', type: 'text', autocomplete: 'name', cls: 'vip-formulario__campo--nome' },
+        { key: 'cpf', label: 'CPF *', type: 'text', autocomplete: 'off', cls: '' },
+        { key: 'whatsapp', label: 'WhatsApp', type: 'tel', autocomplete: 'tel', cls: '' },
+        { key: 'email', label: 'E-mail', type: 'email', autocomplete: 'email', cls: '' }
+      ];
+
+      campos.forEach(function (campo) {
+        var wrapper = document.createElement('div');
+        wrapper.className = 'vip-formulario__campo' + (campo.cls ? ' ' + campo.cls : '');
+        var label = document.createElement('label');
+        var id = 'vip-' + index + '-' + campo.key;
+        label.setAttribute('for', id);
+        label.textContent = campo.label;
+        var input = document.createElement('input');
+        input.id = id;
+        input.type = campo.type;
+        input.autocomplete = campo.autocomplete;
+        input.value = campo.key === 'cpf'
+          ? formatarCpf(draft[campo.key])
+          : (draft[campo.key] || '');
+        input.dataset.vipIndex = String(index);
+        input.dataset.vipField = campo.key;
+        input.addEventListener('input', function () {
+          var valor = campo.key === 'cpf' ? formatarCpf(input.value) : input.value;
+          input.value = valor;
+          estado.vipDrafts[index][campo.key] = valor;
+          input.removeAttribute('aria-invalid');
+          erroVipForm('');
+        });
+        wrapper.append(label, input);
+        grid.appendChild(wrapper);
+      });
+
+      var busWrapper = document.createElement('div');
+      busWrapper.className = 'vip-formulario__campo vip-formulario__campo--onibus';
+      var busLabel = document.createElement('label');
+      var busId = 'vip-' + index + '-bus_number';
+      busLabel.setAttribute('for', busId);
+      busLabel.textContent = 'Ônibus *';
+      var select = document.createElement('select');
+      select.id = busId;
+      select.dataset.vipIndex = String(index);
+      select.dataset.vipField = 'bus_number';
+      var waiting = document.createElement('option');
+      waiting.value = '';
+      waiting.textContent = 'Sem ônibus confirmado';
+      select.appendChild(waiting);
+      onibus.forEach(function (info) {
+        var number = Number(info.numero);
+        var free = info.vagas_livres !== undefined
+          ? Math.max(0, Number(info.vagas_livres || 0))
+          : Math.max(0, Number(estado.frota.capacidade || 46) - assentosOcupadosDoOnibus(info));
+        var option = document.createElement('option');
+        option.value = String(number);
+        option.textContent = 'Ônibus ' + number + ' (' + free + (free === 1 ? ' vaga livre)' : ' vagas livres)');
+        option.disabled = free < 1;
+        select.appendChild(option);
+      });
+      select.value = draft.bus_number || '';
+      select.addEventListener('change', function () {
+        estado.vipDrafts[index].bus_number = select.value;
+        erroVipForm('');
+      });
+      busWrapper.append(busLabel, select);
+      grid.appendChild(busWrapper);
+      fieldset.appendChild(grid);
+      el.vipFormularios.appendChild(fieldset);
+    });
+
+    if (typeof focarIndice === 'number') {
+      var foco = document.getElementById('vip-' + focarIndice + '-full_name');
+      if (foco) window.setTimeout(function () { foco.focus(); }, 0);
+    }
+  }
+
+  function abrirDialogVip() {
+    if (!el.vipDialog) return;
+    estado.vipDrafts = [novoVipRascunho()];
+    estado.vipEnviando = false;
+    erroVipForm('');
+    if (el.vipConfirmar) {
+      el.vipConfirmar.disabled = false;
+      el.vipConfirmar.removeAttribute('aria-busy');
+      el.vipConfirmar.textContent = 'Confirmar reservas VIP';
+    }
+    renderizarFormulariosVip(0);
+    if (typeof el.vipDialog.showModal === 'function') {
+      try {
+        el.vipDialog.showModal();
+      } catch (err) {
+        el.vipDialog.setAttribute('open', '');
+      }
+    } else {
+      el.vipDialog.setAttribute('open', '');
+    }
+  }
+
+  function confirmarVips(evento) {
+    evento.preventDefault();
+    if (estado.vipEnviando || !estado.token) return;
+    var invalid = null;
+    estado.vipDrafts.forEach(function (draft, index) {
+      ['full_name', 'cpf'].forEach(function (field) {
+        if (invalid || String(draft[field] || '').trim() !== '') return;
+        invalid = { index: index, field: field };
+      });
+    });
+    if (invalid) {
+      erroVipForm('Preencha Nome e CPF em todos os formulários VIP.');
+      var invalidInput = document.getElementById('vip-' + invalid.index + '-' + invalid.field);
+      if (invalidInput) {
+        invalidInput.setAttribute('aria-invalid', 'true');
+        invalidInput.focus();
+      }
+      return;
+    }
+
+    estado.vipEnviando = true;
+    erroVipForm('');
+    if (el.vipConfirmar) {
+      el.vipConfirmar.disabled = true;
+      el.vipConfirmar.setAttribute('aria-busy', 'true');
+      el.vipConfirmar.textContent = 'Salvando…';
+    }
+
+    var payload = estado.vipDrafts.map(function (draft) {
+      return {
+        full_name: draft.full_name.trim(),
+        cpf: draft.cpf.trim(),
+        whatsapp: draft.whatsapp.trim(),
+        email: draft.email.trim(),
+        bus_number: draft.bus_number === '' ? null : Number(draft.bus_number)
+      };
+    });
+
+    fetch(API_VIP_CREATE + '?token=' + encodeURIComponent(estado.token), {
       method: 'POST',
       headers: {
         'X-Admin-Token': estado.token,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        vip_seats: el.vipInput.value
-      })
+      body: JSON.stringify({ vips: payload })
     }).then(function (resp) {
       return resp.json().then(function (data) {
-        if (!resp.ok) throw new Error(data.error || 'Erro ao salvar vagas VIP');
+        if (!resp.ok) throw new Error(data.error || 'Não foi possível salvar as reservas VIP.');
         return data;
       });
     }).then(function () {
-      carregar(); // refresh
+      if (el.vipDialog.open) el.vipDialog.close();
+      estado.vipDrafts = [];
+      carregar();
     }).catch(function (err) {
-      mostrarAlertaModal('Não foi possível atualizar VIPs', err.message, 'erro');
-      el.vipSalvar.disabled = false;
-    }).finally(function () {
-      el.vipSalvar.textContent = 'Salvar';
+      estado.vipEnviando = false;
+      if (el.vipConfirmar) {
+        el.vipConfirmar.disabled = false;
+        el.vipConfirmar.removeAttribute('aria-busy');
+        el.vipConfirmar.textContent = 'Confirmar reservas VIP';
+      }
+      erroVipForm(err.message);
     });
   }
 
@@ -1524,24 +1859,32 @@
     });
   });
 
-  if (el.vipInput) {
-    el.vipInput.addEventListener('input', function () {
-      if (estado.frota && el.vipInput.value !== String(estado.frota.vip_seats)) {
-        el.vipSalvar.disabled = false;
-      } else {
-        el.vipSalvar.disabled = true;
-      }
-    });
-    el.vipInput.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        salvarVips();
-      }
+  if (el.vipAdicionar) {
+    el.vipAdicionar.addEventListener('click', abrirDialogVip);
+  }
+
+  if (el.vipCancelar && el.vipDialog) {
+    el.vipCancelar.addEventListener('click', function () {
+      if (!estado.vipEnviando) el.vipDialog.close();
     });
   }
 
-  if (el.vipSalvar) {
-    el.vipSalvar.addEventListener('click', salvarVips);
+  if (el.vipAdicionarOutro) {
+    el.vipAdicionarOutro.addEventListener('click', function () {
+      if (estado.vipEnviando) return;
+      estado.vipDrafts.push(novoVipRascunho());
+      renderizarFormulariosVip(estado.vipDrafts.length - 1);
+    });
+  }
+
+  if (el.vipForm) {
+    el.vipForm.addEventListener('submit', confirmarVips);
+  }
+
+  if (el.vipDialog) {
+    el.vipDialog.addEventListener('click', function (event) {
+      if (event.target === el.vipDialog && !estado.vipEnviando) el.vipDialog.close();
+    });
   }
 
   if (el.otimizarDistribuicao) {

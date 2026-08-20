@@ -77,6 +77,8 @@ function xlsx_estilos_indices(): array
         'status_ok' => 7,
         'status_espera' => 8,
         'status_falha' => 9,
+        'vip' => 10,
+        'status_vip' => 11,
     ];
 }
 
@@ -110,6 +112,7 @@ function xlsx_styles(): string
         '<fill><patternFill patternType="solid"><fgColor rgb="FFE6F5EE"/><bgColor indexed="64"/></patternFill></fill>',
         '<fill><patternFill patternType="solid"><fgColor rgb="FFFDF3E2"/><bgColor indexed="64"/></patternFill></fill>',
         '<fill><patternFill patternType="solid"><fgColor rgb="FFFBEAEA"/><bgColor indexed="64"/></patternFill></fill>',
+        '<fill><patternFill patternType="solid"><fgColor rgb="FFFFF3D6"/><bgColor indexed="64"/></patternFill></fill>',
     ];
 
     $bordaFina = '<left style="thin"><color rgb="FFD9E1EC"/></left>'
@@ -151,6 +154,10 @@ function xlsx_styles(): string
         '<xf numFmtId="49" fontId="5" fillId="6" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>',
         // 9 status_falha
         '<xf numFmtId="49" fontId="6" fillId="7" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>',
+        // 10 vip — fundo dourado claro para a linha administrativa.
+        '<xf numFmtId="49" fontId="7" fillId="8" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment vertical="center"/></xf>',
+        // 11 status_vip
+        '<xf numFmtId="49" fontId="5" fillId="8" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>',
     ];
 
     return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
@@ -249,6 +256,9 @@ function xlsx_build(array $planilha): string
             $estiloCelula = is_array($celula) && !empty($celula['estilo'])
                 ? $celula['estilo']
                 : $estiloLinha;
+            if ($estiloLinha === 'vip' && in_array($estiloCelula, ['texto', 'centralizado'], true)) {
+                $estiloCelula = 'vip';
+            }
             $s = $indices[$estiloCelula] ?? $indices['normal'];
 
             // Célula vazia ainda precisa existir para a borda desenhar; sem ela

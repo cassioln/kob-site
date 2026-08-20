@@ -1,5 +1,10 @@
 # Reservas VIP no painel e nas listas - Implementation Plan
 
+> Status: implementação concluída no código e validada por testes locais. A
+> confirmação contra a instância MySQL de produção e o clique real no navegador
+> permanecem como validação de deploy, pois as credenciais do ambiente não estão
+> disponíveis neste workspace.
+
 > For agentic workers: REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox syntax for tracking.
 
 **Goal:** Permitir cadastrar, editar por movimentação manual e remover reservas VIP com dados completos, refletindo-as na frota, na aba Reservas, no XLSX e no PDF de embarque, sem permitir que a distribuição automática altere VIPs.

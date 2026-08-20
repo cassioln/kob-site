@@ -126,6 +126,21 @@ function bus_fleet_ensure_assignment_status(PDO $pdo): void
     } catch (Throwable $e) {
         // O índice já existe ou a instalação não permite DDL neste momento.
     }
+
+    try {
+        $pdo->exec("ALTER TABLE bus_registrations
+            ADD COLUMN is_vip TINYINT(1) NOT NULL DEFAULT 0
+            AFTER group_name");
+    } catch (Throwable $e) {
+        // A migration versionada já foi aplicada ou a instalação não permite DDL.
+    }
+
+    try {
+        $pdo->exec('CREATE INDEX bus_registrations_is_vip_status_idx
+            ON bus_registrations (is_vip, status)');
+    } catch (Throwable $e) {
+        // O índice já existe ou a instalação não permite DDL neste momento.
+    }
 }
 
 /**
@@ -161,6 +176,7 @@ function bus_fleet_balance_signature(array $snapshot): string
             'bus_number' => $group['bus_number'] !== null ? (int) $group['bus_number'] : null,
             'fleet_assignment_status' => ($group['fleet_assignment_status'] ?? 'assigned') === 'waiting' ? 'waiting' : 'assigned',
             'paid_at' => (string) ($group['paid_at'] ?? ''),
+            'is_vip' => !empty($group['is_vip']),
         ];
     }
     usort($groups, static fn (array $a, array $b): int => strcmp($a['id'], $b['id']));
@@ -210,7 +226,7 @@ function bus_fleet_load_balance_snapshot(PDO $pdo, bool $forUpdate = false): arr
     }
     $lock = $forUpdate ? ' FOR UPDATE' : '';
     $query = $pdo->query(
-        'SELECT id, bus_number, fleet_assignment_status, passenger_count, children_count, paid_at, created_at
+        'SELECT id, bus_number, fleet_assignment_status, passenger_count, children_count, is_vip, paid_at, created_at
            FROM bus_registrations
           WHERE status = "confirmed"
           ORDER BY paid_at ASC, created_at ASC, id ASC' . $lock
@@ -247,7 +263,7 @@ function bus_fleet_load_balance_snapshot(PDO $pdo, bool $forUpdate = false): arr
             'fleet_assignment_status' => ($row['fleet_assignment_status'] ?? 'assigned') === 'waiting' ? 'waiting' : 'assigned',
             'paid_at' => (string) ($row['paid_at'] ?? ''),
             'created_at' => (string) ($row['created_at'] ?? ''),
-            'is_vip' => false,
+            'is_vip' => (bool) $row['is_vip'],
         ];
     }
 
@@ -325,6 +341,23 @@ function bus_fleet_build_balance_plan(array $snapshot, int $capacity = 46, int $
         }
         $initialBus = ($rawGroup['bus_number'] ?? null) !== null ? (int) $rawGroup['bus_number'] : null;
         $status = ($rawGroup['fleet_assignment_status'] ?? 'assigned') === 'waiting' ? 'waiting' : 'assigned';
+
+        // VIPs reais são ocupação fixa para o auto-balanceamento. Eles podem
+        // ser movidos manualmente, mas nunca entram nos candidatos da busca.
+        if (!empty($rawGroup['is_vip'])) {
+            if ($status === 'assigned' && $initialBus !== null) {
+                if (!isset($currentOccupancy[$initialBus])) {
+                    $currentOccupancy[$initialBus] = 0;
+                    $vipOccupancy[$initialBus] = 0;
+                }
+                $currentOccupancy[$initialBus] += $size;
+                $vipOccupancy[$initialBus] += $size;
+            } else {
+                $currentWaiting++;
+            }
+            continue;
+        }
+
         if ($status === 'assigned' && $initialBus !== null && isset($currentOccupancy[$initialBus])) {
             $currentOccupancy[$initialBus] += $size;
         } else {
@@ -654,24 +687,13 @@ function bus_assign_fleet(PDO $pdo, string $registrationId): void
 
     $tamanho = bus_fleet_seat_count((int) $reserva['passenger_count'], (int) $reserva['children_count']);
     
-    // Ler todos os ônibus que já existem e suas capacidades
-    $q = $pdo->query('
-        SELECT bus_number, SUM(passenger_count) as ocupacao
-          FROM bus_registrations
-         WHERE status = "confirmed" AND bus_number IS NOT NULL
-         GROUP BY bus_number
-         ORDER BY bus_number ASC
-    ');
-    $onibus = $q->fetchAll(PDO::FETCH_ASSOC);
-    
-    $ocupacao = [];
-    foreach ($onibus as $o) {
-        $ocupacao[(int) $o['bus_number']] = (int) $o['ocupacao'];
-    }
+    $legacyVip = bus_fleet_load_legacy_vip_settings($pdo);
+    $legacyOccupancy = bus_fleet_vip_occupancy($legacyVip['effective_assignments']);
 
     $busNum = 1;
     while (true) {
-        $current = $ocupacao[$busNum] ?? 0;
+        $current = bus_fleet_bus_occupancy($pdo, $busNum);
+        $current += (int) ($legacyOccupancy[$busNum] ?? 0);
         if ($current + $tamanho <= 46) {
             break;
         }

@@ -60,6 +60,19 @@ $vipPlan = bus_fleet_build_balance_plan(snapshot([
 expect_true(array_column($vipPlan['moves'], 'registration_id') === ['g1'], 'only non-VIP groups may move');
 expect_same(40, $vipPlan['buses'][1]['vip_occupancy'], 'VIP occupancy must remain fixed');
 
+$realVipPlan = bus_fleet_build_balance_plan(snapshot([
+    ['id' => 'vip-real', 'size' => 1, 'bus_number' => 1, 'fleet_assignment_status' => 'assigned', 'paid_at' => '2026-08-01 08:00:00', 'is_vip' => true],
+    ['id' => 'common-one', 'size' => 39, 'bus_number' => 1, 'fleet_assignment_status' => 'assigned', 'paid_at' => '2026-08-01 09:00:00', 'is_vip' => false],
+    ['id' => 'common-two', 'size' => 40, 'bus_number' => 2, 'fleet_assignment_status' => 'assigned', 'paid_at' => '2026-08-01 10:00:00', 'is_vip' => false],
+]));
+
+expect_true(
+    !in_array('vip-real', array_column($realVipPlan['moves'], 'registration_id'), true),
+    'VIP real não pode entrar nos movimentos automáticos'
+);
+expect_same(1, $realVipPlan['buses'][1]['vip_occupancy'], 'VIP real deve ocupar uma vaga fixa');
+expect_same(40, $realVipPlan['buses'][1]['after'], 'a ocupação total deve somar o VIP real uma única vez');
+
 $priorityPlan = bus_fleet_build_balance_plan(snapshot([
     ['id' => 'old', 'size' => 35, 'bus_number' => 1, 'fleet_assignment_status' => 'assigned', 'paid_at' => '2026-08-01 09:00:00', 'is_vip' => false],
     ['id' => 'mid', 'size' => 5, 'bus_number' => 1, 'fleet_assignment_status' => 'assigned', 'paid_at' => '2026-08-02 09:00:00', 'is_vip' => false],

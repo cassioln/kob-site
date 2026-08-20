@@ -68,9 +68,14 @@ try {
             SET bus_number = NULL, fleet_assignment_status = 'waiting', updated_at = UTC_TIMESTAMP()
           WHERE id = ? AND status = 'confirmed'"
     );
+    $guardVip = $pdo->prepare('SELECT is_vip FROM bus_registrations WHERE id = ? FOR UPDATE');
 
     foreach ($plan['moves'] as $move) {
         $registrationId = (string) $move['registration_id'];
+        $guardVip->execute([$registrationId]);
+        if ((int) $guardVip->fetchColumn() === 1) {
+            throw new RuntimeException('A distribuição automática não pode mover uma reserva VIP.');
+        }
         if ($move['to_bus'] === null) {
             $updateWaiting->execute([$registrationId]);
             $affected = $updateWaiting->rowCount();

@@ -64,7 +64,7 @@ try {
 
     $q = $pdo->query(
         'SELECT r.id, r.primary_name, r.primary_cpf, r.email, r.whatsapp, r.status,
-                r.status_detail, r.passenger_count, r.children_count, r.group_name, r.amount_cents,
+                r.status_detail, r.passenger_count, r.children_count, r.group_name, r.is_vip, r.amount_cents,
                 r.mercadopago_order_id, r.confirmation_email_sent_at, r.created_at, r.paid_at, r.bus_number,
                 r.fleet_assignment_status,
                 DATE_FORMAT(CONVERT_TZ(r.created_at, "+00:00", "-03:00"), "%d/%m/%Y %H:%i") AS criado_em,
@@ -120,6 +120,7 @@ try {
     $lista = [];
     $resumo = [
         'reservas_pagas' => 0,
+        'reservas_vip' => 0,
         'reservas_pendentes' => 0,
         'reservas_falha' => 0,
         'pagantes' => 0,
@@ -222,6 +223,7 @@ try {
                     'criancas' => $childCount,
                     'total' => $grupoTotal,
                     'assentos' => $assentosGrupo,
+                    'is_vip' => (bool) $r['is_vip'],
                     'pago_em' => $r['pago_em'] ?? $r['criado_em'] ?? null,
                     'passageiros' => array_map(static fn ($p) => [
                         'posicao' => (int) $p['posicao'],
@@ -279,6 +281,7 @@ try {
             'criancas' => $childCount,
             'total' => $grupoTotal,
             'assentos' => $assentosGrupo,
+            'is_vip' => (bool) $r['is_vip'],
             'pago_em' => $r['pago_em'] ?? $r['criado_em'] ?? null,
             'passageiros' => array_map(static fn ($p) => [
                 'posicao' => (int) $p['posicao'],
@@ -329,7 +332,13 @@ try {
         $passageiros = $porReserva[$r['id']] ?? [];
 
         if ($st['chave'] === 'pago') {
-            $resumo['reservas_pagas']++;
+            if (!empty($r['is_vip'])) {
+                // VIP confirmado não é pagamento aprovado: permanece visível
+                // no filtro próprio sem inflar o indicador financeiro.
+                $resumo['reservas_vip']++;
+            } else {
+                $resumo['reservas_pagas']++;
+            }
             $resumo['pagantes'] += (int) $r['passenger_count'];
             $resumo['criancas_no_colo'] += (int) $r['children_count'];
             $resumo['receita_centavos'] += (int) $r['amount_cents'];
@@ -380,13 +389,17 @@ try {
             ];
         }
 
+        $statusReserva = !empty($r['is_vip'])
+            ? ['chave' => 'vip', 'rotulo' => 'Reserva VIP', 'tom' => 'vip']
+            : $st;
+
         $lista[] = [
             'code' => strtoupper(substr((string) $r['id'], 0, 8)),
             'id' => $r['id'],
             'status' => $r['status'],
-            'status_chave' => $st['chave'],
-            'status_rotulo' => $st['rotulo'],
-            'status_tom' => $st['tom'],
+            'status_chave' => $statusReserva['chave'],
+            'status_rotulo' => $statusReserva['rotulo'],
+            'status_tom' => $statusReserva['tom'],
             'contato' => $r['primary_name'],
             'contato_cpf' => bus_format_cpf((string) $r['primary_cpf']),
             'email' => $r['email'],
@@ -402,6 +415,7 @@ try {
             'email_enviado' => !empty($r['confirmation_email_sent_at']),
             'bus_number' => $r['bus_number'] !== null ? (int) $r['bus_number'] : null,
             'fleet_assignment_status' => ($r['fleet_assignment_status'] ?? 'assigned') === 'waiting' ? 'waiting' : 'assigned',
+            'is_vip' => (bool) $r['is_vip'],
             'passageiros' => $passageiros,
         ];
     }
@@ -425,6 +439,7 @@ try {
             'pagantes' => (int) $r['passenger_count'],
             'criancas' => (int) $r['children_count'],
             'total' => (int) $r['passenger_count'] + (int) $r['children_count'],
+            'is_vip' => (bool) $r['is_vip'],
             'pago_em' => $r['pago_em'] ?? $r['criado_em'] ?? null,
             'passageiros' => array_map(static fn ($p) => [
                 'posicao' => (int) $p['posicao'],
@@ -471,10 +486,12 @@ try {
 
         $ocupados = (int) ($busData['assentos'] ?? $busData['pagantes'] ?? 0);
         $busData['ocupados'] = $ocupados;
+        $busData['assentos_ocupados'] = $ocupados;
         $busData['capacidade'] = 46;
         $busData['vagas_livres'] = max(0, 46 - $ocupados);
         $busData['assentos_de_colos'] = (int) ($busData['criancas'] ?? 0);
         $busData['vip_inclusos'] = $vipsNoOnibus;
+        $busData['vagas_vip'] = $vipsNoOnibus;
         $busData['fechado'] = $ocupados >= 40;
         $listaOnibus[] = $busData;
     }

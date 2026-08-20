@@ -63,6 +63,8 @@ RewriteRule ^api/bus-admin-xlsx/?$            php/mysql/bus-admin-xlsx.php [QSA,
 RewriteRule ^api/bus-settings-update/?$       php/mysql/bus-settings-update.php [QSA,L]
 RewriteRule ^api/bus-fleet-assign/?$          php/mysql/bus-fleet-assign.php [QSA,L]
 RewriteRule ^api/bus-fleet-auto-balance/?$    php/mysql/bus-fleet-auto-balance.php [QSA,L]
+RewriteRule ^api/bus-vip-create/?$            php/mysql/bus-vip-create.php [QSA,L]
+RewriteRule ^api/bus-vip-delete/?$            php/mysql/bus-vip-delete.php [QSA,L]
 RewriteRule ^api/bus-payment-proof/?$         php/mysql/bus-payment-proof.php [QSA,L]
 RewriteRule ^api/mercadopago-webhook/?$       php/mysql/mercadopago-webhook.php [QSA,L]
 

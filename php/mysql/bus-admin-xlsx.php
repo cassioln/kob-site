@@ -14,6 +14,7 @@ declare(strict_types=1);
  */
 
 require_once dirname(__DIR__) . '/lib/validation.php';
+require_once dirname(__DIR__) . '/lib/bus-fleet.php';
 require_once __DIR__ . '/lib/db.php';
 require_once dirname(__DIR__) . '/lib/receipt-pdf.php';
 require_once dirname(__DIR__) . '/lib/xlsx.php';
@@ -50,12 +51,13 @@ function bus_status_xlsx(string $status): array
 
 try {
     $pdo = bus_pdo();
+    bus_fleet_ensure_assignment_status($pdo);
     $filtro = (string) ($_GET['filtro'] ?? 'pago');
     $busca = mb_strtolower(trim((string) ($_GET['busca'] ?? '')), 'UTF-8');
 
     $q = $pdo->query(
         'SELECT r.id, r.primary_name, r.email, r.whatsapp, r.status,
-                r.passenger_count, r.children_count, r.group_name, r.amount_cents,
+                r.passenger_count, r.children_count, r.group_name, r.is_vip, r.amount_cents,
                 r.mercadopago_order_id, r.bus_number,
                 DATE_FORMAT(CONVERT_TZ(r.paid_at, "+00:00", "-03:00"), "%d/%m/%Y %H:%i") AS pago_em,
                 DATE_FORMAT(CONVERT_TZ(r.created_at, "+00:00", "-03:00"), "%d/%m/%Y %H:%i") AS criado_em
@@ -93,8 +95,14 @@ try {
 
     $linhas = [];
     foreach ($reservas as $r) {
-        $st = bus_status_xlsx((string) $r['status']);
-        if ($filtro !== 'todas' && $st['chave'] !== $filtro) {
+        $isVip = (int) ($r['is_vip'] ?? 0) === 1;
+        $st = $isVip
+            ? ['chave' => 'vip', 'rotulo' => 'Reserva VIP', 'estilo' => 'status_vip']
+            : bus_status_xlsx((string) $r['status']);
+        if ($filtro === 'vip' && !$isVip) {
+            continue;
+        }
+        if ($filtro !== 'todas' && $filtro !== 'vip' && $st['chave'] !== $filtro) {
             continue;
         }
 
@@ -115,9 +123,9 @@ try {
         }
 
         $code = strtoupper(substr((string) $r['id'], 0, 8));
-        $grupo = $r['passenger_count'] . ((int) $r['children_count'] > 0
+        $grupo = $isVip ? '' : $r['passenger_count'] . ((int) $r['children_count'] > 0
             ? ' + ' . $r['children_count'] . ' colo' : '');
-        $valor = 'R$ ' . number_format(((int) $r['amount_cents']) / 100, 2, ',', '.');
+        $valor = $isVip ? '' : 'R$ ' . number_format(((int) $r['amount_cents']) / 100, 2, ',', '.');
 
         foreach ($passageiros as $i => $p) {
             $primeiro = $i === 0;
@@ -143,14 +151,14 @@ try {
                 $faixaEtaria = '6 a 17 anos';
             }
 
-            $whatsappPassageiro = 'N/A';
+            $whatsappPassageiro = $isVip ? '' : 'N/A';
             if ($isChildLap) {
                 $whatsappPassageiro = 'N/A';
             } elseif (($p['whatsapp'] ?? '') !== '') {
                 $whatsappPassageiro = bus_format_phone((string) $p['whatsapp']);
             }
 
-            $emailPassageiro = 'N/A';
+            $emailPassageiro = $isVip ? '' : 'N/A';
             if ($isChildLap) {
                 $emailPassageiro = 'N/A';
             } elseif ((string) ($p['email'] ?? '') !== '') {
@@ -164,12 +172,12 @@ try {
             $linhas[] = [
                 // Linha do responsável ganha destaque; a primeira linha de cada
                 // grupo ganha a borda superior que separa os blocos.
-                'estilo' => $responsavel ? 'responsavel' : ($primeiro ? 'grupo' : 'normal'),
+                'estilo' => $isVip ? 'vip' : ($responsavel ? 'responsavel' : ($primeiro ? 'grupo' : 'normal')),
                 'celulas' => [
                     $code,
                     [
                         'tipo' => 'texto',
-                        'v' => $r['bus_number'] !== null ? 'Ônibus ' . $r['bus_number'] : '—',
+                        'v' => $r['bus_number'] !== null ? 'Ônibus ' . $r['bus_number'] : ($isVip ? 'Sem ônibus confirmado' : '—'),
                         'estilo' => 'texto',
                     ],
                     [
@@ -189,8 +197,8 @@ try {
                     $primeiro
                         ? ['v' => $st['rotulo'], 'estilo' => $st['estilo']]
                         : '',
-                    $primeiro ? (string) ($r['pago_em'] ?? '') : '',
-                    $primeiro ? (string) ($r['mercadopago_order_id'] ?? '') : '',
+                    $primeiro && !$isVip ? (string) ($r['pago_em'] ?? '') : '',
+                    $primeiro && !$isVip ? (string) ($r['mercadopago_order_id'] ?? '') : '',
                 ],
             ];
         }
@@ -200,6 +208,7 @@ try {
         'pago' => 'pagamentos aprovados',
         'pendente' => 'aguardando pagamento',
         'falha' => 'cancelados e falhas',
+        'vip' => 'reservas VIP',
         'todas' => 'todas as reservas',
     ][$filtro] ?? $filtro;
 

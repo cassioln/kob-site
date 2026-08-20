@@ -24,12 +24,18 @@ const EMBARQUE_RODAPE = 104.0;
 
 /**
  * @param list<array{
- *   code: string, valor: string, pagantes: int, criancas: int, pago_em: ?string, bus_number: ?int,
+ *   code: string, valor: string, pagantes: int, criancas: int, pago_em: ?string, bus_number: ?int, is_vip?: bool,
  *   passageiros: list<array{nome: string, cpf: string, whatsapp: ?string, responsavel: bool}>
  * }> $reservas
  */
 function bus_boarding_pdf(array $reservas, ?array $logo = null): string
 {
+    // Uma reserva sem ônibus confirmado não é uma presença operacional: ela
+    // fica na fila do painel, mas nunca pode aparecer na lista levada à porta.
+    $reservas = array_values(array_filter($reservas, static function (array $reserva): bool {
+        return array_key_exists('bus_number', $reserva) && $reserva['bus_number'] !== null;
+    }));
+
     $esq = PDF_MARGEM;
     $dir = PDF_A4_LARGURA - PDF_MARGEM;
     $larguraUtil = $dir - $esq;
@@ -134,6 +140,14 @@ function bus_boarding_pdf(array $reservas, ?array $logo = null): string
 
     foreach ($onibusKeys as $bn) {
         $reservasDoOnibus = $porOnibus[$bn];
+        usort($reservasDoOnibus, static function (array $a, array $b): int {
+            $vipOrder = ((int) !empty($b['is_vip'])) <=> ((int) !empty($a['is_vip']));
+            if ($vipOrder !== 0) {
+                return $vipOrder;
+            }
+            return [(string) ($a['pago_em'] ?? ''), (string) $a['code']]
+                <=> [(string) ($b['pago_em'] ?? ''), (string) $b['code']];
+        });
         $tituloOnibus = is_int($bn) ? 'ÔNIBUS ' . $bn : 'SEM ÔNIBUS DEFINIDO';
         
         [$blocos, $y] = $abrirPagina($numeroPagina, $tituloOnibus);
@@ -149,6 +163,9 @@ function bus_boarding_pdf(array $reservas, ?array $logo = null): string
             }
 
             $tituloReserva = 'RESERVA ' . $r['code'];
+            if (!empty($r['is_vip'])) {
+                $tituloReserva = 'RESERVA VIP  ' . $r['code'];
+            }
             if (!empty($r['group_name'])) {
                 $tituloReserva .= '  |  ' . $r['group_name'];
             }

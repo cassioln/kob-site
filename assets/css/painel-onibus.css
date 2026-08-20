@@ -440,6 +440,27 @@
   background: var(--p-superficie-2);
 }
 
+.botao--secundario {
+  background: var(--p-superficie);
+  border-color: var(--p-acao);
+  color: var(--p-acao-escura);
+}
+
+.botao--secundario:hover {
+  background: var(--p-acao-fraca);
+  border-color: var(--p-acao-escura);
+}
+
+.botao--secundario svg,
+.frota-vip-controle svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+}
+
 .botao--pequeno {
   padding: 6px var(--p-3);
   font-size: 0.8125rem;
@@ -522,6 +543,15 @@
    linha do meio do grupo não alcança as de cima. */
 .tabela tbody tr.is-realcada td {
   background: var(--p-realce-linha);
+}
+
+.tabela tbody tr.tabela__linha--vip td {
+  background: #fff8e7;
+  border-bottom-color: #f0d99a;
+}
+
+.tabela tbody tr.tabela__linha--vip[data-grupo-inicio="true"] td {
+  border-top-color: #e7c56d;
 }
 
 .tabela__col-reserva {
@@ -747,6 +777,11 @@
 .etiqueta--falha {
   background: var(--p-falha-fundo);
   color: var(--p-falha);
+}
+
+.etiqueta--vip {
+  background: #fff0c4;
+  color: #8a5700;
 }
 
 .painel__sem-resultado {
@@ -1239,6 +1274,10 @@
   font-size: 12px;
   color: var(--p-tinta-fraca);
   line-height: 1.4;
+}
+
+.frota-vip-controle .botao {
+  min-height: 38px;
 }
 
 /* Grid da frota - layout horizontal em lista empilhada */
@@ -3155,6 +3194,70 @@
   font-size: 12.5px;
 }
 
+.frota-sem-onibus__remover-vip,
+.grupo-item__vip-remover {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid #e7c56d;
+  border-radius: 50%;
+  background: #fff8e7;
+  color: #9a6200;
+  cursor: pointer;
+  transition: background var(--p-transicao), color var(--p-transicao), transform var(--p-transicao);
+}
+
+.frota-sem-onibus__remover-vip:hover,
+.grupo-item__vip-remover:hover {
+  background: #ffe9a8;
+  color: #714700;
+  transform: translateY(-1px);
+}
+
+.frota-sem-onibus__remover-vip:focus-visible,
+.grupo-item__vip-remover:focus-visible {
+  outline: 2px solid #c87900;
+  outline-offset: 2px;
+}
+
+.frota-sem-onibus__remover-vip svg,
+.grupo-item__vip-remover svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+}
+
+/* Remoção do VIP: ação destrutiva, compacta e visualmente distinta do
+   controle de alocação. O tooltip de informações continua disponível. */
+.grupo-item__vip-remover {
+  width: 25px;
+  height: 25px;
+  border-color: #ef4444;
+  background: #fff1f2;
+  color: #b42318;
+}
+
+.grupo-item__vip-remover:hover {
+  background: #ffe4e6;
+  color: #991b1b;
+}
+
+.grupo-item__vip-remover:focus-visible {
+  outline-color: #dc2626;
+}
+
+.grupo-item__vip-remover svg {
+  width: 14px;
+  height: 14px;
+  stroke-width: 3.4;
+}
+
 /* Linha de Passageiros */
 .frota-sem-onibus__passageiros {
   display: flex;
@@ -3574,4 +3677,175 @@
   justify-content: flex-end;
   gap: 10px;
   margin-top: 24px;
+}
+
+.bus-dialog--vip {
+  width: min(calc(100% - 32px), 760px);
+  max-width: 760px;
+  padding: 28px;
+}
+
+.bus-dialog--vip form {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.bus-dialog__subtitle {
+  margin: 4px 0 0;
+  color: var(--p-tinta-fraca);
+  font-size: 0.8125rem;
+}
+
+.bus-dialog__badge-icone--vip {
+  background: #fff0c4;
+  color: #c87900;
+}
+
+.bus-dialog__badge-icone--vip svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+.vip-formularios {
+  display: grid;
+  gap: 14px;
+  max-height: min(55vh, 520px);
+  overflow-y: auto;
+  padding: 2px 5px 2px 1px;
+}
+
+.vip-formulario {
+  padding: 16px;
+  border: 1px solid var(--p-linha);
+  border-radius: var(--p-raio);
+  background: var(--p-superficie-2);
+}
+
+.vip-formulario__cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 13px;
+}
+
+.vip-formulario__numero {
+  color: var(--p-tinta-media);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.vip-formulario__remover {
+  padding: 4px 8px;
+  border: 0;
+  border-radius: var(--p-raio-p);
+  background: transparent;
+  color: var(--p-falha);
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.vip-formulario__remover:hover {
+  background: var(--p-falha-fundo);
+}
+
+.vip-formulario__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.vip-formulario__campo {
+  display: grid;
+  gap: 5px;
+}
+
+.vip-formulario__campo--nome,
+.vip-formulario__campo--onibus {
+  grid-column: 1 / -1;
+}
+
+.vip-formulario__campo label {
+  color: var(--p-tinta-media);
+  font-size: 0.75rem;
+  font-weight: 650;
+}
+
+.vip-formulario__campo input,
+.vip-formulario__campo select {
+  width: 100%;
+  min-height: 40px;
+  padding: 8px 10px;
+  border: 1px solid var(--p-linha-forte);
+  border-radius: var(--p-raio-p);
+  background: var(--p-superficie);
+  color: var(--p-tinta);
+  font: inherit;
+  font-size: 0.875rem;
+  box-sizing: border-box;
+}
+
+.vip-formulario__campo input:focus-visible,
+.vip-formulario__campo select:focus-visible {
+  outline: 2px solid var(--p-acao);
+  outline-offset: 1px;
+  border-color: var(--p-acao);
+}
+
+.vip-formulario__campo input[aria-invalid="true"],
+.vip-formulario__campo select[aria-invalid="true"] {
+  border-color: var(--p-falha);
+  box-shadow: 0 0 0 3px var(--p-falha-fundo);
+}
+
+.vip-form__erro {
+  margin: 14px 0 0;
+  padding: 10px 12px;
+  border-radius: var(--p-raio-p);
+  background: var(--p-falha-fundo);
+  color: var(--p-falha);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
+.bus-dialog__actions--vip {
+  align-items: stretch;
+}
+
+.bus-dialog__actions--vip .botao:first-child {
+  margin-right: auto;
+}
+
+@media (max-width: 560px) {
+  .bus-dialog--vip {
+    padding: 20px 16px;
+  }
+
+  .vip-formularios {
+    max-height: 52vh;
+  }
+
+  .vip-formulario__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .vip-formulario__campo--nome,
+  .vip-formulario__campo--onibus {
+    grid-column: auto;
+  }
+
+  .bus-dialog__actions--vip {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .bus-dialog__actions--vip .botao:first-child {
+    margin-right: 0;
+  }
 }

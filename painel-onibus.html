@@ -114,6 +114,7 @@
           <button class="filtro__opcao" type="button" data-filtro="pendente" aria-pressed="false">Pendente</button>
           <button class="filtro__opcao" type="button" data-filtro="falha" aria-pressed="false">Cancelados /
             Falhas</button>
+          <button class="filtro__opcao filtro__opcao--vip" type="button" data-filtro="vip" aria-pressed="false">Reservas VIP</button>
           <button class="filtro__opcao" type="button" data-filtro="todas" aria-pressed="false">Todos</button>
         </div>
 
@@ -165,12 +166,14 @@
             <p class="frota-header__subtitulo">Cada ônibus comporta 46 pessoas. O mínimo para fechar um ônibus é 40 (podendo usar até 6 lugares flexíveis do anterior).</p>
           </div>
           <div class="frota-header__vip">
-            <label for="vip-input" class="frota-vip-label">Reserva de Lugares (VIPs da Organização):</label>
+            <span class="frota-vip-label">Reservas VIP da organização</span>
             <div class="frota-vip-controle">
-              <input type="number" id="vip-input" min="0" max="200" value="0" class="frota-vip-input" aria-describedby="vip-help">
-              <button id="salvar-vip" class="botao botao--secundario botao--pequeno" type="button" disabled>Salvar</button>
+              <button id="adicionar-vip" class="botao botao--secundario" type="button">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+                Adicionar VIP
+              </button>
             </div>
-            <p id="vip-help" class="frota-vip-ajuda">Estas vagas contam para o fechamento do ônibus, mas não aparecem na lista de embarque.</p>
+            <p id="vip-help" class="frota-vip-ajuda">Cadastre cada pessoa VIP com seus dados. A reserva ocupa um assento e pode ficar sem ônibus confirmado.</p>
           </div>
           <div class="frota-header__acoes">
             <button id="otimizar-distribuicao" class="botao botao--primario" type="button">
@@ -237,6 +240,28 @@
     </div>
   </footer>
 
+  <!-- Modal de cadastro de reservas VIP -->
+  <dialog id="painel-vip-dialog" class="bus-dialog bus-dialog--vip" aria-labelledby="painel-vip-titulo">
+    <form id="form-vip" method="dialog" novalidate>
+      <div class="bus-dialog__header">
+        <div class="bus-dialog__badge-icone bus-dialog__badge-icone--vip" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 3l2.3 5.2 5.7.5-4.3 3.8 1.3 5.5-5-2.9-5 2.9 1.3-5.5L4 8.7l5.7-.5L12 3z"></path></svg>
+        </div>
+        <div>
+          <h2 id="painel-vip-titulo">Adicionar reserva VIP</h2>
+          <p class="bus-dialog__subtitle">Cadastre uma pessoa por reserva.</p>
+        </div>
+      </div>
+      <div id="vip-formularios" class="vip-formularios"></div>
+      <p id="vip-form-erro" class="vip-form__erro" role="alert" hidden></p>
+      <div class="bus-dialog__actions bus-dialog__actions--vip">
+        <button id="vip-cancelar" class="botao botao--discreto" type="button">Cancelar</button>
+        <button id="vip-adicionar-outro" class="botao botao--secundario" type="button">Adicionar outro VIP</button>
+        <button id="vip-confirmar" class="botao botao--primario" type="submit">Confirmar reservas VIP</button>
+      </div>
+    </form>
+  </dialog>
+
   <!-- Modal de Alerta / Erro / Aviso -->
   <dialog id="painel-alerta-dialog" class="bus-dialog" aria-labelledby="painel-dialog-titulo">
     <div class="bus-dialog__header">
@@ -247,11 +272,12 @@
     </div>
     <p id="painel-dialog-mensagem">Mensagem descritiva do aviso.</p>
     <div class="bus-dialog__actions">
+      <button id="painel-dialog-confirmar" class="botao botao--primario" type="button" hidden>Confirmar</button>
       <button id="painel-dialog-fechar" class="botao botao--primario" type="button" autofocus>Entendido</button>
     </div>
   </dialog>
 
-    <script defer src="assets/js/painel-onibus.js?v=20260820-frota-info-v21"></script>
+    <script defer src="assets/js/painel-onibus.js?v=20260820-vip-v26"></script>
 </body>
 
 </html>
