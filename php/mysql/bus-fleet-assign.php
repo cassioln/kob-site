@@ -59,7 +59,7 @@ try {
         
         if ($bus_number !== null) {
             $stmtBus = $pdo->prepare('
-                SELECT SUM(passenger_count + children_count) AS ocupacao 
+                SELECT SUM(passenger_count) AS ocupacao
                   FROM bus_registrations 
                  WHERE status = "confirmed" AND bus_number = ?
             ');
@@ -110,12 +110,12 @@ try {
         throw new ValidationError('Apenas reservas com pagamento confirmado podem ser alocadas.');
     }
 
-    $tamanhoReserva = (int) $reserva['passenger_count'] + (int) $reserva['children_count'];
+    $tamanhoReserva = bus_fleet_seat_count((int) $reserva['passenger_count'], (int) $reserva['children_count']);
 
     // Se estiver movendo para um ônibus específico, validar capacidade
     if ($bus_number !== null) {
         $stmtBus = $pdo->prepare('
-            SELECT SUM(passenger_count + children_count) AS ocupacao 
+            SELECT SUM(passenger_count) AS ocupacao
               FROM bus_registrations 
              WHERE status = "confirmed" AND bus_number = ? AND id != ?
         ');

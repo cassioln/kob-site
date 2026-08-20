@@ -3,6 +3,15 @@
 declare(strict_types=1);
 
 /**
+ * Retorna quantos assentos uma reserva consome.
+ * Criança de colo faz parte do grupo, mas permanece no colo de um pagante.
+ */
+function bus_fleet_seat_count(int $pagantes, int $criancasDeColo = 0): int
+{
+    return max(0, $pagantes);
+}
+
+/**
  * Mantém compatibilidade com instalações que ainda não executaram a migration.
  * A migration versionada continua sendo a fonte oficial; este guard evita que
  * uma publicação parcial derrube o painel antes de ela ser aplicada.
@@ -156,7 +165,7 @@ function bus_fleet_load_balance_snapshot(PDO $pdo, bool $forUpdate = false): arr
     foreach ($rows as $row) {
         $groups[] = [
             'id' => (string) $row['id'],
-            'size' => (int) $row['passenger_count'] + (int) $row['children_count'],
+            'size' => bus_fleet_seat_count((int) $row['passenger_count'], (int) $row['children_count']),
             'bus_number' => $row['bus_number'] !== null ? (int) $row['bus_number'] : null,
             'fleet_assignment_status' => ($row['fleet_assignment_status'] ?? 'assigned') === 'waiting' ? 'waiting' : 'assigned',
             'paid_at' => (string) ($row['paid_at'] ?? ''),
@@ -566,11 +575,11 @@ function bus_assign_fleet(PDO $pdo, string $registrationId): void
         return; // Não está confirmada ou já tem ônibus
     }
 
-    $tamanho = (int) $reserva['passenger_count'] + (int) $reserva['children_count'];
+    $tamanho = bus_fleet_seat_count((int) $reserva['passenger_count'], (int) $reserva['children_count']);
     
     // Ler todos os ônibus que já existem e suas capacidades
     $q = $pdo->query('
-        SELECT bus_number, SUM(passenger_count + children_count) as ocupacao
+        SELECT bus_number, SUM(passenger_count) as ocupacao
           FROM bus_registrations
          WHERE status = "confirmed" AND bus_number IS NOT NULL
          GROUP BY bus_number

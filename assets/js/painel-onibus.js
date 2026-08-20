@@ -400,6 +400,12 @@
 
   // ---- renderização frota ------------------------------------------------
 
+  function assentosDaReserva(reserva) {
+    if (!reserva) return 0;
+    var assentos = reserva.assentos !== undefined ? reserva.assentos : reserva.pagantes;
+    return Math.max(0, Number(assentos || 0));
+  }
+
   function renderizarFrota() {
     if (!estado.frota || !Array.isArray(estado.frota.onibus)) return;
     var onibusList = estado.frota.onibus;
@@ -424,14 +430,14 @@
         ev.preventDefault();
         if (!itemArrastando) return;
 
-        var totalDoItem = itemArrastando.total || 1;
+        var assentosDoItem = itemArrastando.assentos || 1;
         var mesmoOnibus = (itemArrastando.origemBus === busNum);
 
         if (mesmoOnibus) {
           card.classList.add('drag-over');
           card.classList.remove('drag-error');
           ev.dataTransfer.dropEffect = 'move';
-        } else if (ocupados + totalDoItem > maxL) {
+        } else if (ocupados + assentosDoItem > maxL) {
           card.classList.add('drag-error');
           card.classList.remove('drag-over');
           ev.dataTransfer.dropEffect = 'none';
@@ -456,10 +462,11 @@
         if (!rId) return;
 
         if (itemArrastando && itemArrastando.origemBus !== busNum) {
-          var totalDoItem = itemArrastando.total || 1;
-          if (ocupados + totalDoItem > maxL) {
+          var assentosDoItem = itemArrastando.assentos || 1;
+          if (ocupados + assentosDoItem > maxL) {
             var vagasRestantesMsg = Math.max(0, maxL - ocupados);
-            mostrarAlertaModal('Ônibus Lotado', 'O Ônibus ' + busNum + ' não tem vagas suficientes (' + (vagasRestantesMsg === 1 ? '1 vaga restante' : vagasRestantesMsg + ' vagas restantes') + ') para acomodar este grupo de ' + (totalDoItem === 1 ? '1 pessoa' : totalDoItem + ' pessoas') + '.', 'erro');
+            var pessoasDoItem = itemArrastando.pessoas || assentosDoItem;
+            mostrarAlertaModal('Ônibus Lotado', 'O Ônibus ' + busNum + ' não tem vagas suficientes (' + (vagasRestantesMsg === 1 ? '1 vaga restante' : vagasRestantesMsg + ' vagas restantes') + ') para acomodar este grupo de ' + (pessoasDoItem === 1 ? '1 pessoa' : pessoasDoItem + ' pessoas') + ' (' + assentosDoItem + (assentosDoItem === 1 ? ' assento).' : ' assentos).'), 'erro');
             return;
           }
         }
@@ -503,7 +510,7 @@
       cardLotacao.className = 'onibus-card__stat-card';
       var percOcupacao = Math.round((ocupados / maxL) * 100);
       cardLotacao.innerHTML = '<span class="onibus-card__stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></span>'
-        + '<div class="onibus-card__stat-content"><span class="onibus-card__stat-label">Ocupação</span><strong class="onibus-card__stat-value"><span>' + ocupados + ' de ' + maxL + '</span><small>(' + percOcupacao + '%)</small></strong></div>';
+        + '<div class="onibus-card__stat-content"><span class="onibus-card__stat-label">Assentos</span><strong class="onibus-card__stat-value"><span>' + ocupados + ' de ' + maxL + '</span><small>(' + percOcupacao + '%)</small></strong></div>';
 
       // Card 3: Vagas Livres (Ícone oficial da Poltrona do anexo)
       var cardVagas = document.createElement('div');
@@ -649,7 +656,12 @@
 
           item.addEventListener('dragstart', function (ev) {
             ev.dataTransfer.setData('text/plain', r.id);
-            itemArrastando = { id: r.id, total: Number(r.total || 1), origemBus: busNum };
+            itemArrastando = {
+              id: r.id,
+              assentos: Math.max(1, assentosDaReserva(r)),
+              pessoas: Math.max(1, Number(r.total || r.pagantes || 1)),
+              origemBus: busNum
+            };
             item.classList.add('dragging');
           });
           item.addEventListener('dragend', function () {
@@ -757,10 +769,11 @@
             var novoBus = Number(this.value);
             var destInfo = onibusList.find(function (o) { return Number(o.numero) === novoBus; });
             var ocupadosDest = destInfo ? Number(destInfo.ocupados || 0) : 0;
-            var totalDoItem = Number(r.total || 1);
-            if (ocupadosDest + totalDoItem > maxL) {
+            var assentosDoItem = Math.max(1, assentosDaReserva(r));
+            if (ocupadosDest + assentosDoItem > maxL) {
               var vagasRestantesMsg = Math.max(0, maxL - ocupadosDest);
-              mostrarAlertaModal('Ônibus Lotado', 'O Ônibus ' + novoBus + ' não tem vagas suficientes (' + (vagasRestantesMsg === 1 ? '1 vaga restante' : vagasRestantesMsg + ' vagas restantes') + ') para acomodar este grupo de ' + (totalDoItem === 1 ? '1 pessoa' : totalDoItem + ' pessoas') + '.', 'erro');
+              var pessoasDoItem = Math.max(1, Number(r.total || r.pagantes || 1));
+              mostrarAlertaModal('Ônibus Lotado', 'O Ônibus ' + novoBus + ' não tem vagas suficientes (' + (vagasRestantesMsg === 1 ? '1 vaga restante' : vagasRestantesMsg + ' vagas restantes') + ') para acomodar este grupo de ' + (pessoasDoItem === 1 ? '1 pessoa' : pessoasDoItem + ' pessoas') + ' (' + assentosDoItem + (assentosDoItem === 1 ? ' assento).' : ' assentos).'), 'erro');
               this.value = '';
               return;
             }

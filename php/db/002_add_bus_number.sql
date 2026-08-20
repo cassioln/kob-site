@@ -3,8 +3,9 @@
 -- Identifica em qual ônibus cada reserva está alocada.
 --
 -- Regras de negócio:
---   - Cada ônibus comporta até 46 pessoas (pagantes + crianças de colo).
---   - São necessárias no mínimo 40 pessoas para contratar um ônibus.
+--   - Cada ônibus comporta até 46 assentos ocupados por pagantes; crianças de colo
+--     acompanham o grupo, mas não consomem assento.
+--   - São necessários no mínimo 40 assentos ocupados para contratar um ônibus.
 --   - O valor é atribuído automaticamente na confirmação do pagamento
 --     e pode ser sobrescrito manualmente pelo painel (drag-and-drop).
 --   - NULL indica reserva não confirmada ou ainda não alocada.

@@ -181,10 +181,11 @@ try {
             if ($bNum > $maxBusNum) $maxBusNum = $bNum;
             
             if (!isset($porOnibus[$bNum])) {
-                $porOnibus[$bNum] = [ 'numero' => $bNum, 'pagantes' => 0, 'criancas' => 0, 'total' => 0, 'reservas' => [] ];
+                $porOnibus[$bNum] = [ 'numero' => $bNum, 'pagantes' => 0, 'criancas' => 0, 'total' => 0, 'assentos' => 0, 'reservas' => [] ];
             }
             $porOnibus[$bNum]['total'] += 1;
-            $porOnibus[$bNum]['reservas'][] = [ 'id' => $vipId, 'code' => 'VIP ' . $i, 'grupo' => 'Lugar VIP', 'responsavel' => 'Reserva VIP', 'pagantes' => 1, 'criancas' => 0, 'total' => 1, 'is_vip' => true ];
+            $porOnibus[$bNum]['assentos'] += 1;
+            $porOnibus[$bNum]['reservas'][] = [ 'id' => $vipId, 'code' => 'VIP ' . $i, 'grupo' => 'Lugar VIP', 'responsavel' => 'Reserva VIP', 'pagantes' => 1, 'criancas' => 0, 'total' => 1, 'assentos' => 1, 'is_vip' => true ];
         } else {
             $vipsSemFixo[] = $i;
         }
@@ -207,16 +208,18 @@ try {
                 if ($bNum > $maxBusNum) $maxBusNum = $bNum;
                 
                 if (!isset($porOnibus[$bNum])) {
-                    $porOnibus[$bNum] = [ 'numero' => $bNum, 'pagantes' => 0, 'criancas' => 0, 'total' => 0, 'reservas' => [] ];
+                    $porOnibus[$bNum] = [ 'numero' => $bNum, 'pagantes' => 0, 'criancas' => 0, 'total' => 0, 'assentos' => 0, 'reservas' => [] ];
                 }
                 
                 $paxCount = (int) $r['passenger_count'];
                 $childCount = (int) $r['children_count'];
                 $grupoTotal = $paxCount + $childCount;
+                $assentosGrupo = bus_fleet_seat_count($paxCount, $childCount);
 
                 $porOnibus[$bNum]['pagantes'] += $paxCount;
                 $porOnibus[$bNum]['criancas'] += $childCount;
                 $porOnibus[$bNum]['total'] += $grupoTotal;
+                $porOnibus[$bNum]['assentos'] += $assentosGrupo;
                 $porOnibus[$bNum]['reservas'][] = [
                     'id' => $r['id'],
                     'code' => strtoupper(substr((string) $r['id'], 0, 8)),
@@ -225,6 +228,7 @@ try {
                     'pagantes' => $paxCount,
                     'criancas' => $childCount,
                     'total' => $grupoTotal,
+                    'assentos' => $assentosGrupo,
                     'pago_em' => $r['pago_em'] ?? $r['criado_em'] ?? null,
                     'passageiros' => array_map(static fn ($p) => [
                         'posicao' => (int) $p['posicao'],
@@ -249,11 +253,12 @@ try {
         $paxCount = (int) $r['passenger_count'];
         $childCount = (int) $r['children_count'];
         $grupoTotal = $paxCount + $childCount;
+        $assentosGrupo = bus_fleet_seat_count($paxCount, $childCount);
         
         $bNum = 1;
         while (true) {
-            $ocupadosBusAtual = isset($porOnibus[$bNum]) ? $porOnibus[$bNum]['total'] : 0;
-            if ($ocupadosBusAtual + $grupoTotal <= 46) {
+            $ocupadosBusAtual = isset($porOnibus[$bNum]) ? $porOnibus[$bNum]['assentos'] : 0;
+            if ($ocupadosBusAtual + $assentosGrupo <= 46) {
                 break;
             }
             $bNum++;
@@ -266,11 +271,12 @@ try {
         if ($bNum > $maxBusNum) $maxBusNum = $bNum;
         
         if (!isset($porOnibus[$bNum])) {
-            $porOnibus[$bNum] = [ 'numero' => $bNum, 'pagantes' => 0, 'criancas' => 0, 'total' => 0, 'reservas' => [] ];
+            $porOnibus[$bNum] = [ 'numero' => $bNum, 'pagantes' => 0, 'criancas' => 0, 'total' => 0, 'assentos' => 0, 'reservas' => [] ];
         }
         $porOnibus[$bNum]['pagantes'] += $paxCount;
         $porOnibus[$bNum]['criancas'] += $childCount;
         $porOnibus[$bNum]['total'] += $grupoTotal;
+        $porOnibus[$bNum]['assentos'] += $assentosGrupo;
         $porOnibus[$bNum]['reservas'][] = [
             'id' => $r['id'],
             'code' => strtoupper(substr((string) $r['id'], 0, 8)),
@@ -279,6 +285,7 @@ try {
             'pagantes' => $paxCount,
             'criancas' => $childCount,
             'total' => $grupoTotal,
+            'assentos' => $assentosGrupo,
             'pago_em' => $r['pago_em'] ?? $r['criado_em'] ?? null,
             'passageiros' => array_map(static fn ($p) => [
                 'posicao' => (int) $p['posicao'],
@@ -296,7 +303,7 @@ try {
         $vipId = 'vip_' . $i;
         $bNum = 1;
         while (true) {
-            $ocupadosBusAtual = isset($porOnibus[$bNum]) ? $porOnibus[$bNum]['total'] : 0;
+            $ocupadosBusAtual = isset($porOnibus[$bNum]) ? $porOnibus[$bNum]['assentos'] : 0;
             if ($ocupadosBusAtual + 1 <= 46) {
                 break;
             }
@@ -306,9 +313,10 @@ try {
         if ($bNum > $maxBusNum) $maxBusNum = $bNum;
         
         if (!isset($porOnibus[$bNum])) {
-            $porOnibus[$bNum] = [ 'numero' => $bNum, 'pagantes' => 0, 'criancas' => 0, 'total' => 0, 'reservas' => [] ];
+            $porOnibus[$bNum] = [ 'numero' => $bNum, 'pagantes' => 0, 'criancas' => 0, 'total' => 0, 'assentos' => 0, 'reservas' => [] ];
         }
         $porOnibus[$bNum]['total'] += 1;
+        $porOnibus[$bNum]['assentos'] += 1;
         $porOnibus[$bNum]['reservas'][] = [
             'id' => $vipId,
             'code' => 'VIP ' . $i,
@@ -317,6 +325,7 @@ try {
             'pagantes' => 1,
             'criancas' => 0,
             'total' => 1,
+            'assentos' => 1,
             'is_vip' => true
         ];
     }
@@ -455,10 +464,11 @@ try {
             'pagantes' => 0,
             'criancas' => 0,
             'total' => 0,
+            'assentos' => 0,
             'reservas' => [],
         ];
 
-        // O total do ônibus já soma pagantes + criancas + VIPs
+        // `total` representa pessoas; `ocupados` representa assentos físicos.
         $vipsNoOnibus = 0;
         foreach ($busData['reservas'] as $r) {
             if (!empty($r['is_vip'])) {
@@ -466,7 +476,7 @@ try {
             }
         }
 
-        $ocupados = $busData['total'];
+        $ocupados = (int) ($busData['assentos'] ?? $busData['pagantes'] ?? 0);
         $busData['ocupados'] = $ocupados;
         $busData['vip_inclusos'] = $vipsNoOnibus;
         $busData['fechado'] = $ocupados >= 40;

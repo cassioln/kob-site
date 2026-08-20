@@ -49,7 +49,7 @@ if (cols.length === 0) {
 // ── 2. Auto-alocar registros confirmados existentes ─────────────────────
 const [confirmed] = await conn.execute(`
   SELECT r.id,
-         (r.passenger_count + r.children_count) AS total_a_bordo
+         r.passenger_count AS assentos
     FROM bus_registrations r
    WHERE r.status = 'confirmed'
      AND r.bus_number IS NULL
@@ -64,7 +64,7 @@ if (confirmed.length === 0) {
   // Contar ocupação atual dos ônibus (caso alguns já tenham bus_number)
   const [existing] = await conn.execute(`
     SELECT bus_number,
-           SUM(passenger_count + children_count) AS ocupacao
+           SUM(passenger_count) AS ocupacao
       FROM bus_registrations
      WHERE status = 'confirmed' AND bus_number IS NOT NULL
      GROUP BY bus_number
@@ -77,7 +77,7 @@ if (confirmed.length === 0) {
 
   let allocated = 0;
   for (const reg of confirmed) {
-    const size = Number(reg.total_a_bordo);
+    const size = Number(reg.assentos);
     // Encontrar o primeiro ônibus com espaço
     let busNum = 1;
     while (true) {
@@ -98,7 +98,7 @@ if (confirmed.length === 0) {
 
   // Mostrar distribuição
   for (const [bus, count] of Object.entries(ocupacao).sort((a, b) => a[0] - b[0])) {
-    console.log(`   Ônibus ${bus}: ${count}/${BUS_CAPACITY} pessoas`);
+    console.log(`   Ônibus ${bus}: ${count}/${BUS_CAPACITY} assentos`);
   }
 }
 
