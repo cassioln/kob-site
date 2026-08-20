@@ -13,6 +13,12 @@
   var API_LISTA = 'api/bus-manifest';
   var API_AUTO_BALANCE = 'api/bus-fleet-auto-balance';
 
+  var isLocalhost = Boolean(
+    window.location.hostname === 'localhost' ||
+    window.location.hostname === '127.0.0.1' ||
+    window.location.hostname === '[::1]'
+  );
+
   var el = {
     carregando: document.getElementById('estado-carregando'),
     estadoLogin: document.getElementById('estado-login'),
@@ -464,7 +470,7 @@
       var header = document.createElement('div');
       header.className = 'onibus-card__header';
 
-      // Esquerda: Título e Badge de Status
+      // Esquerda: Título acima + Linha de badges/status
       var headerLeft = document.createElement('div');
       headerLeft.className = 'onibus-card__header-left';
 
@@ -472,22 +478,44 @@
       titulo.className = 'onibus-card__titulo';
       titulo.textContent = 'Ônibus ' + busNum;
 
-      var badge = document.createElement('span');
-      badge.className = 'onibus-card__badge';
-      var numOcupadosFormat = ocupados < 10 ? '0' + ocupados : String(ocupados);
-      var prefixo = '[' + numOcupadosFormat + '/' + maxL + '] ';
+      var badgesStrip = document.createElement('div');
+      badgesStrip.className = 'onibus-card__badges-strip';
+
+      var statusPill = document.createElement('span');
+      statusPill.className = 'onibus-card__status-pill';
+
+      var statusDot = document.createElement('span');
+      statusDot.className = 'onibus-card__status-dot';
+      statusPill.appendChild(statusDot);
 
       if (ocupados >= maxL) {
-        badge.classList.add('onibus-card__badge--contratado', 'onibus-card__badge--lotado');
-        badge.textContent = prefixo + 'LOTADO';
+        statusPill.classList.add('onibus-card__status-pill--lotado');
+        statusPill.append(document.createTextNode(' LOTADO'));
       } else if (info.fechado || ocupados >= minL) {
-        badge.classList.add('onibus-card__badge--contratado');
-        badge.textContent = prefixo + 'COTA MÍNIMA ATINGIDA';
+        statusPill.append(document.createTextNode(' COTA MÍNIMA ATINGIDA'));
       } else {
-        badge.classList.add('onibus-card__badge--provisorio');
-        badge.textContent = prefixo + 'EM ABERTO';
+        statusPill.classList.add('onibus-card__status-pill--provisorio');
+        statusPill.append(document.createTextNode(' EM ABERTO'));
       }
-      headerLeft.append(titulo, badge);
+
+      var pillLugares = document.createElement('span');
+      pillLugares.className = 'onibus-card__counter-pill';
+      pillLugares.innerHTML = '<strong>' + ocupados + '/' + maxL + '</strong> lugares';
+
+      var pillVagas = document.createElement('span');
+      pillVagas.className = 'onibus-card__counter-pill' + (vagasRestantes === 0 ? '' : ' onibus-card__counter-pill--ok');
+      pillVagas.innerHTML = '<strong>' + vagasRestantes + '</strong> ' + (vagasRestantes === 1 ? 'livre' : 'livres');
+
+      badgesStrip.append(statusPill, pillLugares, pillVagas);
+
+      if (vipsNoBus > 0) {
+        var pillVip = document.createElement('span');
+        pillVip.className = 'onibus-card__counter-pill';
+        pillVip.innerHTML = '<strong>' + vipsNoBus + '</strong> VIPs';
+        badgesStrip.appendChild(pillVip);
+      }
+
+      headerLeft.append(titulo, badgesStrip);
 
       // Centro: mapa artístico detalhado de assentos do ônibus (46 lugares)
       var headerCenter = document.createElement('div');
@@ -578,45 +606,9 @@
       legenda.innerHTML = legendaHTML;
 
       mapaOcupacao.append(chassi, legenda);
+      headerCenter.appendChild(mapaOcupacao);
 
-      var tx = document.createElement('div');
-      tx.className = 'progresso-texto';
-      var txLeft = document.createElement('span');
-      var txtOcupados = ocupados + ' de ' + maxL + ' ocupados';
-      if (info.vip_inclusos > 0) {
-        txtOcupados += ' (' + info.vip_inclusos + ' VIP)';
-      }
-      txLeft.textContent = txtOcupados;
-
-      var txRight = document.createElement('span');
-      var faltaFechamento = Math.max(0, minL - ocupados);
-      if (ocupados >= maxL) {
-        txRight.textContent = 'Lotação máxima atingida';
-        txRight.className = 'progresso-texto__meta progresso-texto__meta--cheio';
-      } else if (info.fechado || ocupados >= minL) {
-        txRight.textContent = 'Meta de fechamento atingida';
-        txRight.className = 'progresso-texto__meta progresso-texto__meta--ok';
-      } else {
-        txRight.textContent = 'Faltam ' + faltaFechamento + ' para fechar';
-      }
-      tx.append(txLeft, txRight);
-      headerCenter.append(mapaOcupacao, tx);
-
-      // Direita: Badge com vagas livres
-      var headerRight = document.createElement('div');
-      headerRight.className = 'onibus-card__header-right';
-
-      var vagasBadge = document.createElement('span');
-      vagasBadge.className = 'onibus-card__vagas-badge';
-      if (vagasRestantes === 0) {
-        vagasBadge.textContent = '0 vagas livres';
-        vagasBadge.style.color = 'var(--p-falha)';
-      } else {
-        vagasBadge.textContent = vagasRestantes === 1 ? '1 vaga livre' : vagasRestantes + ' vagas livres';
-      }
-      headerRight.appendChild(vagasBadge);
-
-      header.append(headerLeft, headerCenter, headerRight);
+      header.append(headerLeft, headerCenter);
 
       // Corpo simples do ônibus: mantém os grupos inteiros e o arraste manual,
       // sem transformar a tarefa de despacho em uma planta decorativa.
@@ -1157,11 +1149,13 @@
       })
       .catch(function (erro) {
         if (erro && erro.semAcesso) {
-          estado.token = '';
-          localStorage.removeItem('kob_admin_token');
-          if (el.erroLogin) el.erroLogin.hidden = false;
-          mostrar(el.estadoLogin);
-          return;
+          if (!isLocalhost) {
+            estado.token = '';
+            localStorage.removeItem('kob_admin_token');
+            if (el.erroLogin) el.erroLogin.hidden = false;
+            mostrar(el.estadoLogin);
+            return;
+          }
         }
         el.erroDetalhe.textContent = 'Detalhe técnico: ' + erro.message;
         mostrar(el.erro);
@@ -1324,6 +1318,12 @@
         window.history.replaceState({}, '', window.location.pathname);
       }
     }
+  }
+
+  // Em localhost, preenche token padrão automaticamente se estiver vazio
+  if (!estado.token && isLocalhost) {
+    estado.token = 'dev-token';
+    localStorage.setItem('kob_admin_token', estado.token);
   }
 
   if (!estado.token) {

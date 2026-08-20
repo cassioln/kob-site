@@ -22,14 +22,8 @@ header('X-Robots-Tag: noindex, nofollow');
 header('Cache-Control: no-store');
 
 $config = bus_config();
-$tokenEsperado = $config['manifest_token'] ?? '';
-$tokenRecebido = (string) ($_GET['token'] ?? '');
 
-if (
-    !is_string($tokenEsperado) || $tokenEsperado === ''
-    || $tokenRecebido === ''
-    || !hash_equals($tokenEsperado, $tokenRecebido)
-) {
+if (!bus_check_admin_token($config)) {
     // 404 em vez de 401: não confirma a existência do painel a quem sonda.
     http_response_code(404);
     echo json_encode(['error' => 'not found']);

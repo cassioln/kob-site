@@ -7,14 +7,8 @@ require_once dirname(__DIR__) . '/lib/bus-fleet.php';
 require_once __DIR__ . '/lib/db.php';
 
 $config = bus_config();
-$tokenEsperado = $config['manifest_token'] ?? '';
-$tokenRecebido = (string) ($_GET['token'] ?? ($_SERVER['HTTP_X_ADMIN_TOKEN'] ?? ''));
 
-if (
-    !is_string($tokenEsperado) || $tokenEsperado === ''
-    || $tokenRecebido === ''
-    || !hash_equals($tokenEsperado, $tokenRecebido)
-) {
+if (!bus_check_admin_token($config)) {
     json_response(403, ['error' => 'Acesso negado.']);
     exit;
 }

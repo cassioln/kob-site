@@ -176,3 +176,51 @@ function log_failure(string $context, Throwable $error): void
     }
     error_log(sprintf('[kob-bus][%s] %s', $context, $message));
 }
+
+/**
+ * Verifica se a requisição está sendo executada em ambiente local (desenvolvimento).
+ */
+function bus_is_localhost(): bool
+{
+    $sapi = php_sapi_name();
+    if ($sapi === 'cli' || $sapi === 'cli-server') {
+        return true;
+    }
+    $remote = $_SERVER['REMOTE_ADDR'] ?? '';
+    $host = (string) ($_SERVER['HTTP_HOST'] ?? ($_SERVER['SERVER_NAME'] ?? ''));
+    if ($remote === '127.0.0.1' || $remote === '::1' || $remote === 'localhost') {
+        return true;
+    }
+    if (str_starts_with($host, 'localhost') || str_starts_with($host, '127.0.0.1')) {
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Valida o token de administração/manifesto.
+ *
+ * Em localhost/desenvolvimento, aceita requisições locais mesmo com token de dev
+ * ('dev-token') ou se manifest_token não estiver configurado.
+ * Em produção, exige token idêntico via hash_equals.
+ */
+function bus_check_admin_token(array $config, ?string $tokenRecebido = null): bool
+{
+    if ($tokenRecebido === null) {
+        $tokenRecebido = (string) ($_GET['token'] ?? ($_SERVER['HTTP_X_ADMIN_TOKEN'] ?? ''));
+    }
+
+    $tokenEsperado = $config['manifest_token'] ?? '';
+
+    // Se estiver em localhost/dev local, permite acesso de desenvolvimento
+    if (bus_is_localhost()) {
+        return true;
+    }
+
+    if (!is_string($tokenEsperado) || $tokenEsperado === '' || $tokenRecebido === '') {
+        return false;
+    }
+
+    return hash_equals($tokenEsperado, $tokenRecebido);
+}
+

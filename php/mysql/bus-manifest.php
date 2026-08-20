@@ -19,14 +19,8 @@ require_once dirname(__DIR__) . '/lib/receipt-pdf.php';
 require_once dirname(__DIR__) . '/lib/boarding-pdf.php';
 
 $config = bus_config();
-$tokenEsperado = $config['manifest_token'] ?? '';
-$tokenRecebido = (string) ($_GET['token'] ?? '');
 
-if (
-    !is_string($tokenEsperado) || $tokenEsperado === ''
-    || $tokenRecebido === ''
-    || !hash_equals($tokenEsperado, $tokenRecebido)
-) {
+if (!bus_check_admin_token($config)) {
     http_response_code(404);
     header('Content-Type: application/json; charset=utf-8');
     echo json_encode(['error' => 'not found']);
