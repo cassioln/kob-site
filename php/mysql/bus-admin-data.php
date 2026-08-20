@@ -153,16 +153,9 @@ try {
     $vipCount = 0;
     $vipAssignments = [];
     try {
-        $q_settings = $pdo->query("SELECT setting_key, setting_value FROM bus_settings WHERE setting_key IN ('vip_seats', 'vip_assignments')");
-        if ($q_settings) {
-            foreach ($q_settings->fetchAll(PDO::FETCH_ASSOC) as $row) {
-                if ($row['setting_key'] === 'vip_seats') {
-                    $vipCount = (int) $row['setting_value'];
-                } elseif ($row['setting_key'] === 'vip_assignments') {
-                    $vipAssignments = json_decode($row['setting_value'], true) ?: [];
-                }
-            }
-        }
+        $legacyVip = bus_fleet_load_legacy_vip_settings($pdo);
+        $vipCount = $legacyVip['count'];
+        $vipAssignments = $legacyVip['assignments'];
     } catch (Throwable $e) {
         // ignora
     }
@@ -478,6 +471,9 @@ try {
 
         $ocupados = (int) ($busData['assentos'] ?? $busData['pagantes'] ?? 0);
         $busData['ocupados'] = $ocupados;
+        $busData['capacidade'] = 46;
+        $busData['vagas_livres'] = max(0, 46 - $ocupados);
+        $busData['assentos_de_colos'] = (int) ($busData['criancas'] ?? 0);
         $busData['vip_inclusos'] = $vipsNoOnibus;
         $busData['fechado'] = $ocupados >= 40;
         $listaOnibus[] = $busData;

@@ -12,6 +12,100 @@ function bus_fleet_seat_count(int $pagantes, int $criancasDeColo = 0): int
 }
 
 /**
+ * Descarta atribuições VIP legadas que já não pertencem à quantidade ativa.
+ *
+ * A configuração antiga guarda um mapa livre em JSON. Quando a quantidade é
+ * reduzida, chaves como vip_2 podem permanecer no mapa, mas deixam de existir
+ * na interface. Elas não podem continuar consumindo capacidade invisível.
+ *
+ * @param array<mixed> $assignments
+ * @return array<string, int>
+ */
+function bus_fleet_filter_legacy_vip_assignments(array $assignments, int $vipCount): array
+{
+    $filtered = [];
+    for ($i = 1; $i <= max(0, $vipCount); $i++) {
+        $key = 'vip_' . $i;
+        if (!array_key_exists($key, $assignments)) {
+            continue;
+        }
+        $busNumber = filter_var($assignments[$key], FILTER_VALIDATE_INT);
+        if ($busNumber === false || $busNumber < 1 || $busNumber > 99) {
+            continue;
+        }
+        $filtered[$key] = (int) $busNumber;
+    }
+    return $filtered;
+}
+
+/**
+ * Lê a configuração legada sem misturá-la às reservas VIP reais.
+ *
+ * @return array{count:int, assignments:array<string,int>, effective_assignments:array<string,int>}
+ */
+function bus_fleet_load_legacy_vip_settings(PDO $pdo, bool $forUpdate = false): array
+{
+    $lock = $forUpdate ? ' FOR UPDATE' : '';
+    $query = $pdo->query(
+        "SELECT setting_key, setting_value
+           FROM bus_settings
+          WHERE setting_key IN ('vip_seats', 'vip_assignments')" . $lock
+    );
+    $settings = $query ? $query->fetchAll(PDO::FETCH_KEY_PAIR) : [];
+    $count = max(0, (int) ($settings['vip_seats'] ?? 0));
+    $rawAssignments = json_decode((string) ($settings['vip_assignments'] ?? '{}'), true);
+    if (!is_array($rawAssignments)) {
+        $rawAssignments = [];
+    }
+
+    $assignments = bus_fleet_filter_legacy_vip_assignments($rawAssignments, $count);
+    $effective = $assignments;
+    for ($i = 1; $i <= $count; $i++) {
+        $key = 'vip_' . $i;
+        if (!array_key_exists($key, $effective)) {
+            $effective[$key] = 1;
+        }
+    }
+
+    return [
+        'count' => $count,
+        'assignments' => $assignments,
+        'effective_assignments' => $effective,
+    ];
+}
+
+/**
+ * Calcula a ocupação física de um ônibus usando a mesma regra da frota.
+ * Crianças de colo estão armazenadas separadamente e não aumentam o tamanho
+ * do card nem o número de assentos ocupados.
+ */
+function bus_fleet_bus_occupancy(PDO $pdo, int $busNumber, ?string $excludeId = null, bool $forUpdate = false): int
+{
+    $params = [$busNumber];
+    $exclude = '';
+    if ($excludeId !== null && $excludeId !== '') {
+        $exclude = ' AND id <> ?';
+        $params[] = $excludeId;
+    }
+    $lock = $forUpdate ? ' FOR UPDATE' : '';
+    $query = $pdo->prepare(
+        'SELECT passenger_count, children_count
+           FROM bus_registrations
+          WHERE status = "confirmed" AND bus_number = ?' . $exclude . $lock
+    );
+    $query->execute($params);
+
+    $occupancy = 0;
+    foreach ($query->fetchAll(PDO::FETCH_ASSOC) as $row) {
+        $occupancy += bus_fleet_seat_count(
+            (int) ($row['passenger_count'] ?? 0),
+            (int) ($row['children_count'] ?? 0)
+        );
+    }
+    return $occupancy;
+}
+
+/**
  * Mantém compatibilidade com instalações que ainda não executaram a migration.
  * A migration versionada continua sendo a fonte oficial; este guard evita que
  * uma publicação parcial derrube o painel antes de ela ser aplicada.
@@ -123,27 +217,10 @@ function bus_fleet_load_balance_snapshot(PDO $pdo, bool $forUpdate = false): arr
     );
     $rows = $query->fetchAll(PDO::FETCH_ASSOC);
 
-    $settingsQuery = $pdo->query(
-        "SELECT setting_key, setting_value
-           FROM bus_settings
-          WHERE setting_key IN ('vip_seats', 'vip_assignments')" . $lock
-    );
-    $settings = $settingsQuery ? $settingsQuery->fetchAll(PDO::FETCH_KEY_PAIR) : [];
-    $vipCount = max(0, (int) ($settings['vip_seats'] ?? 0));
-    $vipAssignments = json_decode((string) ($settings['vip_assignments'] ?? '{}'), true);
-    if (!is_array($vipAssignments)) {
-        $vipAssignments = [];
-    }
-
+    $legacyVip = bus_fleet_load_legacy_vip_settings($pdo, $forUpdate);
     // O painel trata VIP sem posição explícita como estando no ônibus 1. A
     // simulação precisa usar a mesma ocupação sem gravar essa normalização.
-    $effectiveVipAssignments = $vipAssignments;
-    for ($i = 1; $i <= $vipCount; $i++) {
-        $vipId = 'vip_' . $i;
-        if (!isset($effectiveVipAssignments[$vipId])) {
-            $effectiveVipAssignments[$vipId] = 1;
-        }
-    }
+    $effectiveVipAssignments = $legacyVip['effective_assignments'];
 
     $buses = [];
     foreach ($rows as $row) {

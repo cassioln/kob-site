@@ -257,8 +257,13 @@
 }
 
 @keyframes skeleton {
-  from { background-position: 200% 0; }
-  to { background-position: -200% 0; }
+  from {
+    background-position: 200% 0;
+  }
+
+  to {
+    background-position: -200% 0;
+  }
 }
 
 /* --------------------------------------------------------------------------
@@ -403,7 +408,7 @@
   text-decoration: none;
   cursor: pointer;
   transition: background var(--p-transicao), border-color var(--p-transicao),
-              color var(--p-transicao), transform var(--p-transicao);
+    color var(--p-transicao), transform var(--p-transicao);
 }
 
 .botao:active {
@@ -616,6 +621,7 @@
 
 .tabela__nome {
   font-weight: 550;
+  vertical-align: middle;
 }
 
 .tabela__tag-colo,
@@ -639,9 +645,9 @@
   color: var(--p-acao, #7b1fa2);
 }
 
-/* Marcador antes do nome: estrela para o responsável, travessão para os demais.
+/* Marcador antes do nome: meeple para o responsável, travessão para os demais.
    Largura fixa para os nomes alinharem na vertical, independente do símbolo. */
-/* Texto só para leitor de tela. A estrela comunica visualmente quem é o
+/* Texto só para leitor de tela. O meeple comunica visualmente quem é o
    responsável, mas símbolo não é lido em voz alta: este rótulo cobre isso sem
    ocupar espaço na tela. `clip-path` em vez de `display:none` porque conteúdo
    escondido com display:none NÃO é anunciado. */
@@ -658,26 +664,42 @@
 }
 
 .tabela__posicao {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-width: 18px;
+  height: 18px;
   color: var(--p-tinta-fraca);
   font-size: 0.8125rem;
   font-variant-numeric: tabular-nums;
+  line-height: 1;
+  vertical-align: middle;
 }
 
-/* A estrela é a única marca de "este é o contato responsável" agora que o badge
-   saiu, então precisa de cor e peso próprios: sem isso ela se perderia no meio
-   dos travessões.
-
-   Azul e não o roxo de `--p-acao`: o roxo é a cor de ação (botões, links) e usá-lo
-   num marcador estático sugeria que a estrela era clicável. O tom foi escolhido
-   por medição para render praticamente o mesmo contraste do roxo anterior
-   (8.09:1 contra 8.2:1 no branco) e continuar legível sobre o realce azul da
-   linha (6.65:1). */
+/* O meeple roxo representa um grupo; o azul representa uma reserva individual.
+   VIPs preservam o dourado usado no planejamento de frota. */
 .tabela__posicao--responsavel {
-  color: #155288;
+  color: #7b1fa2;
   font-size: 0.875rem;
   cursor: help;
+}
+
+.tabela__meeple {
+  display: block;
+  width: 18px;
+  height: 18px;
+}
+
+.tabela__meeple--grupo {
+  color: #7b1fa2;
+}
+
+.tabela__meeple--solo {
+  color: #0077b6;
+}
+
+.tabela__meeple--vip {
+  color: #d97706;
 }
 
 .tabela__tel {
@@ -817,7 +839,7 @@
   /* Texto secundário longo (telefone + e-mail juntos) precisa poder quebrar,
      senão vira a fonte do overflow horizontal. `anywhere` fica restrito a
      e-mail/código: aplicado no nome, ele quebraria "Nascimento" no meio. */
-  .tabela tbody td > * {
+  .tabela tbody td>* {
     min-width: 0;
   }
 
@@ -1063,6 +1085,7 @@
 /* Impressão: a lista de embarque em papel é caso de uso real na porta do
    ônibus, onde às vezes não há sinal. */
 @media print {
+
   .painel__topo,
   .ferramentas,
   .painel__acoes-topo,
@@ -1127,6 +1150,7 @@
 .painel-aba-conteudo {
   display: none;
 }
+
 .painel-aba-conteudo.ativa {
   display: block;
 }
@@ -1229,7 +1253,7 @@
   background: var(--p-superficie);
   border-radius: 18px;
   border: 1px solid var(--p-linha);
-  box-shadow: 0 4px 20px rgba(13, 34, 66, 0.05);
+  box-shadow: 0 8px 28px rgba(13, 34, 66, 0.1);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -1261,6 +1285,7 @@
   gap: 20px;
   background: var(--p-fundo);
   flex-wrap: wrap;
+  position: relative;
 }
 
 .onibus-card__header-left {
@@ -1297,7 +1322,7 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  gap: clamp(4px, 1.2cqi, 8px);
+  gap: clamp(4px, 1.2cqi, 15px);
   padding: clamp(8px, 2.5cqi, 14px) 6px;
   background: var(--p-superficie);
   border: 1.5px solid var(--p-linha);
@@ -1393,10 +1418,12 @@
   background: var(--p-ok-fundo);
   border-color: rgba(15, 122, 74, 0.3);
 }
+
 .onibus-card__stat-card--status.is-contratado .onibus-card__stat-icon {
   background: rgba(15, 122, 74, 0.15);
   color: var(--p-ok);
 }
+
 .onibus-card__stat-card--status.is-contratado .onibus-card__stat-value {
   color: var(--p-ok);
 }
@@ -1405,10 +1432,12 @@
   background: #f1f5f9;
   border-color: #cbd5e1;
 }
+
 .onibus-card__stat-card--status.is-lotado .onibus-card__stat-icon {
   background: #e2e8f0;
   color: #334155;
 }
+
 .onibus-card__stat-card--status.is-lotado .onibus-card__stat-value {
   color: #1e293b;
 }
@@ -1417,10 +1446,12 @@
   background: var(--p-espera-fundo);
   border-color: rgba(138, 90, 0, 0.3);
 }
+
 .onibus-card__stat-card--status.is-aberto .onibus-card__stat-icon {
   background: rgba(138, 90, 0, 0.15);
   color: var(--p-espera);
 }
+
 .onibus-card__stat-card--status.is-aberto .onibus-card__stat-value {
   color: var(--p-espera);
 }
@@ -1434,13 +1465,16 @@
   background: var(--p-superficie);
   border-color: var(--p-linha);
 }
+
 .onibus-card__stat-card--vip:hover {
   border-color: var(--p-linha-forte);
 }
+
 .onibus-card__stat-card--vip .onibus-card__stat-icon {
   color: #d97706;
   background: rgba(251, 191, 36, 0.2);
 }
+
 .onibus-card__stat-card--vip .onibus-card__stat-icon svg {
   width: 72%;
   height: 72%;
@@ -1449,6 +1483,7 @@
   fill: #d97706;
   filter: drop-shadow(0 1px 2px rgba(217, 119, 6, 0.3));
 }
+
 .onibus-card__stat-card--vip .onibus-card__stat-value {
   color: var(--p-tinta);
 }
@@ -1463,6 +1498,63 @@
   max-width: none;
 }
 
+.onibus-card__vista-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid var(--p-linha-forte);
+  border-radius: 8px;
+  background: var(--p-superficie);
+  color: var(--p-tinta-media);
+  cursor: pointer;
+  font: inherit;
+  transition: color 0.15s ease;
+}
+
+.onibus-card__titulo-linha {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.onibus-card__vista-toggle span {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.onibus-card__vista-toggle svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.onibus-card__vista-toggle:hover,
+.onibus-card__vista-toggle:focus-visible {
+  border-color: var(--p-acao);
+  background: var(--p-acao-fraca);
+  color: var(--p-acao);
+  outline: none;
+}
+
+.onibus-card--compacto .onibus-card__corpo {
+  display: none;
+}
+
 .onibus-card__badge {
   font-size: 11px;
   font-weight: 700;
@@ -1471,11 +1563,13 @@
   padding: 3px 9px;
   border-radius: 12px;
 }
+
 .onibus-card__badge--contratado {
   background: var(--p-ok-fundo);
   color: var(--p-ok);
   border: 1px solid rgba(15, 122, 74, 0.2);
 }
+
 .onibus-card__badge--provisorio {
   background: var(--p-espera-fundo);
   color: var(--p-espera);
@@ -1494,7 +1588,7 @@
   border-radius: 36px 18px 18px 36px;
   overflow: hidden;
   margin: 16px;
-  box-shadow: inset 0 2px 6px rgba(0,0,0,0.03);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.03);
 }
 
 @media (max-width: 768px) {
@@ -1516,7 +1610,7 @@
   padding: 16px 6px;
   border-radius: 34px 0 0 34px;
   flex-shrink: 0;
-  box-shadow: 2px 0 8px rgba(0,0,0,0.08);
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.08);
 }
 
 @media (max-width: 768px) {
@@ -1635,6 +1729,11 @@
   z-index: 10;
 }
 
+.onibus-card:has(.grupo-item--menu-aberto) {
+  overflow: visible;
+  z-index: 20;
+}
+
 .grupo-item:active {
   cursor: grabbing;
 }
@@ -1653,6 +1752,53 @@
   width: 100%;
 }
 
+.grupo-item__titulo-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  flex: 1;
+}
+
+.grupo-item__info-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #64748b;
+  cursor: help;
+  transition: color 0.15s ease;
+}
+
+.grupo-item__info-trigger svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 3.2px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.grupo-item__info-trigger svg circle[fill="currentColor"],
+.grupo-item__info-trigger svg rect {
+  fill: currentColor;
+  stroke: none;
+}
+
+.grupo-item__info-trigger:hover,
+.grupo-item__info-trigger:focus-visible {
+  color: var(--p-acao);
+  outline: none;
+}
+
 .grupo-item__titulo {
   font-weight: 750;
   font-size: 13.5px;
@@ -1665,15 +1811,68 @@
 }
 
 .grupo-item__code {
-  font-size: 10.5px;
-  font-family: ui-monospace, monospace;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: auto;
+  min-width: 86px;
+  height: 28px;
+  min-height: 28px;
+  box-sizing: border-box;
+  appearance: none;
+  font: 700 12px/1 ui-monospace, monospace;
   font-weight: 700;
   color: var(--p-tinta-fraca);
-  background: var(--p-fundo);
-  border: 1px solid var(--p-linha);
-  padding: 1px 5px;
-  border-radius: 4px;
+  background: transparent;
+  border: 0;
+  padding: 4px 0;
+  border-radius: 0;
   flex-shrink: 0;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+
+.grupo-item__code::after {
+  content: attr(data-copy-hint);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 6px);
+  z-index: 40;
+  padding: 4px 7px;
+  border-radius: 5px;
+  background: #1e293b;
+  color: #ffffff;
+  font: 600 10px/1.2 var(--p-fonte-corpo, system-ui, sans-serif);
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transform: translate(-50%, 3px);
+  transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s ease;
+}
+
+.grupo-item__code:hover,
+.grupo-item__code:focus-visible,
+.grupo-item__code.is-copiado {
+  color: var(--p-acao);
+  outline: none;
+}
+
+.grupo-item__code:hover::after,
+.grupo-item__code:focus-visible::after,
+.grupo-item__code.is-copiado::after {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0);
+}
+
+.grupo-item__code.is-copiado::after {
+  background: var(--p-ok);
+}
+
+.grupo-item__code > span {
+  white-space: nowrap;
 }
 
 .grupo-item__bottom {
@@ -1696,6 +1895,7 @@
   overflow-x: auto;
   scrollbar-width: none;
 }
+
 .grupo-item__meeples::-webkit-scrollbar {
   display: none;
 }
@@ -1706,16 +1906,64 @@
   gap: 2.5px;
 }
 
+.grupo-item__meeples-compacto {
+  display: none;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.grupo-item__meeples-individual {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.grupo-item__meeples-contagem {
+  font-size: 14px;
+  font-weight: 850;
+  color: var(--p-tinta);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.grupo-item__meeples--compacta .grupo-item__meeples-individual {
+  display: none;
+}
+
+.grupo-item__meeples--compacta .grupo-item__meeples-compacto {
+  display: inline-flex;
+}
+
+@media (max-width: 560px) {
+  .grupo-item__meeples--compacta-mobile .grupo-item__meeples-individual {
+    display: none;
+  }
+
+  .grupo-item__meeples--compacta-mobile .grupo-item__meeples-compacto {
+    display: inline-flex;
+  }
+}
+
 /* Meeple Adulto (Regular que ocupa assento) */
 .meeple-svg {
   display: inline-block;
   flex-shrink: 0;
   transition: transform 0.12s ease;
 }
+
 .meeple-svg--adult {
   color: #7b1fa2;
   filter: drop-shadow(0 1px 1px rgba(123, 31, 162, 0.25));
 }
+
+.grupo-item__meeples--solo .meeple-svg--adult {
+  color: #0077b6;
+  filter: drop-shadow(0 1px 1px rgba(0, 119, 182, 0.28));
+}
+
 .grupo-item:hover .meeple-svg--adult {
   transform: scale(1.1);
 }
@@ -1735,6 +1983,7 @@
   color: #ec4899;
   filter: drop-shadow(0 1px 1px rgba(236, 72, 153, 0.3));
 }
+
 .grupo-item:hover .meeple-svg--child {
   transform: scale(1.15);
 }
@@ -1744,6 +1993,7 @@
   color: #d97706;
   filter: drop-shadow(0 1px 2px rgba(217, 119, 6, 0.45));
 }
+
 .grupo-item:hover .meeple-svg--vip {
   transform: scale(1.15);
 }
@@ -1752,6 +2002,7 @@
   background: var(--p-superficie);
   border-color: var(--p-linha);
 }
+
 .grupo-item--vip:hover {
   border-color: var(--p-linha-forte);
   box-shadow: 0 4px 12px rgba(13, 34, 66, 0.08);
@@ -1784,12 +2035,140 @@
   background: var(--p-superficie);
 }
 
+/* Menu de destino: ação compacta no card, com opções visuais e acessíveis. */
+.grupo-item__mover {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.grupo-item__mover-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 28px;
+  padding: 4px 7px;
+  border: 1px solid var(--p-linha);
+  border-radius: 7px;
+  background: var(--p-fundo);
+  color: var(--p-tinta-media);
+  cursor: pointer;
+  font: 600 11px/1 inherit;
+  list-style: none;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+
+.grupo-item__mover-trigger::-webkit-details-marker {
+  display: none;
+}
+
+.grupo-item__mover-trigger svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.grupo-item__mover-trigger:hover,
+.grupo-item__mover[open] .grupo-item__mover-trigger,
+.grupo-item__mover-trigger:focus-visible {
+  border-color: var(--p-acao);
+  background: var(--p-superficie);
+  color: var(--p-acao);
+  outline: none;
+}
+
+.grupo-item__mover-chevron {
+  width: 11px !important;
+  height: 11px !important;
+  transition: transform 0.15s ease;
+}
+
+.grupo-item__mover[open] .grupo-item__mover-chevron {
+  transform: rotate(180deg);
+}
+
+.grupo-item__mover-opcoes {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 8px);
+  z-index: 30;
+  display: grid;
+  gap: 4px;
+  min-width: 205px;
+  padding: 6px;
+  border: 1px solid var(--p-linha);
+  border-radius: 10px;
+  background: #ffffff;
+  box-shadow: 0 12px 28px rgba(13, 34, 66, 0.18);
+}
+
+.grupo-item__mover:not([open]) .grupo-item__mover-opcoes {
+  display: none;
+}
+
+.grupo-item__mover-opcao {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 7px 8px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--p-tinta);
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+}
+
+.grupo-item__mover-opcao:hover,
+.grupo-item__mover-opcao:focus-visible {
+  background: var(--p-fundo);
+  outline: none;
+}
+
+.grupo-item__mover-opcao>svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  fill: none;
+  stroke: var(--p-acao);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.grupo-item__mover-opcao--espera>svg {
+  stroke: #b45309;
+}
+
+.grupo-item__mover-opcao-copy {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.grupo-item__mover-opcao-copy strong {
+  font-size: 11px;
+  font-weight: 750;
+  line-height: 1.15;
+}
+
+.grupo-item__mover-opcao-copy small {
+  color: var(--p-tinta-fraca);
+  font-size: 10px;
+  line-height: 1.1;
+}
+
 /* Tooltip com Informações Extras no Hover */
 .grupo-item__tooltip {
   position: absolute;
   bottom: calc(100% + 8px);
-  left: 50%;
-  transform: translateX(-50%) translateY(4px);
+  left: 0;
+  transform: translateY(4px);
   background: #0f172a;
   color: #f8fafc;
   padding: 10px 14px;
@@ -1812,17 +2191,18 @@
   content: '';
   position: absolute;
   top: 100%;
-  left: 50%;
+  left: 9px;
   transform: translateX(-50%);
   border-width: 5px 5px 0 5px;
   border-style: solid;
   border-color: #0f172a transparent transparent transparent;
 }
 
-.grupo-item:hover .grupo-item__tooltip {
+.grupo-item__info-trigger:hover~.grupo-item__tooltip,
+.grupo-item__info-trigger:focus-visible~.grupo-item__tooltip {
   opacity: 1;
   visibility: visible;
-  transform: translateX(-50%) translateY(0);
+  transform: translateY(0);
 }
 
 .grupo-item__tooltip-resp {
@@ -1832,6 +2212,7 @@
   margin-bottom: 6px;
   display: block;
 }
+
 .grupo-item__tooltip-resp strong {
   color: #ffffff;
   font-weight: 700;
@@ -1877,6 +2258,7 @@
   color: #94a3b8;
   display: block;
 }
+
 .grupo-item__tooltip-pagamento strong {
   color: #cbd5e1;
   font-weight: 600;
@@ -1932,7 +2314,7 @@
   padding: 16px 6px;
   border-radius: 0 16px 16px 0;
   flex-shrink: 0;
-  box-shadow: -2px 0 8px rgba(0,0,0,0.06);
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.06);
 }
 
 @media (max-width: 768px) {
@@ -1952,7 +2334,7 @@
   font-size: 10px;
   font-weight: 700;
   color: #94a3b8;
-  background: rgba(255,255,255,0.08);
+  background: rgba(255, 255, 255, 0.08);
   padding: 6px 8px;
   border-radius: 8px;
 }
@@ -1963,7 +2345,7 @@
   color: #64748b;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  border-top: 1px solid rgba(255,255,255,0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   padding-top: 6px;
   width: 100%;
   text-align: center;
@@ -2066,7 +2448,8 @@
   position: absolute;
   top: 0;
   bottom: 0;
-  left: 87%; /* 40/46 = 86.9% */
+  left: 87%;
+  /* 40/46 = 86.9% */
   width: 2px;
   background: #ffffff;
   z-index: 1;
@@ -2134,11 +2517,13 @@
   border-radius: 3px;
   z-index: 3;
 }
+
 .onibus-arte-mapa__retrovisor.top {
   top: -9px;
   transform: rotate(-20deg);
   box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.15);
 }
+
 .onibus-arte-mapa__retrovisor.bottom {
   bottom: -9px;
   transform: rotate(20deg);
@@ -2154,10 +2539,26 @@
   border-radius: 3px;
   z-index: 1;
 }
-.onibus-arte-mapa__roda.roda--tras-top { top: -4px; left: 35px; }
-.onibus-arte-mapa__roda.roda--diant-top { top: -4px; right: 55px; }
-.onibus-arte-mapa__roda.roda--tras-bot { bottom: -4px; left: 35px; }
-.onibus-arte-mapa__roda.roda--diant-bot { bottom: -4px; right: 55px; }
+
+.onibus-arte-mapa__roda.roda--tras-top {
+  top: -4px;
+  left: 35px;
+}
+
+.onibus-arte-mapa__roda.roda--diant-top {
+  top: -4px;
+  right: 55px;
+}
+
+.onibus-arte-mapa__roda.roda--tras-bot {
+  bottom: -4px;
+  left: 35px;
+}
+
+.onibus-arte-mapa__roda.roda--diant-bot {
+  bottom: -4px;
+  right: 55px;
+}
 
 .onibus-arte-mapa__grade {
   display: flex;
@@ -2299,6 +2700,7 @@
   border-radius: 0 4px 4px 0;
   box-shadow: 0 0 8px rgba(234, 179, 8, 0.8), 2px 0 6px rgba(253, 224, 71, 0.6);
 }
+
 .onibus-arte-mapa__farol.top-aux,
 .onibus-arte-mapa__farol.bottom-aux {
   height: 6px;
@@ -2872,6 +3274,7 @@
 }
 
 @media (max-width: 560px) {
+
   .onibus-card__header,
   .onibus-card__corpo,
   .frota-otimizacao,
@@ -2916,6 +3319,152 @@
   }
 }
 
+/* Header da frota: no tablet a leitura passa a ser vertical; no celular os
+   indicadores ficam em uma grade compacta e o mapa continua explorável por
+   gesto horizontal quando a planta não couber na largura disponível. */
+@media (max-width: 1023px) {
+  .onibus-card__header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    gap: 14px;
+    padding: 16px 18px;
+  }
+
+  .onibus-card__header-left {
+    width: 100%;
+    min-width: 0;
+    gap: 10px;
+  }
+
+  .onibus-card__stats-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .onibus-card__stat-card {
+    aspect-ratio: auto;
+    min-height: 92px;
+    padding: 10px 6px;
+  }
+
+  .onibus-card__header-center {
+    grid-column: 1;
+    order: initial;
+    width: 100%;
+    max-width: 100%;
+    justify-content: center;
+    overflow-x: auto;
+    padding: 2px 2px 5px;
+    scrollbar-width: thin;
+  }
+
+  .ocupacao-mapa.onibus-arte-mapa {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .onibus-arte-mapa__chassi {
+    align-self: center;
+  }
+
+  .onibus-arte-mapa__legenda--vertical {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6px;
+    min-width: 0;
+    border-top: 1.5px solid var(--p-linha);
+    border-left: 0;
+    padding: 10px 0 0;
+  }
+
+  .onibus-arte-mapa__legenda-item {
+    min-width: 0;
+    padding: 5px 6px;
+  }
+
+  .onibus-card__vista-toggle {
+    width: 44px;
+    height: 44px;
+  }
+
+  .onibus-card__vista-toggle:focus-visible {
+    outline: 2px solid var(--p-ciano, #00aeef);
+    outline-offset: 2px;
+  }
+}
+
+@media (max-width: 560px) {
+  .onibus-card__header {
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .onibus-card__titulo {
+    font-size: 18px;
+  }
+
+  .onibus-card__stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .onibus-card__stat-card {
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr);
+    align-items: center;
+    gap: 8px;
+    min-height: 72px;
+    padding: 9px 8px;
+    text-align: left;
+  }
+
+  .onibus-card__stat-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+  }
+
+  .onibus-card__stat-content,
+  .onibus-card__stat-value {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .onibus-card__stat-label {
+    font-size: 9px;
+  }
+
+  .onibus-card__stat-value {
+    font-size: 11px;
+  }
+
+  .onibus-card__header-center {
+    justify-content: flex-start;
+    margin-inline: -4px;
+    width: calc(100% + 8px);
+  }
+
+  .onibus-arte-mapa__chassi {
+    align-self: flex-start;
+  }
+
+  .onibus-arte-mapa__legenda--vertical {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .onibus-arte-mapa__legenda-texto strong {
+    font-size: 10.5px;
+  }
+
+  .onibus-arte-mapa__legenda-texto span {
+    font-size: 9px;
+  }
+}
+
 /* ============================================================================
    Modal / Diálogo Moderno (<dialog class="bus-dialog">)
    ========================================================================== */
@@ -2947,6 +3496,7 @@
     opacity: 0;
     transform: scale(0.94) translateY(8px);
   }
+
   to {
     opacity: 1;
     transform: scale(1) translateY(0);
@@ -2961,8 +3511,13 @@
 }
 
 @keyframes busBackdropFade {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 .bus-dialog__header {

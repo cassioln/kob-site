@@ -12,6 +12,7 @@
   var API = 'api/bus-admin-data';
   var API_LISTA = 'api/bus-manifest';
   var API_AUTO_BALANCE = 'api/bus-fleet-auto-balance';
+  var MEEPLE_PATH_D = 'M256 54.99c-27 0-46.418 14.287-57.633 32.23-10.03 16.047-14.203 34.66-15.017 50.962-30.608 15.135-64.515 30.394-91.815 45.994-14.32 8.183-26.805 16.414-36.203 25.26C45.934 218.28 39 228.24 39 239.99c0 5 2.44 9.075 5.19 12.065 2.754 2.99 6.054 5.312 9.812 7.48 7.515 4.336 16.99 7.95 27.412 11.076 15.483 4.646 32.823 8.1 47.9 9.577-14.996 25.84-34.953 49.574-52.447 72.315C56.65 378.785 39 403.99 39 431.99c0 4-.044 7.123.31 10.26.355 3.137 1.256 7.053 4.41 10.156 3.155 3.104 7.017 3.938 10.163 4.28 3.146.345 6.315.304 10.38.304h111.542c8.097 0 14.026.492 20.125-3.43 6.1-3.92 8.324-9.275 12.67-17.275l.088-.16.08-.166s9.723-19.77 21.324-39.388c5.8-9.808 12.097-19.576 17.574-26.498 2.74-3.46 5.304-6.204 7.15-7.754.564-.472.82-.56 1.184-.76.363.2.62.288 1.184.76 1.846 1.55 4.41 4.294 7.15 7.754 5.477 6.922 11.774 16.69 17.574 26.498 11.6 19.618 21.324 39.387 21.324 39.387l.08.165.088.16c4.346 8 6.55 13.323 12.61 17.254 6.058 3.93 11.974 3.45 19.957 3.45H448c4 0 7.12.043 10.244-.304 3.123-.347 6.998-1.21 10.12-4.332 3.12-3.122 3.984-6.997 4.33-10.12.348-3.122.306-6.244.306-10.244 0-28-17.65-53.205-37.867-79.488-17.493-22.74-37.45-46.474-52.447-72.315 15.077-1.478 32.417-4.93 47.9-9.576 10.422-3.125 19.897-6.74 27.412-11.075 3.758-2.168 7.058-4.49 9.81-7.48 2.753-2.99 5.192-7.065 5.192-12.065 0-11.75-6.934-21.71-16.332-30.554-9.398-8.846-21.883-17.077-36.203-25.26-27.3-15.6-61.207-30.86-91.815-45.994-.814-16.3-4.988-34.915-15.017-50.96C302.418 69.276 283 54.99 256 54.99z';
 
   var isLocalhost = Boolean(
     window.location.hostname === 'localhost' ||
@@ -80,6 +81,7 @@
   // mouseover poder sair cedo quando o cursor apenas anda entre linhas da MESMA
   // reserva: sem isso, cada célula percorrida repintaria o grupo inteiro.
   var grupoRealcado = null;
+  var frotaCardsCompactos = {};
 
   // ---- utilidades ---------------------------------------------------------
 
@@ -161,6 +163,25 @@
     span.className = 'etiqueta etiqueta--' + tom;
     span.textContent = rotulo;
     return span;
+  }
+
+  function meepleDaReserva(reserva) {
+    var pagantes = Number(reserva && reserva.pagantes || 0);
+    var criancas = Number(reserva && reserva.criancas || 0);
+    var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    var isGrupo = pagantes > 1 || criancas > 0;
+
+    svg.setAttribute('viewBox', '0 0 512 512');
+    svg.setAttribute('class', 'tabela__meeple ' + (reserva && reserva.is_vip
+      ? 'tabela__meeple--vip'
+      : (isGrupo ? 'tabela__meeple--grupo' : 'tabela__meeple--solo')));
+    svg.setAttribute('focusable', 'false');
+    svg.setAttribute('aria-hidden', 'true');
+    path.setAttribute('fill', 'currentColor');
+    path.setAttribute('d', MEEPLE_PATH_D);
+    svg.appendChild(path);
+    return svg;
   }
 
   // ---- montagem da tabela ------------------------------------------------
@@ -246,7 +267,7 @@
 
         var reservaSpan = document.createElement('span');
         reservaSpan.className = 'tabela__codigo';
-        reservaSpan.textContent = r.code;
+        reservaSpan.textContent = '#' + r.code;
         blocoReserva.appendChild(reservaSpan);
 
         var totalPessoas = (r.pagantes || 0) + (r.criancas || 0);
@@ -270,18 +291,17 @@
         celula('Reserva', '');
       }
 
-      // Passageiro: marcador de responsável, nome e aviso de nova reserva.
+      // Passageiro: meeple identifica o responsável pela reserva; os demais
+      // passageiros continuam com marcadores discretos para preservar a leitura.
       var nomeWrap = document.createElement('div');
       var linhaNome = document.createElement('div');
       var pos = document.createElement('span');
       pos.className = 'tabela__posicao';
-      // Numerar não ajudava a conferência: a ordem já é visual, e o número
-      // competia com o nome. O que importa é UMA marca — quem é o responsável
-      // pela reserva. Estrela para ele, travessão para os demais. O `title` e o
-      // texto para leitor de tela existem porque símbolo sozinho não é lido.
+      // Uma reserva recebe apenas um meeple, sem repetir o ícone para cada
+      // integrante. Grupos ficam roxos; reservas individuais ficam azuis.
       if (p.responsavel) {
         pos.classList.add('tabela__posicao--responsavel');
-        pos.textContent = '★';
+        pos.replaceChildren(meepleDaReserva(r));
         pos.setAttribute('title', 'Contato responsável pela reserva');
       } else if (p.crianca_colo) {
         pos.textContent = '•';
@@ -644,6 +664,37 @@
       // sem transformar a tarefa de despacho em uma planta decorativa.
       var corpoOnibus = document.createElement('div');
       corpoOnibus.className = 'onibus-card__corpo';
+      corpoOnibus.id = 'onibus-corpo-' + busNum;
+
+      var botaoVista = document.createElement('button');
+      botaoVista.type = 'button';
+      botaoVista.className = 'onibus-card__vista-toggle';
+      botaoVista.setAttribute('aria-controls', corpoOnibus.id);
+      botaoVista.title = frotaCardsCompactos[busNum] ? 'Expandir detalhes do Ônibus ' + busNum : 'Recolher detalhes do Ônibus ' + busNum;
+
+      function atualizarBotaoVista() {
+        var compacto = Boolean(frotaCardsCompactos[busNum]);
+        card.classList.toggle('onibus-card--compacto', compacto);
+        botaoVista.setAttribute('aria-expanded', compacto ? 'false' : 'true');
+        botaoVista.setAttribute('aria-label', compacto ? 'Expandir detalhes do Ônibus ' + busNum : 'Recolher detalhes do Ônibus ' + busNum);
+        botaoVista.title = compacto ? 'Expandir detalhes do Ônibus ' + busNum : 'Recolher detalhes do Ônibus ' + busNum;
+        botaoVista.innerHTML = (compacto
+          ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 15 6-6 6 6"></path></svg><span>Expandir</span>'
+          : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg><span>Recolher</span>');
+      }
+
+      botaoVista.addEventListener('click', function (ev) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        frotaCardsCompactos[busNum] = !frotaCardsCompactos[busNum];
+        atualizarBotaoVista();
+      });
+      atualizarBotaoVista();
+      var tituloLinha = document.createElement('div');
+      tituloLinha.className = 'onibus-card__titulo-linha';
+      tituloLinha.append(botaoVista, titulo);
+      headerLeft.insertBefore(tituloLinha, statsGrid);
+
       var assentosGrid = document.createElement('div');
       assentosGrid.className = 'onibus-planta__assentos-grid';
 
@@ -688,11 +739,69 @@
             tituloGrupo.title = r.responsavel;
           }
 
-          var codeTag = document.createElement('span');
-          codeTag.className = 'grupo-item__code';
-          codeTag.textContent = '#' + (r.code || 'RESERVA');
+          var tituloGrupoWrap = document.createElement('div');
+          tituloGrupoWrap.className = 'grupo-item__titulo-wrap';
 
-          itemTop.append(tituloGrupo, codeTag);
+          var infoId = 'grupo-info-' + String(r.id || busNum).replace(/[^a-zA-Z0-9_-]/g, '-');
+          var infoTrigger = document.createElement('button');
+          infoTrigger.type = 'button';
+          infoTrigger.className = 'grupo-item__info-trigger';
+          infoTrigger.setAttribute('aria-label', 'Ver informações do grupo');
+          infoTrigger.setAttribute('aria-describedby', infoId);
+          infoTrigger.title = 'Ver informações do grupo';
+          infoTrigger.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none"></circle><circle cx="12" cy="8" r="1.6" fill="currentColor" stroke="none"></circle><rect x="10.3" y="11" width="3.4" height="7" rx="1.7" fill="currentColor" stroke="none"></rect></svg>';
+          infoTrigger.addEventListener('mousedown', function (ev) {
+            ev.stopPropagation();
+          });
+
+          var codeTag = document.createElement('button');
+          codeTag.type = 'button';
+          codeTag.className = 'grupo-item__code';
+          var codigoReserva = r.code || 'RESERVA';
+          codeTag.setAttribute('aria-label', 'Copiar número da reserva ' + codigoReserva);
+          codeTag.title = 'Copiar número da reserva';
+          codeTag.dataset.copyHint = 'Clique para copiar';
+          codeTag.innerHTML = '<span>#' + codigoReserva + '</span>';
+          codeTag.addEventListener('mousedown', function (ev) {
+            ev.stopPropagation();
+          });
+          codeTag.addEventListener('click', function (ev) {
+            ev.preventDefault();
+            ev.stopPropagation();
+
+            var confirmarCopia = function () {
+              codeTag.classList.add('is-copiado');
+              codeTag.setAttribute('aria-label', 'Número da reserva copiado');
+              codeTag.title = 'Número copiado';
+              codeTag.dataset.copyHint = 'Copiado';
+              window.setTimeout(function () {
+                codeTag.classList.remove('is-copiado');
+                codeTag.setAttribute('aria-label', 'Copiar número da reserva ' + codigoReserva);
+                codeTag.title = 'Copiar número da reserva';
+                codeTag.dataset.copyHint = 'Clique para copiar';
+              }, 1600);
+            };
+
+            if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+              navigator.clipboard.writeText(codigoReserva).then(confirmarCopia).catch(function () {});
+              return;
+            }
+
+            var campoTemporario = document.createElement('textarea');
+            campoTemporario.value = codigoReserva;
+            campoTemporario.setAttribute('readonly', '');
+            campoTemporario.style.position = 'fixed';
+            campoTemporario.style.opacity = '0';
+            document.body.appendChild(campoTemporario);
+            campoTemporario.select();
+            try {
+              if (document.execCommand('copy')) confirmarCopia();
+            } finally {
+              campoTemporario.remove();
+            }
+          });
+          tituloGrupoWrap.append(infoTrigger, tituloGrupo);
+          itemTop.append(tituloGrupoWrap, codeTag);
           item.appendChild(itemTop);
 
           // Rodapé do card: Representação Visual por Meeples + Seletor Mover
@@ -701,10 +810,10 @@
 
           var meeplePathD = 'M256 54.99c-27 0-46.418 14.287-57.633 32.23-10.03 16.047-14.203 34.66-15.017 50.962-30.608 15.135-64.515 30.394-91.815 45.994-14.32 8.183-26.805 16.414-36.203 25.26C45.934 218.28 39 228.24 39 239.99c0 5 2.44 9.075 5.19 12.065 2.754 2.99 6.054 5.312 9.812 7.48 7.515 4.336 16.99 7.95 27.412 11.076 15.483 4.646 32.823 8.1 47.9 9.577-14.996 25.84-34.953 49.574-52.447 72.315C56.65 378.785 39 403.99 39 431.99c0 4-.044 7.123.31 10.26.355 3.137 1.256 7.053 4.41 10.156 3.155 3.104 7.017 3.938 10.163 4.28 3.146.345 6.315.304 10.38.304h111.542c8.097 0 14.026.492 20.125-3.43 6.1-3.92 8.324-9.275 12.67-17.275l.088-.16.08-.166s9.723-19.77 21.324-39.388c5.8-9.808 12.097-19.576 17.574-26.498 2.74-3.46 5.304-6.204 7.15-7.754.564-.472.82-.56 1.184-.76.363.2.62.288 1.184.76 1.846 1.55 4.41 4.294 7.15 7.754 5.477 6.922 11.774 16.69 17.574 26.498 11.6 19.618 21.324 39.387 21.324 39.387l.08.165.088.16c4.346 8 6.55 13.323 12.61 17.254 6.058 3.93 11.974 3.45 19.957 3.45H448c4 0 7.12.043 10.244-.304 3.123-.347 6.998-1.21 10.12-4.332 3.12-3.122 3.984-6.997 4.33-10.12.348-3.122.306-6.244.306-10.244 0-28-17.65-53.205-37.867-79.488-17.493-22.74-37.45-46.474-52.447-72.315 15.077-1.478 32.417-4.93 47.9-9.576 10.422-3.125 19.897-6.74 27.412-11.075 3.758-2.168 7.058-4.49 9.81-7.48 2.753-2.99 5.192-7.065 5.192-12.065 0-11.75-6.934-21.71-16.332-30.554-9.398-8.846-21.883-17.077-36.203-25.26-27.3-15.6-61.207-30.86-91.815-45.994-.814-16.3-4.988-34.915-15.017-50.96C302.418 69.276 283 54.99 256 54.99z';
 
-          var meepleAdultoSVG = '<svg viewBox="0 0 512 512" width="16" height="16" class="meeple-svg meeple-svg--adult" focusable="false" aria-hidden="true"><path fill="currentColor" d="' + meeplePathD + '"></path></svg>';
-          var meepleCriancaSVG = '<svg viewBox="0 0 512 512" width="11" height="11" class="meeple-svg meeple-svg--child" focusable="false" aria-hidden="true"><path fill="currentColor" d="' + meeplePathD + '"></path></svg>';
+          var meepleAdultoSVG = '<svg viewBox="0 0 512 512" width="20" height="20" class="meeple-svg meeple-svg--adult" focusable="false" aria-hidden="true"><path fill="currentColor" d="' + meeplePathD + '"></path></svg>';
+          var meepleCriancaSVG = '<svg viewBox="0 0 512 512" width="14" height="14" class="meeple-svg meeple-svg--child" focusable="false" aria-hidden="true"><path fill="currentColor" d="' + meeplePathD + '"></path></svg>';
 
-          var meepleVipSVG = '<svg viewBox="0 0 512 512" width="18" height="18" class="meeple-svg meeple-svg--vip" focusable="false" aria-hidden="true"><path fill="currentColor" d="' + meeplePathD + '"></path></svg>';
+          var meepleVipSVG = '<svg viewBox="0 0 512 512" width="20" height="20" class="meeple-svg meeple-svg--vip" focusable="false" aria-hidden="true"><path fill="currentColor" d="' + meeplePathD + '"></path></svg>';
 
           var meeplesContainer = document.createElement('div');
           meeplesContainer.className = 'grupo-item__meeples';
@@ -717,13 +826,24 @@
             var numPagantes = Number(r.pagantes || r.total || 1);
             var numColo = Number(r.criancas || 0);
 
+            if (numPagantes === 1 && numColo === 0) {
+              meeplesContainer.classList.add('grupo-item__meeples--solo');
+            }
+
             var textoDesc = numPagantes === 1 ? '1 pagante' : numPagantes + ' pagantes';
             if (numColo > 0) {
               textoDesc += ' + ' + (numColo === 1 ? '1 criança de colo' : numColo + ' crianças de colo');
             }
             meeplesContainer.title = textoDesc;
 
-            var htmlMeeples = '<span class="grupo-item__meeples-grupo grupo-item__meeples-grupo--adultos">';
+            var totalIntegrantes = numPagantes + numColo;
+            if (totalIntegrantes >= 7) {
+              meeplesContainer.classList.add('grupo-item__meeples--compacta');
+            } else if (totalIntegrantes >= 4) {
+              meeplesContainer.classList.add('grupo-item__meeples--compacta-mobile');
+            }
+
+            var htmlMeeples = '<span class="grupo-item__meeples-individual"><span class="grupo-item__meeples-grupo grupo-item__meeples-grupo--adultos">';
             for (var mi = 0; mi < numPagantes; mi++) {
               htmlMeeples += meepleAdultoSVG;
             }
@@ -737,55 +857,100 @@
               htmlMeeples += '</span>';
             }
 
-            meeplesContainer.innerHTML = htmlMeeples;
+            htmlMeeples += '</span>';
+
+            var htmlCompacto = '<span class="grupo-item__meeples-compacto">'
+              + '<span class="grupo-item__meeples-grupo grupo-item__meeples-grupo--adultos"><strong class="grupo-item__meeples-contagem">' + numPagantes + '</strong>' + meepleAdultoSVG + '</span>';
+            if (numColo > 0) {
+              htmlCompacto += '<span class="grupo-item__meeples-sep">+</span><span class="grupo-item__meeples-grupo grupo-item__meeples-grupo--criancas"><strong class="grupo-item__meeples-contagem">' + numColo + '</strong>' + meepleCriancaSVG + '</span>';
+            }
+            htmlCompacto += '</span>';
+
+            meeplesContainer.innerHTML = htmlMeeples + htmlCompacto;
           }
 
-          // Seletor Mover para outro ônibus
-          var selectMover = document.createElement('select');
-          selectMover.className = 'grupo-item__select-mover';
-          selectMover.title = 'Mover para outro ônibus';
-          selectMover.setAttribute('aria-label', 'Mover para outro ônibus');
+          // Menu de movimentação: opções visuais para ônibus e fila de espera.
+          var moverMenu = document.createElement('details');
+          moverMenu.className = 'grupo-item__mover';
 
-          var optPadrao = document.createElement('option');
-          optPadrao.value = '';
-          optPadrao.textContent = 'Mover…';
-          optPadrao.disabled = true;
-          optPadrao.selected = true;
-          selectMover.appendChild(optPadrao);
+          var moverTrigger = document.createElement('summary');
+          moverTrigger.className = 'grupo-item__mover-trigger';
+          moverTrigger.title = 'Mover para outro ônibus';
+          moverTrigger.setAttribute('aria-label', 'Mover para outro ônibus');
+          moverTrigger.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="13" rx="2"></rect><path d="M7 18v2M17 18v2M3 10h18"></path><circle cx="7" cy="15" r="1"></circle><circle cx="17" cy="15" r="1"></circle></svg><span>Mover</span><svg class="grupo-item__mover-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>';
+          moverMenu.appendChild(moverTrigger);
+
+          var moverOpcoes = document.createElement('div');
+          moverOpcoes.className = 'grupo-item__mover-opcoes';
+          moverOpcoes.setAttribute('role', 'listbox');
+          moverOpcoes.setAttribute('aria-label', 'Destinos disponíveis');
+
+          function adicionarOpcaoMover(valor, titulo, detalhe, tipo) {
+            var opcao = document.createElement('button');
+            opcao.type = 'button';
+            opcao.className = 'grupo-item__mover-opcao grupo-item__mover-opcao--' + tipo;
+            opcao.setAttribute('role', 'option');
+            opcao.innerHTML = (tipo === 'espera'
+              ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v12H4z"></path><path d="m4 7 4 5h8l4-5M8 12h8"></path></svg>'
+              : '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="13" rx="2"></rect><path d="M3 10h18M7 18v2M17 18v2"></path></svg>')
+              + '<span class="grupo-item__mover-opcao-copy"><strong>' + titulo + '</strong><small>' + detalhe + '</small></span>';
+            opcao.addEventListener('click', function (ev) {
+              ev.preventDefault();
+              ev.stopPropagation();
+              moverMenu.open = false;
+              if (valor === null) {
+                moverParaOnibus(r.id, null);
+                return;
+              }
+
+              var novoBus = Number(valor);
+              var destInfo = onibusList.find(function (o) { return Number(o.numero) === novoBus; });
+              var ocupadosDest = destInfo ? Number(destInfo.ocupados || 0) : 0;
+              var assentosDoItem = Math.max(1, assentosDaReserva(r));
+              if (ocupadosDest + assentosDoItem > maxL) {
+                var vagasRestantesMsg = Math.max(0, maxL - ocupadosDest);
+                var pessoasDoItem = Math.max(1, Number(r.total || r.pagantes || 1));
+                mostrarAlertaModal('Ônibus Lotado', 'O Ônibus ' + novoBus + ' não tem vagas suficientes (' + (vagasRestantesMsg === 1 ? '1 vaga restante' : vagasRestantesMsg + ' vagas restantes') + ') para acomodar este grupo de ' + (pessoasDoItem === 1 ? '1 pessoa' : pessoasDoItem + ' pessoas') + ' (' + assentosDoItem + (assentosDoItem === 1 ? ' assento).' : ' assentos).'), 'erro');
+                return;
+              }
+              moverParaOnibus(r.id, novoBus);
+            });
+            moverOpcoes.appendChild(opcao);
+          }
 
           onibusList.forEach(function (outro) {
             var numOutro = Number(outro.numero);
             if (numOutro !== busNum) {
-              var opt = document.createElement('option');
-              opt.value = numOutro;
               var vagasLivresOutro = Math.max(0, maxL - Number(outro.ocupados || 0));
-              opt.textContent = 'Ônibus ' + numOutro + ' (' + vagasLivresOutro + ' vagas)';
-              selectMover.appendChild(opt);
+              adicionarOpcaoMover(numOutro, 'Ônibus ' + numOutro, vagasLivresOutro + (vagasLivresOutro === 1 ? ' vaga livre' : ' vagas livres'), 'onibus');
             }
           });
 
-          selectMover.addEventListener('change', function () {
-            if (!this.value) return;
-            var novoBus = Number(this.value);
-            var destInfo = onibusList.find(function (o) { return Number(o.numero) === novoBus; });
-            var ocupadosDest = destInfo ? Number(destInfo.ocupados || 0) : 0;
-            var assentosDoItem = Math.max(1, assentosDaReserva(r));
-            if (ocupadosDest + assentosDoItem > maxL) {
-              var vagasRestantesMsg = Math.max(0, maxL - ocupadosDest);
-              var pessoasDoItem = Math.max(1, Number(r.total || r.pagantes || 1));
-              mostrarAlertaModal('Ônibus Lotado', 'O Ônibus ' + novoBus + ' não tem vagas suficientes (' + (vagasRestantesMsg === 1 ? '1 vaga restante' : vagasRestantesMsg + ' vagas restantes') + ') para acomodar este grupo de ' + (pessoasDoItem === 1 ? '1 pessoa' : pessoasDoItem + ' pessoas') + ' (' + assentosDoItem + (assentosDoItem === 1 ? ' assento).' : ' assentos).'), 'erro');
-              this.value = '';
-              return;
-            }
-            moverParaOnibus(r.id, novoBus);
+          if (!r.is_vip) {
+            adicionarOpcaoMover(null, 'Sem ônibus confirmado', 'Enviar para a fila de espera', 'espera');
+          }
+
+          moverMenu.appendChild(moverOpcoes);
+          moverMenu.addEventListener('toggle', function () {
+            item.classList.toggle('grupo-item--menu-aberto', moverMenu.open);
+          });
+          moverTrigger.addEventListener('click', function () {
+            document.querySelectorAll('.grupo-item__mover[open]').forEach(function (aberto) {
+              if (aberto !== moverMenu) aberto.open = false;
+            });
+          });
+          moverMenu.addEventListener('mousedown', function (ev) {
+            ev.stopPropagation();
           });
 
-          itemBottom.append(meeplesContainer, selectMover);
+          itemBottom.append(meeplesContainer, moverMenu);
           item.appendChild(itemBottom);
 
           // Tooltip com Informações Extras no Hover
           var tooltip = document.createElement('div');
           tooltip.className = 'grupo-item__tooltip';
+          tooltip.id = infoId;
+          tooltip.setAttribute('role', 'tooltip');
           if (r.is_vip) {
             tooltip.innerHTML = '<div class="grupo-item__tooltip-resp">★ Lugar VIP da Organização</div><div class="grupo-item__tooltip-pax">1 vaga reservada para a equipe</div>';
           } else {
@@ -820,7 +985,7 @@
 
             tooltip.innerHTML = htmlTooltip;
           }
-          item.appendChild(tooltip);
+          tituloGrupoWrap.appendChild(tooltip);
 
           assentosGrid.appendChild(item);
         });
