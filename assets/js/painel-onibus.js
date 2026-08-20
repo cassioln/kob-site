@@ -597,8 +597,10 @@
             tituloGrupo.innerHTML = '★ Lugar VIP da Organização';
           } else if (r.grupo) {
             tituloGrupo.textContent = r.grupo;
+            tituloGrupo.title = r.grupo;
           } else {
             tituloGrupo.textContent = r.responsavel;
+            tituloGrupo.title = r.responsavel;
           }
 
           var codeTag = document.createElement('span');
@@ -607,23 +609,6 @@
 
           itemTop.append(tituloGrupo, codeTag);
           item.appendChild(itemTop);
-
-          // Subtítulo do Responsável (quando há nome de grupo)
-          if (!r.is_vip && r.grupo && r.responsavel) {
-            var respEl = document.createElement('div');
-            respEl.className = 'grupo-item__responsavel';
-            respEl.textContent = '👤 Resp: ' + r.responsavel;
-            item.appendChild(respEl);
-          }
-
-          // Lista detalhada de nomes de passageiros (quando houver)
-          if (!r.is_vip && Array.isArray(r.passageiros) && r.passageiros.length > 1) {
-            var passList = document.createElement('div');
-            passList.className = 'grupo-item__passageiros-lista';
-            passList.title = 'Passageiros do grupo';
-            passList.textContent = 'Passageiros: ' + r.passageiros.join(', ');
-            item.appendChild(passList);
-          }
 
           // Rodapé do card: Badge de Pessoas e Seletor Mover
           var itemBottom = document.createElement('div');
@@ -634,9 +619,13 @@
           if (r.is_vip) {
             tamTag.textContent = '1 VIP';
           } else {
-            var labelPax = (r.pagantes || r.total) + ' pag.';
-            if (r.criancas > 0) labelPax += ' + ' + r.criancas + ' colo';
-            tamTag.textContent = labelPax + ' (' + (r.total === 1 ? '1 pessoa' : r.total + ' pessoas') + ')';
+            var numPagantes = Number(r.pagantes || r.total || 1);
+            var numColo = Number(r.criancas || 0);
+            if (numColo > 0) {
+              tamTag.textContent = numPagantes + ' + ' + numColo + ' colo';
+            } else {
+              tamTag.textContent = numPagantes === 1 ? '1 pessoa' : numPagantes + ' pessoas';
+            }
           }
 
           // Seletor Mover para outro ônibus
@@ -680,6 +669,21 @@
 
           itemBottom.append(tamTag, selectMover);
           item.appendChild(itemBottom);
+
+          // Tooltip com Informações Extras no Hover
+          var tooltip = document.createElement('div');
+          tooltip.className = 'grupo-item__tooltip';
+          if (r.is_vip) {
+            tooltip.innerHTML = '<span class="grupo-item__tooltip-resp">★ Lugar VIP da Organização</span><span class="grupo-item__tooltip-pax">1 vaga reservada para a equipe</span>';
+          } else {
+            var tooltipResp = '<span class="grupo-item__tooltip-resp">👤 Resp: ' + escHtml(r.responsavel || r.grupo || 'Participante') + '</span>';
+            var nomesPassageiros = Array.isArray(r.passageiros) && r.passageiros.length > 0
+              ? r.passageiros.join(', ')
+              : (r.responsavel || 'Não informado');
+            var tooltipPax = '<span class="grupo-item__tooltip-pax">Passageiros: ' + escHtml(nomesPassageiros) + '</span>';
+            tooltip.innerHTML = tooltipResp + tooltipPax;
+          }
+          item.appendChild(tooltip);
 
           assentosGrid.appendChild(item);
         });
