@@ -16,6 +16,7 @@ Adicionar à aba Frota uma automação capaz de reorganizar grupos inteiros entr
 8. Reservas confirmadas que não puderem entrar em um ônibus fechado passam para o estado persistente “Sem ônibus confirmado”.
 9. O estado “Sem ônibus confirmado” não altera o pagamento, o valor, a data ou os dados pessoais da reserva.
 10. Uma alocação manual posterior remove o estado “Sem ônibus confirmado”.
+11. Um ônibus que terminar abaixo de 40 pessoas não mantém grupos comuns alocados; esses grupos passam para “Sem ônibus confirmado”. VIPs permanecem fixos mesmo quando, sozinhos, não são suficientes para fechar o ônibus.
 
 ## Estado persistente
 
@@ -45,7 +46,7 @@ O algoritmo será executado no servidor e receberá o estado atual do banco dent
 
 ### Decisão
 
-O algoritmo considera VIPs como ocupação bloqueada e procura a melhor distribuição dos grupos não VIP. Cada grupo só pode permanecer no ônibus atual ou ser transferido inteiro para outro ônibus.
+O algoritmo considera VIPs como ocupação bloqueada e procura a melhor distribuição dos grupos não VIP. Cada grupo só pode permanecer no ônibus atual, ser transferido inteiro para outro ônibus fechado ou passar para “Sem ônibus confirmado”. Um ônibus candidato só pode reter grupos comuns se a ocupação final, incluindo VIPs, atingir pelo menos 40 pessoas.
 
 A comparação entre planos segue ordem lexicográfica:
 
