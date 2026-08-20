@@ -614,11 +614,10 @@
           var itemBottom = document.createElement('div');
           itemBottom.className = 'grupo-item__bottom';
 
-          var tamTag = document.createElement('span');
-          tamTag.className = 'grupo-item__tag-tamanho';
-          if (r.is_vip) {
-            tamTag.textContent = '1 VIP';
-          } else {
+          var tamTag = null;
+          if (!r.is_vip) {
+            tamTag = document.createElement('span');
+            tamTag.className = 'grupo-item__tag-tamanho';
             var numPagantes = Number(r.pagantes || r.total || 1);
             var numColo = Number(r.criancas || 0);
             if (numColo > 0) {
@@ -626,6 +625,8 @@
             } else {
               tamTag.textContent = numPagantes === 1 ? '1 pessoa' : numPagantes + ' pessoas';
             }
+          } else {
+            itemBottom.style.justifyContent = 'flex-end';
           }
 
           // Seletor Mover para outro ônibus
@@ -667,7 +668,8 @@
             moverParaOnibus(r.id, novoBus);
           });
 
-          itemBottom.append(tamTag, selectMover);
+          if (tamTag) itemBottom.appendChild(tamTag);
+          itemBottom.appendChild(selectMover);
           item.appendChild(itemBottom);
 
           // Tooltip com Informações Extras no Hover
