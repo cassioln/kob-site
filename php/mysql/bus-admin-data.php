@@ -225,7 +225,15 @@ try {
                     'pagantes' => $paxCount,
                     'criancas' => $childCount,
                     'total' => $grupoTotal,
-                    'passageiros' => array_map(static fn ($p) => $p['nome'], $porReserva[$r['id']] ?? []),
+                    'pago_em' => $r['pago_em'] ?? $r['criado_em'] ?? null,
+                    'passageiros' => array_map(static fn ($p) => [
+                        'posicao' => (int) $p['posicao'],
+                        'nome' => $p['nome'],
+                        'responsavel' => (bool) $p['responsavel'],
+                        'menor' => (bool) $p['menor'],
+                        'crianca_colo' => (bool) $p['crianca_colo'],
+                        'faixa' => $p['crianca_colo'] ? '0 a 5 anos' : ($p['menor'] ? '6 a 17 anos' : '18 anos ou mais'),
+                    ], $porReserva[$r['id']] ?? []),
                 ];
             }
         }
@@ -271,7 +279,15 @@ try {
             'pagantes' => $paxCount,
             'criancas' => $childCount,
             'total' => $grupoTotal,
-            'passageiros' => array_map(static fn ($p) => $p['nome'], $porReserva[$r['id']] ?? []),
+            'pago_em' => $r['pago_em'] ?? $r['criado_em'] ?? null,
+            'passageiros' => array_map(static fn ($p) => [
+                'posicao' => (int) $p['posicao'],
+                'nome' => $p['nome'],
+                'responsavel' => (bool) $p['responsavel'],
+                'menor' => (bool) $p['menor'],
+                'crianca_colo' => (bool) $p['crianca_colo'],
+                'faixa' => $p['crianca_colo'] ? '0 a 5 anos' : ($p['menor'] ? '6 a 17 anos' : '18 anos ou mais'),
+            ], $porReserva[$r['id']] ?? []),
         ];
     }
 
@@ -407,7 +423,15 @@ try {
             'pagantes' => (int) $r['passenger_count'],
             'criancas' => (int) $r['children_count'],
             'total' => (int) $r['passenger_count'] + (int) $r['children_count'],
-            'pago_em' => $r['pago_em'],
+            'pago_em' => $r['pago_em'] ?? $r['criado_em'] ?? null,
+            'passageiros' => array_map(static fn ($p) => [
+                'posicao' => (int) $p['posicao'],
+                'nome' => $p['nome'],
+                'responsavel' => (bool) $p['responsavel'],
+                'menor' => (bool) $p['menor'],
+                'crianca_colo' => (bool) $p['crianca_colo'],
+                'faixa' => $p['crianca_colo'] ? '0 a 5 anos' : ($p['menor'] ? '6 a 17 anos' : '18 anos ou mais'),
+            ], $porReserva[$r['id']] ?? []),
             '_paid_at' => (string) ($r['paid_at'] ?? ''),
             '_created_at' => (string) ($r['created_at'] ?? ''),
         ];

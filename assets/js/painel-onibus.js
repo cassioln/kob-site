@@ -413,6 +413,7 @@
       var busNum = Number(info.numero || 1);
       var ocupados = Number(info.ocupados || 0);
       var vagasRestantes = Math.max(0, maxL - ocupados);
+      var vipsNoBus = Number(info.vip_inclusos || 0);
 
       var card = document.createElement('div');
       card.className = 'onibus-card';
@@ -470,7 +471,7 @@
       var header = document.createElement('div');
       header.className = 'onibus-card__header';
 
-      // Esquerda: Título acima + Linha de badges/status
+      // Esquerda: Título acima + Grid de mini-cards com iconografia ocupando o espaço livre
       var headerLeft = document.createElement('div');
       headerLeft.className = 'onibus-card__header-left';
 
@@ -478,44 +479,49 @@
       titulo.className = 'onibus-card__titulo';
       titulo.textContent = 'Ônibus ' + busNum;
 
-      var badgesStrip = document.createElement('div');
-      badgesStrip.className = 'onibus-card__badges-strip';
+      var statsGrid = document.createElement('div');
+      statsGrid.className = 'onibus-card__stats-grid';
 
-      var statusPill = document.createElement('span');
-      statusPill.className = 'onibus-card__status-pill';
+      var numOcupadosFormat = ocupados < 10 ? '0' + ocupados : String(ocupados);
+      var statusTexto = ocupados >= maxL ? 'LOTADO' : (info.fechado || ocupados >= minL ? 'COTA ATINGIDA' : 'EM ABERTO');
 
-      var statusDot = document.createElement('span');
-      statusDot.className = 'onibus-card__status-dot';
-      statusPill.appendChild(statusDot);
-
+      // Card 1: Status
+      var cardStatus = document.createElement('div');
+      cardStatus.className = 'onibus-card__stat-card onibus-card__stat-card--status';
       if (ocupados >= maxL) {
-        statusPill.classList.add('onibus-card__status-pill--lotado');
-        statusPill.append(document.createTextNode(' LOTADO'));
+        cardStatus.classList.add('is-lotado');
       } else if (info.fechado || ocupados >= minL) {
-        statusPill.append(document.createTextNode(' COTA MÍNIMA ATINGIDA'));
+        cardStatus.classList.add('is-contratado');
       } else {
-        statusPill.classList.add('onibus-card__status-pill--provisorio');
-        statusPill.append(document.createTextNode(' EM ABERTO'));
+        cardStatus.classList.add('is-aberto');
       }
+      cardStatus.innerHTML = '<span class="onibus-card__stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="15" rx="3"></rect><circle cx="7" cy="18" r="2"></circle><circle cx="17" cy="18" r="2"></circle><line x1="3" y1="9" x2="21" y2="9"></line><line x1="12" y1="3" x2="12" y2="9"></line></svg></span>'
+        + '<div class="onibus-card__stat-content"><span class="onibus-card__stat-label">Status</span><strong class="onibus-card__stat-value"><span class="onibus-card__stat-tag">[' + numOcupadosFormat + '/' + maxL + ']</span><span>' + statusTexto + '</span></strong></div>';
 
-      var pillLugares = document.createElement('span');
-      pillLugares.className = 'onibus-card__counter-pill';
-      pillLugares.innerHTML = '<strong>' + ocupados + '/' + maxL + '</strong> lugares';
+      // Card 2: Lotação / Passageiros
+      var cardLotacao = document.createElement('div');
+      cardLotacao.className = 'onibus-card__stat-card';
+      var percOcupacao = Math.round((ocupados / maxL) * 100);
+      cardLotacao.innerHTML = '<span class="onibus-card__stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></span>'
+        + '<div class="onibus-card__stat-content"><span class="onibus-card__stat-label">Ocupação</span><strong class="onibus-card__stat-value"><span>' + ocupados + ' de ' + maxL + '</span><small>(' + percOcupacao + '%)</small></strong></div>';
 
-      var pillVagas = document.createElement('span');
-      pillVagas.className = 'onibus-card__counter-pill' + (vagasRestantes === 0 ? '' : ' onibus-card__counter-pill--ok');
-      pillVagas.innerHTML = '<strong>' + vagasRestantes + '</strong> ' + (vagasRestantes === 1 ? 'livre' : 'livres');
+      // Card 3: Vagas Livres (Ícone oficial da Poltrona do anexo)
+      var cardVagas = document.createElement('div');
+      cardVagas.className = 'onibus-card__stat-card' + (vagasRestantes > 0 ? ' onibus-card__stat-card--livre' : '');
+      var iconePoltronaSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3a1.5 1.5 0 0 1 3 0v7.5c0 1.2.8 2 2 2h6.5a2 2 0 0 1 0 4h-8.5c-2.5 0-4.5-1.8-4.5-4.5V4.5A1.5 1.5 0 0 1 6 3z"></path><path d="M8 11.5h7a1 1 0 0 1 0 2H8"></path><path d="M7 19.5v2.5"></path><path d="M15 19.5v2.5"></path></svg>';
+      cardVagas.innerHTML = '<span class="onibus-card__stat-icon">' + iconePoltronaSVG + '</span>'
+        + '<div class="onibus-card__stat-content"><span class="onibus-card__stat-label">Vagas</span><strong class="onibus-card__stat-value">' + (vagasRestantes === 0 ? 'Lotado' : '<span>' + vagasRestantes + (vagasRestantes === 1 ? ' vaga' : ' vagas') + '</span><small>livres</small>') + '</strong></div>';
 
-      badgesStrip.append(statusPill, pillLugares, pillVagas);
+      // Card 4: VIPs Organização (Estrela SVG grande e dourada)
+      var cardVip = document.createElement('div');
+      cardVip.className = 'onibus-card__stat-card onibus-card__stat-card--vip';
+      var iconeEstrelaSVG = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
+      cardVip.innerHTML = '<span class="onibus-card__stat-icon">' + iconeEstrelaSVG + '</span>'
+        + '<div class="onibus-card__stat-content"><span class="onibus-card__stat-label">VIPs Org.</span><strong class="onibus-card__stat-value"><span>' + (vipsNoBus > 0 ? vipsNoBus + (vipsNoBus === 1 ? ' lugar' : ' lugares') : '0 lugares') + '</span><small>' + (vipsNoBus > 0 ? 'reservados' : 'livres') + '</small></strong></div>';
 
-      if (vipsNoBus > 0) {
-        var pillVip = document.createElement('span');
-        pillVip.className = 'onibus-card__counter-pill';
-        pillVip.innerHTML = '<strong>' + vipsNoBus + '</strong> VIPs';
-        badgesStrip.appendChild(pillVip);
-      }
+      statsGrid.append(cardStatus, cardLotacao, cardVagas, cardVip);
 
-      headerLeft.append(titulo, badgesStrip);
+      headerLeft.append(titulo, statsGrid);
 
       // Centro: mapa artístico detalhado de assentos do ônibus (46 lugares)
       var headerCenter = document.createElement('div');
@@ -528,12 +534,26 @@
       var chassi = document.createElement('div');
       chassi.className = 'onibus-arte-mapa__chassi';
 
+      // Retrovisores exteriores
+      var retrovisorTop = document.createElement('span');
+      retrovisorTop.className = 'onibus-arte-mapa__retrovisor top';
+      var retrovisorBottom = document.createElement('span');
+      retrovisorBottom.className = 'onibus-arte-mapa__retrovisor bottom';
+
+      // Rodas / Caixas de roda
+      var rodaDiantTop = document.createElement('span');
+      rodaDiantTop.className = 'onibus-arte-mapa__roda roda--diant-top';
+      var rodaTrasTop = document.createElement('span');
+      rodaTrasTop.className = 'onibus-arte-mapa__roda roda--tras-top';
+      var rodaDiantBottom = document.createElement('span');
+      rodaDiantBottom.className = 'onibus-arte-mapa__roda roda--diant-bot';
+      var rodaTrasBottom = document.createElement('span');
+      rodaTrasBottom.className = 'onibus-arte-mapa__roda roda--tras-bot';
+
       var fileira1 = [45, 41, 37, 33, 29, 25, 21, 17, 13, 9, 5, 1];
       var fileira2 = [46, 42, 38, 34, 30, 26, 22, 18, 14, 10, 6, 2];
       var fileira3 = [44, 40, 36, 32, 28, 24, 20, 16, 12, 8, 4];
       var fileira4 = [43, 39, 35, 31, 27, 23, 19, 15, 11, 7, 3];
-
-      var vipsNoBus = Number(info.vip_inclusos || 0);
 
       function criarPoltrona(num) {
         var poltrona = document.createElement('span');
@@ -591,18 +611,21 @@
 
       var cabine = document.createElement('div');
       cabine.className = 'onibus-arte-mapa__cabine';
-      cabine.innerHTML = '<div class="onibus-arte-mapa__volante" title="Cabine do motorista"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="2" x2="12" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><circle cx="12" cy="12" r="3"></circle></svg></div><span class="onibus-arte-mapa__farol top"></span><span class="onibus-arte-mapa__farol bottom"></span>';
+      cabine.innerHTML = '<div class="onibus-arte-mapa__volante" title="Cabine do motorista"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="2" x2="12" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><circle cx="12" cy="12" r="3"></circle></svg></div><div class="onibus-arte-mapa__farol-grupo"><span class="onibus-arte-mapa__farol top"></span><span class="onibus-arte-mapa__farol top-aux"></span><span class="onibus-arte-mapa__farol bottom-aux"></span><span class="onibus-arte-mapa__farol bottom"></span></div>';
 
-      chassi.append(gradeAssentos, cabine);
+      chassi.append(retrovisorTop, retrovisorBottom, rodaTrasTop, rodaDiantTop, rodaTrasBottom, rodaDiantBottom, gradeAssentos, cabine);
 
+      // Legenda vertical ocupando a mesma altura do ônibus com fonte ampliada
       var legenda = document.createElement('div');
-      legenda.className = 'onibus-arte-mapa__legenda';
-      var legendaHTML = '';
-      if (vipsNoBus > 0) {
-        legendaHTML += '<span class="onibus-arte-mapa__legenda-item"><span class="onibus-arte-mapa__legenda-cor onibus-arte-mapa__legenda-cor--vip">★</span> VIP (' + vipsNoBus + ')</span>';
-      }
-      legendaHTML += '<span class="onibus-arte-mapa__legenda-item"><span class="onibus-arte-mapa__legenda-cor onibus-arte-mapa__legenda-cor--base"></span> Cota mínima (40)</span>'
-        + '<span class="onibus-arte-mapa__legenda-item"><span class="onibus-arte-mapa__legenda-cor onibus-arte-mapa__legenda-cor--extra"></span> Extras flex (6)</span>';
+      legenda.className = 'onibus-arte-mapa__legenda onibus-arte-mapa__legenda--vertical';
+      var textoVip = vipsNoBus > 0
+        ? vipsNoBus + (vipsNoBus === 1 ? ' vaga reservada' : ' vagas reservadas')
+        : 'Nenhuma vaga reservada';
+
+      var legendaHTML = '<div class="onibus-arte-mapa__legenda-item"><span class="onibus-arte-mapa__legenda-cor onibus-arte-mapa__legenda-cor--vip">★</span> <div class="onibus-arte-mapa__legenda-texto"><strong>VIP da Organização</strong><span>' + textoVip + '</span></div></div>'
+        + '<div class="onibus-arte-mapa__legenda-item"><span class="onibus-arte-mapa__legenda-cor onibus-arte-mapa__legenda-cor--base"></span> <div class="onibus-arte-mapa__legenda-texto"><strong>Cota Mínima</strong><span>1 a 40 lugares</span></div></div>'
+        + '<div class="onibus-arte-mapa__legenda-item"><span class="onibus-arte-mapa__legenda-cor onibus-arte-mapa__legenda-cor--extra"></span> <div class="onibus-arte-mapa__legenda-texto"><strong>Assentos Extras</strong><span>41 a 46 lugares</span></div></div>'
+        + '<div class="onibus-arte-mapa__legenda-item"><span class="onibus-arte-mapa__legenda-cor onibus-arte-mapa__legenda-cor--livre"></span> <div class="onibus-arte-mapa__legenda-texto"><strong>Disponíveis</strong><span>' + vagasRestantes + ' ' + (vagasRestantes === 1 ? 'vaga livre' : 'vagas livres') + '</span></div></div>';
       legenda.innerHTML = legendaHTML;
 
       mapaOcupacao.append(chassi, legenda);
@@ -660,23 +683,49 @@
           itemTop.append(tituloGrupo, codeTag);
           item.appendChild(itemTop);
 
-          // Rodapé do card: Badge de Pessoas e Seletor Mover
+          // Rodapé do card: Representação Visual por Meeples + Seletor Mover
           var itemBottom = document.createElement('div');
           itemBottom.className = 'grupo-item__bottom';
 
-          var tamTag = null;
-          if (!r.is_vip) {
-            tamTag = document.createElement('span');
-            tamTag.className = 'grupo-item__tag-tamanho';
+          var meeplePathD = 'M256 54.99c-27 0-46.418 14.287-57.633 32.23-10.03 16.047-14.203 34.66-15.017 50.962-30.608 15.135-64.515 30.394-91.815 45.994-14.32 8.183-26.805 16.414-36.203 25.26C45.934 218.28 39 228.24 39 239.99c0 5 2.44 9.075 5.19 12.065 2.754 2.99 6.054 5.312 9.812 7.48 7.515 4.336 16.99 7.95 27.412 11.076 15.483 4.646 32.823 8.1 47.9 9.577-14.996 25.84-34.953 49.574-52.447 72.315C56.65 378.785 39 403.99 39 431.99c0 4-.044 7.123.31 10.26.355 3.137 1.256 7.053 4.41 10.156 3.155 3.104 7.017 3.938 10.163 4.28 3.146.345 6.315.304 10.38.304h111.542c8.097 0 14.026.492 20.125-3.43 6.1-3.92 8.324-9.275 12.67-17.275l.088-.16.08-.166s9.723-19.77 21.324-39.388c5.8-9.808 12.097-19.576 17.574-26.498 2.74-3.46 5.304-6.204 7.15-7.754.564-.472.82-.56 1.184-.76.363.2.62.288 1.184.76 1.846 1.55 4.41 4.294 7.15 7.754 5.477 6.922 11.774 16.69 17.574 26.498 11.6 19.618 21.324 39.387 21.324 39.387l.08.165.088.16c4.346 8 6.55 13.323 12.61 17.254 6.058 3.93 11.974 3.45 19.957 3.45H448c4 0 7.12.043 10.244-.304 3.123-.347 6.998-1.21 10.12-4.332 3.12-3.122 3.984-6.997 4.33-10.12.348-3.122.306-6.244.306-10.244 0-28-17.65-53.205-37.867-79.488-17.493-22.74-37.45-46.474-52.447-72.315 15.077-1.478 32.417-4.93 47.9-9.576 10.422-3.125 19.897-6.74 27.412-11.075 3.758-2.168 7.058-4.49 9.81-7.48 2.753-2.99 5.192-7.065 5.192-12.065 0-11.75-6.934-21.71-16.332-30.554-9.398-8.846-21.883-17.077-36.203-25.26-27.3-15.6-61.207-30.86-91.815-45.994-.814-16.3-4.988-34.915-15.017-50.96C302.418 69.276 283 54.99 256 54.99z';
+
+          var meepleAdultoSVG = '<svg viewBox="0 0 512 512" width="16" height="16" class="meeple-svg meeple-svg--adult" focusable="false" aria-hidden="true"><path fill="currentColor" d="' + meeplePathD + '"></path></svg>';
+          var meepleCriancaSVG = '<svg viewBox="0 0 512 512" width="11" height="11" class="meeple-svg meeple-svg--child" focusable="false" aria-hidden="true"><path fill="currentColor" d="' + meeplePathD + '"></path></svg>';
+
+          var meepleVipSVG = '<svg viewBox="0 0 512 512" width="18" height="18" class="meeple-svg meeple-svg--vip" focusable="false" aria-hidden="true"><path fill="currentColor" d="' + meeplePathD + '"></path></svg>';
+
+          var meeplesContainer = document.createElement('div');
+          meeplesContainer.className = 'grupo-item__meeples';
+
+          if (r.is_vip) {
+            meeplesContainer.classList.add('grupo-item__meeples--vip');
+            meeplesContainer.title = '1 Lugar VIP da Organização';
+            meeplesContainer.innerHTML = meepleVipSVG;
+          } else {
             var numPagantes = Number(r.pagantes || r.total || 1);
             var numColo = Number(r.criancas || 0);
+
+            var textoDesc = numPagantes === 1 ? '1 pagante' : numPagantes + ' pagantes';
             if (numColo > 0) {
-              tamTag.textContent = numPagantes + ' + ' + numColo + ' colo';
-            } else {
-              tamTag.textContent = numPagantes === 1 ? '1 pessoa' : numPagantes + ' pessoas';
+              textoDesc += ' + ' + (numColo === 1 ? '1 criança de colo' : numColo + ' crianças de colo');
             }
-          } else {
-            itemBottom.style.justifyContent = 'flex-end';
+            meeplesContainer.title = textoDesc;
+
+            var htmlMeeples = '<span class="grupo-item__meeples-grupo grupo-item__meeples-grupo--adultos">';
+            for (var mi = 0; mi < numPagantes; mi++) {
+              htmlMeeples += meepleAdultoSVG;
+            }
+            htmlMeeples += '</span>';
+
+            if (numColo > 0) {
+              htmlMeeples += '<span class="grupo-item__meeples-sep">+</span><span class="grupo-item__meeples-grupo grupo-item__meeples-grupo--criancas">';
+              for (var ci = 0; ci < numColo; ci++) {
+                htmlMeeples += meepleCriancaSVG;
+              }
+              htmlMeeples += '</span>';
+            }
+
+            meeplesContainer.innerHTML = htmlMeeples;
           }
 
           // Seletor Mover para outro ônibus
@@ -718,22 +767,45 @@
             moverParaOnibus(r.id, novoBus);
           });
 
-          if (tamTag) itemBottom.appendChild(tamTag);
-          itemBottom.appendChild(selectMover);
+          itemBottom.append(meeplesContainer, selectMover);
           item.appendChild(itemBottom);
 
           // Tooltip com Informações Extras no Hover
           var tooltip = document.createElement('div');
           tooltip.className = 'grupo-item__tooltip';
           if (r.is_vip) {
-            tooltip.innerHTML = '<span class="grupo-item__tooltip-resp">★ Lugar VIP da Organização</span><span class="grupo-item__tooltip-pax">1 vaga reservada para a equipe</span>';
+            tooltip.innerHTML = '<div class="grupo-item__tooltip-resp">★ Lugar VIP da Organização</div><div class="grupo-item__tooltip-pax">1 vaga reservada para a equipe</div>';
           } else {
-            var tooltipResp = '<span class="grupo-item__tooltip-resp">Resp.: ' + escapeHtml(r.responsavel || r.grupo || 'Participante') + '</span>';
-            var nomesPassageiros = Array.isArray(r.passageiros) && r.passageiros.length > 0
-              ? r.passageiros.join(', ')
-              : (r.responsavel || 'Não informado');
-            var tooltipPax = '<span class="grupo-item__tooltip-pax">Passageiros: ' + escapeHtml(nomesPassageiros) + '</span>';
-            tooltip.innerHTML = tooltipResp + tooltipPax;
+            var nomeResp = r.responsavel || r.grupo || 'Participante';
+            var htmlTooltip = '<div class="grupo-item__tooltip-resp"><strong>Contato principal:</strong> ' + escapeHtml(nomeResp) + '</div>';
+
+            var listaPassageiros = Array.isArray(r.passageiros) ? r.passageiros : [];
+            // Filtra passageiros além do responsável (posicao >= 2 ou índice >= 1)
+            var demaisPassageiros = listaPassageiros.filter(function (pax, idx) {
+              if (typeof pax === 'object' && pax !== null) {
+                return !pax.responsavel && (pax.posicao ? pax.posicao >= 2 : idx >= 1);
+              }
+              return idx >= 1;
+            });
+
+            if (demaisPassageiros.length > 0) {
+              htmlTooltip += '<div class="grupo-item__tooltip-pax-titulo"><strong>Passageiros:</strong></div>';
+              htmlTooltip += '<ul class="grupo-item__tooltip-lista">';
+              demaisPassageiros.forEach(function (pax, i) {
+                var numPos = (typeof pax === 'object' && pax && pax.posicao) ? pax.posicao : (i + 2);
+                var nomePax = typeof pax === 'string' ? pax : (pax.nome || 'Passageiro');
+                var faixaPax = (typeof pax === 'object' && pax && pax.faixa) ? pax.faixa : (pax.crianca_colo ? '0 a 5 anos' : (pax.menor ? '6 a 17 anos' : '18 anos ou mais'));
+                htmlTooltip += '<li class="grupo-item__tooltip-item">' + numPos + ' - ' + escapeHtml(nomePax) + ' | <span class="grupo-item__tooltip-faixa">' + escapeHtml(faixaPax) + '</span></li>';
+              });
+              htmlTooltip += '</ul>';
+            }
+
+            var dataPagto = r.pago_em || r.criado_em;
+            if (dataPagto) {
+              htmlTooltip += '<div class="grupo-item__tooltip-pagamento"><strong>Confirmação de pagamento:</strong> ' + escapeHtml(dataPagto) + '</div>';
+            }
+
+            tooltip.innerHTML = htmlTooltip;
           }
           item.appendChild(tooltip);
 
@@ -827,22 +899,68 @@
     var linha = document.createElement('div');
     linha.className = 'frota-otimizacao__movimento';
 
-    var grupo = document.createElement('span');
-    grupo.className = 'frota-otimizacao__movimento-grupo';
-    grupo.textContent = rotuloGrupo(move.registration_id);
+    var reserva = encontrarReserva(move.registration_id);
+    var nomeGrupo = (reserva && reserva.grupo) ? reserva.grupo : ('Reserva #' + (reserva && reserva.code ? reserva.code : String(move.registration_id).slice(0, 8)));
+    var nomeContato = (reserva && reserva.contato) ? reserva.contato : 'Não informado';
 
-    var rota = document.createElement('span');
-    rota.className = 'frota-otimizacao__movimento-rota';
+    var numPagantes = reserva ? Number(reserva.pagantes || 1) : Number(move.size || 1);
+    var numCriancas = reserva ? Number(reserva.criancas || 0) : 0;
+    var textoPessoas = numPagantes === 1 ? '1 pessoa' : numPagantes + ' pessoas';
+    if (numCriancas > 0) {
+      textoPessoas += ' + ' + (numCriancas === 1 ? '1 criança de colo' : numCriancas + ' crianças de colo');
+    }
+
+    var dataPagto = reserva ? (reserva.pago_em || reserva.criado_em) : null;
+
     var origem = move.from_bus === null ? 'Sem ônibus' : 'Ônibus ' + move.from_bus;
     var destino = move.to_bus === null ? 'Sem ônibus confirmado' : 'Ônibus ' + move.to_bus;
-    rota.textContent = origem + ' → ' + destino;
 
-    var total = document.createElement('span');
-    total.className = 'frota-otimizacao__movimento-total';
-    total.textContent = tamanhoReservaConhecida(move.registration_id, move.size)
-      + (Number(move.size) === 1 ? ' pessoa' : ' pessoas');
+    // --- Linha Superior / Header do Card ---
+    var topRow = document.createElement('div');
+    topRow.className = 'frota-otimizacao__movimento-top';
 
-    linha.append(grupo, rota, total);
+    var infoLeft = document.createElement('div');
+    infoLeft.className = 'frota-otimizacao__movimento-info-left';
+    infoLeft.innerHTML = '<strong class="frota-otimizacao__movimento-grupo">' + escapeHtml(nomeGrupo) + '</strong>'
+      + '<span class="frota-otimizacao__movimento-sep">|</span>'
+      + '<span class="frota-otimizacao__movimento-contato"><span class="frota-otimizacao__movimento-contato-label">Contato principal:</span> ' + escapeHtml(nomeContato) + '</span>'
+      + '<span class="frota-otimizacao__movimento-sep">|</span>'
+      + '<span class="frota-otimizacao__movimento-qtd">' + escapeHtml(textoPessoas) + '</span>';
+
+    var rightSide = document.createElement('div');
+    rightSide.className = 'frota-otimizacao__movimento-right';
+
+    if (dataPagto) {
+      var pagtoTag = document.createElement('span');
+      pagtoTag.className = 'frota-otimizacao__movimento-pagamento';
+      pagtoTag.textContent = 'pagamento aprovado ' + dataPagto;
+      rightSide.appendChild(pagtoTag);
+    }
+
+    var rotaBadge = document.createElement('span');
+    rotaBadge.className = 'frota-otimizacao__movimento-rota';
+    rotaBadge.innerHTML = '<span class="frota-otimizacao__rota-origem">' + escapeHtml(origem) + '</span> <span class="frota-otimizacao__rota-seta">→</span> <span class="frota-otimizacao__rota-destino">' + escapeHtml(destino) + '</span>';
+    rightSide.appendChild(rotaBadge);
+
+    topRow.append(infoLeft, rightSide);
+
+    // --- Linha Inferior / Nomes dos Passageiros ---
+    var bottomRow = document.createElement('div');
+    bottomRow.className = 'frota-otimizacao__movimento-passageiros';
+
+    var listaPax = reserva && Array.isArray(reserva.passageiros) && reserva.passageiros.length > 0
+      ? reserva.passageiros
+      : [{ nome: nomeContato }];
+
+    var nomesFormatados = listaPax.map(function (p) {
+      var n = typeof p === 'string' ? p : p.nome;
+      var f = typeof p === 'object' && p.faixa ? ' (' + p.faixa + ')' : '';
+      return escapeHtml(n + f);
+    }).join(' <span class="frota-otimizacao__movimento-pax-sep">|</span> ');
+
+    bottomRow.innerHTML = '<span class="frota-otimizacao__movimento-pax-label">Passageiros:</span> <span class="frota-otimizacao__movimento-pax-lista">' + nomesFormatados + '</span>';
+
+    linha.append(topRow, bottomRow);
     return linha;
   }
 
@@ -995,14 +1113,38 @@
       var linha = document.createElement('div');
       linha.className = 'frota-sem-onibus__item';
 
-      var info = document.createElement('div');
-      info.className = 'frota-sem-onibus__info';
-      var titulo = document.createElement('strong');
-      titulo.textContent = item.grupo || item.contato || ('Reserva ' + item.code);
-      var detalhe = document.createElement('span');
-      detalhe.textContent = item.total + (item.total === 1 ? ' pessoa' : ' pessoas')
-        + ' · pagamento aprovado ' + (item.pago_em || 'sem data');
-      info.append(titulo, detalhe);
+      // --- Linha Superior / Header do Card ---
+      var topRow = document.createElement('div');
+      topRow.className = 'frota-sem-onibus__top';
+
+      var infoLeft = document.createElement('div');
+      infoLeft.className = 'frota-sem-onibus__info-left';
+
+      var nomeGrupo = item.grupo || ('Reserva #' + item.code);
+      var nomeContato = item.contato || 'Não informado';
+
+      var numPagantes = Number(item.pagantes || item.total || 1);
+      var numCriancas = Number(item.criancas || 0);
+      var textoPessoas = numPagantes === 1 ? '1 pessoa' : numPagantes + ' pessoas';
+      if (numCriancas > 0) {
+        textoPessoas += ' + ' + (numCriancas === 1 ? '1 criança de colo' : numCriancas + ' crianças de colo');
+      }
+
+      infoLeft.innerHTML = '<strong class="frota-sem-onibus__nome-grupo">' + escapeHtml(nomeGrupo) + '</strong>'
+        + '<span class="frota-sem-onibus__sep">|</span>'
+        + '<span class="frota-sem-onibus__contato"><span class="frota-sem-onibus__contato-label">Contato principal:</span> ' + escapeHtml(nomeContato) + '</span>'
+        + '<span class="frota-sem-onibus__sep">|</span>'
+        + '<span class="frota-sem-onibus__qtd">' + escapeHtml(textoPessoas) + '</span>';
+
+      var rightSide = document.createElement('div');
+      rightSide.className = 'frota-sem-onibus__right';
+
+      if (item.pago_em) {
+        var pagtoTag = document.createElement('span');
+        pagtoTag.className = 'frota-sem-onibus__pagamento';
+        pagtoTag.textContent = 'pagamento aprovado ' + item.pago_em;
+        rightSide.appendChild(pagtoTag);
+      }
 
       var select = document.createElement('select');
       select.className = 'grupo-item__select-mover frota-sem-onibus__select';
@@ -1025,8 +1167,27 @@
         this.disabled = true;
         moverParaOnibus(item.id, destino);
       });
+      rightSide.appendChild(select);
 
-      linha.append(info, select);
+      topRow.append(infoLeft, rightSide);
+
+      // --- Linha Inferior / Nomes dos Passageiros ---
+      var bottomRow = document.createElement('div');
+      bottomRow.className = 'frota-sem-onibus__passageiros';
+
+      var listaPax = Array.isArray(item.passageiros) && item.passageiros.length > 0
+        ? item.passageiros
+        : [{ nome: nomeContato }];
+
+      var nomesFormatados = listaPax.map(function (p) {
+        var n = typeof p === 'string' ? p : p.nome;
+        var f = typeof p === 'object' && p.faixa ? ' (' + p.faixa + ')' : '';
+        return escapeHtml(n + f);
+      }).join(' <span class="frota-sem-onibus__pax-sep">|</span> ');
+
+      bottomRow.innerHTML = '<span class="frota-sem-onibus__pax-label">Passageiros:</span> <span class="frota-sem-onibus__pax-lista">' + nomesFormatados + '</span>';
+
+      linha.append(topRow, bottomRow);
       el.frotaSemOnibusLista.appendChild(linha);
     });
   }
