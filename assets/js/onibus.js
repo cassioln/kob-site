@@ -709,7 +709,7 @@
     });
   }
 
-  function setWizardStep(step) {
+  function setWizardStep(step, shouldScroll) {
     currentWizardStep = Math.max(1, Math.min(3, step));
 
     var steps = form.querySelectorAll('[data-wizard-step]');
@@ -735,9 +735,11 @@
     updateStepperUI();
     updateWizardHeaderCopy();
 
-    var heading = document.getElementById('step-heading');
-    if (heading) {
-      heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (shouldScroll) {
+      var heading = document.getElementById('step-heading');
+      if (heading) {
+        heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     }
   }
 
@@ -798,15 +800,15 @@
 
   function validateForm() {
     if (!validateStep1()) {
-      setWizardStep(1);
+      setWizardStep(1, true);
       return false;
     }
     if (!validateStep2()) {
-      setWizardStep(2);
+      setWizardStep(2, true);
       return false;
     }
     if (!validateStep3()) {
-      setWizardStep(3);
+      setWizardStep(3, true);
       return false;
     }
     return true;
@@ -1190,9 +1192,9 @@
       var currentStepEl = nextBtn.closest('[data-wizard-step]');
       var sNum = currentStepEl ? Number(currentStepEl.getAttribute('data-wizard-step')) : currentWizardStep;
       if (sNum === 1) {
-        if (validateStep1()) setWizardStep(2);
+        if (validateStep1()) setWizardStep(2, true);
       } else if (sNum === 2) {
-        if (validateStep2()) setWizardStep(3);
+        if (validateStep2()) setWizardStep(3, true);
       }
       return;
     }
@@ -1203,9 +1205,9 @@
       var currentStepEl = prevBtn.closest('[data-wizard-step]');
       var sNum = currentStepEl ? Number(currentStepEl.getAttribute('data-wizard-step')) : currentWizardStep;
       if (sNum === 2) {
-        setWizardStep(1);
+        setWizardStep(1, true);
       } else if (sNum === 3) {
-        setWizardStep(2);
+        setWizardStep(2, true);
       }
       return;
     }
@@ -1219,11 +1221,11 @@
       var targetStep = Number(item.getAttribute('data-step-target'));
       if (!targetStep || targetStep === currentWizardStep) return;
       if (targetStep < currentWizardStep) {
-        setWizardStep(targetStep);
+        setWizardStep(targetStep, true);
       } else if (targetStep === 2 && validateStep1()) {
-        setWizardStep(2);
+        setWizardStep(2, true);
       } else if (targetStep === 3 && validateStep1() && validateStep2()) {
-        setWizardStep(3);
+        setWizardStep(3, true);
       }
     });
   }
