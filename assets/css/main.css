@@ -3773,6 +3773,22 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
   margin-bottom: 6px;
 }
 
+.price-card--sold .price-card__value,
+.price-card__value--sold {
+  color: #828f9f;
+  opacity: 0.7;
+}
+
+.price-card--sold .price-card__value .cur,
+.price-card--sold .price-card__value .per,
+.price-card--sold .price-card__value .dec,
+.price-card__value--sold .cur,
+.price-card__value--sold .per,
+.price-card__value--sold .dec {
+  color: #9aa7b7;
+  opacity: 0.85;
+}
+
 /* Discreet decimals (,00) on cabine prices — smaller, less prominent than the main number */
 #panel-cabines .price-card__value .amount .dec,
 #panel-bebidas .price-card__value .amount .dec {
