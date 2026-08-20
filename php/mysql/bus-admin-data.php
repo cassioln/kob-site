@@ -13,6 +13,7 @@ declare(strict_types=1);
  */
 
 require_once dirname(__DIR__) . '/lib/validation.php';
+require_once dirname(__DIR__) . '/lib/bus-fleet.php';
 require_once __DIR__ . '/lib/db.php';
 require_once dirname(__DIR__) . '/lib/receipt-pdf.php';
 
@@ -65,11 +66,13 @@ function bus_status_painel(string $status): array
 
 try {
     $pdo = bus_pdo();
+    bus_fleet_ensure_assignment_status($pdo);
 
     $q = $pdo->query(
         'SELECT r.id, r.primary_name, r.primary_cpf, r.email, r.whatsapp, r.status,
                 r.status_detail, r.passenger_count, r.children_count, r.group_name, r.amount_cents,
-                r.mercadopago_order_id, r.confirmation_email_sent_at, r.created_at, r.bus_number,
+                r.mercadopago_order_id, r.confirmation_email_sent_at, r.created_at, r.paid_at, r.bus_number,
+                r.fleet_assignment_status,
                 DATE_FORMAT(CONVERT_TZ(r.created_at, "+00:00", "-03:00"), "%d/%m/%Y %H:%i") AS criado_em,
                 DATE_FORMAT(CONVERT_TZ(r.paid_at, "+00:00", "-03:00"), "%d/%m/%Y %H:%i") AS pago_em
            FROM bus_registrations r
@@ -198,9 +201,13 @@ try {
     foreach ($reservas as $idx => $r) {
         $st = bus_status_painel((string) $r['status']);
         if ($st['chave'] === 'pago') {
-            if ($r['bus_number'] === null) {
+            $fleetStatus = ($r['fleet_assignment_status'] ?? 'assigned') === 'waiting'
+                ? 'waiting'
+                : 'assigned';
+
+            if ($r['bus_number'] === null && $fleetStatus !== 'waiting') {
                 $reservasSemFixoIndices[] = $idx;
-            } else {
+            } elseif ($r['bus_number'] !== null) {
                 $bNum = (int) $r['bus_number'];
                 if ($bNum < 1) $bNum = 1;
                 if ($bNum > $maxBusNum) $maxBusNum = $bNum;
@@ -380,9 +387,42 @@ try {
             'order_id' => $r['mercadopago_order_id'],
             'email_enviado' => !empty($r['confirmation_email_sent_at']),
             'bus_number' => $r['bus_number'] !== null ? (int) $r['bus_number'] : null,
+            'fleet_assignment_status' => ($r['fleet_assignment_status'] ?? 'assigned') === 'waiting' ? 'waiting' : 'assigned',
             'passageiros' => $passageiros,
         ];
     }
+
+    $semOnibusConfirmado = [];
+    foreach ($reservas as $r) {
+        $fleetStatus = ($r['fleet_assignment_status'] ?? 'assigned') === 'waiting'
+            ? 'waiting'
+            : 'assigned';
+        if (bus_status_painel((string) $r['status'])['chave'] !== 'pago'
+            || $fleetStatus !== 'waiting'
+            || $r['bus_number'] !== null) {
+            continue;
+        }
+
+        $semOnibusConfirmado[] = [
+            'id' => $r['id'],
+            'code' => strtoupper(substr((string) $r['id'], 0, 8)),
+            'contato' => $r['primary_name'],
+            'grupo' => ($r['group_name'] ?? '') !== '' ? $r['group_name'] : null,
+            'pagantes' => (int) $r['passenger_count'],
+            'criancas' => (int) $r['children_count'],
+            'total' => (int) $r['passenger_count'] + (int) $r['children_count'],
+            'pago_em' => $r['pago_em'],
+            '_paid_at' => (string) ($r['paid_at'] ?? ''),
+            '_created_at' => (string) ($r['created_at'] ?? ''),
+        ];
+    }
+    usort($semOnibusConfirmado, static function (array $a, array $b): int {
+        return [$a['_paid_at'], $a['_created_at'], $a['id']] <=> [$b['_paid_at'], $b['_created_at'], $b['id']];
+    });
+    foreach ($semOnibusConfirmado as &$item) {
+        unset($item['_paid_at'], $item['_created_at']);
+    }
+    unset($item);
 
 
     // Constrói a lista de ônibus (exibe sempre no mínimo 3 ônibus)
@@ -418,6 +458,7 @@ try {
         'minimo' => 40,
         'vip_seats' => $vipCount,
         'onibus' => $listaOnibus,
+        'sem_onibus_confirmado' => $semOnibusConfirmado,
     ];
 
     echo json_encode([

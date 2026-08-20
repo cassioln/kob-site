@@ -8,7 +8,7 @@
   <meta name="robots" content="noindex, nofollow, noarchive">
   <title>Painel de gestão · Reservas · Kriativos On Board 2026</title>
   <link rel="icon" href="assets/images/brand/favicon.png">
-  <link rel="stylesheet" href="assets/css/painel-onibus.css?v=20260819-footer-layout">
+  <link rel="stylesheet" href="assets/css/painel-onibus.css?v=20260820-frota-balance">
 </head>
 
 <body class="painel">
@@ -172,7 +172,37 @@
             </div>
             <p id="vip-help" class="frota-vip-ajuda">Estas vagas contam para o fechamento do ônibus, mas não aparecem na lista de embarque.</p>
           </div>
+          <div class="frota-header__acoes">
+            <button id="otimizar-distribuicao" class="botao botao--primario" type="button">
+              Otimizar distribuição
+            </button>
+            <p class="frota-header__acao-ajuda">Reorganiza grupos inteiros para fechar mais ônibus.</p>
+          </div>
         </header>
+
+        <section id="frota-otimizacao" class="frota-otimizacao" aria-labelledby="frota-otimizacao-titulo" hidden>
+          <div class="frota-otimizacao__cabecalho">
+            <div>
+              <h3 id="frota-otimizacao-titulo">Prévia da distribuição</h3>
+              <p id="frota-otimizacao-resumo"></p>
+            </div>
+            <span class="frota-otimizacao__vip-aviso">VIPs permanecem no ônibus atual.</span>
+          </div>
+          <div id="frota-otimizacao-movimentos"></div>
+          <div id="frota-otimizacao-espera"></div>
+          <div class="frota-otimizacao__acoes">
+            <button id="frota-otimizacao-cancelar" class="botao botao--discreto" type="button">Cancelar</button>
+            <button id="frota-otimizacao-aplicar" class="botao botao--primario" type="button">Aplicar distribuição</button>
+          </div>
+        </section>
+
+        <section id="frota-sem-onibus" class="frota-sem-onibus" aria-labelledby="frota-sem-onibus-titulo" hidden>
+          <div class="frota-sem-onibus__cabecalho">
+            <h3 id="frota-sem-onibus-titulo">Sem ônibus confirmado</h3>
+            <p>Reservas confirmadas aguardando alocação, ordenadas pelo pagamento aprovado.</p>
+          </div>
+          <div class="frota-sem-onibus__lista"></div>
+        </section>
 
         <!-- Container onde o JS vai renderizar os ônibus -->
         <section id="frota-onibus-container" class="frota-grid" aria-label="Lista de Ônibus">
@@ -183,7 +213,7 @@
 
       <p class="painel__rodape">
         Dados atualizados em <span id="atualizado-em">—</span>.
-        Esta página é somente leitura: nada aqui altera uma reserva.
+        Pagamentos e dados das reservas não são alterados aqui; a Frota ajusta apenas a alocação operacional.
       </p>
     </div>
   </main>
@@ -221,7 +251,7 @@
     </div>
   </dialog>
 
-  <script defer src="assets/js/painel-onibus.js?v=20260819-cards-uniformes"></script>
+  <script defer src="assets/js/painel-onibus.js?v=20260820-frota-balance"></script>
 </body>
 
 </html>

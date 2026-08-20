@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 require_once dirname(__DIR__) . '/lib/validation.php';
+require_once dirname(__DIR__) . '/lib/bus-fleet.php';
 require_once __DIR__ . '/lib/db.php';
 
 $config = bus_config();
@@ -38,6 +39,7 @@ try {
     }
 
     $pdo = bus_pdo();
+    bus_fleet_ensure_assignment_status($pdo);
     
     // Tratamento para VIPs (IDs virtuais vip_1, vip_2 etc)
     if (str_starts_with($registrationId, 'vip_')) {
@@ -158,7 +160,9 @@ try {
         }
     }
 
-    $stmtUpdate = $pdo->prepare('UPDATE bus_registrations SET bus_number = ? WHERE id = ?');
+    $stmtUpdate = $pdo->prepare("UPDATE bus_registrations
+        SET bus_number = ?, fleet_assignment_status = 'assigned', updated_at = UTC_TIMESTAMP()
+      WHERE id = ?");
     $stmtUpdate->execute([$bus_number, $registrationId]);
 
     json_response(200, ['success' => true, 'bus_number' => $bus_number]);

@@ -1,7 +1,7 @@
 /* Painel de gestão de reservas — transporte fretado.
  *
- * Somente leitura. Nenhuma ação aqui altera reserva: mudar status de pagamento
- * pela interface abriria caminho para confirmar vaga sem lastro no Mercado Pago.
+ * A interface não altera pagamentos nem dados de passageiros. As ações de Frota
+ * alteram apenas a alocação operacional, sempre por endpoints autenticados.
  *
  * Sem dependências externas — o site é estático e publicado por FTP, então
  * adicionar bundler ou biblioteca de planilha só para exportar não se paga.
@@ -11,6 +11,7 @@
 
   var API = 'api/bus-admin-data';
   var API_LISTA = 'api/bus-manifest';
+  var API_AUTO_BALANCE = 'api/bus-fleet-auto-balance';
 
   var el = {
     carregando: document.getElementById('estado-carregando'),
@@ -42,6 +43,15 @@
     abas: document.querySelectorAll('.painel-abas__botao'),
     conteudosAba: document.querySelectorAll('.painel-aba-conteudo'),
     frotaContainer: document.getElementById('frota-onibus-container'),
+    otimizarDistribuicao: document.getElementById('otimizar-distribuicao'),
+    frotaOtimizacao: document.getElementById('frota-otimizacao'),
+    frotaOtimizacaoResumo: document.getElementById('frota-otimizacao-resumo'),
+    frotaOtimizacaoMovimentos: document.getElementById('frota-otimizacao-movimentos'),
+    frotaOtimizacaoEspera: document.getElementById('frota-otimizacao-espera'),
+    frotaOtimizacaoCancelar: document.getElementById('frota-otimizacao-cancelar'),
+    frotaOtimizacaoAplicar: document.getElementById('frota-otimizacao-aplicar'),
+    frotaSemOnibus: document.getElementById('frota-sem-onibus'),
+    frotaSemOnibusLista: document.querySelector('#frota-sem-onibus .frota-sem-onibus__lista'),
     vipInput: document.getElementById('vip-input'),
     vipSalvar: document.getElementById('salvar-vip'),
     alertaDialog: document.getElementById('painel-alerta-dialog'),
@@ -56,7 +66,8 @@
     filtro: 'pago',
     busca: '',
     token: '',
-    frota: null
+    frota: null,
+    frotaBalancePreview: null
   };
 
   // Número do grupo atualmente realçado. Guardado fora do handler para o
@@ -458,7 +469,7 @@
 
       var titulo = document.createElement('h3');
       titulo.className = 'onibus-card__titulo';
-      titulo.innerHTML = '🚍 Ônibus ' + busNum;
+      titulo.textContent = 'Ônibus ' + busNum;
 
       var badge = document.createElement('span');
       badge.className = 'onibus-card__badge';
@@ -471,26 +482,28 @@
       }
       headerLeft.append(titulo, badge);
 
-      // Centro: Barra de Progresso com Marcador de 40
+      // Centro: mapa compacto de ocupação com marcador da meta de fechamento.
       var headerCenter = document.createElement('div');
       headerCenter.className = 'onibus-card__header-center';
 
-      var barWrap = document.createElement('div');
-      barWrap.className = 'progresso-bar';
-      var barFill = document.createElement('div');
-      barFill.className = 'progresso-bar__fill';
-      if (ocupados >= maxL) {
-        barFill.classList.add('progresso-bar__fill--cheio');
-      } else if (ocupados >= minL) {
-        barFill.classList.add('progresso-bar__fill--ok');
-      }
-      var perc = Math.min(100, Math.round((ocupados / maxL) * 100));
-      barFill.style.transform = 'scaleX(' + (perc / 100) + ')';
+      var mapaOcupacao = document.createElement('div');
+      mapaOcupacao.className = 'ocupacao-mapa';
+      mapaOcupacao.style.setProperty('--ocupacao-meta', Math.min(100, (minL / maxL) * 100) + '%');
+      mapaOcupacao.setAttribute('aria-hidden', 'true');
 
-      var mark = document.createElement('div');
-      mark.className = 'progresso-bar__marker';
-      mark.title = 'Meta de viabilidade: 40 assentos';
-      barWrap.append(barFill, mark);
+      var assentosMapa = document.createElement('div');
+      assentosMapa.className = 'ocupacao-mapa__assentos';
+      for (var assentoNumero = 1; assentoNumero <= maxL; assentoNumero++) {
+        var assento = document.createElement('span');
+        assento.className = 'ocupacao-mapa__assento';
+        if (assentoNumero <= ocupados) assento.classList.add('is-ocupado');
+        if (assentoNumero === minL) assento.classList.add('is-meta');
+        assentosMapa.appendChild(assento);
+      }
+      var marcadorMeta = document.createElement('span');
+      marcadorMeta.className = 'ocupacao-mapa__marcador';
+      marcadorMeta.dataset.label = 'META ' + minL;
+      mapaOcupacao.append(assentosMapa, marcadorMeta);
 
       var tx = document.createElement('div');
       tx.className = 'progresso-texto';
@@ -503,15 +516,17 @@
 
       var txRight = document.createElement('span');
       var faltaFechamento = Math.max(0, minL - ocupados);
-      if (info.fechado || ocupados >= minL) {
-        txRight.textContent = 'Meta atingida';
-        txRight.style.color = 'var(--p-ok)';
-        txRight.style.fontWeight = '600';
+      if (ocupados >= maxL) {
+        txRight.textContent = 'Lotação máxima atingida';
+        txRight.className = 'progresso-texto__meta progresso-texto__meta--cheio';
+      } else if (info.fechado || ocupados >= minL) {
+        txRight.textContent = 'Meta de fechamento atingida';
+        txRight.className = 'progresso-texto__meta progresso-texto__meta--ok';
       } else {
-        txRight.textContent = 'Faltam ' + faltaFechamento + ' p/ meta';
+        txRight.textContent = 'Faltam ' + faltaFechamento + ' para fechar';
       }
       tx.append(txLeft, txRight);
-      headerCenter.append(barWrap, tx);
+      headerCenter.append(mapaOcupacao, tx);
 
       // Direita: Badge com vagas livres
       var headerRight = document.createElement('div');
@@ -529,50 +544,10 @@
 
       header.append(headerLeft, headerCenter, headerRight);
 
-      // --- PLANTA BAIXA HORIZONTAL DO ÔNIBUS ---
-      var plantaHorizontal = document.createElement('div');
-      plantaHorizontal.className = 'onibus-planta-horizontal';
-
-      // 1. Cockpit / Frente do Ônibus
-      var cockpit = document.createElement('div');
-      cockpit.className = 'onibus-planta__cockpit';
-      cockpit.title = 'Frente do Ônibus · Cabine do Motorista';
-      cockpit.innerHTML = `
-        <div class="onibus-planta__parabrisa"></div>
-        <div class="onibus-planta__volante">
-          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"></circle>
-            <circle cx="12" cy="12" r="3"></circle>
-            <line x1="12" y1="2" x2="12" y2="9"></line>
-            <line x1="2" y1="12" x2="9" y2="12"></line>
-            <line x1="15" y1="12" x2="22" y2="12"></line>
-          </svg>
-          <span>FRENTE</span>
-        </div>
-        <div class="onibus-planta__porta">
-          <span>🚪 Entrada</span>
-        </div>
-      `;
-
-      // 2. Salão / Cabine de Passageiros
-      var cabine = document.createElement('div');
-      cabine.className = 'onibus-planta__cabine';
-
-      var cabineHeader = document.createElement('div');
-      cabineHeader.className = 'onibus-planta__cabine-header';
-
-      var janelaSuperior = document.createElement('div');
-      janelaSuperior.className = 'onibus-planta__faixa-janelas';
-      janelaSuperior.innerHTML = '<span class="onibus-janela"></span><span class="onibus-janela"></span><span class="onibus-janela"></span><span class="onibus-janela"></span><span class="onibus-janela"></span><span class="onibus-janela"></span>';
-
-      var statusCabine = document.createElement('div');
-      statusCabine.className = 'onibus-planta__status-cabine';
-      var numGrupos = (info.reservas && info.reservas.length) ? info.reservas.length : 0;
-      statusCabine.innerHTML = '<span><strong>Planta Baixa Horizontal</strong> &middot; ' + maxL + ' assentos totais</span><span>' + plural(numGrupos, 'reserva alocada', 'reservas alocadas') + ' &middot; ' + plural(ocupados, 'pessoa a bordo', 'pessoas a bordo') + '</span>';
-
-      cabineHeader.append(janelaSuperior, statusCabine);
-      cabine.appendChild(cabineHeader);
-
+      // Corpo simples do ônibus: mantém os grupos inteiros e o arraste manual,
+      // sem transformar a tarefa de despacho em uma planta decorativa.
+      var corpoOnibus = document.createElement('div');
+      corpoOnibus.className = 'onibus-card__corpo';
       var assentosGrid = document.createElement('div');
       assentosGrid.className = 'onibus-planta__assentos-grid';
 
@@ -687,7 +662,7 @@
           if (r.is_vip) {
             tooltip.innerHTML = '<span class="grupo-item__tooltip-resp">★ Lugar VIP da Organização</span><span class="grupo-item__tooltip-pax">1 vaga reservada para a equipe</span>';
           } else {
-            var tooltipResp = '<span class="grupo-item__tooltip-resp">👤 Resp: ' + escapeHtml(r.responsavel || r.grupo || 'Participante') + '</span>';
+            var tooltipResp = '<span class="grupo-item__tooltip-resp">Resp.: ' + escapeHtml(r.responsavel || r.grupo || 'Participante') + '</span>';
             var nomesPassageiros = Array.isArray(r.passageiros) && r.passageiros.length > 0
               ? r.passageiros.join(', ')
               : (r.responsavel || 'Não informado');
@@ -704,7 +679,12 @@
           var slotLivres = document.createElement('div');
           slotLivres.className = 'onibus-vagas-livres-slot';
           slotLivres.innerHTML = `
-            <div class="onibus-vagas-livres-icone">💺</div>
+            <div class="onibus-vagas-livres-icone" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 18v-5a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v5"></path>
+                <path d="M5 15h14M7 18v2M17 18v2"></path>
+              </svg>
+            </div>
             <div class="onibus-vagas-livres-info">
               <strong>` + (vagasRestantes === 1 ? '1 Assento Livre' : vagasRestantes + ' Assentos Livres') + `</strong>
               <span>Espaço disponível neste ônibus. Arraste grupos ou use a opção "Mover…" para alocar pessoas aqui.</span>
@@ -714,41 +694,13 @@
         }
       } else {
         var vazioHint = document.createElement('div');
-        vazioHint.style.font = '400 13px/1.5 system-ui, -apple-system, sans-serif';
-        vazioHint.style.color = 'var(--p-tinta-fraca)';
-        vazioHint.style.padding = '36px 16px';
-        vazioHint.style.textAlign = 'center';
-        vazioHint.style.border = '2px dashed #cbd5e1';
-        vazioHint.style.borderRadius = '12px';
-        vazioHint.style.background = '#f8fafc';
-        vazioHint.style.gridColumn = '1 / -1';
-        vazioHint.textContent = '🚍 Cabine vazia (46 vagas livres). Arraste grupos para cá ou use a opção "Mover…" em qualquer reserva para alocar pessoas neste ônibus.';
+        vazioHint.className = 'onibus-planta__vazio';
+        vazioHint.textContent = maxL + ' vagas livres. Arraste grupos para cá ou use a opção "Mover…" para alocar pessoas neste ônibus.';
         assentosGrid.appendChild(vazioHint);
       }
 
-      cabine.appendChild(assentosGrid);
-
-      var janelaInferior = document.createElement('div');
-      janelaInferior.className = 'onibus-planta__faixa-janelas';
-      janelaInferior.innerHTML = '<span class="onibus-janela"></span><span class="onibus-janela"></span><span class="onibus-janela"></span><span class="onibus-janela"></span><span class="onibus-janela"></span><span class="onibus-janela"></span>';
-      cabine.appendChild(janelaInferior);
-
-      // 3. Traseira do Ônibus (WC / Motor)
-      var traseira = document.createElement('div');
-      traseira.className = 'onibus-planta__traseira';
-      traseira.title = 'Traseira do Ônibus · WC a Bordo';
-      traseira.innerHTML = `
-        <div class="onibus-planta__wc" title="Sanitário a Bordo">
-          <span style="font-size: 16px;">🚻</span>
-          <span>WC</span>
-        </div>
-        <div class="onibus-planta__motor">
-          <span>MOTOR</span>
-        </div>
-      `;
-
-      plantaHorizontal.append(cockpit, cabine, traseira);
-      card.append(header, plantaHorizontal);
+      corpoOnibus.appendChild(assentosGrid);
+      card.append(header, corpoOnibus);
 
       el.frotaContainer.appendChild(card);
     });
@@ -783,6 +735,234 @@
       el.vipSalvar.disabled = true;
       el.vipSalvar.textContent = 'Salvar';
     }
+
+    renderizarSemOnibusConfirmado();
+  }
+
+  function encontrarReserva(reservaId) {
+    return estado.reservas.find(function (reserva) {
+      return String(reserva.id) === String(reservaId);
+    }) || null;
+  }
+
+  function rotuloGrupo(reservaId) {
+    var reserva = encontrarReserva(reservaId);
+    if (!reserva) return 'Reserva ' + String(reservaId).slice(0, 8);
+    return reserva.grupo || reserva.contato || ('Reserva ' + String(reservaId).slice(0, 8));
+  }
+
+  function tamanhoReservaConhecida(reservaId, fallback) {
+    var reserva = encontrarReserva(reservaId);
+    if (!reserva) return Number(fallback || 0);
+    return Number(reserva.pagantes || 0) + Number(reserva.criancas || 0);
+  }
+
+  function criarLinhaBalanceamento(move) {
+    var linha = document.createElement('div');
+    linha.className = 'frota-otimizacao__movimento';
+
+    var grupo = document.createElement('span');
+    grupo.className = 'frota-otimizacao__movimento-grupo';
+    grupo.textContent = rotuloGrupo(move.registration_id);
+
+    var rota = document.createElement('span');
+    rota.className = 'frota-otimizacao__movimento-rota';
+    var origem = move.from_bus === null ? 'Sem ônibus' : 'Ônibus ' + move.from_bus;
+    var destino = move.to_bus === null ? 'Sem ônibus confirmado' : 'Ônibus ' + move.to_bus;
+    rota.textContent = origem + ' → ' + destino;
+
+    var total = document.createElement('span');
+    total.className = 'frota-otimizacao__movimento-total';
+    total.textContent = tamanhoReservaConhecida(move.registration_id, move.size)
+      + (Number(move.size) === 1 ? ' pessoa' : ' pessoas');
+
+    linha.append(grupo, rota, total);
+    return linha;
+  }
+
+  function renderizarBalancePreview(plan) {
+    if (!el.frotaOtimizacao || !plan) return;
+
+    el.frotaOtimizacao.hidden = false;
+    el.frotaOtimizacaoMovimentos.replaceChildren();
+    el.frotaOtimizacaoEspera.replaceChildren();
+
+    var atualFechados = Number(plan.current && plan.current.closed || 0);
+    var previstoFechados = Number(plan.proposed && plan.proposed.closed || 0);
+    var espera = Array.isArray(plan.waiting) ? plan.waiting : [];
+    var movimentos = Array.isArray(plan.moves) ? plan.moves : [];
+    el.frotaOtimizacaoResumo.textContent = 'Agora: ' + atualFechados
+      + (atualFechados === 1 ? ' ônibus fechado' : ' ônibus fechados')
+      + ' · Depois: ' + previstoFechados
+      + (previstoFechados === 1 ? ' ônibus fechado' : ' ônibus fechados')
+      + ' · ' + espera.length + (espera.length === 1 ? ' grupo em espera' : ' grupos em espera');
+
+    var tituloMovimentos = document.createElement('h4');
+    tituloMovimentos.textContent = movimentos.length
+      ? 'Movimentações (' + movimentos.length + ')'
+      : 'Nenhuma movimentação necessária';
+    el.frotaOtimizacaoMovimentos.appendChild(tituloMovimentos);
+
+    if (movimentos.length) {
+      var listaMovimentos = document.createElement('div');
+      listaMovimentos.className = 'frota-otimizacao__lista';
+      movimentos.forEach(function (move) {
+        listaMovimentos.appendChild(criarLinhaBalanceamento(move));
+      });
+      el.frotaOtimizacaoMovimentos.appendChild(listaMovimentos);
+    } else {
+      var vazio = document.createElement('p');
+      vazio.className = 'frota-otimizacao__vazio';
+      vazio.textContent = 'A distribuição atual já é a melhor encontrada pelas regras da Frota.';
+      el.frotaOtimizacaoMovimentos.appendChild(vazio);
+    }
+
+    var tituloEspera = document.createElement('h4');
+    tituloEspera.textContent = espera.length
+      ? 'Sem ônibus confirmado (' + espera.length + ')'
+      : 'Sem grupos aguardando ônibus';
+    el.frotaOtimizacaoEspera.appendChild(tituloEspera);
+    if (espera.length) {
+      var listaEspera = document.createElement('ul');
+      listaEspera.className = 'frota-otimizacao__espera-lista';
+      espera.forEach(function (id) {
+        var item = document.createElement('li');
+        item.textContent = rotuloGrupo(id) + ' · pagamento aprovado';
+        listaEspera.appendChild(item);
+      });
+      el.frotaOtimizacaoEspera.appendChild(listaEspera);
+    }
+
+    el.frotaOtimizacaoAplicar.disabled = movimentos.length === 0;
+  }
+
+  function solicitarBalance() {
+    if (!estado.token || !el.otimizarDistribuicao) return;
+    el.otimizarDistribuicao.disabled = true;
+    el.otimizarDistribuicao.setAttribute('aria-busy', 'true');
+    el.otimizarDistribuicao.textContent = 'Calculando…';
+
+    fetch(API_AUTO_BALANCE + '?token=' + encodeURIComponent(estado.token), {
+      method: 'POST',
+      headers: {
+        'X-Admin-Token': estado.token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ mode: 'preview' })
+    }).then(function (resp) {
+      return resp.json().then(function (data) {
+        if (!resp.ok) throw new Error(data.error || 'Não foi possível calcular a distribuição.');
+        return data;
+      });
+    }).then(function (data) {
+      estado.frotaBalancePreview = data.plan || null;
+      renderizarBalancePreview(estado.frotaBalancePreview);
+    }).catch(function (err) {
+      mostrarAlertaModal('Não foi possível otimizar a Frota', err.message, 'erro');
+    }).finally(function () {
+      el.otimizarDistribuicao.disabled = false;
+      el.otimizarDistribuicao.removeAttribute('aria-busy');
+      el.otimizarDistribuicao.textContent = 'Otimizar distribuição';
+    });
+  }
+
+  function aplicarBalance() {
+    var preview = estado.frotaBalancePreview;
+    if (!estado.token || !preview || !preview.signature) return;
+
+    el.frotaOtimizacaoAplicar.disabled = true;
+    el.frotaOtimizacaoAplicar.setAttribute('aria-busy', 'true');
+    el.frotaOtimizacaoAplicar.textContent = 'Aplicando…';
+
+    fetch(API_AUTO_BALANCE + '?token=' + encodeURIComponent(estado.token), {
+      method: 'POST',
+      headers: {
+        'X-Admin-Token': estado.token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ mode: 'apply', signature: preview.signature })
+    }).then(function (resp) {
+      return resp.json().then(function (data) {
+        if (!resp.ok) {
+          var erro = new Error(data.error || 'Não foi possível aplicar a distribuição.');
+          erro.status = resp.status;
+          throw erro;
+        }
+        return data;
+      });
+    }).then(function (data) {
+      var plan = data.plan || preview;
+      estado.frotaBalancePreview = null;
+      el.frotaOtimizacao.hidden = true;
+      mostrarAlertaModal(
+        'Distribuição aplicada',
+        plan.proposed.closed + (plan.proposed.closed === 1 ? ' ônibus fechado.' : ' ônibus fechados.'),
+        'ok'
+      );
+      carregar();
+    }).catch(function (err) {
+      estado.frotaBalancePreview = null;
+      el.frotaOtimizacao.hidden = true;
+      if (err.status === 409) {
+        mostrarAlertaModal('Prévia desatualizada', err.message, 'aviso');
+        carregar();
+        return;
+      }
+      mostrarAlertaModal('Não foi possível aplicar a distribuição', err.message, 'erro');
+    }).finally(function () {
+      el.frotaOtimizacaoAplicar.removeAttribute('aria-busy');
+      el.frotaOtimizacaoAplicar.textContent = 'Aplicar distribuição';
+    });
+  }
+
+  function renderizarSemOnibusConfirmado() {
+    if (!el.frotaSemOnibus || !el.frotaSemOnibusLista) return;
+    var espera = estado.frota && Array.isArray(estado.frota.sem_onibus_confirmado)
+      ? estado.frota.sem_onibus_confirmado
+      : [];
+    el.frotaSemOnibusLista.replaceChildren();
+    el.frotaSemOnibus.hidden = espera.length === 0;
+    if (!espera.length) return;
+    var capacidade = Number(estado.frota.capacidade || 46);
+
+    espera.forEach(function (item) {
+      var linha = document.createElement('div');
+      linha.className = 'frota-sem-onibus__item';
+
+      var info = document.createElement('div');
+      info.className = 'frota-sem-onibus__info';
+      var titulo = document.createElement('strong');
+      titulo.textContent = item.grupo || item.contato || ('Reserva ' + item.code);
+      var detalhe = document.createElement('span');
+      detalhe.textContent = item.total + (item.total === 1 ? ' pessoa' : ' pessoas')
+        + ' · pagamento aprovado ' + (item.pago_em || 'sem data');
+      info.append(titulo, detalhe);
+
+      var select = document.createElement('select');
+      select.className = 'grupo-item__select-mover frota-sem-onibus__select';
+      select.setAttribute('aria-label', 'Alocar ' + (item.grupo || item.contato || item.code));
+      var padrao = document.createElement('option');
+      padrao.value = '';
+      padrao.textContent = 'Alocar em…';
+      padrao.disabled = true;
+      padrao.selected = true;
+      select.appendChild(padrao);
+      (estado.frota.onibus || []).forEach(function (onibus) {
+        var option = document.createElement('option');
+        option.value = onibus.numero;
+        option.textContent = 'Ônibus ' + onibus.numero + ' (' + Math.max(0, capacidade - Number(onibus.ocupados || 0)) + ' vagas)';
+        select.appendChild(option);
+      });
+      select.addEventListener('change', function () {
+        if (!this.value) return;
+        var destino = Number(this.value);
+        this.disabled = true;
+        moverParaOnibus(item.id, destino);
+      });
+
+      linha.append(info, select);
+      el.frotaSemOnibusLista.appendChild(linha);
+    });
   }
 
   function moverParaOnibus(reservaId, destinoBusNum) {
@@ -866,6 +1046,9 @@
       mostrar(el.estadoLogin);
       return;
     }
+
+    estado.frotaBalancePreview = null;
+    if (el.frotaOtimizacao) el.frotaOtimizacao.hidden = true;
 
     el.recarregar.setAttribute('aria-busy', 'true');
 
@@ -952,6 +1135,21 @@
 
   if (el.vipSalvar) {
     el.vipSalvar.addEventListener('click', salvarVips);
+  }
+
+  if (el.otimizarDistribuicao) {
+    el.otimizarDistribuicao.addEventListener('click', solicitarBalance);
+  }
+
+  if (el.frotaOtimizacaoCancelar) {
+    el.frotaOtimizacaoCancelar.addEventListener('click', function () {
+      estado.frotaBalancePreview = null;
+      if (el.frotaOtimizacao) el.frotaOtimizacao.hidden = true;
+    });
+  }
+
+  if (el.frotaOtimizacaoAplicar) {
+    el.frotaOtimizacaoAplicar.addEventListener('click', aplicarBalance);
   }
 
   el.busca.addEventListener('input', function (ev) {

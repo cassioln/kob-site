@@ -908,7 +908,11 @@
 
   .botao,
   .filtro__opcao,
-  .campo-busca input {
+  .campo-busca input,
+  .onibus-card,
+  .grupo-item,
+  .grupo-item__tooltip,
+  .onibus-vagas-livres-slot {
     transition: none;
   }
 
@@ -1815,6 +1819,372 @@
   justify-content: space-between;
   font-size: 12px;
   color: var(--p-tinta-media);
+}
+
+/* Mapa de ocupação: duas fileiras de assentos, com a meta como corte visual. */
+.onibus-card__corpo {
+  padding: 16px;
+  background: var(--p-superficie);
+}
+
+.onibus-planta__assentos-grid {
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 12px;
+}
+
+.ocupacao-mapa {
+  position: relative;
+  min-width: 250px;
+  padding: 8px 10px 10px;
+  border: 1px solid var(--p-linha);
+  border-radius: var(--p-raio-p);
+  background: var(--p-superficie);
+}
+
+.ocupacao-mapa__assentos {
+  display: grid;
+  grid-template-columns: repeat(23, minmax(3px, 1fr));
+  grid-template-rows: repeat(2, 8px);
+  gap: 4px 3px;
+}
+
+.ocupacao-mapa__assento {
+  display: block;
+  border-radius: 2px;
+  background: var(--p-superficie-2);
+  border: 1px solid var(--p-linha);
+}
+
+.ocupacao-mapa__assento.is-ocupado {
+  background: var(--p-acao);
+  border-color: var(--p-acao);
+}
+
+.ocupacao-mapa__assento.is-meta {
+  box-shadow: inset 0 0 0 1px var(--p-espera);
+}
+
+.ocupacao-mapa__marcador {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  left: var(--ocupacao-meta);
+  width: 2px;
+  transform: translateX(-1px);
+  background: var(--p-espera);
+  pointer-events: none;
+}
+
+.ocupacao-mapa__marcador::before {
+  content: attr(data-label);
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: max-content;
+  padding: 1px 3px;
+  transform: translate(-50%, -100%);
+  border-radius: 3px;
+  background: var(--p-espera-fundo);
+  color: var(--p-espera);
+  font-size: 8px;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.progresso-texto__meta {
+  font-weight: 650;
+  text-align: right;
+}
+
+.progresso-texto__meta--ok {
+  color: var(--p-ok);
+}
+
+.progresso-texto__meta--cheio {
+  color: var(--p-tinta);
+}
+
+.onibus-planta__vazio {
+  grid-column: 1 / -1;
+  padding: 24px 16px;
+  border: 1px dashed var(--p-linha-forte);
+  border-radius: var(--p-raio);
+  background: var(--p-superficie-2);
+  color: var(--p-tinta-fraca);
+  font-size: 13px;
+  text-align: center;
+}
+
+/* Ações da distribuição automática. */
+.frota-header__acoes {
+  display: flex;
+  flex: 0 1 260px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--p-2);
+  padding-top: 2px;
+}
+
+.frota-header__acao-ajuda {
+  margin: 0;
+  color: var(--p-tinta-fraca);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.frota-otimizacao,
+.frota-sem-onibus {
+  margin-bottom: var(--p-5);
+  padding: var(--p-5);
+  border: 1px solid var(--p-linha);
+  border-radius: var(--p-raio);
+  background: var(--p-superficie);
+  box-shadow: var(--p-sombra);
+}
+
+.frota-otimizacao {
+  border-left: 3px solid var(--p-acao);
+}
+
+.frota-sem-onibus {
+  border-left: 3px solid var(--p-espera);
+  background: #fffdf8;
+}
+
+.frota-otimizacao__cabecalho,
+.frota-sem-onibus__cabecalho {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--p-4);
+  margin-bottom: var(--p-4);
+}
+
+.frota-otimizacao h3,
+.frota-sem-onibus h3,
+.frota-otimizacao h4 {
+  margin: 0;
+  color: var(--p-tinta);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.frota-otimizacao__cabecalho p,
+.frota-sem-onibus__cabecalho p {
+  margin: 4px 0 0;
+  color: var(--p-tinta-media);
+  font-size: 13px;
+}
+
+.frota-otimizacao__vip-aviso {
+  flex: 0 0 auto;
+  padding: 5px 9px;
+  border: 1px solid #ead99f;
+  border-radius: 999px;
+  background: var(--p-espera-fundo);
+  color: var(--p-espera);
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.frota-otimizacao__lista {
+  display: grid;
+  gap: var(--p-2);
+  margin-top: var(--p-3);
+}
+
+.frota-otimizacao__movimento {
+  display: grid;
+  grid-template-columns: minmax(150px, 1fr) minmax(190px, 1fr) auto;
+  align-items: center;
+  gap: var(--p-3);
+  padding: 10px 12px;
+  border: 1px solid var(--p-linha);
+  border-radius: var(--p-raio-p);
+  background: var(--p-fundo);
+  font-size: 13px;
+}
+
+.frota-otimizacao__movimento-grupo {
+  overflow: hidden;
+  color: var(--p-tinta);
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.frota-otimizacao__movimento-rota {
+  color: var(--p-tinta-media);
+}
+
+.frota-otimizacao__movimento-total {
+  color: var(--p-tinta);
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.frota-otimizacao__vazio {
+  margin: var(--p-3) 0 0;
+  color: var(--p-tinta-media);
+  font-size: 13px;
+}
+
+.frota-otimizacao__espera-lista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  margin: var(--p-3) 0 0;
+  padding-left: 18px;
+  color: var(--p-espera);
+  font-size: 13px;
+}
+
+.frota-otimizacao__acoes {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--p-2);
+  margin-top: var(--p-5);
+}
+
+.frota-sem-onibus__lista {
+  display: grid;
+  gap: var(--p-2);
+}
+
+.frota-sem-onibus__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--p-4);
+  padding: 10px 12px;
+  border: 1px solid #ead99f;
+  border-radius: var(--p-raio-p);
+  background: var(--p-superficie);
+}
+
+.frota-sem-onibus__info {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.frota-sem-onibus__info strong {
+  overflow: hidden;
+  color: var(--p-tinta);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.frota-sem-onibus__info span {
+  color: var(--p-tinta-media);
+  font-size: 12px;
+}
+
+.frota-sem-onibus__select {
+  flex: 0 0 auto;
+  max-width: 180px;
+}
+
+@media (max-width: 768px) {
+  .frota-header__acoes {
+    flex: 1 1 100%;
+    padding-top: 0;
+  }
+
+  .frota-header__acoes .botao {
+    width: 100%;
+  }
+
+  .onibus-card__header-center {
+    order: 3;
+    flex-basis: 100%;
+    max-width: none;
+  }
+
+  .onibus-card__header-right {
+    margin-left: auto;
+  }
+
+  .frota-otimizacao__cabecalho,
+  .frota-sem-onibus__cabecalho {
+    flex-direction: column;
+  }
+
+  .frota-otimizacao__vip-aviso {
+    align-self: flex-start;
+  }
+
+  .frota-otimizacao__movimento {
+    grid-template-columns: 1fr auto;
+  }
+
+  .frota-otimizacao__movimento-rota {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .frota-otimizacao__movimento-total {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .frota-sem-onibus__item {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .frota-sem-onibus__select {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .onibus-card__header,
+  .onibus-card__corpo,
+  .frota-otimizacao,
+  .frota-sem-onibus {
+    padding: var(--p-3);
+  }
+
+  .onibus-card__header-left {
+    min-width: 0;
+  }
+
+  .onibus-card__titulo {
+    font-size: 16px;
+  }
+
+  .onibus-card__header-right {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .onibus-card__vagas-badge {
+    width: 100%;
+    text-align: center;
+  }
+
+  .progresso-texto {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .progresso-texto__meta {
+    text-align: left;
+  }
+
+  .frota-otimizacao__acoes {
+    flex-direction: column-reverse;
+  }
+
+  .frota-otimizacao__acoes .botao {
+    width: 100%;
+  }
 }
 
 /* ============================================================================
