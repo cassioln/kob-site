@@ -79,6 +79,7 @@ function xlsx_estilos_indices(): array
         'status_falha' => 9,
         'vip' => 10,
         'status_vip' => 11,
+        'responsavel_centralizado' => 12,
     ];
 }
 
@@ -158,6 +159,8 @@ function xlsx_styles(): string
         '<xf numFmtId="49" fontId="7" fillId="8" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment vertical="center"/></xf>',
         // 11 status_vip
         '<xf numFmtId="49" fontId="5" fillId="8" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>',
+        // 12 responsavel_centralizado — mesmo destaque do responsável, com o Nº centralizado.
+        '<xf numFmtId="49" fontId="7" fillId="4" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>',
     ];
 
     return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
@@ -258,6 +261,12 @@ function xlsx_build(array $planilha): string
                 : $estiloLinha;
             if ($estiloLinha === 'vip' && in_array($estiloCelula, ['texto', 'centralizado'], true)) {
                 $estiloCelula = 'vip';
+            } elseif ($estiloLinha === 'responsavel') {
+                if ($estiloCelula === 'texto') {
+                    $estiloCelula = 'responsavel';
+                } elseif ($estiloCelula === 'centralizado') {
+                    $estiloCelula = 'responsavel_centralizado';
+                }
             }
             $s = $indices[$estiloCelula] ?? $indices['normal'];
 
