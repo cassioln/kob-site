@@ -75,6 +75,22 @@ function bus_fleet_load_legacy_vip_settings(PDO $pdo, bool $forUpdate = false): 
 }
 
 /**
+ * Remove a configuração antiga de VIPs por quantidade.
+ *
+ * VIPs reais são reservas em bus_registrations com is_vip=1 e não passam por
+ * estas chaves. A limpeza é deliberadamente limitada a elas para não apagar
+ * nenhuma pessoa cadastrada no fluxo novo.
+ */
+function bus_fleet_clear_legacy_vip_settings(PDO $pdo): void
+{
+    $delete = $pdo->prepare("DELETE FROM bus_settings WHERE setting_key = 'vip_assignments'");
+    $delete->execute();
+
+    $reset = $pdo->prepare("UPDATE bus_settings SET setting_value = '0' WHERE setting_key = 'vip_seats'");
+    $reset->execute();
+}
+
+/**
  * Calcula a ocupação física de um ônibus usando a mesma regra da frota.
  * Crianças de colo estão armazenadas separadamente e não aumentam o tamanho
  * do card nem o número de assentos ocupados.

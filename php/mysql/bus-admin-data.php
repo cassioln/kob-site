@@ -154,6 +154,9 @@ try {
     $vipCount = 0;
     $vipAssignments = [];
     try {
+        // Remove a configuração antiga assim que o painel autenticado é
+        // aberto. VIPs reais (is_vip=1) ficam preservados.
+        bus_fleet_clear_legacy_vip_settings($pdo);
         $legacyVip = bus_fleet_load_legacy_vip_settings($pdo);
         $vipCount = $legacyVip['count'];
         $vipAssignments = $legacyVip['assignments'];

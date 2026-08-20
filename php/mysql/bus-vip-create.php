@@ -33,6 +33,7 @@ try {
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
     $pdo->exec("INSERT IGNORE INTO bus_settings (setting_key, setting_value) VALUES ('vip_seats', '0')");
+    bus_fleet_clear_legacy_vip_settings($pdo);
 
     $pdo->beginTransaction();
     $transactionOpen = true;

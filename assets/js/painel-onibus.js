@@ -49,6 +49,7 @@
     rPendentes: document.getElementById('r-pendentes'),
     rReceita: document.getElementById('r-receita'),
     rSemTelefone: document.getElementById('r-sem-telefone'),
+    filtroOnibus: document.getElementById('filtro-onibus'),
     abas: document.querySelectorAll('.painel-abas__botao'),
     conteudosAba: document.querySelectorAll('.painel-aba-conteudo'),
     frotaContainer: document.getElementById('frota-onibus-container'),
@@ -79,7 +80,8 @@
 
   var estado = {
     reservas: [],
-    filtro: 'pago',
+    filtro: 'todas',
+    filtroOnibus: 'todos',
     busca: '',
     token: '',
     frota: null,
@@ -246,6 +248,20 @@
     return digitos;
   }
 
+  function formatarWhatsapp(whatsapp) {
+    var digitos = String(whatsapp || '').replace(/\D/g, '').slice(0, 11);
+    if (digitos.length > 10) {
+      return digitos.replace(/(\d{2})(\d{5})(\d{1,4})/, '($1) $2-$3');
+    }
+    if (digitos.length > 6) {
+      return digitos.replace(/(\d{2})(\d{4})(\d{1,4})/, '($1) $2-$3');
+    }
+    if (digitos.length > 2) {
+      return digitos.replace(/(\d{2})(\d{1,5})/, '($1) $2');
+    }
+    return digitos;
+  }
+
   function badge(rotulo, tom) {
     var span = document.createElement('span');
     span.className = 'etiqueta etiqueta--' + tom;
@@ -272,6 +288,39 @@
     return svg;
   }
 
+  function renderizarFiltroOnibus() {
+    if (!el.filtroOnibus) return;
+    var numeros = {};
+    var frota = estado.frota && Array.isArray(estado.frota.onibus) ? estado.frota.onibus : [];
+    frota.forEach(function (onibus) {
+      var numero = Number(onibus.numero);
+      if (Number.isInteger(numero) && numero > 0) numeros[numero] = true;
+    });
+    estado.reservas.forEach(function (reserva) {
+      if (reserva.bus_number !== null && reserva.bus_number !== undefined) {
+        var numero = Number(reserva.bus_number);
+        if (Number.isInteger(numero) && numero > 0) numeros[numero] = true;
+      }
+    });
+
+    var opcoes = [{ value: 'todos', label: 'Todos os ônibus' }];
+    Object.keys(numeros).map(Number).sort(function (a, b) { return a - b; }).forEach(function (numero) {
+      opcoes.push({ value: String(numero), label: 'Ônibus ' + numero });
+    });
+    opcoes.push({ value: 'sem-onibus', label: 'Sem ônibus confirmado' });
+
+    var valores = opcoes.map(function (opcao) { return opcao.value; });
+    if (valores.indexOf(estado.filtroOnibus) === -1) estado.filtroOnibus = 'todos';
+    el.filtroOnibus.replaceChildren();
+    opcoes.forEach(function (opcao) {
+      var option = document.createElement('option');
+      option.value = opcao.value;
+      option.textContent = opcao.label;
+      option.selected = opcao.value === estado.filtroOnibus;
+      el.filtroOnibus.appendChild(option);
+    });
+  }
+
   // ---- montagem da tabela ------------------------------------------------
 
   /**
@@ -284,6 +333,10 @@
 
     estado.reservas.forEach(function (reserva) {
       if (estado.filtro !== 'todas' && reserva.status_chave !== estado.filtro) return;
+      if (estado.filtroOnibus !== 'todos') {
+        var semOnibus = reserva.bus_number === null || reserva.bus_number === undefined;
+        if (estado.filtroOnibus === 'sem-onibus' ? !semOnibus : Number(reserva.bus_number) !== Number(estado.filtroOnibus)) return;
+      }
 
       var passageiros = reserva.passageiros.length
         ? reserva.passageiros
@@ -462,7 +515,7 @@
 
       var nomeOnibus = '';
       if (primeiro) {
-        nomeOnibus = r.bus_number ? 'Ônibus ' + r.bus_number : (r.is_vip ? 'Sem ônibus confirmado' : '—');
+        nomeOnibus = r.bus_number ? 'BUS ' + r.bus_number : '—';
       }
       celula('Ônibus', nomeOnibus, 'tabela__onibus');
 
@@ -484,10 +537,14 @@
 
     var grupos = {};
     linhas.forEach(function (l) { grupos[l.reserva.code] = true; });
+    var totalVips = estado.reservas.filter(function (reserva) { return reserva.is_vip; }).length;
+    var resumoVips = totalVips > 0
+      ? ' · ' + plural(totalVips, 'reserva VIP cadastrada', 'reservas VIP cadastradas')
+      : '';
     el.contagem.textContent = linhas.length
       ? plural(linhas.length, 'passageiro', 'passageiros') + ' em '
-      + plural(Object.keys(grupos).length, 'reserva', 'reservas')
-      : '';
+      + plural(Object.keys(grupos).length, 'reserva', 'reservas') + resumoVips
+      : resumoVips;
   }
 
   function renderizarResumo(resumo) {
@@ -602,7 +659,7 @@
 
       var titulo = document.createElement('h3');
       titulo.className = 'onibus-card__titulo';
-      titulo.textContent = 'Ônibus ' + busNum;
+      titulo.textContent = 'BUS ' + busNum;
 
       var statsGrid = document.createElement('div');
       statsGrid.className = 'onibus-card__stats-grid';
@@ -829,7 +886,7 @@
           tituloGrupo.className = 'grupo-item__titulo';
           if (r.is_vip) {
             var nomeVip = r.responsavel || 'Reserva VIP';
-            tituloGrupo.textContent = '★ ' + nomeVip;
+            tituloGrupo.textContent = nomeVip;
             tituloGrupo.title = nomeVip;
           } else if (r.grupo) {
             tituloGrupo.textContent = r.grupo;
@@ -1072,7 +1129,7 @@
           tooltip.id = infoId;
           tooltip.setAttribute('role', 'tooltip');
           if (r.is_vip) {
-            tooltip.innerHTML = '<div class="grupo-item__tooltip-resp">★ ' + escapeHtml(r.responsavel || 'Reserva VIP') + '</div><div class="grupo-item__tooltip-pax">1 vaga reservada para a equipe</div>';
+            tooltip.innerHTML = '<div class="grupo-item__tooltip-resp">' + escapeHtml(r.responsavel || 'Reserva VIP') + '</div><div class="grupo-item__tooltip-pax">1 vaga reservada para a equipe</div>';
           } else {
             var nomeResp = r.responsavel || r.grupo || 'Participante';
             var htmlTooltip = '<div class="grupo-item__tooltip-resp"><strong>Contato principal:</strong> ' + escapeHtml(nomeResp) + '</div>';
@@ -1413,6 +1470,8 @@
 
       var nomeGrupo = item.grupo || ('Reserva #' + item.code);
       var nomeContato = item.contato || 'Não informado';
+      var nomeGrupoClasse = 'frota-sem-onibus__nome-grupo' + (item.is_vip ? ' frota-sem-onibus__nome-grupo--vip' : '');
+      var marcaVip = item.is_vip ? '★ ' : '';
 
       var numPagantes = Number(item.pagantes || item.total || 1);
       var numCriancas = Number(item.criancas || 0);
@@ -1421,7 +1480,7 @@
         textoPessoas += ' + ' + (numCriancas === 1 ? '1 criança de colo' : numCriancas + ' crianças de colo');
       }
 
-      infoLeft.innerHTML = '<strong class="frota-sem-onibus__nome-grupo">' + escapeHtml(nomeGrupo) + '</strong>'
+      infoLeft.innerHTML = '<strong class="' + nomeGrupoClasse + '">' + marcaVip + escapeHtml(nomeGrupo) + '</strong>'
         + '<span class="frota-sem-onibus__sep">|</span>'
         + '<span class="frota-sem-onibus__contato"><span class="frota-sem-onibus__contato-label">Contato principal:</span> ' + escapeHtml(nomeContato) + '</span>'
         + '<span class="frota-sem-onibus__sep">|</span>'
@@ -1618,11 +1677,18 @@
         input.autocomplete = campo.autocomplete;
         input.value = campo.key === 'cpf'
           ? formatarCpf(draft[campo.key])
-          : (draft[campo.key] || '');
+          : (campo.key === 'whatsapp' ? formatarWhatsapp(draft[campo.key]) : (draft[campo.key] || ''));
+        if (campo.key === 'whatsapp') {
+          input.inputMode = 'tel';
+          input.maxLength = 15;
+          input.placeholder = '(11) 90000-0000';
+        }
         input.dataset.vipIndex = String(index);
         input.dataset.vipField = campo.key;
         input.addEventListener('input', function () {
-          var valor = campo.key === 'cpf' ? formatarCpf(input.value) : input.value;
+          var valor = campo.key === 'cpf'
+            ? formatarCpf(input.value)
+            : (campo.key === 'whatsapp' ? formatarWhatsapp(input.value) : input.value);
           input.value = valor;
           estado.vipDrafts[index][campo.key] = valor;
           input.removeAttribute('aria-invalid');
@@ -1773,6 +1839,9 @@
   function exportarExcel() {
     var url = 'api/bus-admin-xlsx?token=' + encodeURIComponent(estado.token)
       + '&filtro=' + encodeURIComponent(estado.filtro);
+    if (estado.filtroOnibus !== 'todos') {
+      url += '&onibus=' + encodeURIComponent(estado.filtroOnibus);
+    }
     if (estado.busca.trim()) {
       url += '&busca=' + encodeURIComponent(estado.busca.trim());
     }
@@ -1805,6 +1874,7 @@
       .then(function (dados) {
         estado.reservas = dados.reservas || [];
         estado.frota = dados.frota || null;
+        renderizarFiltroOnibus();
         renderizarResumo(dados.resumo);
 
         if (!estado.reservas.length) {
@@ -1913,6 +1983,13 @@
     el.busca.focus();
     renderizar();
   });
+
+  if (el.filtroOnibus) {
+    el.filtroOnibus.addEventListener('change', function () {
+      estado.filtroOnibus = el.filtroOnibus.value;
+      renderizar();
+    });
+  }
 
   Array.prototype.slice.call(document.querySelectorAll('[data-filtro]')).forEach(function (botao) {
     botao.addEventListener('click', function () {

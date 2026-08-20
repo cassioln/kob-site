@@ -53,6 +53,7 @@ try {
     $pdo = bus_pdo();
     bus_fleet_ensure_assignment_status($pdo);
     $filtro = (string) ($_GET['filtro'] ?? 'pago');
+    $onibusFiltro = trim((string) ($_GET['onibus'] ?? 'todos'));
     $busca = mb_strtolower(trim((string) ($_GET['busca'] ?? '')), 'UTF-8');
 
     $q = $pdo->query(
@@ -95,6 +96,14 @@ try {
 
     $linhas = [];
     foreach ($reservas as $r) {
+        $semOnibus = $r['bus_number'] === null;
+        if ($onibusFiltro === 'sem-onibus' && !$semOnibus) {
+            continue;
+        }
+        if (ctype_digit($onibusFiltro) && (int) $onibusFiltro > 0
+            && (int) ($r['bus_number'] ?? 0) !== (int) $onibusFiltro) {
+            continue;
+        }
         $isVip = (int) ($r['is_vip'] ?? 0) === 1;
         $st = $isVip
             ? ['chave' => 'vip', 'rotulo' => 'Reserva VIP', 'estilo' => 'status_vip']
@@ -211,6 +220,9 @@ try {
         'vip' => 'reservas VIP',
         'todas' => 'todas as reservas',
     ][$filtro] ?? $filtro;
+    $rotuloOnibus = $onibusFiltro === 'sem-onibus'
+        ? 'sem ônibus confirmado'
+        : (ctype_digit($onibusFiltro) && (int) $onibusFiltro > 0 ? 'Ônibus ' . (int) $onibusFiltro : 'todos os ônibus');
 
     // Estado vazio: uma planilha só com cabeçalho parece exportação que falhou.
     // Uma linha dizendo o que aconteceu evita a dúvida "quebrou ou está vazio?".
@@ -229,6 +241,7 @@ try {
         'nome' => 'Passageiros',
         'titulo' => 'Kriativos On Board 2026 · Transporte fretado · Passageiros',
         'subtitulo' => 'Filtro: ' . $rotuloFiltro
+            . ' · ônibus: ' . $rotuloOnibus
             . ($busca !== '' ? ' · busca: "' . $busca . '"' : '')
             . ' · ' . count($linhas) . ' passageiro(s) · gerado em '
             . gmdate('d/m/Y H:i', time() - 3 * 3600),
