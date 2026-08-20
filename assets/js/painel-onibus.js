@@ -164,9 +164,9 @@
         // Reserva sem passageiro gravado ainda: mostra o contato, para a linha
         // não desaparecer da conferência.
         : [{
-            posicao: 1, nome: reserva.contato, cpf: reserva.contato_cpf,
-            whatsapp: reserva.contato_whatsapp, responsavel: true, nova_reserva: null
-          }];
+          posicao: 1, nome: reserva.contato, cpf: reserva.contato_cpf,
+          whatsapp: reserva.contato_whatsapp, responsavel: true, nova_reserva: null
+        }];
 
       passageiros.forEach(function (p, i) {
         if (termo) {
@@ -336,7 +336,7 @@
 
       var nomeOnibus = '';
       if (primeiro) {
-          nomeOnibus = r.bus_number ? 'Ônibus ' + r.bus_number : '—';
+        nomeOnibus = r.bus_number ? 'Ônibus ' + r.bus_number : '—';
       }
       celula('Ônibus', nomeOnibus, 'tabela__onibus');
 
@@ -360,7 +360,7 @@
     linhas.forEach(function (l) { grupos[l.reserva.code] = true; });
     el.contagem.textContent = linhas.length
       ? plural(linhas.length, 'passageiro', 'passageiros') + ' em '
-        + plural(Object.keys(grupos).length, 'reserva', 'reservas')
+      + plural(Object.keys(grupos).length, 'reserva', 'reservas')
       : '';
   }
 
@@ -381,7 +381,7 @@
   var itemArrastando = null;
 
   // ---- renderização frota ------------------------------------------------
-  
+
   function renderizarFrota() {
     if (!estado.frota || !Array.isArray(estado.frota.onibus)) return;
     var onibusList = estado.frota.onibus;
@@ -451,11 +451,11 @@
       // --- HEADER DO ÔNIBUS ---
       var header = document.createElement('div');
       header.className = 'onibus-card__header';
-      
+
       // Esquerda: Título e Badge de Status
       var headerLeft = document.createElement('div');
       headerLeft.className = 'onibus-card__header-left';
-      
+
       var titulo = document.createElement('h3');
       titulo.className = 'onibus-card__titulo';
       titulo.innerHTML = '🚍 Ônibus ' + busNum;
@@ -486,7 +486,7 @@
       }
       var perc = Math.min(100, Math.round((ocupados / maxL) * 100));
       barFill.style.transform = 'scaleX(' + (perc / 100) + ')';
-      
+
       var mark = document.createElement('div');
       mark.className = 'progresso-bar__marker';
       mark.title = 'Meta de viabilidade: 40 assentos';
@@ -516,7 +516,7 @@
       // Direita: Badge com vagas livres
       var headerRight = document.createElement('div');
       headerRight.className = 'onibus-card__header-right';
-      
+
       var vagasBadge = document.createElement('span');
       vagasBadge.className = 'onibus-card__vagas-badge';
       if (vagasRestantes === 0) {
@@ -591,7 +591,7 @@
           item.addEventListener('dragend', function () {
             itemArrastando = null;
             item.classList.remove('dragging');
-            document.querySelectorAll('.onibus-card').forEach(function(c) {
+            document.querySelectorAll('.onibus-card').forEach(function (c) {
               c.classList.remove('drag-over', 'drag-error');
             });
           });
@@ -754,7 +754,7 @@
     });
 
     // Card Horizontal para Adicionar Ônibus Vazio
-    var nextBusNum = onibusList.length > 0 ? Math.max.apply(null, onibusList.map(function(o) { return Number(o.numero); })) + 1 : 1;
+    var nextBusNum = onibusList.length > 0 ? Math.max.apply(null, onibusList.map(function (o) { return Number(o.numero); })) + 1 : 1;
     var btnAdd = document.createElement('button');
     btnAdd.type = 'button';
     btnAdd.className = 'onibus-card onibus-card--adicionar';
@@ -766,12 +766,12 @@
         </svg>
       </div>
       <div class="onibus-card--adicionar-texto">
-        <h4 class="onibus-card--adicionar-titulo">+ Adicionar Ônibus Vazio à Frota (Ônibus ` + nextBusNum + `)</h4>
+        <h4 class="onibus-card--adicionar-titulo">Adicionar Ônibus Vazio à Frota (Ônibus ` + nextBusNum + `)</h4>
         <p class="onibus-card--adicionar-desc">Cria uma nova cabine para balancear grupos e organizar os assentos da viagem.</p>
       </div>
     `;
-    btnAdd.onclick = function() {
-      var novoBusNum = onibusList.length > 0 ? Math.max.apply(null, onibusList.map(function(o) { return Number(o.numero); })) + 1 : 1;
+    btnAdd.onclick = function () {
+      var novoBusNum = onibusList.length > 0 ? Math.max.apply(null, onibusList.map(function (o) { return Number(o.numero); })) + 1 : 1;
       onibusList.push({ numero: novoBusNum, ocupados: 0, vip_inclusos: 0, reservas: [] });
       renderizarFrota();
     };
@@ -779,9 +779,9 @@
 
     // Config do VIP
     if (document.activeElement !== el.vipInput) {
-       el.vipInput.value = estado.frota.vip_seats || 0;
-       el.vipSalvar.disabled = true;
-       el.vipSalvar.textContent = 'Salvar';
+      el.vipInput.value = estado.frota.vip_seats || 0;
+      el.vipSalvar.disabled = true;
+      el.vipSalvar.textContent = 'Salvar';
     }
   }
 
@@ -798,17 +798,17 @@
         registration_id: reservaId,
         bus_number: destinoBusNum
       })
-    }).then(function(resp) {
-      return resp.json().then(function(data) {
+    }).then(function (resp) {
+      return resp.json().then(function (data) {
         if (!resp.ok) throw new Error(data.error || 'Erro ao mover passageiros');
         return data;
       });
-    }).then(function() {
+    }).then(function () {
       // Recarrega tudo para manter as totalizacoes sincronizadas
       carregar();
-    }).catch(function(err) {
+    }).catch(function (err) {
       mostrarAlertaModal('Não foi possível mover passageiros', err.message, 'erro');
-    }).finally(function() {
+    }).finally(function () {
       el.frotaContainer.style.opacity = '1';
     });
   }
@@ -826,17 +826,17 @@
       body: JSON.stringify({
         vip_seats: el.vipInput.value
       })
-    }).then(function(resp) {
-      return resp.json().then(function(data) {
+    }).then(function (resp) {
+      return resp.json().then(function (data) {
         if (!resp.ok) throw new Error(data.error || 'Erro ao salvar vagas VIP');
         return data;
       });
-    }).then(function() {
+    }).then(function () {
       carregar(); // refresh
-    }).catch(function(err) {
+    }).catch(function (err) {
       mostrarAlertaModal('Não foi possível atualizar VIPs', err.message, 'erro');
       el.vipSalvar.disabled = false;
-    }).finally(function() {
+    }).finally(function () {
       el.vipSalvar.textContent = 'Salvar';
     });
   }
@@ -919,10 +919,10 @@
   el.abas.forEach(function (botao) {
     botao.addEventListener('click', function () {
       var alvo = botao.dataset.aba;
-      el.abas.forEach(function(b) { b.classList.remove('ativo'); });
+      el.abas.forEach(function (b) { b.classList.remove('ativo'); });
       botao.classList.add('ativo');
 
-      el.conteudosAba.forEach(function(c) {
+      el.conteudosAba.forEach(function (c) {
         if (c.id === 'aba-' + alvo) {
           c.hidden = false;
           c.classList.add('ativa');
@@ -935,21 +935,21 @@
   });
 
   if (el.vipInput) {
-    el.vipInput.addEventListener('input', function() {
+    el.vipInput.addEventListener('input', function () {
       if (estado.frota && el.vipInput.value !== String(estado.frota.vip_seats)) {
         el.vipSalvar.disabled = false;
       } else {
         el.vipSalvar.disabled = true;
       }
     });
-    el.vipInput.addEventListener('keydown', function(e) {
+    el.vipInput.addEventListener('keydown', function (e) {
       if (e.key === 'Enter') {
         e.preventDefault();
         salvarVips();
       }
     });
   }
-  
+
   if (el.vipSalvar) {
     el.vipSalvar.addEventListener('click', salvarVips);
   }

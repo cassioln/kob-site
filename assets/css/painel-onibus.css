@@ -1,3 +1,11 @@
+@font-face {
+  font-family: Chantal;
+  src: url("../fonts/chantal-medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* ==========================================================================
    Painel da organização — transporte fretado
 
@@ -926,7 +934,7 @@
   margin: 0 auto;
   display: flex;
   align-items: center;
-  gap: var(--p-5);
+  gap: clamp(28px, 5vw, 72px);
 }
 
 .painel-footer__brand {
@@ -940,9 +948,47 @@
   height: auto;
 }
 
-.painel-footer__inner p {
+.painel-footer__identity {
+  display: flex;
+  flex: 0 1 auto;
+  min-width: 0;
+  align-items: center;
+  gap: clamp(20px, 3vw, 44px);
+}
+
+.painel-footer__identity p {
+  max-width: 22ch;
   margin: 0;
-  font-size: 0.875rem;
+  font-family: Chantal, "Segoe Script", cursive;
+  font-size: clamp(1.05rem, 1.5vw, 1.45rem);
+  line-height: 1.55;
+}
+
+.painel-footer__nav {
+  display: flex;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 18px clamp(18px, 2.4vw, 42px);
+}
+
+.painel-footer__nav a {
+  color: rgba(233, 242, 251, 0.8);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: color var(--p-transicao);
+}
+
+.painel-footer__nav a:hover {
+  color: #ffffff;
+}
+
+.painel-footer__nav a:focus-visible {
+  outline: 2px solid #29c3f5;
+  outline-offset: 5px;
 }
 
 /* Assinatura de quem fez o site, na mesma formatação da home
@@ -995,8 +1041,18 @@
 @media (max-width: 560px) {
   .painel-footer__inner {
     flex-direction: column;
+    align-items: stretch;
+    gap: 24px;
+  }
+
+  .painel-footer__identity {
     align-items: flex-start;
-    gap: var(--p-3);
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .painel-footer__nav {
+    justify-content: flex-start;
   }
 }
 
@@ -1865,4 +1921,3 @@
   gap: 10px;
   margin-top: 24px;
 }
-
