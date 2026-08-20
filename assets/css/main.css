@@ -5174,9 +5174,14 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
   align-items: center;
   justify-content: center;
   gap: 6px 12px;
-  margin-top: 14px;
+  margin-top: var(--sp-lg);
   color: var(--foam-white);
   text-align: center;
+}
+
+.price-note + .travel-insurance,
+.travel-insurance + .price-note {
+  margin-top: 14px;
 }
 
 .travel-insurance__label {
