@@ -130,6 +130,15 @@
     return n + ' ' + (n === 1 ? singular : pluralForma);
   }
 
+  function escapeHtml(str) {
+    return String(str || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
   function badge(rotulo, tom) {
     var span = document.createElement('span');
     span.className = 'etiqueta etiqueta--' + tom;
@@ -678,11 +687,11 @@
           if (r.is_vip) {
             tooltip.innerHTML = '<span class="grupo-item__tooltip-resp">★ Lugar VIP da Organização</span><span class="grupo-item__tooltip-pax">1 vaga reservada para a equipe</span>';
           } else {
-            var tooltipResp = '<span class="grupo-item__tooltip-resp">👤 Resp: ' + escHtml(r.responsavel || r.grupo || 'Participante') + '</span>';
+            var tooltipResp = '<span class="grupo-item__tooltip-resp">👤 Resp: ' + escapeHtml(r.responsavel || r.grupo || 'Participante') + '</span>';
             var nomesPassageiros = Array.isArray(r.passageiros) && r.passageiros.length > 0
               ? r.passageiros.join(', ')
               : (r.responsavel || 'Não informado');
-            var tooltipPax = '<span class="grupo-item__tooltip-pax">Passageiros: ' + escHtml(nomesPassageiros) + '</span>';
+            var tooltipPax = '<span class="grupo-item__tooltip-pax">Passageiros: ' + escapeHtml(nomesPassageiros) + '</span>';
             tooltip.innerHTML = tooltipResp + tooltipPax;
           }
           item.appendChild(tooltip);
