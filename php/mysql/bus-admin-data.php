@@ -332,6 +332,8 @@ try {
             $resumo['reservas_falha']++;
         }
 
+        $resumo['receita'] = number_format($resumo['receita_centavos'] / 100, 2, ',', '.');
+
         // Só reservas encerradas sem pagamento ganham o aviso de "tentou de
         // novo". Numa reserva paga o dado seria ruído: ela já está resolvida.
         $avisarNovaReserva = in_array($st['chave'], ['falha'], true);

@@ -6,5 +6,10 @@
 # index.html direto por duplo-clique (file://). Abrir por file:// faz o
 # navegador bloquear scripts e as abas/animacoes podem nao funcionar.
 cd "$(dirname "$0")"
-echo "Servindo o site em http://localhost:8080  (Ctrl+C para parar)"
-python3 -m http.server 8080
+if command -v php >/dev/null 2>&1; then
+  echo "Iniciando servidor PHP com suporte a rotas de API em http://localhost:8080 (Ctrl+C para parar)"
+  php -S localhost:8080 router.php
+else
+  echo "PHP não encontrado, iniciando servidor estático Python em http://localhost:8080 (Ctrl+C para parar)"
+  python3 -m http.server 8080
+fi

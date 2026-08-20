@@ -1832,65 +1832,252 @@
   gap: 12px;
 }
 
-.ocupacao-mapa {
-  position: relative;
-  min-width: 250px;
+/* ==========================================================================
+   Mapa Artístico de Assentos do Ônibus (46 Lugares com Cota Mínima e Flex)
+   ========================================================================== */
+
+.ocupacao-mapa.onibus-arte-mapa {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  max-width: 600px;
   padding: 8px 10px 10px;
   border: 1px solid var(--p-linha);
-  border-radius: var(--p-raio-p);
+  border-radius: var(--p-raio);
   background: var(--p-superficie);
 }
 
-.ocupacao-mapa__assentos {
-  display: grid;
-  grid-template-columns: repeat(23, minmax(3px, 1fr));
-  grid-template-rows: repeat(2, 8px);
-  gap: 4px 3px;
+.onibus-arte-mapa__chassi {
+  display: flex;
+  align-items: stretch;
+  background: #ffffff;
+  border: 2px solid #cbd5e1;
+  border-radius: 12px 32px 32px 12px;
+  padding: 10px 12px;
+  position: relative;
+  box-shadow: 0 2px 8px rgba(13, 34, 66, 0.05);
+  border-right: 4px solid #94a3b8;
+  overflow-x: auto;
 }
 
-.ocupacao-mapa__assento {
-  display: block;
-  border-radius: 2px;
-  background: var(--p-superficie-2);
-  border: 1px solid var(--p-linha);
+.onibus-arte-mapa__grade {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
 }
 
-.ocupacao-mapa__assento.is-ocupado {
-  background: var(--p-acao);
-  border-color: var(--p-acao);
+.onibus-arte-mapa__bloco {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
 }
 
-.ocupacao-mapa__assento.is-meta {
-  box-shadow: inset 0 0 0 1px var(--p-espera);
+.onibus-arte-mapa__linha {
+  display: flex;
+  gap: 3px;
+  justify-content: flex-end;
 }
 
-.ocupacao-mapa__marcador {
-  position: absolute;
-  top: 3px;
-  bottom: 3px;
-  left: var(--ocupacao-meta);
-  width: 2px;
-  transform: translateX(-1px);
-  background: var(--p-espera);
-  pointer-events: none;
-}
-
-.ocupacao-mapa__marcador::before {
-  content: attr(data-label);
-  position: absolute;
-  top: 0;
-  left: 50%;
-  width: max-content;
-  padding: 1px 3px;
-  transform: translate(-50%, -100%);
+.onibus-arte-mapa__corredor {
+  height: 8px;
+  margin: 1px 0;
   border-radius: 3px;
-  background: var(--p-espera-fundo);
-  color: var(--p-espera);
-  font-size: 8px;
-  font-weight: 750;
-  letter-spacing: 0.04em;
+  background: repeating-linear-gradient(90deg, #f8fafc 0, #f8fafc 6px, #e2e8f0 6px, #e2e8f0 12px);
+}
+
+.onibus-poltrona {
+  width: 25px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  letter-spacing: -0.02em;
+  border-radius: 4px;
+  background: #f1f5f9;
+  color: #64748b;
+  border: 1px solid #cbd5e1;
+  user-select: none;
+  cursor: default;
+  transition: transform 0.1s ease, background-color 0.15s ease;
+}
+
+.onibus-poltrona:hover {
+  transform: scale(1.1);
+  z-index: 2;
+}
+
+/* Assentos VIP da Organização (Dourado Brilhante com Estrela ★) */
+.onibus-poltrona.onibus-poltrona--vip {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: linear-gradient(135deg, #fde047 0%, #fbbf24 45%, #d97706 100%) !important;
+  color: #78350f !important;
+  border-color: #b45309 !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+  padding: 0 !important;
+  box-shadow: 0 1px 3px rgba(217, 119, 6, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+/* Assento Base Ocupado (1-40) - Variante 1 Quente */
+.onibus-poltrona.is-ocupada:not(.onibus-poltrona--vip) {
+  background: #f97316;
+  background: linear-gradient(135deg, #fb923c, #ea580c);
+  color: #ffffff;
+  border-color: #c2410c;
+  box-shadow: 0 1px 2px rgba(234, 88, 12, 0.25);
+}
+
+/* Assento Extra Flex (41-46) */
+.onibus-poltrona.onibus-poltrona--extra {
+  border-color: #0284c7;
+  background: #f0f9ff;
+  color: #0369a1;
+}
+
+.onibus-poltrona.onibus-poltrona--extra.is-ocupada:not(.onibus-poltrona--vip) {
+  background: #0284c7;
+  background: linear-gradient(135deg, #38bdf8, #0284c7);
+  color: #ffffff;
+  border-color: #0369a1;
+  box-shadow: 0 1px 2px rgba(2, 132, 199, 0.3);
+}
+
+/* Cabine do motorista (à direita / frente do ônibus) */
+.onibus-arte-mapa__cabine {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 36px;
+  margin-left: 8px;
+  border-left: 1.5px dashed #cbd5e1;
+  padding-left: 6px;
+  position: relative;
+  color: #64748b;
+}
+
+.onibus-arte-mapa__volante {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  color: #475569;
+}
+
+.onibus-arte-mapa__farol {
+  position: absolute;
+  right: -16px;
+  width: 5px;
+  height: 10px;
+  background: #eab308;
+  border-radius: 0 3px 3px 0;
+  box-shadow: 0 0 4px rgba(234, 179, 8, 0.6);
+}
+
+.onibus-arte-mapa__farol.top {
+  top: 8px;
+}
+
+.onibus-arte-mapa__farol.bottom {
+  bottom: 8px;
+}
+
+/* Legenda */
+.onibus-arte-mapa__legenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #475569;
+  align-items: center;
+  margin-top: 2px;
+}
+
+.onibus-arte-mapa__legenda-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.onibus-arte-mapa__legenda-cor {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+}
+
+.onibus-arte-mapa__legenda-cor--vip {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #fde047 0%, #fbbf24 45%, #d97706 100%);
+  color: #78350f;
+  border: 1px solid #b45309;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 11px;
+  font-weight: 900;
   line-height: 1;
-  white-space: nowrap;
+}
+
+.onibus-arte-mapa__legenda-cor--base {
+  background: linear-gradient(135deg, #fb923c, #ea580c);
+  border: 1px solid #c2410c;
+}
+
+.onibus-arte-mapa__legenda-cor--extra {
+  background: linear-gradient(135deg, #38bdf8, #0284c7);
+  border: 1px solid #0369a1;
+}
+
+.onibus-arte-mapa__legenda-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.onibus-arte-mapa__legenda-cor {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+}
+
+.onibus-arte-mapa__legenda-cor--vip {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #fde047 0%, #fbbf24 45%, #d97706 100%);
+  color: #78350f;
+  border: 1px solid #b45309;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.onibus-arte-mapa__legenda-cor--base {
+  background: linear-gradient(135deg, #fb923c, #ea580c);
+  border: 1px solid #c2410c;
+}
+
+.onibus-arte-mapa__legenda-cor--extra {
+  background: linear-gradient(135deg, #38bdf8, #0284c7);
+  border: 1px solid #0369a1;
 }
 
 .progresso-texto__meta {

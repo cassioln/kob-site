@@ -384,7 +384,8 @@
     if (resumo.reservas_pendentes > 0) pend.push(resumo.reservas_pendentes + ' aguardando');
     if (resumo.reservas_falha > 0) pend.push(resumo.reservas_falha + ' cancelada(s)/falha');
     el.rPendentes.textContent = pend.length ? pend.join(' · ') : 'nada pendente';
-    el.rReceita.textContent = 'R$ ' + resumo.receita;
+    var rec = resumo.receita !== undefined ? resumo.receita : (resumo.receita_centavos ? (resumo.receita_centavos / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0,00');
+    el.rReceita.textContent = 'R$ ' + rec;
     el.rSemTelefone.textContent = resumo.sem_telefone;
   }
 
@@ -473,37 +474,110 @@
 
       var badge = document.createElement('span');
       badge.className = 'onibus-card__badge';
-      if (info.fechado || ocupados >= minL) {
+      var numOcupadosFormat = ocupados < 10 ? '0' + ocupados : String(ocupados);
+      var prefixo = '[' + numOcupadosFormat + '/' + maxL + '] ';
+
+      if (ocupados >= maxL) {
+        badge.classList.add('onibus-card__badge--contratado', 'onibus-card__badge--lotado');
+        badge.textContent = prefixo + 'LOTADO';
+      } else if (info.fechado || ocupados >= minL) {
         badge.classList.add('onibus-card__badge--contratado');
-        badge.textContent = ocupados >= maxL ? 'Lotado (' + ocupados + '/' + maxL + ')' : 'Contratado (' + ocupados + '/' + maxL + ')';
+        badge.textContent = prefixo + 'COTA MÍNIMA ATINGIDA';
       } else {
         badge.classList.add('onibus-card__badge--provisorio');
-        badge.textContent = 'Em aberto (' + ocupados + '/' + minL + ')';
+        badge.textContent = prefixo + 'EM ABERTO';
       }
       headerLeft.append(titulo, badge);
 
-      // Centro: mapa compacto de ocupação com marcador da meta de fechamento.
+      // Centro: mapa artístico detalhado de assentos do ônibus (46 lugares)
       var headerCenter = document.createElement('div');
       headerCenter.className = 'onibus-card__header-center';
 
       var mapaOcupacao = document.createElement('div');
-      mapaOcupacao.className = 'ocupacao-mapa';
-      mapaOcupacao.style.setProperty('--ocupacao-meta', Math.min(100, (minL / maxL) * 100) + '%');
-      mapaOcupacao.setAttribute('aria-hidden', 'true');
+      mapaOcupacao.className = 'ocupacao-mapa onibus-arte-mapa';
+      mapaOcupacao.setAttribute('aria-label', 'Mapa de assentos do ônibus ' + busNum);
 
-      var assentosMapa = document.createElement('div');
-      assentosMapa.className = 'ocupacao-mapa__assentos';
-      for (var assentoNumero = 1; assentoNumero <= maxL; assentoNumero++) {
-        var assento = document.createElement('span');
-        assento.className = 'ocupacao-mapa__assento';
-        if (assentoNumero <= ocupados) assento.classList.add('is-ocupado');
-        if (assentoNumero === minL) assento.classList.add('is-meta');
-        assentosMapa.appendChild(assento);
+      var chassi = document.createElement('div');
+      chassi.className = 'onibus-arte-mapa__chassi';
+
+      var fileira1 = [45, 41, 37, 33, 29, 25, 21, 17, 13, 9, 5, 1];
+      var fileira2 = [46, 42, 38, 34, 30, 26, 22, 18, 14, 10, 6, 2];
+      var fileira3 = [44, 40, 36, 32, 28, 24, 20, 16, 12, 8, 4];
+      var fileira4 = [43, 39, 35, 31, 27, 23, 19, 15, 11, 7, 3];
+
+      var vipsNoBus = Number(info.vip_inclusos || 0);
+
+      function criarPoltrona(num) {
+        var poltrona = document.createElement('span');
+        poltrona.className = 'onibus-poltrona';
+        var isExtra = num > minL;
+        var numStr = num < 10 ? '0' + num : '' + num;
+
+        if (isExtra) poltrona.classList.add('onibus-poltrona--extra');
+
+        if (num <= vipsNoBus) {
+          // Assentos VIP da organização nos primeiros números disponíveis
+          poltrona.classList.add('is-ocupada', 'onibus-poltrona--vip');
+          poltrona.textContent = '★';
+          poltrona.title = 'Poltrona ' + numStr + ' ★ VIP da Organização';
+        } else if (num <= ocupados) {
+          poltrona.classList.add('is-ocupada');
+          poltrona.textContent = numStr;
+          poltrona.title = 'Poltrona ' + numStr + (isExtra ? ' (Assento extra flexível)' : ' (Cota mínima 1-40)');
+        } else {
+          poltrona.textContent = numStr;
+          poltrona.title = 'Poltrona ' + numStr + (isExtra ? ' (Assento extra livre)' : ' (Livre)');
+        }
+
+        return poltrona;
       }
-      var marcadorMeta = document.createElement('span');
-      marcadorMeta.className = 'ocupacao-mapa__marcador';
-      marcadorMeta.dataset.label = 'META ' + minL;
-      mapaOcupacao.append(assentosMapa, marcadorMeta);
+
+      var gradeAssentos = document.createElement('div');
+      gradeAssentos.className = 'onibus-arte-mapa__grade';
+
+      var blocoSuperior = document.createElement('div');
+      blocoSuperior.className = 'onibus-arte-mapa__bloco';
+      var r1 = document.createElement('div');
+      r1.className = 'onibus-arte-mapa__linha';
+      fileira1.forEach(function (n) { r1.appendChild(criarPoltrona(n)); });
+      var r2 = document.createElement('div');
+      r2.className = 'onibus-arte-mapa__linha';
+      fileira2.forEach(function (n) { r2.appendChild(criarPoltrona(n)); });
+      blocoSuperior.append(r1, r2);
+
+      var corredor = document.createElement('div');
+      corredor.className = 'onibus-arte-mapa__corredor';
+      corredor.setAttribute('aria-hidden', 'true');
+
+      var blocoInferior = document.createElement('div');
+      blocoInferior.className = 'onibus-arte-mapa__bloco';
+      var r3 = document.createElement('div');
+      r3.className = 'onibus-arte-mapa__linha onibus-arte-mapa__linha--recuo';
+      fileira3.forEach(function (n) { r3.appendChild(criarPoltrona(n)); });
+      var r4 = document.createElement('div');
+      r4.className = 'onibus-arte-mapa__linha onibus-arte-mapa__linha--recuo';
+      fileira4.forEach(function (n) { r4.appendChild(criarPoltrona(n)); });
+      blocoInferior.append(r3, r4);
+
+      gradeAssentos.append(blocoSuperior, corredor, blocoInferior);
+
+      var cabine = document.createElement('div');
+      cabine.className = 'onibus-arte-mapa__cabine';
+      cabine.innerHTML = '<div class="onibus-arte-mapa__volante" title="Cabine do motorista"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="2" x2="12" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><circle cx="12" cy="12" r="3"></circle></svg></div><span class="onibus-arte-mapa__farol top"></span><span class="onibus-arte-mapa__farol bottom"></span>';
+
+      chassi.append(gradeAssentos, cabine);
+
+      var legenda = document.createElement('div');
+      legenda.className = 'onibus-arte-mapa__legenda';
+      var legendaHTML = '';
+      if (vipsNoBus > 0) {
+        legendaHTML += '<span class="onibus-arte-mapa__legenda-item"><span class="onibus-arte-mapa__legenda-cor onibus-arte-mapa__legenda-cor--vip">★</span> VIP (' + vipsNoBus + ')</span>';
+      }
+      legendaHTML += '<span class="onibus-arte-mapa__legenda-item"><span class="onibus-arte-mapa__legenda-cor onibus-arte-mapa__legenda-cor--base"></span> Cota mínima (40)</span>'
+        + '<span class="onibus-arte-mapa__legenda-item"><span class="onibus-arte-mapa__legenda-cor onibus-arte-mapa__legenda-cor--extra"></span> Extras flex (6)</span>';
+      legenda.innerHTML = legendaHTML;
+
+      mapaOcupacao.append(chassi, legenda);
 
       var tx = document.createElement('div');
       tx.className = 'progresso-texto';
