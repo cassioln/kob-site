@@ -57,7 +57,6 @@ function mp_request(string $method, string $url, ?array $payload, array $extraHe
     $body = curl_exec($handle);
     $status = (int) curl_getinfo($handle, CURLINFO_RESPONSE_CODE);
     $curlError = curl_error($handle);
-    curl_close($handle);
 
     if ($body === false) {
         throw new MercadoPagoError('Falha de rede ao falar com o Mercado Pago: ' . $curlError, 503);

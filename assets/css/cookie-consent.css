@@ -1,5 +1,7 @@
 /* Componente de consentimento LGPD — isolado e reutilizável. */
-.cookie-consent {
+:root,
+.cookie-consent,
+.cookie-policy-page {
   --consent-abyss: var(--ocean-abyss, #041d3a);
   --consent-navy: var(--ocean-navy, #082f57);
   --consent-purple: var(--kriativa-purple, #7b1fa2);
@@ -9,6 +11,9 @@
   --consent-ink: var(--ink-strong, #0d2242);
   --consent-body: var(--font-body, "Montserrat", system-ui, sans-serif);
   --consent-display: var(--font-display, "Gobold Extra2", system-ui, sans-serif);
+}
+
+.cookie-consent {
   position: fixed;
   z-index: 400;
   inset: auto 0 0;
@@ -829,15 +834,47 @@
 .cookie-policy__button {
   display: inline-flex;
   min-height: 48px;
-  margin-top: 24px;
-  padding: 12px 22px;
+  margin-top: 16px;
+  padding: 12px 24px;
   align-items: center;
   justify-content: center;
   border: 0;
   border-radius: 6px;
-  color: #ffffff;
+  color: #ffffff !important;
   background: var(--consent-purple, #7b1fa2);
+  font-family: var(--consent-body, "Montserrat", sans-serif);
+  font-size: 0.9375rem;
   font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(123, 31, 162, 0.25);
+  transition: background-color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+}
+
+.cookie-policy__button:hover {
+  background: var(--consent-purple-deep, #57127a);
+  color: #ffffff !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(123, 31, 162, 0.35);
+}
+
+.cookie-policy__button:active {
+  transform: translateY(0);
+}
+
+.cookie-policy__button--outline {
+  color: var(--consent-purple-deep, #57127a) !important;
+  background: #ffffff !important;
+  border: 2px solid var(--consent-purple, #7b1fa2);
+  box-shadow: none;
+}
+
+.cookie-policy__button--outline:hover {
+  background: var(--consent-purple, #7b1fa2) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(123, 31, 162, 0.25);
 }
 
 .cookie-policy__footer {
@@ -847,15 +884,27 @@
   padding: 0 20px 48px;
   flex-wrap: wrap;
   justify-content: space-between;
+  align-items: center;
   gap: 12px 24px;
-  color: color-mix(in srgb, var(--consent-ink, #0d2242) 72%, #ffffff);
+  color: var(--consent-ink, #0d2242);
   font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.cookie-policy__footer p,
+.cookie-policy__footer span {
+  color: var(--consent-ink, #0d2242);
 }
 
 .cookie-policy__footer a {
   color: var(--consent-purple-deep, #57127a);
   font-weight: 700;
   text-underline-offset: 4px;
+}
+
+.cookie-policy__footer a:hover {
+  color: var(--consent-purple, #7b1fa2);
+  text-decoration: underline;
 }
 
 /* Crédito de quem fez o site: linha própria centralizada, com régua acima. O

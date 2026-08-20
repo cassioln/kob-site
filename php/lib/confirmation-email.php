@@ -130,7 +130,7 @@ function bus_confirmation_email_html(array $dados): string
                 Quem embarca com você
               </p>
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-                ' . $linhasPassageiros . '
+                ' . $linhasManifesto . '
                 ' . $linhaCriancas . '
               </table>
             </td>

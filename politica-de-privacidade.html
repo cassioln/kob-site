@@ -42,7 +42,7 @@
     rel="stylesheet">
   <link rel="preload" href="assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
   <link rel="stylesheet" href="assets/css/main.css?v=20260713-audit-opt">
-  <link rel="stylesheet" href="assets/css/cookie-consent.css?v=20260817-2-powered">
+  <link rel="stylesheet" href="assets/css/cookie-consent.css?v=20260820-fix-contrast">
   <script defer src="assets/js/cookie-consent.js?v=20260713-5"></script>
 </head>
 
@@ -232,17 +232,23 @@
     </section>
 
     <!-- BOTÕES DE NAVEGAÇÃO -->
-    <div class="cookie-preferences__save" style="margin-top: 3rem; text-align: center;">
-      <a class="cookie-consent__button cookie-consent__button--save" href="index.html"
-         style="display: inline-block; text-decoration: none; padding: 14px 28px;">
+    <div style="margin-top: 3rem; text-align: center; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+      <a class="cookie-policy__button" href="index.html">
         Voltar à página inicial
+      </a>
+      <a class="cookie-policy__button cookie-policy__button--outline" href="termos-de-transporte.html">
+        Ver Termos do Transporte
       </a>
     </div>
   </main>
 
   <footer class="cookie-policy__footer">
     <span>© 2026 Kriativos On Board. Todos os direitos reservados.</span>
-    <a href="index.html">Voltar para kriativosonboard.com.br</a>
+    <p style="margin-top: 0; font-size: 0.85rem;">
+      <a href="index.html">Página inicial</a> &middot;
+      <a href="termos-de-transporte.html">Termos do Transporte</a> &middot;
+      <a href="politica-de-cookies.html">Política de Cookies</a>
+    </p>
     <div class="cookie-policy__powered">
       Powered by <a href="https://ksio.dev" target="_blank" rel="noopener noreferrer">ksio.dev</a>
     </div>

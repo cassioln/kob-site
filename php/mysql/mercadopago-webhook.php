@@ -8,8 +8,8 @@ require_once __DIR__ . '/lib/db.php';
 require_once dirname(__DIR__) . '/lib/mercadopago.php';
 require_once dirname(__DIR__) . '/lib/mp-signature.php';
 require_once __DIR__ . '/lib/confirmation-mailer.php';
-require_once __DIR__ . '/lib/group-names.php';
-require_once __DIR__ . '/lib/bus-fleet.php';
+require_once __DIR__ . '/lib/group-assign.php';
+require_once dirname(__DIR__) . '/lib/bus-fleet.php';
 
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
     json_response(405, ['error' => 'Método não permitido.']);

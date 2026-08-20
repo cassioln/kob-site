@@ -109,7 +109,9 @@
   var statusTimer = null;
   var expiryTimer = null;
   var activeRegistrationId = null;
+  var activePayment = null;
   var confirmedSnapshot = null;
+  var CHECKOUT_STORAGE_KEY = 'kob-checkout-state-v1';
 
   // Lista de passageiros adicionais [{ id, ageGroup, fullName, cpf, whatsapp, email }]
   var addedPassengers = [];
@@ -876,6 +878,71 @@
     expiryTimer = null;
   }
 
+  function persistCheckoutState() {
+    if (!activeRegistrationId || !confirmedSnapshot) return;
+
+    try {
+      sessionStorage.setItem(CHECKOUT_STORAGE_KEY, JSON.stringify({
+        registrationId: activeRegistrationId,
+        orderId: confirmedSnapshot.orderId || '',
+        totalAmount: confirmedSnapshot.totalAmount || '',
+        payment: activePayment ? {
+          qrCode: activePayment.qrCode || '',
+          qrCodeBase64: activePayment.qrCodeBase64 || '',
+          ticketUrl: activePayment.ticketUrl || ''
+        } : null,
+        snapshot: confirmedSnapshot,
+        savedAt: Date.now()
+      }));
+    } catch (_error) {
+      // A private browsing policy or a full sessionStorage must not block Pix.
+    }
+  }
+
+  function readCheckoutState() {
+    try {
+      var raw = sessionStorage.getItem(CHECKOUT_STORAGE_KEY);
+      if (!raw) return null;
+      var saved = JSON.parse(raw);
+      if (!saved || !saved.registrationId || !saved.snapshot) return null;
+      // A stale tab should not unexpectedly reopen an old checkout days later.
+      if (saved.savedAt && Date.now() - Number(saved.savedAt) > 24 * 60 * 60 * 1000) {
+        sessionStorage.removeItem(CHECKOUT_STORAGE_KEY);
+        return null;
+      }
+      return saved;
+    } catch (_error) {
+      return null;
+    }
+  }
+
+  function restoreCheckoutState() {
+    var saved = readCheckoutState();
+    if (!saved) return;
+
+    activeRegistrationId = saved.registrationId;
+    confirmedSnapshot = saved.snapshot;
+    activePayment = saved.payment || null;
+    setStep('pagamento');
+    form.hidden = true;
+    paymentPanel.hidden = false;
+
+    if (activePayment && activePayment.qrCodeBase64) {
+      pixQr.src = 'data:image/png;base64,' + activePayment.qrCodeBase64;
+    }
+    if (activePayment && activePayment.qrCode) {
+      pixCopyCode.value = activePayment.qrCode;
+    }
+    if (activePayment && activePayment.ticketUrl) {
+      ticketLink.href = activePayment.ticketUrl;
+      ticketLink.hidden = false;
+    }
+
+    paymentStatus.textContent = 'Retomando a confirmação do seu pagamento…';
+    startExpiryCountdown(activeRegistrationId);
+    pollPaymentStatus(activeRegistrationId);
+  }
+
   function formatRemaining(ms) {
     var totalSeconds = Math.max(0, Math.floor(ms / 1000));
     var minutes = Math.floor(totalSeconds / 60);
@@ -1015,6 +1082,7 @@
       titleEl.setAttribute('tabindex', '-1');
       titleEl.focus({ preventScroll: true });
     }
+    persistCheckoutState();
   }
 
   function openStillHereDialog() {
@@ -1059,17 +1127,18 @@
       }
       if (typeof onPending === 'function') onPending();
       statusTimer = window.setTimeout(function () {
-        pollPaymentStatus(registrationId);
+        pollPaymentStatus(registrationId, options);
       }, 3000);
     }).catch(function () {
       statusTimer = window.setTimeout(function () {
-        pollPaymentStatus(registrationId);
+        pollPaymentStatus(registrationId, options);
       }, 5000);
     });
   }
 
   function showPayment(payment) {
     activeRegistrationId = payment.registrationId;
+    activePayment = payment;
     setStep('pagamento');
 
     var payload = getPayload();
@@ -1082,9 +1151,10 @@
         return { name: p.full_name, whatsapp: p.whatsapp || '', is_minor: p.is_minor };
       }),
       children: payload.children.map(function (c) {
-        return { name: c.full_name, cpf: c.cpf };
+        return { name: c.full_name };
       })
     };
+    persistCheckoutState();
     form.hidden = true;
     paymentPanel.hidden = false;
     pixQr.src = 'data:image/png;base64,' + payment.qrCodeBase64;
@@ -1279,6 +1349,7 @@
   setStep('cadastro');
   setWizardStep(1);
   syncGroupModeState();
+  restoreCheckoutState();
 
   // Hero: Cartão de embarque holográfico 3D (Overdrive)
   (function () {

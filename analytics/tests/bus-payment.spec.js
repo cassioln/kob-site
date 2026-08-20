@@ -92,7 +92,7 @@ test('cadastra o grupo, calcula o valor e exibe o Pix', async ({ page }) => {
   await expect(page.locator('#review-passengers-list .bus-review-card__item')).toHaveCount(4);
   await expect(page.locator('#review-paying-count')).toHaveText('3');
   await expect(page.locator('#review-total-amount')).toHaveText('R$ 360,00');
-  await page.getByLabel(/Li e concordo com as condições/i).check();
+  await page.getByLabel(/Li e concordo com os termos/i).check();
 
   await page.getByRole('button', { name: /gerar pagamento pix/i }).click();
 
@@ -151,7 +151,7 @@ test('confirma a vaga automaticamente quando o pagamento é identificado', async
 
   // Etapa 3: Revisão
   await expect(page.locator('[data-wizard-step="3"]')).toBeVisible();
-  await page.getByLabel(/Li e concordo com as condições/i).check();
+  await page.getByLabel(/Li e concordo com os termos/i).check();
   await page.getByRole('button', { name: /gerar pagamento pix/i }).click();
 
   await expect(page.locator('#payment-panel')).toBeVisible();
@@ -166,6 +166,49 @@ test('confirma a vaga automaticamente quando o pagamento é identificado', async
   await expect(page.locator('#confirmed-amount')).toHaveText('R$ 240,00');
   await expect(page.locator('#confirmed-code')).not.toHaveText('—');
   await expect(page.locator('#pix-expiry')).toBeHidden();
+});
+
+test('retoma o checkout e confirma após recarregar a página', async ({ page }) => {
+  let statusChecks = 0;
+  await page.route('**/api/create-pix-order', async (route) => {
+    await route.fulfill({
+      status: 201,
+      contentType: 'application/json',
+      body: JSON.stringify(fakePixResponse())
+    });
+  });
+  await page.route('**/api/bus-registration-status**', async (route) => {
+    statusChecks += 1;
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(statusChecks > 1
+        ? { status: 'confirmed', groupName: 'Wingspan' }
+        : { status: 'payment_pending' })
+    });
+  });
+
+  await page.goto('/onibus.html');
+  await page.getByLabel('Nome completo (contato principal)').fill('Maria de Souza');
+  await page.getByLabel('CPF do contato principal').fill(primaryCpf);
+  await page.locator('#primary-birth').fill('15/05/1990');
+  await page.locator('#primary-email').fill('maria@example.com');
+  await page.locator('#primary-whatsapp').fill('11942554141');
+  await page.getByRole('button', { name: /continuar: grupo/i }).click();
+  await page.locator('#solo-traveler').check();
+  await page.locator('#btn-group-next').click();
+  await page.getByLabel(/Li e concordo/i).check();
+  await page.getByRole('button', { name: /gerar pagamento pix/i }).click();
+
+  await expect(page.locator('#payment-panel')).toBeVisible();
+  await expect.poll(() => statusChecks).toBeGreaterThan(0);
+
+  await page.reload();
+
+  await expect(page.locator('#confirmation-panel')).toBeVisible({ timeout: 15000 });
+  await expect(page.locator('#confirmed-group')).toBeVisible();
+  await expect(page.locator('#confirmed-group-name')).toHaveText('Wingspan');
+  await expect(page.locator('#payment-panel')).toBeHidden();
 });
 
 test('janela de 10 minutos abre o aviso e não confirma nada sozinha', async ({ page }) => {
@@ -197,7 +240,7 @@ test('janela de 10 minutos abre o aviso e não confirma nada sozinha', async ({ 
   await page.locator('#solo-traveler').check();
   await page.locator('#btn-group-next').click();
 
-  await page.getByLabel(/Li e concordo com as condições/i).check();
+  await page.getByLabel(/Li e concordo com os termos/i).check();
   await page.getByRole('button', { name: /gerar pagamento pix/i }).click();
 
   // O contador aparece em mm:ss, começando nos 10 minutos.
@@ -411,7 +454,7 @@ test('comprovante impresso sai em A4 monocromático, sem sobras da página', asy
 
   await page.locator('#solo-traveler').check();
   await page.locator('#btn-group-next').click();
-  await page.getByLabel(/Li e concordo com as condições/i).check();
+  await page.getByLabel(/Li e concordo com os termos/i).check();
   await page.getByRole('button', { name: /gerar pagamento pix/i }).click();
   await expect(page.locator('#confirmation-panel')).toBeVisible({ timeout: 15000 });
 
