@@ -164,3 +164,166 @@ test('permite retirar um VIP real para sem ônibus confirmado', async ({ page })
     bus_number: null
   });
 });
+
+test('normaliza dados do VIP e bloqueia WhatsApp inválido', async ({ page }) => {
+  let vipRequest;
+  let vipRequestCount = 0;
+
+  await page.route('**/api/bus-admin-data*', route => route.fulfill({
+    status: 200,
+    contentType: 'application/json',
+    body: JSON.stringify({
+      reservas: [],
+      resumo: {
+        total_a_bordo: 0,
+        pagantes: 0,
+        criancas_no_colo: 0,
+        reservas_pagas: 0,
+        reservas_vip: 0,
+        reservas_pendentes: 0,
+        reservas_falha: 0,
+        receita_centavos: 0,
+        sem_telefone: 0
+      },
+      frota: {
+        capacidade: 46,
+        minimo: 40,
+        sem_onibus_confirmado: [],
+        onibus: [{ numero: 1, ocupados: 0, vagas_livres: 46, assentos: 0, reservas: [] }]
+      }
+    })
+  }));
+  await page.route('**/api/bus-vip-create*', async route => {
+    vipRequestCount += 1;
+    vipRequest = route.request().postDataJSON();
+    await route.fulfill({
+      status: 201,
+      contentType: 'application/json',
+      body: JSON.stringify({ success: true, vips: [] })
+    });
+  });
+
+  await page.goto('/painel-onibus.html');
+  await page.getByRole('button', { name: 'Planejamento de Frota' }).click();
+  await page.getByRole('button', { name: 'Adicionar VIP' }).click();
+
+  const name = page.locator('#vip-0-full_name');
+  const cpf = page.locator('#vip-0-cpf');
+  const email = page.locator('#vip-0-email');
+  const whatsapp = page.locator('#vip-0-whatsapp');
+  await name.fill('SAMARA NASCIMENTO DE TOLEDO');
+  await cpf.fill('52998224725');
+  await email.fill('USUARIO@EMAIL.COM');
+  await expect(email).toHaveValue('usuario@email.com');
+  await whatsapp.fill('55119958957');
+  await expect(name).toHaveCSS('text-transform', 'uppercase');
+  await expect(email).toHaveCSS('text-transform', 'lowercase');
+
+  await page.getByRole('button', { name: /confirmar reservas vip/i }).click();
+  await expect(page.locator('#vip-form-erro')).toContainText(/WhatsApp.*DDD|WhatsApp.*válido/i);
+  await expect(whatsapp).toHaveAttribute('aria-invalid', 'true');
+  expect(vipRequestCount).toBe(0);
+
+  await whatsapp.fill('5511999998888');
+  await page.getByRole('button', { name: /confirmar reservas vip/i }).click();
+  await expect.poll(() => vipRequest).toEqual({
+    vips: [{
+      full_name: 'Samara Nascimento de Toledo',
+      cpf: '529.982.247-25',
+      whatsapp: '11999998888',
+      email: 'usuario@email.com',
+      bus_number: null
+    }]
+  });
+});
+
+test('cria atalho seguro de WhatsApp apenas para número válido', async ({ page }) => {
+  await page.route('**/api/bus-admin-data*', route => route.fulfill({
+    status: 200,
+    contentType: 'application/json',
+    body: JSON.stringify({
+      reservas: [
+        {
+          id: 'valid-whatsapp-id',
+          code: 'A1B2C3D4',
+          status: 'confirmed',
+          status_chave: 'pago',
+          status_rotulo: 'Pagamento aprovado',
+          status_tom: 'ok',
+          contato: 'Samara Nascimento de Toledo',
+          contato_cpf: '52998224725',
+          email: 'usuario@email.com',
+          contato_whatsapp: '11999998888',
+          pagantes: 1,
+          criancas: 0,
+          grupo: null,
+          valor_centavos: 12000,
+          criado_em: '21/08/2026 13:00',
+          pago_em: '21/08/2026 13:01',
+          order_id: 'ORD-VALID',
+          is_vip: false,
+          bus_number: 1,
+          passageiros: [{
+            posicao: 1,
+            nome: 'Samara Nascimento de Toledo',
+            cpf: '529.982.247-25',
+            whatsapp: '(11) 99999-8888',
+            responsavel: true,
+            menor: false,
+            crianca_colo: false
+          }]
+        },
+        {
+          id: 'invalid-whatsapp-id',
+          code: 'E5F6G7H8',
+          status: 'confirmed',
+          status_chave: 'pago',
+          status_rotulo: 'Pagamento aprovado',
+          status_tom: 'ok',
+          contato: 'Contato legado',
+          contato_cpf: '52998224725',
+          email: 'legado@email.com',
+          contato_whatsapp: '55119958957',
+          pagantes: 1,
+          criancas: 0,
+          grupo: null,
+          valor_centavos: 12000,
+          criado_em: '21/08/2026 12:00',
+          pago_em: '21/08/2026 12:01',
+          order_id: 'ORD-INVALID',
+          is_vip: false,
+          bus_number: null,
+          passageiros: [{
+            posicao: 1,
+            nome: 'Contato legado',
+            cpf: '529.982.247-25',
+            whatsapp: '55119958957',
+            responsavel: true,
+            menor: false,
+            crianca_colo: false
+          }]
+        }
+      ],
+      resumo: {
+        total_a_bordo: 2,
+        pagantes: 2,
+        criancas_no_colo: 0,
+        reservas_pagas: 2,
+        reservas_vip: 0,
+        reservas_pendentes: 0,
+        reservas_falha: 0,
+        receita_centavos: 24000,
+        sem_telefone: 0
+      },
+      frota: { capacidade: 46, minimo: 40, onibus: [] }
+    })
+  }));
+
+  await page.goto('/painel-onibus.html');
+
+  const links = page.locator('.tabela__whatsapp-link');
+  await expect(links).toHaveCount(1);
+  await expect(links.first()).toHaveAttribute('href', 'https://api.whatsapp.com/send?phone=5511999998888');
+  await expect(links.first()).toHaveAttribute('target', '_blank');
+  await expect(links.first()).toHaveAttribute('rel', 'noopener noreferrer');
+});

@@ -427,7 +427,7 @@
       var pEmailEl = document.getElementById('primary-summary-email');
       if (pEmailWrap && pEmailEl) {
         if (pEmail) {
-          pEmailEl.textContent = displayUppercase(pEmail);
+          pEmailEl.textContent = normalizeEmail(pEmail);
           pEmailWrap.hidden = false;
         } else {
           pEmailWrap.hidden = true;
@@ -464,7 +464,7 @@
           detailsHtml += '<span>WhatsApp: <strong>' + maskWhatsapp(p.whatsapp) + '</strong></span>';
         }
         if (p.email) {
-          detailsHtml += '<span>E-mail: <strong>' + escapeHtml(displayUppercase(p.email)) + '</strong></span>';
+          detailsHtml += '<span>E-mail: <strong>' + escapeHtml(normalizeEmail(p.email)) + '</strong></span>';
         }
       }
 
@@ -648,7 +648,7 @@
       }
       if (reviewPersonEmailRow) {
         reviewPersonEmailRow.hidden = false;
-        if (reviewPersonEmail) reviewPersonEmail.textContent = pendingNewPassenger.email ? displayUppercase(pendingNewPassenger.email) : 'Não informado';
+        if (reviewPersonEmail) reviewPersonEmail.textContent = pendingNewPassenger.email ? normalizeEmail(pendingNewPassenger.email) : 'Não informado';
       }
     }
 
@@ -1249,6 +1249,9 @@
 
   // Mascaras nos inputs do Contato Principal
   primaryCpf.addEventListener('input', function (event) { event.currentTarget.value = maskCpf(event.currentTarget.value); });
+  if (primaryEmail) {
+    primaryEmail.addEventListener('input', function (event) { event.currentTarget.value = normalizeEmail(event.currentTarget.value); });
+  }
   if (primaryBirth) {
     primaryBirth.addEventListener('input', function (event) { event.currentTarget.value = maskDate(event.currentTarget.value); });
   }
@@ -1279,6 +1282,9 @@
         substepFieldsAlert.hidden = false;
       }
     });
+  }
+  if (newPEmail) {
+    newPEmail.addEventListener('input', function (event) { event.currentTarget.value = normalizeEmail(event.currentTarget.value); });
   }
 
   // Interacoes da Etapa 2

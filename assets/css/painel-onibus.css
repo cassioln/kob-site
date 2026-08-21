@@ -765,6 +765,35 @@
   white-space: nowrap;
 }
 
+.tabela__whatsapp-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  color: #168c4b;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: color var(--p-transicao), background var(--p-transicao);
+}
+
+.tabela__whatsapp-link:hover {
+  color: #0d6f3a;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.tabela__whatsapp-link:focus-visible {
+  outline: 2px solid #168c4b;
+  outline-offset: 3px;
+}
+
+.tabela__whatsapp-link svg {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
 .tabela__tel--vazio {
   color: var(--p-tinta-fraca);
   font-style: italic;
@@ -3841,6 +3870,14 @@
   font: inherit;
   font-size: 0.875rem;
   box-sizing: border-box;
+}
+
+.vip-formulario__campo input[data-vip-field="full_name"] {
+  text-transform: uppercase;
+}
+
+.vip-formulario__campo input[data-vip-field="email"] {
+  text-transform: lowercase;
 }
 
 .vip-formulario__campo input:focus-visible,

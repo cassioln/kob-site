@@ -256,7 +256,10 @@
   }
 
   function formatarWhatsapp(whatsapp) {
-    var digitos = String(whatsapp || '').replace(/\D/g, '').slice(0, 11);
+    var brutos = String(whatsapp || '').replace(/\D/g, '').slice(0, 13);
+    var digitos = brutos.startsWith('55') && (brutos.length === 12 || brutos.length === 13)
+      ? brutos.slice(2)
+      : brutos.slice(0, 11);
     if (digitos.length > 10) {
       return digitos.replace(/(\d{2})(\d{5})(\d{1,4})/, '($1) $2-$3');
     }
@@ -267,6 +270,81 @@
       return digitos.replace(/(\d{2})(\d{1,5})/, '($1) $2');
     }
     return digitos;
+  }
+
+  var personNameConnectors = {
+    de: true, da: true, do: true, das: true, dos: true, e: true
+  };
+  var brazilianDdds = new Set([
+    '11', '12', '13', '14', '15', '16', '17', '18', '19',
+    '21', '22', '24', '27', '28',
+    '31', '32', '33', '34', '35', '37', '38',
+    '41', '42', '43', '44', '45', '46', '47', '48', '49',
+    '51', '53', '54', '55',
+    '61', '62', '63', '64', '65', '66', '67', '68', '69',
+    '71', '73', '74', '75', '77', '79',
+    '81', '82', '83', '84', '85', '86', '87', '88', '89',
+    '91', '92', '93', '94', '95', '96', '97', '98', '99'
+  ]);
+
+  function isValidBrazilianPhoneDigits(national) {
+    if (!/^\d+$/.test(national) || !brazilianDdds.has(national.slice(0, 2))) return false;
+    var subscriber = national.slice(2);
+    if (/^(\d)\1+$/.test(subscriber)) return false;
+    if (national.length === 10) return /^[2-5]\d{7}$/.test(subscriber);
+    if (national.length === 11) return /^9\d{8}$/.test(subscriber);
+    return false;
+  }
+
+  function normalizarWhatsapp(whatsapp) {
+    var todos = String(whatsapp || '').replace(/\D/g, '');
+    var nacional = todos.startsWith('55') && (todos.length === 12 || todos.length === 13)
+      ? todos.slice(2)
+      : todos;
+    return isValidBrazilianPhoneDigits(nacional) ? nacional : '';
+  }
+
+  function normalizarNomeCompleto(nome) {
+    var normalizado = String(nome || '').trim().replace(/\s+/g, ' ').toLocaleLowerCase('pt-BR');
+    return normalizado.split(' ').map(function (token, index) {
+      if (index > 0 && personNameConnectors[token]) return token;
+      return token.split(/([-'])/u).map(function (parte) {
+        if (parte === '-' || parte === "'") return parte;
+        return parte ? parte.charAt(0).toLocaleUpperCase('pt-BR') + parte.slice(1) : parte;
+      }).join('');
+    }).join(' ');
+  }
+
+  function normalizarEmail(email) {
+    return String(email || '').trim().toLocaleLowerCase('pt-BR');
+  }
+
+  function emailValido(email) {
+    var valor = normalizarEmail(email);
+    return valor.length <= 200 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(valor);
+  }
+
+  function criarLinkWhatsapp(telefone, nome) {
+    var nacional = normalizarWhatsapp(telefone);
+    if (!nacional) return null;
+
+    var link = document.createElement('a');
+    link.className = 'tabela__whatsapp-link';
+    link.href = 'https://api.whatsapp.com/send?phone=55' + nacional;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.setAttribute('aria-label', 'Conversar com ' + (nome || 'passageiro') + ' pelo WhatsApp');
+
+    var icone = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    icone.setAttribute('viewBox', '0 0 24 24');
+    icone.setAttribute('aria-hidden', 'true');
+    var circulo = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    circulo.setAttribute('d', 'M20.5 3.5A11.9 11.9 0 0 0 12.05 0C5.48 0 .13 5.34.13 11.91c0 2.1.55 4.15 1.59 5.96L.03 24l6.27-1.64a11.9 11.9 0 0 0 5.75 1.46h.01c6.57 0 11.91-5.34 11.91-11.91 0-3.18-1.24-6.16-3.47-8.41Zm-8.45 18.3h-.01a9.88 9.88 0 0 1-5.03-1.38l-.36-.21-3.72.98.99-3.63-.23-.37a9.87 9.87 0 1 1 8.36 4.61Zm5.42-7.39c-.3-.15-1.77-.87-2.05-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-1.76-.88-2.91-1.57-4.07-3.55-.31-.53.31-.49.89-1.63.1-.2.05-.37-.03-.52-.07-.15-.67-1.61-.92-2.2-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.22 3.08c.15.2 2.1 3.2 5.1 4.49 1.9.82 2.64.89 3.58.75.58-.09 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.07-.12-.27-.2-.57-.35Z');
+    icone.appendChild(circulo);
+    var texto = document.createElement('span');
+    texto.textContent = formatarWhatsapp(telefone);
+    link.append(icone, texto);
+    return link;
   }
 
   function badge(rotulo, tom) {
@@ -510,7 +588,12 @@
       celula('CPF', p.cpf || '—', 'tabela__cpf');
 
       if (p.whatsapp) {
-        celula('WhatsApp', p.whatsapp, 'tabela__tel');
+        var linkWhatsapp = criarLinkWhatsapp(p.whatsapp, p.nome || r.contato);
+        if (linkWhatsapp) {
+          celula('WhatsApp', linkWhatsapp, 'tabela__tel');
+        } else {
+          celula('WhatsApp', p.whatsapp, 'tabela__tel');
+        }
       } else {
         celula('WhatsApp', 'N/A', 'tabela__tel tabela__tel--vazio');
       }
@@ -1646,6 +1729,22 @@
     el.vipFormErro.hidden = !mensagem;
   }
 
+  function validarCampoVip(index, campo, input) {
+    var valor = String(input ? input.value : estado.vipDrafts[index][campo] || '').trim();
+    var invalido = false;
+    if (campo === 'whatsapp') {
+      invalido = valor !== '' && !normalizarWhatsapp(valor);
+    } else if (campo === 'email') {
+      invalido = valor !== '' && !emailValido(valor);
+    }
+
+    if (input) {
+      if (invalido) input.setAttribute('aria-invalid', 'true');
+      else input.removeAttribute('aria-invalid');
+    }
+    return !invalido;
+  }
+
   function renderizarFormulariosVip(focarIndice) {
     if (!el.vipFormularios) return;
     el.vipFormularios.replaceChildren();
@@ -1708,11 +1807,24 @@
         input.addEventListener('input', function () {
           var valor = campo.key === 'cpf'
             ? formatarCpf(input.value)
-            : (campo.key === 'whatsapp' ? formatarWhatsapp(input.value) : input.value);
+            : (campo.key === 'whatsapp'
+              ? formatarWhatsapp(input.value)
+              : (campo.key === 'email' ? normalizarEmail(input.value) : input.value));
           input.value = valor;
           estado.vipDrafts[index][campo.key] = valor;
-          input.removeAttribute('aria-invalid');
+          if (campo.key === 'whatsapp' || campo.key === 'email') {
+            validarCampoVip(index, campo.key, input);
+          } else {
+            input.removeAttribute('aria-invalid');
+          }
           erroVipForm('');
+        });
+        input.addEventListener('blur', function () {
+          if (campo.key === 'whatsapp' && !validarCampoVip(index, campo.key, input)) {
+            erroVipForm('Informe um WhatsApp válido com DDD ou deixe o campo em branco.');
+          } else if (campo.key === 'email' && !validarCampoVip(index, campo.key, input)) {
+            erroVipForm('Informe um e-mail válido ou deixe o campo em branco.');
+          }
         });
         wrapper.append(label, input);
         grid.appendChild(wrapper);
@@ -1791,9 +1903,16 @@
         if (invalid || String(draft[field] || '').trim() !== '') return;
         invalid = { index: index, field: field };
       });
+      if (!invalid && String(draft.whatsapp || '').trim() !== '' && !normalizarWhatsapp(draft.whatsapp)) {
+        invalid = { index: index, field: 'whatsapp', message: 'Informe um WhatsApp válido com DDD ou deixe o campo em branco.' };
+      }
+      if (!invalid && String(draft.email || '').trim() !== '' && !emailValido(draft.email)) {
+        invalid = { index: index, field: 'email', message: 'Informe um e-mail válido ou deixe o campo em branco.' };
+      }
     });
     if (invalid) {
-      erroVipForm('Preencha Nome e CPF em todos os formulários VIP.');
+      var mensagem = invalid.message || 'Preencha Nome e CPF em todos os formulários VIP.';
+      erroVipForm(mensagem);
       var invalidInput = document.getElementById('vip-' + invalid.index + '-' + invalid.field);
       if (invalidInput) {
         invalidInput.setAttribute('aria-invalid', 'true');
@@ -1812,10 +1931,10 @@
 
     var payload = estado.vipDrafts.map(function (draft) {
       return {
-        full_name: draft.full_name.trim(),
+        full_name: normalizarNomeCompleto(draft.full_name),
         cpf: draft.cpf.trim(),
-        whatsapp: draft.whatsapp.trim(),
-        email: draft.email.trim(),
+        whatsapp: normalizarWhatsapp(draft.whatsapp),
+        email: normalizarEmail(draft.email),
         bus_number: draft.bus_number === '' ? null : Number(draft.bus_number)
       };
     });

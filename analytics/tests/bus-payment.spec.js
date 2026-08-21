@@ -45,7 +45,8 @@ test('cadastra o grupo, calcula o valor e exibe o Pix', async ({ page }) => {
   await page.getByLabel('Nome completo (contato principal)').fill('MARIA DE SOUZA');
   await page.getByLabel('CPF do contato principal').fill(primaryCpf);
   await page.locator('#primary-birth').fill('15/05/1990');
-  await page.locator('#primary-email').fill('maria@example.com');
+  await page.locator('#primary-email').fill('MARIA@EXAMPLE.COM');
+  await expect(page.locator('#primary-email')).toHaveValue('maria@example.com');
   await page.locator('#primary-whatsapp').fill('11942554141');
   await page.getByRole('button', { name: /continuar: grupo/i }).click();
 
@@ -705,7 +706,8 @@ test('contato em 3 linhas e WhatsApp opcional nos passageiros extras', async ({ 
   await page.locator('#new-p-cpf').fill(passengerTwoCpf);
   await page.locator('#new-p-whatsapp').fill('11912345678');
   await expect(page.locator('#new-p-whatsapp')).toHaveValue('(11) 91234-5678');
-  await page.locator('#new-p-email').fill('ana@example.com');
+  await page.locator('#new-p-email').fill('ANA@EXAMPLE.COM');
+  await expect(page.locator('#new-p-email')).toHaveValue('ana@example.com');
   await page.locator('#btn-substep-fields-next').click();
   await page.locator('#btn-substep-confirm-save').click();
 
@@ -794,12 +796,12 @@ test('navegação do wizard: voltar e avançar mantém dados e validações', as
   // Avançar para Step 3 (Revisão)
   await page.locator('#btn-group-next').click();
   await expect(page.locator('[data-wizard-step="3"]')).toBeVisible();
-  await expect(page.locator('#review-passengers-list')).toContainText('Carlos Silva');
-  await expect(page.locator('#review-passengers-list')).toContainText('Fernanda Silva');
+  await expect(page.locator('#review-passengers-list')).toContainText('CARLOS SILVA');
+  await expect(page.locator('#review-passengers-list')).toContainText('FERNANDA SILVA');
   await expect(page.locator('#review-children-row')).toBeHidden();
 
   // Voltar de Step 3 para Step 2
   await page.getByRole('button', { name: /voltar e editar grupo/i }).click();
   await expect(page.locator('[data-wizard-step="2"]')).toBeVisible();
-  await expect(page.locator('#added-passengers-list')).toContainText('Fernanda Silva');
+  await expect(page.locator('#added-passengers-list')).toContainText('FERNANDA SILVA');
 });
