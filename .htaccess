@@ -57,6 +57,8 @@ RewriteRule ^api/bus-registration-status/?$   php/mysql/bus-registration-status.
 RewriteRule ^api/bus-manifest/?$              php/mysql/bus-manifest.php [QSA,L]
 # Dados do painel da organizacao (JSON agregado). Mesmo token do manifest.
 RewriteRule ^api/bus-admin-data/?$            php/mysql/bus-admin-data.php [QSA,L]
+# Reconcilia pendências em segundo plano quando o webhook não atualizou a reserva.
+RewriteRule ^api/bus-admin-reconcile/?$       php/mysql/bus-admin-reconcile.php [QSA,L]
 # Exportacao .xlsx do painel. Mesmo token do manifest.
 RewriteRule ^api/bus-admin-xlsx/?$            php/mysql/bus-admin-xlsx.php [QSA,L]
 # Configuracoes e alocacao de frota do painel

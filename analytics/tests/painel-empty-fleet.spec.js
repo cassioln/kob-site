@@ -1,5 +1,50 @@
 import { test, expect } from '@playwright/test';
 
+test('reconcilia pendências de pagamento em segundo plano ao abrir o painel', async ({ page }) => {
+  let request;
+  let adminRequests = 0;
+  let reconciliationRequests = 0;
+
+  await page.route('**/api/bus-admin-data*', route => {
+    adminRequests += 1;
+    return route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        reservas: [],
+        resumo: {
+          total_a_bordo: 0,
+          pagantes: 0,
+          criancas_no_colo: 0,
+          reservas_pagas: 0,
+          reservas_pendentes: 0,
+          reservas_falha: 0,
+          receita_centavos: 0,
+          sem_telefone: 0
+        },
+        frota: { capacidade: 46, minimo: 40, onibus: [] }
+      })
+    });
+  });
+  await page.route('**/api/bus-admin-reconcile*', async route => {
+    request = route.request();
+    reconciliationRequests += 1;
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ checked: 1, updated: reconciliationRequests === 1 ? 1 : 0 })
+    });
+  });
+
+  await page.goto('/painel-onibus.html');
+
+  await expect.poll(() => request && ({
+    method: request.method(),
+    token: new URL(request.url()).searchParams.get('token')
+  })).toEqual({ method: 'POST', token: 'dev-token' });
+  await expect.poll(() => adminRequests).toBe(2);
+});
+
 test('mantém a frota acessível quando não há reservas', async ({ page }) => {
   await page.route('**/api/bus-admin-data*', route => route.fulfill({
     status: 200,

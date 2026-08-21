@@ -10,6 +10,7 @@
   'use strict';
 
   var API = 'api/bus-admin-data';
+  var API_RECONCILE = 'api/bus-admin-reconcile';
   var API_LISTA = 'api/bus-manifest';
   var API_AUTO_BALANCE = 'api/bus-fleet-auto-balance';
   var API_VIP_CREATE = 'api/bus-vip-create';
@@ -87,7 +88,8 @@
     frota: null,
     frotaBalancePreview: null,
     vipDrafts: [],
-    vipEnviando: false
+    vipEnviando: false,
+    reconciliandoPendencias: false
   };
 
   // Número do grupo atualmente realçado. Guardado fora do handler para o
@@ -1868,6 +1870,33 @@
 
   // ---- carregamento ------------------------------------------------------
 
+  function reconciliarPendencias() {
+    if (!estado.token || estado.reconciliandoPendencias) return;
+
+    estado.reconciliandoPendencias = true;
+    fetch(API_RECONCILE + '?token=' + encodeURIComponent(estado.token), {
+      method: 'POST',
+      headers: { 'X-Admin-Token': estado.token }
+    })
+      .then(function (resp) {
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        return resp.json();
+      })
+      .then(function (resultado) {
+        if (Number(resultado.updated) > 0) {
+          estado.reconciliandoPendencias = false;
+          carregar();
+        }
+      })
+      .catch(function () {
+        // A tabela já foi exibida. Uma falha temporária nesta proteção não deve
+        // esconder os dados nem invalidar a sessão administrativa.
+      })
+      .finally(function () {
+        estado.reconciliandoPendencias = false;
+      });
+  }
+
   function carregar() {
     if (!estado.token) {
       mostrar(el.estadoLogin);
@@ -1903,6 +1932,7 @@
         renderizar();
         renderizarFrota();
         mostrar(el.dados);
+        reconciliarPendencias();
       })
       .catch(function (erro) {
         if (erro && erro.semAcesso) {
