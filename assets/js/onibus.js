@@ -121,6 +121,21 @@
     return String(value || '').replace(/\D/g, '');
   }
 
+  var personNameConnectors = {
+    de: true, da: true, do: true, das: true, dos: true, e: true
+  };
+  var brazilianDdds = new Set([
+    '11', '12', '13', '14', '15', '16', '17', '18', '19',
+    '21', '22', '24', '27', '28',
+    '31', '32', '33', '34', '35', '37', '38',
+    '41', '42', '43', '44', '45', '46', '47', '48', '49',
+    '51', '53', '54', '55',
+    '61', '62', '63', '64', '65', '66', '67', '68', '69',
+    '71', '73', '74', '75', '77', '79',
+    '81', '82', '83', '84', '85', '86', '87', '88', '89',
+    '91', '92', '93', '94', '95', '96', '97', '98', '99'
+  ]);
+
   function maskCpf(value) {
     var valueDigits = digits(value).slice(0, 11);
     if (valueDigits.length > 9) return valueDigits.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2})/, '$1.$2.$3-$4');
@@ -130,7 +145,10 @@
   }
 
   function maskWhatsapp(value) {
-    var valueDigits = digits(value).slice(0, 11);
+    var rawDigits = digits(value).slice(0, 13);
+    var valueDigits = rawDigits.startsWith('55') && (rawDigits.length === 12 || rawDigits.length === 13)
+      ? rawDigits.slice(2)
+      : rawDigits.slice(0, 11);
     if (valueDigits.length > 10) return valueDigits.replace(/(\d{2})(\d{5})(\d{1,4})/, '($1) $2-$3');
     if (valueDigits.length > 6) return valueDigits.replace(/(\d{2})(\d{4})(\d{1,4})/, '($1) $2-$3');
     if (valueDigits.length > 2) return valueDigits.replace(/(\d{2})(\d{1,5})/, '($1) $2');
@@ -189,8 +207,40 @@
     return remainder === Number(cpf[10]);
   }
 
+  function isValidBrazilianPhoneDigits(national) {
+    if (!/^\d+$/.test(national) || !brazilianDdds.has(national.slice(0, 2))) return false;
+    var subscriber = national.slice(2);
+    if (/^(\d)\1+$/.test(subscriber)) return false;
+    if (national.length === 10) return /^[2-5]\d{7}$/.test(subscriber);
+    if (national.length === 11) return /^9\d{8}$/.test(subscriber);
+    return false;
+  }
+
+  function normalizeWhatsappDigits(value) {
+    var all = digits(value);
+    var national = all.startsWith('55') && (all.length === 12 || all.length === 13)
+      ? all.slice(2)
+      : all;
+    return isValidBrazilianPhoneDigits(national) ? national : '';
+  }
+
   function normalizeFullName(value) {
-    return String(value || '').trim().replace(/\s+/g, ' ');
+    var normalized = String(value || '').trim().replace(/\s+/g, ' ').toLocaleLowerCase('pt-BR');
+    return normalized.split(' ').map(function (token, index) {
+      if (index > 0 && personNameConnectors[token]) return token;
+      return token.split(/([-'])/u).map(function (part) {
+        if (part === '-' || part === "'") return part;
+        return part ? part.charAt(0).toLocaleUpperCase('pt-BR') + part.slice(1) : part;
+      }).join('');
+    }).join(' ');
+  }
+
+  function normalizeEmail(value) {
+    return String(value || '').trim().toLocaleLowerCase('pt-BR');
+  }
+
+  function displayUppercase(value) {
+    return String(value || '').toLocaleUpperCase('pt-BR');
   }
 
   function displayCount(count, singular, plural) {
@@ -354,10 +404,10 @@
       var pName = normalizeFullName(primaryName.value) || 'CONTATO PRINCIPAL';
       var pCpf = maskCpf(primaryCpf.value) || '—';
       var pWa = primaryWhatsapp ? digits(primaryWhatsapp.value) : '';
-      var pEmail = primaryEmail ? primaryEmail.value.trim() : '';
+      var pEmail = primaryEmail ? normalizeEmail(primaryEmail.value) : '';
 
       var pNameEl = document.getElementById('primary-summary-name');
-      if (pNameEl) pNameEl.textContent = pName;
+      if (pNameEl) pNameEl.textContent = displayUppercase(pName);
 
       var pCpfEl = document.getElementById('primary-summary-cpf');
       if (pCpfEl) pCpfEl.textContent = pCpf;
@@ -377,7 +427,7 @@
       var pEmailEl = document.getElementById('primary-summary-email');
       if (pEmailWrap && pEmailEl) {
         if (pEmail) {
-          pEmailEl.textContent = pEmail;
+          pEmailEl.textContent = displayUppercase(pEmail);
           pEmailWrap.hidden = false;
         } else {
           pEmailWrap.hidden = true;
@@ -403,18 +453,18 @@
         detailsHtml = '<div class="bus-passenger__child-layout">' +
           '<img src="assets/images/brand/meeple-baby.webp" alt="Criança de colo (0 a 5 anos)" class="bus-passenger__meeple-img" width="48" height="48" loading="lazy">' +
           '<div class="bus-passenger__child-data">' +
-          '<span>Nome: <strong>' + escapeHtml(p.fullName) + '</strong></span>' +
+          '<span>Nome: <strong>' + escapeHtml(displayUppercase(p.fullName)) + '</strong></span>' +
           '<span>CPF: <strong>' + maskCpf(p.cpf) + '</strong></span>' +
           '</div>' +
           '</div>';
       } else {
-        detailsHtml = '<span>Nome: <strong>' + escapeHtml(p.fullName) + '</strong></span>' +
+        detailsHtml = '<span>Nome: <strong>' + escapeHtml(displayUppercase(p.fullName)) + '</strong></span>' +
           '<span>CPF: <strong>' + maskCpf(p.cpf) + '</strong></span>';
         if (p.whatsapp) {
           detailsHtml += '<span>WhatsApp: <strong>' + maskWhatsapp(p.whatsapp) + '</strong></span>';
         }
         if (p.email) {
-          detailsHtml += '<span>E-mail: <strong>' + escapeHtml(p.email) + '</strong></span>';
+          detailsHtml += '<span>E-mail: <strong>' + escapeHtml(displayUppercase(p.email)) + '</strong></span>';
         }
       }
 
@@ -553,17 +603,18 @@
       return;
     }
 
-    var waVal = newPWhatsapp ? digits(newPWhatsapp.value) : '';
-    if (waVal && waVal.length !== 11) {
+    var waRaw = newPWhatsapp ? newPWhatsapp.value : '';
+    var waVal = waRaw.trim() ? normalizeWhatsappDigits(waRaw) : '';
+    if (waRaw.trim() && !waVal) {
       if (substepFieldsAlert) {
-        substepFieldsAlert.textContent = 'Informe um WhatsApp válido com DDD (11 dígitos) ou deixe o campo em branco.';
+        substepFieldsAlert.textContent = 'Informe um WhatsApp válido com DDD ou deixe o campo em branco.';
         substepFieldsAlert.hidden = false;
       }
       if (newPWhatsapp) newPWhatsapp.focus();
       return;
     }
 
-    var emailVal = newPEmail ? newPEmail.value.trim() : '';
+    var emailVal = newPEmail ? normalizeEmail(newPEmail.value) : '';
     if (emailVal && !newPEmail.validity.valid) {
       if (substepFieldsAlert) {
         substepFieldsAlert.textContent = 'Informe um e-mail válido ou deixe o campo em branco.';
@@ -584,7 +635,7 @@
       adult: '18 anos ou mais (Adulto pagante)'
     };
     if (reviewPersonAge) reviewPersonAge.textContent = ageLabels[pendingNewPassenger.ageGroup] || '—';
-    if (reviewPersonName) reviewPersonName.textContent = pendingNewPassenger.fullName;
+    if (reviewPersonName) reviewPersonName.textContent = displayUppercase(pendingNewPassenger.fullName);
     if (reviewPersonCpf) reviewPersonCpf.textContent = maskCpf(pendingNewPassenger.cpf);
 
     if (pendingNewPassenger.ageGroup === 'child') {
@@ -597,7 +648,7 @@
       }
       if (reviewPersonEmailRow) {
         reviewPersonEmailRow.hidden = false;
-        if (reviewPersonEmail) reviewPersonEmail.textContent = pendingNewPassenger.email || 'Não informado';
+        if (reviewPersonEmail) reviewPersonEmail.textContent = pendingNewPassenger.email ? displayUppercase(pendingNewPassenger.email) : 'Não informado';
       }
     }
 
@@ -687,7 +738,7 @@
     // Passageiro 1 (Contato Principal)
     var p1Item = document.createElement('li');
     p1Item.className = 'bus-review-card__item';
-    p1Item.innerHTML = '<span class="bus-review-card__item-name">1. ' + (escapeHtml(normalizeFullName(primaryName.value)) || 'Contato Principal') + '</span>' +
+    p1Item.innerHTML = '<span class="bus-review-card__item-name">1. ' + (escapeHtml(displayUppercase(normalizeFullName(primaryName.value))) || 'CONTATO PRINCIPAL') + '</span>' +
       '<span class="bus-review-card__item-details"><small class="bus-passenger__tag bus-passenger__tag--primary">Contato Principal</small></span>';
     reviewPassengersList.appendChild(p1Item);
 
@@ -705,7 +756,7 @@
         tagHtml = '<small class="bus-passenger__tag bus-passenger__tag--adult">18 anos ou mais</small>';
       }
 
-      item.innerHTML = '<span class="bus-review-card__item-name">' + pNum + '. ' + escapeHtml(p.fullName) + '</span>' +
+      item.innerHTML = '<span class="bus-review-card__item-name">' + pNum + '. ' + escapeHtml(displayUppercase(p.fullName)) + '</span>' +
         '<span class="bus-review-card__item-details">' + tagHtml + '</span>';
       reviewPassengersList.appendChild(item);
     });
@@ -773,7 +824,9 @@
     var birthParsed = primaryBirth ? parseBirthDate(primaryBirth.value) : null;
     if (!birthParsed) return invalid('Informe uma data de nascimento válida (DD/MM/AAAA) para o contato principal.', primaryBirth);
     if (birthParsed.age < 18) return invalid('O contato principal / responsável financeiro deve ter 18 anos ou mais.', primaryBirth);
-    if (digits(primaryWhatsapp.value).length !== 11) return invalid('Informe um WhatsApp válido com DDD.', primaryWhatsapp);
+    if (!normalizeWhatsappDigits(primaryWhatsapp.value)) {
+      return invalid('Informe um WhatsApp válido com DDD.', primaryWhatsapp);
+    }
     if (!primaryEmail.validity.valid) return invalid('Informe um e-mail válido.', primaryEmail);
     setStatus('', false);
     return true;
@@ -825,8 +878,8 @@
       full_name: normalizeFullName(primaryName.value),
       cpf: digits(primaryCpf.value),
       birth_date: birthParsed ? birthParsed.iso : '',
-      whatsapp: digits(primaryWhatsapp.value),
-      email: primaryEmail.value.trim(),
+      whatsapp: normalizeWhatsappDigits(primaryWhatsapp.value),
+      email: normalizeEmail(primaryEmail.value),
       age_group: 'adult',
       is_minor: false
     }];
@@ -835,8 +888,8 @@
       passengers.push({
         full_name: normalizeFullName(p.fullName),
         cpf: digits(p.cpf),
-        whatsapp: digits(p.whatsapp),
-        email: (p.email || '').trim(),
+        whatsapp: p.whatsapp ? normalizeWhatsappDigits(p.whatsapp) : '',
+        email: normalizeEmail(p.email || ''),
         age_group: p.ageGroup,
         is_minor: p.ageGroup === 'minor'
       });
@@ -856,8 +909,8 @@
         full_name: normalizeFullName(primaryName.value),
         cpf: digits(primaryCpf.value),
         birth_date: birthParsed ? birthParsed.iso : '',
-        email: primaryEmail.value.trim(),
-        whatsapp: digits(primaryWhatsapp.value),
+        email: normalizeEmail(primaryEmail.value),
+        whatsapp: normalizeWhatsappDigits(primaryWhatsapp.value),
         age_group: 'adult',
         is_minor: false
       },
@@ -1200,6 +1253,14 @@
     primaryBirth.addEventListener('input', function (event) { event.currentTarget.value = maskDate(event.currentTarget.value); });
   }
   primaryWhatsapp.addEventListener('input', function (event) { event.currentTarget.value = maskWhatsapp(event.currentTarget.value); });
+  primaryWhatsapp.addEventListener('blur', function () {
+    if (normalizeWhatsappDigits(primaryWhatsapp.value)) {
+      primaryWhatsapp.removeAttribute('aria-invalid');
+      return;
+    }
+    primaryWhatsapp.setAttribute('aria-invalid', 'true');
+    setStatus('Informe um WhatsApp válido com DDD.', true);
+  });
 
   // Mascaras nos inputs do Mini Multi-step
   if (newPCpf) {
@@ -1207,6 +1268,17 @@
   }
   if (newPWhatsapp) {
     newPWhatsapp.addEventListener('input', function (event) { event.currentTarget.value = maskWhatsapp(event.currentTarget.value); });
+    newPWhatsapp.addEventListener('blur', function () {
+      if (!newPWhatsapp.value.trim() || normalizeWhatsappDigits(newPWhatsapp.value)) {
+        newPWhatsapp.removeAttribute('aria-invalid');
+        return;
+      }
+      newPWhatsapp.setAttribute('aria-invalid', 'true');
+      if (substepFieldsAlert) {
+        substepFieldsAlert.textContent = 'Informe um WhatsApp válido com DDD ou deixe o campo em branco.';
+        substepFieldsAlert.hidden = false;
+      }
+    });
   }
 
   // Interacoes da Etapa 2

@@ -3523,6 +3523,17 @@
   transform: none;
 }
 
+/* Os campos mantêm o valor canônico no payload, mas são apresentados em
+   maiúsculas para facilitar a conferência durante a reserva. */
+#bus-form input[name="primary_name"],
+#bus-form input[name="email"],
+#bus-form input[id="new-p-name"],
+#bus-form input[id="new-p-email"],
+#bus-form .bus-passenger__added-details strong,
+#bus-form .bus-review-card__item-name {
+  text-transform: uppercase;
+}
+
 /* ============================================================================
    Acessibilidade: Redução de movimento nas animações do Checkout
    ========================================================================== */

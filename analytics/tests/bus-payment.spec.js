@@ -30,8 +30,8 @@ test('cadastra o grupo, calcula o valor e exibe o Pix', async ({ page }) => {
   });
 
   await page.goto('/onibus.html');
-  await expect(page).toHaveTitle(/Ônibus.*Kriativos/i);
-  await expect(page.getByRole('heading', { name: /ônibus fretado/i })).toBeVisible();
+  await expect(page).toHaveTitle(/(?:Ônibus|Busão).*Kriativos/i);
+  await expect(page.getByRole('heading', { name: /ônibus|busão/i })).toBeVisible();
   const farePanel = page.locator('#heroFarePanel');
   await expect(farePanel.getByText('R$ 120,00', { exact: true })).toBeVisible();
   await expect(farePanel.getByText('/ pessoa pagante', { exact: true })).toBeVisible();
@@ -42,7 +42,7 @@ test('cadastra o grupo, calcula o valor e exibe o Pix', async ({ page }) => {
   await expect(route.locator('.route-shuttle__stop--arrival')).toContainText('Porto de Santos');
 
   // Etapa 1: Contato Principal
-  await page.getByLabel('Nome completo (contato principal)').fill('Maria de Souza');
+  await page.getByLabel('Nome completo (contato principal)').fill('MARIA DE SOUZA');
   await page.getByLabel('CPF do contato principal').fill(primaryCpf);
   await page.locator('#primary-birth').fill('15/05/1990');
   await page.locator('#primary-email').fill('maria@example.com');
@@ -58,10 +58,10 @@ test('cadastra o grupo, calcula o valor e exibe o Pix', async ({ page }) => {
   await page.locator('#new-passenger-age').selectOption('adult');
   await page.locator('#btn-substep-age-next').click();
 
-  await page.locator('#new-p-name').fill('João de Souza');
+  await page.locator('#new-p-name').fill('JOÃO DE SOUZA');
   await page.locator('#new-p-cpf').fill(passengerTwoCpf);
   await page.locator('#btn-substep-fields-next').click();
-  await expect(page.locator('#review-person-name')).toHaveText('João de Souza');
+  await expect(page.locator('#review-person-name')).toHaveText('JOÃO DE SOUZA');
   await page.locator('#btn-substep-confirm-save').click();
 
   // Adicionar Passageiro 3 (Menor 6-17)
@@ -69,7 +69,7 @@ test('cadastra o grupo, calcula o valor e exibe o Pix', async ({ page }) => {
   await page.locator('#new-passenger-age').selectOption('minor');
   await page.locator('#btn-substep-age-next').click();
 
-  await page.locator('#new-p-name').fill('Ana de Souza');
+  await page.locator('#new-p-name').fill('ANA DE SOUZA');
   await page.locator('#new-p-cpf').fill(passengerThreeCpf);
   await page.locator('#btn-substep-fields-next').click();
   await page.locator('#btn-substep-confirm-save').click();
@@ -121,6 +121,27 @@ test('cadastra o grupo, calcula o valor e exibe o Pix', async ({ page }) => {
   await expect(page.locator('#pix-qr')).toHaveAttribute('src', 'data:image/png;base64,aGVsbG8=');
   await expect(page.locator('#pix-copy-code')).toHaveValue(/000201/);
   await expect(page.locator('#bus-form')).toBeHidden();
+});
+
+test('bloqueia WhatsApp preenchido com estrutura inválida', async ({ page }) => {
+  let createRequests = 0;
+  await page.route('**/api/create-pix-order', async route => {
+    createRequests += 1;
+    await route.fulfill({ status: 500, contentType: 'application/json', body: '{}' });
+  });
+
+  await page.goto('/onibus.html');
+  await page.locator('#primary-name').fill('SAMARA NASCIMENTO DE TOLEDO');
+  await page.locator('#primary-cpf').fill(primaryCpf);
+  await page.locator('#primary-birth').fill('15/05/1990');
+  await page.locator('#primary-email').fill('USUARIO@EMAIL.COM');
+  await page.locator('#primary-whatsapp').fill('55119958957');
+  await page.getByRole('button', { name: /continuar: grupo/i }).click();
+
+  await expect(page.locator('[data-wizard-step="1"]')).toBeVisible();
+  await expect(page.locator('#primary-whatsapp')).toHaveAttribute('aria-invalid', 'true');
+  await expect(page.locator('#bus-form-status')).toContainText(/WhatsApp.*DDD|WhatsApp.*válido/i);
+  expect(createRequests).toBe(0);
 });
 
 test('confirma a vaga automaticamente quando o pagamento é identificado', async ({ page }) => {
