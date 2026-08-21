@@ -15,6 +15,7 @@ declare(strict_types=1);
 
 require_once dirname(__DIR__) . '/lib/validation.php';
 require_once dirname(__DIR__) . '/lib/bus-fleet.php';
+require_once dirname(__DIR__) . '/lib/contact-display.php';
 require_once __DIR__ . '/lib/db.php';
 require_once dirname(__DIR__) . '/lib/receipt-pdf.php';
 require_once dirname(__DIR__) . '/lib/xlsx.php';
@@ -160,20 +161,16 @@ try {
                 $faixaEtaria = '6 a 17 anos';
             }
 
-            $whatsappPassageiro = $isVip ? '' : 'N/A';
-            if ($isChildLap) {
-                $whatsappPassageiro = 'N/A';
-            } elseif (($p['whatsapp'] ?? '') !== '') {
+            $whatsappPassageiro = $isVip ? '' : bus_missing_contact_label($p['whatsapp'] ?? null, $isChildLap);
+            if (!$isChildLap && ($p['whatsapp'] ?? '') !== '') {
                 $whatsappPassageiro = bus_format_phone((string) $p['whatsapp']);
             }
 
-            $emailPassageiro = $isVip ? '' : 'N/A';
-            if ($isChildLap) {
-                $emailPassageiro = 'N/A';
-            } elseif ((string) ($p['email'] ?? '') !== '') {
+            $emailPassageiro = $isVip ? '' : bus_missing_contact_label($p['email'] ?? null, $isChildLap);
+            if (!$isChildLap && (string) ($p['email'] ?? '') !== '') {
                 $emailPassageiro = (string) $p['email'];
-            } elseif ($responsavel) {
-                $emailPassageiro = (string) ($r['email'] ?? '');
+            } elseif (!$isChildLap && $responsavel) {
+                $emailPassageiro = bus_missing_contact_label($r['email'] ?? null, false);
             }
 
             // Reserva, Responsável e Grupo repetem em todas as linhas do grupo,
