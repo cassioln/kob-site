@@ -282,7 +282,16 @@
     var amount = (paying * priceCents / 100).toFixed(2).replace('.', ',');
     if (summaryCount) summaryCount.textContent = displayCount(totalP, 'passageiro', 'passageiros');
     if (summaryPaying) summaryPaying.textContent = displayCount(paying, 'passageiro', 'passageiros');
-    if (total) total.textContent = 'R$ ' + amount;
+    if (total) {
+      var prevText = total.textContent;
+      var newText = 'R$ ' + amount;
+      if (prevText !== newText) {
+        total.textContent = newText;
+        total.classList.remove('is-updating');
+        void total.offsetWidth; // Força reflow para reiniciar animação de pulso
+        total.classList.add('is-updating');
+      }
+    }
   }
 
   // Cabeçalho por etapa global
@@ -1414,8 +1423,15 @@
 
   if (copyPix) {
     copyPix.addEventListener('click', async function () {
+      var originalHTML = copyPix.innerHTML;
       try {
         await navigator.clipboard.writeText(pixCopyCode.value);
+        copyPix.classList.add('is-copied');
+        copyPix.innerHTML = 'Código copiado! <span aria-hidden="true">✓</span>';
+        setTimeout(function () {
+          copyPix.classList.remove('is-copied');
+          copyPix.innerHTML = originalHTML;
+        }, 2200);
         paymentStatus.textContent = 'Código Pix copiado. Agora é só colar no app do seu banco.';
       } catch (_error) {
         pixCopyCode.focus();

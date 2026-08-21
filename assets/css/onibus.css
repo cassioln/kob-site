@@ -170,6 +170,23 @@
   border-radius: 50%;
   background: var(--ocean-cyan);
   box-shadow: 0 0 8px var(--ocean-cyan);
+  animation: heroDotPulse 2.4s ease-in-out infinite;
+}
+
+@keyframes heroDotPulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.85;
+    box-shadow: 0 0 8px var(--ocean-cyan);
+  }
+
+  50% {
+    transform: scale(1.35);
+    opacity: 1;
+    box-shadow: 0 0 14px var(--ocean-cyan);
+  }
 }
 
 .bus-hero h1 {
@@ -335,6 +352,17 @@
   transform-style: preserve-3d;
   transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1);
   will-change: transform;
+  animation: busHeroFloat 5s ease-in-out infinite alternate;
+}
+
+@keyframes busHeroFloat {
+  0% {
+    transform: rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg)) translateY(0);
+  }
+
+  100% {
+    transform: rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg)) translateY(-6px);
+  }
 }
 
 .bus-hero__art-wrap img {
@@ -374,10 +402,8 @@
 @media (prefers-reduced-motion: reduce) {
 
   .route-shuttle__beacon,
-  .bus-hero__headlight-beam {
-    animation: none !important;
-  }
-
+  .bus-hero__headlight-beam,
+  .bus-hero__badge-dot,
   .bus-hero__art-wrap {
     transform: none !important;
   }
@@ -430,6 +456,11 @@
 
 .bus-flow__step {
   position: relative;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.bus-flow__step:hover {
+  transform: translateY(-4px);
 }
 
 /* Conector: seta desenhada em CSS, sem peso de asset. */
@@ -443,6 +474,12 @@
   border-top: 1.5px solid var(--line-mid);
   border-right: 1.5px solid var(--line-mid);
   transform: translate(50%, -50%) rotate(45deg);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease;
+}
+
+.bus-flow__step:hover::after {
+  transform: translate(75%, -50%) rotate(45deg);
+  border-color: var(--action-ink);
 }
 
 .bus-flow__step:last-child::after {
@@ -457,11 +494,23 @@
   height: 42px;
   color: var(--action-ink);
   border-bottom: 2px solid var(--action);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), color 0.25s ease, border-color 0.25s ease;
+}
+
+.bus-flow__step:hover .bus-flow__marker {
+  transform: scale(1.12);
+  color: var(--action);
+  border-bottom-color: var(--action);
 }
 
 .bus-flow__marker svg {
   width: 23px;
   height: 23px;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.bus-flow__step:hover .bus-flow__marker svg {
+  transform: scale(1.08) translateY(-1px);
 }
 
 .bus-flow__step strong {
@@ -576,7 +625,7 @@
   color: var(--ink-faint, #6f8294);
   font-weight: 800;
   font-size: 0.85rem;
-  transition: border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s cubic-bezier(0.16, 1, 0.3, 1), color 0.3s ease, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+  transition: border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s cubic-bezier(0.16, 1, 0.3, 1), color 0.3s ease, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
   box-shadow: 0 2px 6px rgba(15, 39, 66, 0.06);
 }
 
@@ -634,7 +683,7 @@
 .bus-stepper__item.is-completed .bus-stepper__check {
   display: block;
   stroke: #032b43;
-  animation: busCheckPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  animation: busCheckPop 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 @keyframes busCheckPop {
@@ -878,6 +927,25 @@
   background: #ffffff;
   box-shadow: 0 3px 10px rgba(15, 39, 66, 0.04);
   overflow: hidden;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+  animation: busPassengerEntrance 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes busPassengerEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.bus-passenger:hover {
+  border-color: #a4bed8;
+  box-shadow: 0 6px 18px rgba(15, 39, 66, 0.08);
 }
 
 .bus-passenger--primary-summary {
@@ -1035,7 +1103,7 @@
   object-fit: contain;
   flex-shrink: 0;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
-  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .bus-passenger--child:hover .bus-passenger__meeple-img {
@@ -1958,6 +2026,11 @@
   background: var(--ocean-abyss);
   color: var(--ink-invert);
   box-shadow: 0 8px 16px rgba(8, 47, 87, 0.14);
+  transition: box-shadow 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.bus-summary:hover {
+  box-shadow: 0 14px 32px rgba(8, 47, 87, 0.28);
 }
 
 .bus-summary__pin {
@@ -1988,6 +2061,7 @@
   gap: 16px;
   padding: 14px 0;
   border-top: 1px solid var(--line-invert);
+  transition: background-color 0.2s ease;
 }
 
 .bus-summary dt {
@@ -2023,6 +2097,32 @@
   font-family: var(--font-display);
   font-size: 2rem;
   line-height: 1;
+  display: inline-block;
+  transition: color 0.3s ease;
+}
+
+.bus-summary__total strong.is-updating {
+  animation: busPriceGlow 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes busPriceGlow {
+  0% {
+    transform: scale(1);
+    color: var(--sunset-gold);
+    text-shadow: none;
+  }
+
+  45% {
+    transform: scale(1.1);
+    color: #fff275;
+    text-shadow: 0 0 16px rgba(255, 242, 117, 0.7);
+  }
+
+  100% {
+    transform: scale(1);
+    color: var(--sunset-gold);
+    text-shadow: none;
+  }
 }
 
 .bus-summary__warning {
@@ -2246,6 +2346,13 @@
   border: 1px solid var(--line-mid);
   border-radius: var(--r-md);
   background: var(--foam-white);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.bus-payment-panel__qr-wrap img:hover {
+  transform: scale(1.02);
+  border-color: var(--ocean-cyan);
+  box-shadow: 0 8px 24px rgba(0, 174, 239, 0.16);
 }
 
 .bus-payment-panel__copy textarea {
@@ -2253,10 +2360,47 @@
   resize: vertical;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 0.76rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.bus-payment-panel__copy textarea:focus-visible {
+  outline: none;
+  border-color: var(--ocean-cyan);
+  box-shadow: 0 0 0 3.5px rgba(0, 174, 239, 0.2);
 }
 
 .bus-payment-panel__copy .btn {
   margin-top: 12px;
+}
+
+#copy-pix {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+#copy-pix:active {
+  transform: scale(0.96);
+}
+
+#copy-pix.is-copied {
+  background: #00875a !important;
+  border-color: #00875a !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 16px rgba(0, 135, 90, 0.35) !important;
+  animation: copySuccessPop 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes copySuccessPop {
+  0% {
+    transform: scale(0.95);
+  }
+
+  50% {
+    transform: scale(1.04);
+  }
+
+  100% {
+    transform: scale(1);
+  }
 }
 
 .bus-payment-panel__ticket {
@@ -2394,15 +2538,15 @@
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   box-shadow: 0 16px 36px -12px rgba(0, 0, 0, 0.35);
-  transition: transform var(--dur-state) var(--ease-quart),
-    border-color var(--dur-state) ease,
-    box-shadow var(--dur-state) ease;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .bus-reassurance__card:hover {
-  transform: translateY(-3px);
+  transform: translateY(-5px);
   border-color: rgba(255, 255, 255, 0.22);
-  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.5), 0 0 24px rgba(0, 174, 239, 0.08);
 }
 
 .bus-reassurance__icon {
@@ -2413,6 +2557,11 @@
   height: 48px;
   border-radius: var(--r-md);
   flex-shrink: 0;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease;
+}
+
+.bus-reassurance__card:hover .bus-reassurance__icon {
+  transform: scale(1.12) rotate(4deg);
 }
 
 .bus-reassurance__icon svg {
@@ -3549,7 +3698,18 @@
   .bus-passenger,
   .bus-passenger--added,
   .bus-form__status:not(:empty),
-  .bus-payment-panel {
+  .bus-payment-panel,
+  .bus-summary__total strong.is-updating,
+  #copy-pix.is-copied,
+  .bus-reassurance__card,
+  .bus-reassurance__icon,
+  .bus-flow__step,
+  .bus-flow__marker,
+  .bus-flow__step::after,
+  .bus-hero__art-wrap,
+  .bus-hero__badge-dot,
+  .bus-dialog[open],
+  .bus-dialog::backdrop {
     animation: none !important;
     transition: opacity 0.15s linear, color 0.15s linear, background-color 0.15s linear !important;
     transform: none !important;
