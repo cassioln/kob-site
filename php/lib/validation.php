@@ -35,6 +35,37 @@ function normalize_text(mixed $value, string $label, int $min = 2, int $max = 16
     return $normalized;
 }
 
+/**
+ * Canonicalizes a person's name for persistence and transactional messages.
+ * The public forms may present the value in uppercase, but the stored value
+ * follows the human-readable title-case format used by the panel and e-mails.
+ */
+function normalize_person_name(mixed $value, string $label, int $min = 2, int $max = 160): string
+{
+    $normalized = normalize_text($value, $label, $min, $max);
+    $lower = mb_strtolower($normalized, 'UTF-8');
+    $tokens = explode(' ', $lower);
+    $connectors = ['de' => true, 'da' => true, 'do' => true, 'das' => true, 'dos' => true, 'e' => true];
+
+    foreach ($tokens as $index => $token) {
+        if ($index > 0 && isset($connectors[$token])) {
+            continue;
+        }
+
+        $parts = preg_split('/([\-\'])/u', $token, -1, PREG_SPLIT_DELIM_CAPTURE) ?: [$token];
+        foreach ($parts as $partIndex => $part) {
+            if ($part === '-' || $part === "'") {
+                continue;
+            }
+            $parts[$partIndex] = mb_strtoupper(mb_substr($part, 0, 1, 'UTF-8'), 'UTF-8')
+                . mb_substr($part, 1, null, 'UTF-8');
+        }
+        $tokens[$index] = implode('', $parts);
+    }
+
+    return implode(' ', $tokens);
+}
+
 function is_valid_cpf(mixed $value): bool
 {
     $cpf = digits_only($value);
@@ -89,15 +120,48 @@ function normalize_email(mixed $value): string
     return $email;
 }
 
+function is_valid_brazilian_phone_digits(string $national): bool
+{
+    static $ddds = [
+        '11', '12', '13', '14', '15', '16', '17', '18', '19',
+        '21', '22', '24', '27', '28',
+        '31', '32', '33', '34', '35', '37', '38',
+        '41', '42', '43', '44', '45', '46', '47', '48', '49',
+        '51', '53', '54', '55',
+        '61', '62', '63', '64', '65', '66', '67', '68', '69',
+        '71', '73', '74', '75', '77', '79',
+        '81', '82', '83', '84', '85', '86', '87', '88', '89',
+        '91', '92', '93', '94', '95', '96', '97', '98', '99',
+    ];
+
+    if (!preg_match('/^\d+$/', $national) || !in_array(substr($national, 0, 2), $ddds, true)) {
+        return false;
+    }
+
+    $subscriber = substr($national, 2);
+    if (preg_match('/^(\d)\1+$/', $subscriber)) {
+        return false;
+    }
+
+    if (strlen($national) === 10) {
+        return preg_match('/^[2-5]\d{7}$/', $subscriber) === 1;
+    }
+
+    if (strlen($national) === 11) {
+        return preg_match('/^9\d{8}$/', $subscriber) === 1;
+    }
+
+    return false;
+}
+
 function normalize_whatsapp(mixed $value): string
 {
     $all = digits_only($value);
-    $national = $all;
-    if (str_starts_with($all, '55') && (strlen($all) === 12 || strlen($all) === 13)) {
-        $national = substr($all, 2);
-    }
-    if (!in_array(strlen($national), [10, 11], true)) {
-        throw new ValidationError('WhatsApp inválido.');
+    $national = str_starts_with($all, '55') && in_array(strlen($all), [12, 13], true)
+        ? substr($all, 2)
+        : $all;
+    if (!is_valid_brazilian_phone_digits($national)) {
+        throw new ValidationError('WhatsApp inválido. Informe um número brasileiro com DDD.');
     }
 
     return $national;
@@ -171,7 +235,7 @@ function validate_bus_payload(mixed $payload): array
         throw new ValidationError('As crianças de até 5 anos não podem passar do número de passageiros pagantes.');
     }
 
-    $primaryName = normalize_text($contact['full_name'] ?? null, 'Nome completo do contato principal', 3);
+    $primaryName = normalize_person_name($contact['full_name'] ?? null, 'Nome completo do contato principal', 3);
     if (count(explode(' ', $primaryName)) < 2) {
         throw new ValidationError('Informe o nome completo do contato principal.');
     }
@@ -197,7 +261,7 @@ function validate_bus_payload(mixed $payload): array
         if (!is_array($entry)) {
             throw new ValidationError("Passageiro {$position} inválido.");
         }
-        $fullName = normalize_text($entry['full_name'] ?? null, "Nome completo do passageiro {$position}", 3);
+        $fullName = normalize_person_name($entry['full_name'] ?? null, "Nome completo do passageiro {$position}", 3);
         if (count(explode(' ', $fullName)) < 2) {
             throw new ValidationError("Informe o nome completo do passageiro {$position}.");
         }
@@ -289,7 +353,7 @@ function validate_bus_payload(mixed $payload): array
         if (!is_array($entry)) {
             throw new ValidationError("Criança {$childPos} inválida.");
         }
-        $childName = normalize_text($entry['full_name'] ?? null, "Nome completo da criança", 3);
+        $childName = normalize_person_name($entry['full_name'] ?? null, "Nome completo da criança", 3);
         if (count(explode(' ', $childName)) < 2) {
             throw new ValidationError("Informe o nome completo da criança.");
         }

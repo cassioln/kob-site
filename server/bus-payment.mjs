@@ -27,6 +27,19 @@ function normalizeText(value, label, minLength = 2, maxLength = 160) {
   return normalized;
 }
 
+const PERSON_NAME_CONNECTORS = new Set(['de', 'da', 'do', 'das', 'dos', 'e']);
+
+export function normalizePersonName(value, label, minLength = 2, maxLength = 160) {
+  const normalized = normalizeText(value, label, minLength, maxLength).toLocaleLowerCase('pt-BR');
+  return normalized.split(' ').map((token, index) => {
+    if (index > 0 && PERSON_NAME_CONNECTORS.has(token)) return token;
+    return token.split(/([-'])/u).map(part => {
+      if (part === '-' || part === "'") return part;
+      return part ? part.charAt(0).toLocaleUpperCase('pt-BR') + part.slice(1) : part;
+    }).join('');
+  }).join(' ');
+}
+
 function digitsOnly(value) {
   return String(value || '').replace(/\D/g, '');
 }
@@ -66,13 +79,34 @@ function normalizeEmail(value) {
   return email;
 }
 
-function normalizeWhatsapp(value) {
+const BRAZILIAN_DDDS = new Set([
+  '11', '12', '13', '14', '15', '16', '17', '18', '19',
+  '21', '22', '24', '27', '28',
+  '31', '32', '33', '34', '35', '37', '38',
+  '41', '42', '43', '44', '45', '46', '47', '48', '49',
+  '51', '53', '54', '55',
+  '61', '62', '63', '64', '65', '66', '67', '68', '69',
+  '71', '73', '74', '75', '77', '79',
+  '81', '82', '83', '84', '85', '86', '87', '88', '89',
+  '91', '92', '93', '94', '95', '96', '97', '98', '99'
+]);
+
+export function isValidBrazilianPhoneDigits(national) {
+  if (!/^\d+$/.test(national) || !BRAZILIAN_DDDS.has(national.slice(0, 2))) return false;
+  const subscriber = national.slice(2);
+  if (/^(\d)\1+$/.test(subscriber)) return false;
+  if (national.length === 10) return /^[2-5]\d{7}$/.test(subscriber);
+  if (national.length === 11) return /^9\d{8}$/.test(subscriber);
+  return false;
+}
+
+export function normalizeWhatsapp(value) {
   const digits = digitsOnly(value);
   const national = digits.startsWith('55') && (digits.length === 12 || digits.length === 13)
     ? digits.slice(2)
     : digits;
-  if (![10, 11].includes(national.length)) {
-    throw new ValidationError('WhatsApp inválido.');
+  if (!isValidBrazilianPhoneDigits(national)) {
+    throw new ValidationError('WhatsApp inválido. Informe um número brasileiro com DDD.');
   }
   return national;
 }
@@ -139,7 +173,7 @@ export function validateBusPayload(payload) {
     throw new ValidationError('As crianças de até 5 anos não podem passar do número de passageiros pagantes.');
   }
 
-  const primaryName = normalizeText(contact.full_name, 'Nome completo do contato principal', 3);
+  const primaryName = normalizePersonName(contact.full_name, 'Nome completo do contato principal', 3);
   if (primaryName.split(' ').length < 2) {
     throw new ValidationError('Informe o nome completo do contato principal.');
   }
@@ -155,7 +189,7 @@ export function validateBusPayload(payload) {
 
   const passengers = payload.passengers.map((passenger, index) => {
     const entry = requiredObject(passenger, `Passageiro ${index + 1}`);
-    const fullName = normalizeText(entry.full_name, `Nome completo do passageiro ${index + 1}`, 3);
+    const fullName = normalizePersonName(entry.full_name, `Nome completo do passageiro ${index + 1}`, 3);
     if (fullName.split(' ').length < 2) {
       throw new ValidationError(`Informe o nome completo do passageiro ${index + 1}.`);
     }
@@ -212,7 +246,7 @@ export function validateBusPayload(payload) {
     }
     rawChildrenList.forEach((childEntry, childIndex) => {
       const child = requiredObject(childEntry, `Criança de colo ${childIndex + 1}`);
-      const fullName = normalizeText(child.full_name, `Nome completo da criança ${childIndex + 1}`, 3);
+      const fullName = normalizePersonName(child.full_name, `Nome completo da criança ${childIndex + 1}`, 3);
       if (fullName.split(' ').length < 2) {
         throw new ValidationError(`Informe o nome completo da criança ${childIndex + 1}.`);
       }

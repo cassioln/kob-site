@@ -478,3 +478,22 @@ test('WhatsApp do passageiro é opcional, mas inválido é recusado', () => {
     ]
   }), /WhatsApp do passageiro 2 inválido/);
 });
+
+test('canonicaliza identidade e recusa WhatsApp estruturalmente inválido', () => {
+  const payload = structuredClone(basePayload);
+  payload.contact.full_name = '  SAMARA   NASCIMENTO DE TOLEDO  ';
+  payload.contact.email = 'USUARIO@EMAIL.COM';
+  payload.contact.whatsapp = '5511999998888';
+  payload.passengers[0].full_name = payload.contact.full_name;
+
+  const normalizado = validateBusPayload(payload);
+  assert.equal(normalizado.contact.fullName, 'Samara Nascimento de Toledo');
+  assert.equal(normalizado.contact.email, 'usuario@email.com');
+  assert.equal(normalizado.contact.whatsapp, '11999998888');
+  assert.equal(normalizado.passengers[0].fullName, 'Samara Nascimento de Toledo');
+
+  assert.throws(() => validateBusPayload({
+    ...payload,
+    contact: { ...payload.contact, whatsapp: '55119958957' },
+  }), /WhatsApp inválido/);
+});

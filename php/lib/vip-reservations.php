@@ -44,7 +44,7 @@ function vip_normalize_entry(mixed $raw, int $position): array
         throw new ValidationError("VIP {$position} inválido.");
     }
 
-    $fullName = normalize_text($raw['full_name'] ?? $raw['name'] ?? null, "Nome do VIP {$position}", 3, 255);
+    $fullName = normalize_person_name($raw['full_name'] ?? $raw['name'] ?? null, "Nome do VIP {$position}", 3, 255);
     if (count(preg_split('/\s+/u', $fullName, -1, PREG_SPLIT_NO_EMPTY) ?: []) < 2) {
         throw new ValidationError("Informe o nome completo do VIP {$position}.");
     }
