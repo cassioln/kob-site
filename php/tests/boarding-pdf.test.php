@@ -4,6 +4,23 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../lib/boarding-pdf.php';
 
+$deprecations = [];
+set_error_handler(function (int $severity, string $message) use (&$deprecations): bool {
+    if ($severity === E_DEPRECATED) {
+        $deprecations[] = $message;
+        return true;
+    }
+
+    return false;
+});
+$logo = pdf_carregar_imagem(__DIR__ . '/../../assets/images/brand/kriativos-on-board-logo.webp');
+restore_error_handler();
+
+if ($logo !== null && $deprecations !== []) {
+    fwrite(STDERR, "FAIL: carregamento de imagem emite depreciações: " . implode('; ', $deprecations) . "\n");
+    exit(1);
+}
+
 $pdf = bus_boarding_pdf([
     [
         'code' => 'COMUM001',

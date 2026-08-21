@@ -213,9 +213,14 @@
   }
 
   function mostrar(secao) {
-    [el.carregando, el.estadoLogin, el.erro, el.vazio, el.dados].forEach(function (s) {
+    [el.carregando, el.estadoLogin, el.erro, el.dados].forEach(function (s) {
       if (s) s.hidden = s !== secao;
     });
+    if (el.vazio) {
+      el.vazio.hidden = secao === el.dados
+        ? estado.reservas.length > 0
+        : secao !== el.vazio;
+    }
     if (el.botaoSair) {
       el.botaoSair.hidden = (secao !== el.dados && secao !== el.vazio);
     }
@@ -1065,10 +1070,11 @@
             opcao.type = 'button';
             opcao.className = 'grupo-item__mover-opcao grupo-item__mover-opcao--' + tipo;
             opcao.setAttribute('role', 'option');
+            var detalheHtml = detalhe ? '<small>' + detalhe + '</small>' : '';
             opcao.innerHTML = (tipo === 'espera'
               ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v12H4z"></path><path d="m4 7 4 5h8l4-5M8 12h8"></path></svg>'
               : '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="13" rx="2"></rect><path d="M3 10h18M7 18v2M17 18v2"></path></svg>')
-              + '<span class="grupo-item__mover-opcao-copy"><strong>' + titulo + '</strong><small>' + detalhe + '</small></span>';
+              + '<span class="grupo-item__mover-opcao-copy"><strong>' + titulo + '</strong>' + detalheHtml + '</span>';
             opcao.addEventListener('click', function (ev) {
               ev.preventDefault();
               ev.stopPropagation();
@@ -1106,9 +1112,12 @@
             }
           });
 
-          if (!r.is_vip) {
-            adicionarOpcaoMover(null, 'Sem ônibus confirmado', 'Enviar para a fila de espera', 'espera');
-          }
+          adicionarOpcaoMover(
+            null,
+            'Sem ônibus confirmado',
+            r.is_vip ? '' : 'Enviar para a fila de espera',
+            'espera'
+          );
 
           moverMenu.appendChild(moverOpcoes);
           moverMenu.addEventListener('toggle', function () {
@@ -1885,11 +1894,6 @@
         estado.frota = dados.frota || null;
         renderizarFiltroOnibus();
         renderizarResumo(dados.resumo);
-
-        if (!estado.reservas.length) {
-          mostrar(el.vazio);
-          return;
-        }
 
         el.baixarLista.href = API_LISTA + '?token=' + encodeURIComponent(estado.token);
         el.atualizadoEm.textContent = new Date().toLocaleString('pt-BR', {

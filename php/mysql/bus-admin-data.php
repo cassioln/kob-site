@@ -344,6 +344,7 @@ try {
             }
             $resumo['pagantes'] += (int) $r['passenger_count'];
             $resumo['criancas_no_colo'] += (int) $r['children_count'];
+            $resumo['total_a_bordo'] += (int) $r['passenger_count'] + (int) $r['children_count'];
             $resumo['receita_centavos'] += (int) $r['amount_cents'];
             foreach ($passageiros as $p) {
                 if ($p['whatsapp'] === null) {

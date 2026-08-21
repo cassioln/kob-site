@@ -31,7 +31,7 @@
     rel="stylesheet">
   <link rel="preload" href="assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
   <link rel="stylesheet" href="assets/css/main.css?v=20260727-incluso-editorial-r2">
-  <link rel="stylesheet" href="assets/css/onibus.css?v=20260819-footer-layout">
+  <link rel="stylesheet" href="assets/css/onibus.css?v=20260820-review-clean-icons">
   <link rel="stylesheet" href="assets/css/cookie-consent.css?v=20260820-fix-contrast">
   <script defer src="assets/js/cookie-consent.js?v=20260713-5"></script>
   <script defer src="assets/js/onibus.js?v=20260821-payment-recovery-v1"></script>
@@ -445,27 +445,79 @@
                   </p>
 
                   <div class="bus-review-card">
-                    <div class="bus-review-card__section">
-                      <h3 class="bus-review-card__title">Resumo da Viagem</h3>
-                      <div class="bus-review-card__route">
-                        <div class="bus-review-card__route-item">
-                          <strong>Ida</strong>: Terminal Barra Funda (SP) → Porto de Santos (Concais)
+                    <div class="bus-review-card__section bus-review-card__section--trip">
+                      <div class="bus-review-card__header-row">
+                        <h3 class="bus-review-card__title">Resumo da Viagem</h3>
+                        <span class="bus-review-card__badge-tag">Ida e Volta</span>
+                      </div>
+
+                      <!-- Trajeto / Rotas -->
+                      <div class="bus-review-trip">
+                        <div class="bus-review-trip__leg">
+                          <span class="bus-review-trip__pill bus-review-trip__pill--ida">IDA</span>
+                          <div class="bus-review-trip__route">
+                            <span class="bus-review-trip__origin">Barra Funda (SP)</span>
+                            <svg class="bus-review-trip__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                              <line x1="5" y1="12" x2="19" y2="12"></line>
+                              <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                            <span class="bus-review-trip__dest">Porto de Santos (Concais)</span>
+                          </div>
                         </div>
-                        <div class="bus-review-card__route-item">
-                          <strong>Volta</strong>: Porto de Santos (Concais) → Terminal Barra Funda (SP)
+
+                        <div class="bus-review-trip__leg">
+                          <span class="bus-review-trip__pill bus-review-trip__pill--volta">VOLTA</span>
+                          <div class="bus-review-trip__route">
+                            <span class="bus-review-trip__origin">Porto de Santos (Concais)</span>
+                            <svg class="bus-review-trip__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                              <line x1="5" y1="12" x2="19" y2="12"></line>
+                              <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                            <span class="bus-review-trip__dest">Barra Funda (SP)</span>
+                          </div>
                         </div>
-                        <div class="bus-review-card__route-item">
-                          <strong>Encontro do grupo</strong>: 06:00 hrs (Rua Tagipuru, altura do número 552
-                          - Barra Funda - SP, atrás do Memorial da América Latina)
+                      </div>
+
+                      <!-- Grid de Detalhes: Ponto de Encontro e Horários -->
+                      <div class="bus-review-grid">
+                        <div class="bus-review-info-box">
+                          <div class="bus-review-info-box__icon bus-review-info-box__icon--map" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                              <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
+                              <circle cx="12" cy="10" r="3"></circle>
+                            </svg>
+                          </div>
+                          <div class="bus-review-info-box__body">
+                            <span class="bus-review-info-box__label">Ponto de Encontro</span>
+                            <strong class="bus-review-info-box__main">Rua Tagipuru, nº 552</strong>
+                            <span class="bus-review-info-box__sub">Barra Funda · São Paulo (atrás do Memorial da América Latina)</span>
+                          </div>
                         </div>
-                        <div class="bus-review-card__route-item">
-                          <strong>Saída do ônibus</strong>: <strong>06:20 hrs</strong> (tolerância máxima de 10 minutos)
+
+                        <div class="bus-review-info-box">
+                          <div class="bus-review-info-box__icon bus-review-info-box__icon--clock" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                              <circle cx="12" cy="12" r="10"></circle>
+                              <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                          </div>
+                          <div class="bus-review-info-box__body">
+                            <span class="bus-review-info-box__label">Horários de Embarque</span>
+                            <div class="bus-review-info-box__times">
+                              <span>Encontro: <strong>06:00</strong></span>
+                              <span class="bus-review-info-box__times-sep" aria-hidden="true">·</span>
+                              <span>Saída: <strong>06:20</strong></span>
+                            </div>
+                            <span class="bus-review-info-box__sub bus-review-info-box__sub--warn">Tolerância máxima de 10 minutos</span>
+                          </div>
                         </div>
                       </div>
                     </div>
 
                     <div class="bus-review-card__section">
-                      <h3 class="bus-review-card__title">Passageiros Cadastrados</h3>
+                      <div class="bus-review-card__header-row">
+                        <h3 class="bus-review-card__title">Passageiros Cadastrados</h3>
+                      </div>
                       <ul class="bus-review-card__list" id="review-passengers-list"></ul>
                     </div>
 

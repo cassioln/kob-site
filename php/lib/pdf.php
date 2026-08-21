@@ -175,7 +175,6 @@ function pdf_carregar_imagem(string $caminho): ?array
         ob_start();
         $ok = imagejpeg($plano, null, 88);
         $jpeg = (string) ob_get_clean();
-        imagedestroy($plano);
 
         if (!$ok || $jpeg === '') {
             return null;
@@ -190,7 +189,7 @@ function pdf_carregar_imagem(string $caminho): ?array
             'bpc' => 8,
         ];
     } finally {
-        imagedestroy($img);
+        unset($plano, $img);
     }
 }
 
