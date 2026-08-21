@@ -1415,4 +1415,38 @@
     });
   })();
 
+  /* Modal do Ponto de Encontro (Barra Funda): iframe sob demanda em dialog nativo */
+  (function meetingMap() {
+    var dialog = document.getElementById('meetingMapModal');
+    var openBtn = document.getElementById('meetingMapOpen');
+    var closeBtn = document.getElementById('meetingMapClose');
+    var frame = document.getElementById('meetingMapFrame');
+    if (!dialog || !openBtn || !closeBtn || !frame || typeof dialog.showModal !== 'function') {
+      if (openBtn) openBtn.hidden = true;
+      return;
+    }
+
+    var stage = dialog.querySelector('.map-modal__stage');
+    var source = frame.dataset.src;
+    frame.addEventListener('load', function () {
+      if (frame.src && frame.src !== 'about:blank' && stage) stage.classList.remove('is-loading');
+    });
+
+    openBtn.addEventListener('click', function () {
+      if (stage) stage.classList.add('is-loading');
+      frame.src = source;
+      dialog.showModal();
+    });
+
+    closeBtn.addEventListener('click', function () { dialog.close(); });
+    dialog.addEventListener('click', function (event) {
+      if (event.target === dialog) dialog.close();
+    });
+    dialog.addEventListener('close', function () {
+      frame.src = 'about:blank';
+      if (stage) stage.classList.remove('is-loading');
+      openBtn.focus();
+    });
+  })();
+
 })();

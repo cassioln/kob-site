@@ -8897,9 +8897,7 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
   overflow: hidden;
   padding-block: clamp(82px, 10vw, 140px) clamp(96px, 12vw, 160px);
   color: var(--foam-white);
-  background:
-    radial-gradient(circle at 77% 22%, rgba(41, 195, 245, 0.14), transparent 28%),
-    linear-gradient(146deg, var(--ocean-abyss) 0%, #06294d 54%, #0a426d 100%);
+  background: #06294d;
 }
 
 .preboard-route::before,
@@ -8917,25 +8915,14 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
   top: -30%;
   left: -14%;
   border: 1px solid rgba(41, 195, 245, 0.13);
-  box-shadow: 0 0 0 74px rgba(41, 195, 245, 0.025), 0 0 0 150px rgba(41, 195, 245, 0.018);
 }
 
 .preboard-route::after {
-  width: 420px;
-  aspect-ratio: 1;
-  right: -260px;
-  bottom: -130px;
-  background: rgba(123, 31, 162, 0.32);
-  filter: blur(40px);
+  display: none;
 }
 
 .preboard-route__glow {
-  position: absolute;
-  inset: auto 0 0;
-  height: 42%;
-  z-index: -1;
-  background: linear-gradient(180deg, transparent, rgba(0, 174, 239, 0.1));
-  pointer-events: none;
+  display: none;
 }
 
 .preboard-route__head {
@@ -9142,11 +9129,11 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
   z-index: 2;
   display: block;
   width: auto;
-  min-height: 248px;
-  padding: clamp(24px, 2.8vw, 32px);
-  border-radius: 16px;
+  min-height: 236px;
+  padding: clamp(22px, 2.8vw, 30px) 0 22px;
+  border-top: 1px solid rgba(41, 195, 245, 0.34);
   color: var(--foam-white);
-  background: rgba(255, 255, 255, 0.055);
+  background: transparent;
 }
 
 .route-stop::after {
@@ -9225,6 +9212,241 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
   transform: translate(3px, -3px);
 }
 
+.route-shuttle {
+  position: relative;
+  z-index: 2;
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+  grid-template-areas:
+    "copy visual"
+    "route visual"
+    "cta visual";
+  align-items: center;
+  column-gap: clamp(28px, 4vw, 64px);
+  row-gap: 18px;
+  min-height: 0;
+  padding: 0 0 clamp(28px, 3.4vw, 40px);
+  color: var(--foam-white);
+}
+
+.route-shuttle__visual {
+  grid-area: visual;
+  width: min(100%, 440px);
+  aspect-ratio: 1392 / 1130;
+  justify-self: end;
+  align-self: end;
+  margin: 0;
+}
+
+.route-shuttle__visual img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+}
+
+.route-shuttle__copy {
+  grid-area: copy;
+  min-width: 0;
+}
+
+#hospedagem.preboard-route .route-shuttle h3 {
+  margin-bottom: 8px;
+  color: var(--foam-white);
+  font-family: var(--font-body);
+  font-size: clamp(1.35rem, 2vw, 1.75rem);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+}
+
+#hospedagem.preboard-route .route-shuttle__official {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  color: var(--sunset-gold);
+  font-size: 0.68rem !important;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  line-height: 1.25;
+  text-transform: uppercase;
+}
+
+.route-shuttle__official::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 7px;
+  height: 7px;
+  background: currentcolor;
+  border-radius: 50%;
+}
+
+#hospedagem.preboard-route .route-shuttle__copy > p:last-child {
+  max-width: 35ch;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.96rem;
+  line-height: 1.58;
+  text-wrap: pretty;
+}
+
+.route-shuttle__route {
+  grid-area: route;
+  display: grid;
+  grid-template-columns: minmax(72px, 0.7fr) minmax(92px, 1fr) minmax(110px, 1.1fr);
+  grid-template-areas:
+    "badge badge badge"
+    "start track arrival";
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.route-shuttle__trip-badge {
+  grid-area: badge;
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+  gap: 6px;
+  color: var(--ocean-cyan);
+  font-size: 0.66rem;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.route-shuttle__trip-badge svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentcolor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.route-shuttle__stop {
+  grid-area: start;
+  display: grid;
+  gap: 4px;
+  color: var(--foam-white);
+  font-size: clamp(0.9rem, 1.2vw, 1rem);
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.route-shuttle__stop small {
+  color: rgba(255, 255, 255, 0.56);
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.route-shuttle__stop--arrival {
+  grid-area: arrival;
+  color: var(--sunset-gold);
+}
+
+.route-shuttle__track {
+  grid-area: track;
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 72px;
+  height: 24px;
+  color: var(--ocean-cyan);
+}
+
+.route-shuttle__track::before,
+.route-shuttle__track::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  height: 1px;
+  background: currentcolor;
+  transform: translateY(-50%);
+}
+
+.route-shuttle__track::before {
+  right: 50%;
+  left: 0;
+}
+
+.route-shuttle__track::after {
+  right: 0;
+  left: 50%;
+  opacity: 0.32;
+}
+
+.route-shuttle__track i {
+  position: absolute;
+  left: 50%;
+  z-index: 1;
+  width: 8px;
+  height: 8px;
+  border: 2px solid var(--ocean-cyan);
+  border-radius: 50%;
+  background: var(--ocean-abyss);
+  transform: translateX(-50%);
+}
+
+.route-shuttle__track svg {
+  position: absolute;
+  right: -1px;
+  z-index: 1;
+  width: 20px;
+  height: 20px;
+  color: var(--ocean-cyan);
+  stroke: currentcolor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.route-shuttle__link {
+  grid-area: cta;
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 12px 18px;
+  border: 0;
+  border-radius: 8px;
+  color: var(--foam-white);
+  background: var(--kriativa-purple);
+  font-size: 0.84rem;
+  font-weight: 850;
+  white-space: nowrap;
+  transition: background var(--dur-state) var(--ease-quart), transform var(--dur-state) var(--ease-expo);
+}
+
+.route-shuttle__link svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentcolor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform var(--dur-state) var(--ease-expo);
+}
+
+.route-shuttle__link:hover,
+.route-shuttle__link:focus-visible {
+  color: var(--foam-white);
+  background: var(--kriativa-purple-deep);
+  transform: translateY(-2px);
+}
+
+.route-shuttle__link:hover svg,
+.route-shuttle__link:focus-visible svg {
+  transform: translateX(3px);
+}
+
 .route-destination {
   position: relative;
   z-index: 2;
@@ -9238,8 +9460,8 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
   padding: clamp(30px, 4vw, 48px);
   color: var(--ocean-abyss);
   background: var(--sunset-gold);
-  border-radius: 16px;
-  box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.14);
+  border-radius: 10px;
+  box-shadow: none;
 }
 
 .route-destination__icon {
@@ -9437,12 +9659,14 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
 }
 
 .js-reveal .preboard-route__map.reveal .route-stop,
+.js-reveal .preboard-route__map.reveal .route-shuttle,
 .js-reveal .preboard-route__map.reveal .route-destination {
   opacity: 0;
   transform: translateY(18px);
 }
 
 .js-reveal .preboard-route__map.reveal.is-in .route-stop,
+.js-reveal .preboard-route__map.reveal.is-in .route-shuttle,
 .js-reveal .preboard-route__map.reveal.is-in .route-destination {
   opacity: 1;
   transform: none;
@@ -9450,19 +9674,23 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
 }
 
 .js-reveal .preboard-route__map.reveal.is-in .route-stop--first {
-  transition-delay: 180ms;
+  transition-delay: 360ms;
 }
 
 .js-reveal .preboard-route__map.reveal.is-in .route-stop--second {
-  transition-delay: 430ms;
+  transition-delay: 520ms;
 }
 
 .js-reveal .preboard-route__map.reveal.is-in .route-stop--parking {
-  transition-delay: 720ms;
+  transition-delay: 680ms;
+}
+
+.js-reveal .preboard-route__map.reveal.is-in .route-shuttle {
+  transition-delay: 120ms;
 }
 
 .js-reveal .preboard-route__map.reveal.is-in .route-destination {
-  transition-delay: 1080ms;
+  transition-delay: 900ms;
 }
 
 /* Manual de bordo */
@@ -9830,9 +10058,31 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
 
   .route-stop {
     min-height: 220px;
-    padding: 24px;
+    padding: 24px 0 20px;
     border-top: 1px solid rgba(41, 195, 245, 0.3);
-    background: rgba(255, 255, 255, 0.045);
+    background: transparent;
+  }
+
+  .route-shuttle {
+    grid-template-columns: minmax(0, 1fr) minmax(220px, 0.8fr);
+    grid-template-areas:
+      "copy visual"
+      "route visual"
+      "cta visual";
+    gap: 20px 28px;
+  }
+
+  .route-shuttle__visual {
+    width: min(100%, 340px);
+    justify-self: end;
+  }
+
+  .route-shuttle__route {
+    width: 100%;
+  }
+
+  .route-shuttle__link {
+    justify-self: start;
   }
 
   .route-stop::after {
@@ -9844,7 +10094,7 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
   }
 
   .route-stop--parking {
-    background: rgba(123, 31, 162, 0.17);
+    background: transparent;
   }
 
   .route-destination {
@@ -9941,7 +10191,38 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
 
   .route-stop {
     min-height: 0;
-    padding: 22px 20px;
+    padding: 22px 0;
+  }
+
+  .route-shuttle {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "visual"
+      "copy"
+      "route"
+      "cta";
+    gap: 18px;
+    padding: 0 0 30px;
+  }
+
+  .route-shuttle__visual {
+    width: min(100%, 340px);
+    justify-self: center;
+  }
+
+  .route-shuttle__copy,
+  .route-shuttle__route,
+  .route-shuttle__link {
+    grid-column: auto;
+  }
+
+  .route-shuttle__route {
+    grid-template-columns: minmax(0, 1fr) minmax(54px, 0.72fr) minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  .route-shuttle__link {
+    width: 100%;
   }
 
   .route-destination {
@@ -9984,6 +10265,7 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
 @media (prefers-reduced-motion: reduce) {
 
   .js-reveal .preboard-route__map.reveal .route-stop,
+  .js-reveal .preboard-route__map.reveal .route-shuttle,
   .js-reveal .preboard-route__map.reveal .route-destination {
     opacity: 1;
     transform: none;
@@ -9991,7 +10273,9 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
   }
 
   .faq__nav-track i,
-  .route-stop__link span {
+  .route-stop__link span,
+  .route-shuttle__link,
+  .route-shuttle__link svg {
     transition: none;
   }
 }

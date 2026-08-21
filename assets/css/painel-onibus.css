@@ -808,8 +808,8 @@
 }
 
 .etiqueta--vip {
-  background: #fff0c4;
-  color: #8a5700;
+  background: #d97706;
+  color: #ffffff;
 }
 
 .painel__sem-resultado {
@@ -1956,7 +1956,7 @@
   background: var(--p-ok);
 }
 
-.grupo-item__code > span {
+.grupo-item__code>span {
   white-space: nowrap;
 }
 

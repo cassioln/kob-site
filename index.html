@@ -130,7 +130,7 @@
   <!-- Fontes da marca (banner KOB): Gobold Extra2 = display, Chantal = acento manuscrito -->
   <link rel="preload" href="assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
 
-  <link rel="stylesheet" href="assets/css/main.css?v=20260727-incluso-editorial-r2">
+  <link rel="stylesheet" href="assets/css/main.css?v=20260820-preboard-shuttle-v1">
   <link rel="stylesheet" href="assets/css/cookie-consent.css?v=20260820-fix-contrast">
   <script defer src="assets/js/cookie-consent.js?v=20260713-5"></script>
 </head>
@@ -282,6 +282,7 @@
       <a href="#itinerario">Itinerário</a>
       <a href="#valores">Valores</a>
       <a href="#depoimentos">Depoimentos</a>
+      <a href="https://busao.kriativosonboard.com.br/">Ônibus Fretado</a>
       <a href="#faq">Dúvidas</a>
     </nav>
     <div class="nav__right">
@@ -316,6 +317,7 @@
       <a href="#itinerario">Itinerário</a>
       <a href="#valores">Valores</a>
       <a href="#depoimentos">Depoimentos</a>
+      <a href="https://busao.kriativosonboard.com.br/">Ônibus Fretado</a>
       <a href="#faq">Dúvidas</a>
     </nav>
     <a class="btn btn--primary btn--lg" data-analytics-channel="whatsapp" data-analytics-cta-id="drawer_reserve"
@@ -2184,10 +2186,51 @@
         <header class="preboard-route__head reveal">
           <p class="preboard-route__script">Já garantiu sua cabine?</p>
           <h2 id="stay-title">Evite imprevistos <span>no dia do embarque</span></h2>
-          <p class="lead">Planeje sua chegada com antecedência. Hospede-se em Santos e embarque sem preocupações.</p>
+          <p class="lead">Planeje onde ficar, como chegar e embarque sem preocupações.</p>
         </header>
 
         <div class="preboard-route__map reveal" role="group" aria-label="Opções para chegar ao Porto de Santos">
+          <article class="route-shuttle" aria-labelledby="route-shuttle-title">
+            <figure class="route-shuttle__visual">
+              <img src="assets/images/transport/kriativos-on-board-bus.webp"
+                alt="Ônibus roxo oficial dos Kriativos On Board"
+                width="973" height="710" loading="lazy" decoding="async">
+            </figure>
+            <div class="route-shuttle__copy">
+              <h3 id="route-shuttle-title">Ônibus fretado</h3>
+              <p class="route-shuttle__official">Fretado oficial dos Kriativos!</p>
+              <p>Saia de São Paulo com a turma e chegue ao Porto de Santos sem preocupação.</p>
+            </div>
+            <div class="route-shuttle__route" aria-label="Rota de ida e volta do ônibus fretado: São Paulo e Porto de Santos">
+              <span class="route-shuttle__trip-badge">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M5 8h12l-2.5-2.5M19 16H7l2.5 2.5"></path>
+                </svg>
+                Ida e volta
+              </span>
+              <span class="route-shuttle__stop">
+                <small>Embarque</small>
+                São Paulo
+              </span>
+              <span class="route-shuttle__track" aria-hidden="true">
+                <i></i>
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M5 12h14M13 6l6 6-6 6"></path>
+                </svg>
+              </span>
+              <span class="route-shuttle__stop route-shuttle__stop--arrival">
+                <small>Destino</small>
+                Porto de Santos
+              </span>
+            </div>
+            <a class="route-shuttle__link" href="https://busao.kriativosonboard.com.br/">
+              <span>Ver horários e reservar</span>
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M5 12h14M13 6l6 6-6 6"></path>
+              </svg>
+            </a>
+          </article>
+
           <article class="route-stop route-stop--first">
             <div class="route-stop__body">
               <p class="route-stop__meta">Cerca de 15 min do porto</p>
@@ -2363,9 +2406,9 @@
                 </details>
                 <details>
                   <summary>Existe traslado até o porto?</summary>
-                  <div>Ainda estamos verificando a disponibilidade de ônibus para os Kriativos desta
-                    edição. Em breve
-                    informaremos.</div>
+                  <div>Sim. Disponibilizamos um ônibus fretado de São Paulo até o Porto de Santos, com retorno após o
+                    cruzeiro. <a href="https://busao.kriativosonboard.com.br/">Conheça o ônibus fretado e reserve sua
+                      vaga.</a></div>
                 </details>
                 <details>
                   <summary>Como faço com o estacionamento?</summary>
@@ -2734,9 +2777,7 @@
             data-analytics-intent="reservation_support"
             href="https://api.whatsapp.com/send?phone=5513981580498&amp;text=Ol%C3%A1%2C%20Royal%20Trip%21%20Estou%20planejando%20minha%20viagem%20para%20o%20Kriativos%20On%20Board%202026%20e%20gostaria%20de%20orienta%C3%A7%C3%A3o%20sobre%20reserva%2C%20valores%20e%20embarque."
             target="_blank" rel="noopener">WhatsApp Royal Trip</a>
-          <!-- Link do onibus fretado removido temporariamente: a pagina esta em
-               validacao com token de TESTE do Mercado Pago e nao aceita
-               pagamento real. Restaurar junto com a troca para producao. -->
+          <a href="https://busao.kriativosonboard.com.br/">Ônibus fretado</a>
           <a href="#valores">Ver valores</a>
           <a href="#itinerario">Itinerário</a>
         </nav>

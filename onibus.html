@@ -31,10 +31,10 @@
     rel="stylesheet">
   <link rel="preload" href="assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
   <link rel="stylesheet" href="assets/css/main.css?v=20260727-incluso-editorial-r2">
-  <link rel="stylesheet" href="assets/css/onibus.css?v=20260820-review-clean-icons">
+  <link rel="stylesheet" href="assets/css/onibus.css?v=20260820-discreet-map-btn">
   <link rel="stylesheet" href="assets/css/cookie-consent.css?v=20260820-fix-contrast">
   <script defer src="assets/js/cookie-consent.js?v=20260713-5"></script>
-  <script defer src="assets/js/onibus.js?v=20260821-payment-recovery-v1"></script>
+  <script defer src="assets/js/onibus.js?v=20260820-discreet-map-btn"></script>
 </head>
 
 <body class="bus-page">
@@ -457,7 +457,8 @@
                           <span class="bus-review-trip__pill bus-review-trip__pill--ida">IDA</span>
                           <div class="bus-review-trip__route">
                             <span class="bus-review-trip__origin">Barra Funda (SP)</span>
-                            <svg class="bus-review-trip__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <svg class="bus-review-trip__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                              stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                               <line x1="5" y1="12" x2="19" y2="12"></line>
                               <polyline points="12 5 19 12 12 19"></polyline>
                             </svg>
@@ -469,7 +470,8 @@
                           <span class="bus-review-trip__pill bus-review-trip__pill--volta">VOLTA</span>
                           <div class="bus-review-trip__route">
                             <span class="bus-review-trip__origin">Porto de Santos (Concais)</span>
-                            <svg class="bus-review-trip__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <svg class="bus-review-trip__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                              stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                               <line x1="5" y1="12" x2="19" y2="12"></line>
                               <polyline points="12 5 19 12 12 19"></polyline>
                             </svg>
@@ -482,7 +484,8 @@
                       <div class="bus-review-grid">
                         <div class="bus-review-info-box">
                           <div class="bus-review-info-box__icon bus-review-info-box__icon--map" aria-hidden="true">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                              stroke-linecap="round" stroke-linejoin="round">
                               <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
                               <circle cx="12" cy="10" r="3"></circle>
                             </svg>
@@ -490,13 +493,22 @@
                           <div class="bus-review-info-box__body">
                             <span class="bus-review-info-box__label">Ponto de Encontro</span>
                             <strong class="bus-review-info-box__main">Rua Tagipuru, nº 552</strong>
-                            <span class="bus-review-info-box__sub">Barra Funda · São Paulo (atrás do Memorial da América Latina)</span>
+                            <span class="bus-review-info-box__sub">Barra Funda · São Paulo (atrás do Memorial da América
+                              Latina)</span>
+                            <button class="bus-review-map-btn" id="meetingMapOpen" type="button" aria-haspopup="dialog">
+                              <span>Ver mapa</span>
+                              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Z"></path>
+                                <path d="M9 3v15M15 6v15"></path>
+                              </svg>
+                            </button>
                           </div>
                         </div>
 
                         <div class="bus-review-info-box">
                           <div class="bus-review-info-box__icon bus-review-info-box__icon--clock" aria-hidden="true">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                              stroke-linecap="round" stroke-linejoin="round">
                               <circle cx="12" cy="12" r="10"></circle>
                               <polyline points="12 6 12 12 16 14"></polyline>
                             </svg>
@@ -508,7 +520,8 @@
                               <span class="bus-review-info-box__times-sep" aria-hidden="true">·</span>
                               <span>Saída: <strong>06:20</strong></span>
                             </div>
-                            <span class="bus-review-info-box__sub bus-review-info-box__sub--warn">Tolerância máxima de 10 minutos</span>
+                            <span class="bus-review-info-box__sub bus-review-info-box__sub--warn">Tolerância máxima de
+                              10 minutos</span>
                           </div>
                         </div>
                       </div>
@@ -573,7 +586,8 @@
                 <div class="bus-payment-panel__notice-badge">
                   <span class="bus-payment-panel__notice-pulse" aria-hidden="true"></span>
                   <span class="bus-payment-panel__notice-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round">
                       <path d="M5 22h14"></path>
                       <path d="M5 2h14"></path>
                       <path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"></path>
@@ -678,10 +692,13 @@
                 <p class="bus-confirmed__group-text">Entre no grupo oficial do WhatsApp do fretado para receber
                   informações em tempo real sobre a viagem:</p>
                 <div class="bus-confirmed__group-action-row">
-                  <a class="bus-confirmed__wa-btn" href="https://chat.whatsapp.com/DxTVSZrcKXa6WopHZkGL5N?s=cl&amp;p=i&amp;ilr=4"
-                    target="_blank" rel="noopener noreferrer">
+                  <a class="bus-confirmed__wa-btn"
+                    href="https://chat.whatsapp.com/DxTVSZrcKXa6WopHZkGL5N?s=cl&amp;p=i&amp;ilr=4" target="_blank"
+                    rel="noopener noreferrer">
                     <svg viewBox="0 0 24 24" aria-hidden="true">
-                      <path d="M20.5 3.5A11.8 11.8 0 0 0 12.1 0C5.6 0 .3 5.3.3 11.8c0 2.1.5 4.1 1.6 5.9L0 24l6.4-1.7a11.9 11.9 0 0 0 5.7 1.5h.1c6.5 0 11.8-5.3 11.8-11.9 0-3.2-1.2-6.1-3.5-8.4ZM12.1 21.9h-.1a9.8 9.8 0 0 1-5-1.4l-.4-.2-3.8 1 1-3.7-.2-.4a9.8 9.8 0 0 1-1.5-5.3c0-5.4 4.4-9.8 9.9-9.8 2.6 0 5.1 1 7 2.9a9.8 9.8 0 0 1 2.9 7c0 5.4-4.4 9.9-9.8 9.9Zm5.4-7.4c-.3-.1-1.8-.9-2.1-1-.3-.1-.5-.1-.7.2-.2.3-.8 1-1 1.2-.2.2-.4.2-.7.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.3Z"></path>
+                      <path
+                        d="M20.5 3.5A11.8 11.8 0 0 0 12.1 0C5.6 0 .3 5.3.3 11.8c0 2.1.5 4.1 1.6 5.9L0 24l6.4-1.7a11.9 11.9 0 0 0 5.7 1.5h.1c6.5 0 11.8-5.3 11.8-11.9 0-3.2-1.2-6.1-3.5-8.4ZM12.1 21.9h-.1a9.8 9.8 0 0 1-5-1.4l-.4-.2-3.8 1 1-3.7-.2-.4a9.8 9.8 0 0 1-1.5-5.3c0-5.4 4.4-9.8 9.9-9.8 2.6 0 5.1 1 7 2.9a9.8 9.8 0 0 1 2.9 7c0 5.4-4.4 9.9-9.8 9.9Zm5.4-7.4c-.3-.1-1.8-.9-2.1-1-.3-.1-.5-.1-.7.2-.2.3-.8 1-1 1.2-.2.2-.4.2-.7.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.3Z">
+                      </path>
                     </svg>
                     <span>Entrar no Grupo Oficial do Fretado</span>
                   </a>
@@ -696,57 +713,65 @@
               <!-- Bloco legado preservado apenas para compatibilidade visual; a
                    confirmação atual usa os elementos acima e IDs únicos. -->
               <div class="bus-confirmed__legacy" hidden aria-hidden="true">
-              <h2 class="bus-confirmed__title" id="confirmed-legacy-title">Reserva Confirmada!</h2>
-              <p class="bus-confirmed__lead">Seu pagamento foi identificado e suas vagas estão garantidas.</p>
+                <h2 class="bus-confirmed__title" id="confirmed-legacy-title">Reserva Confirmada!</h2>
+                <p class="bus-confirmed__lead">Seu pagamento foi identificado e suas vagas estão garantidas.</p>
 
-              <div class="bus-confirmed__card">
-                <div class="bus-confirmed__code-label">Código da Reserva</div>
-                <div class="bus-confirmed__code" id="confirmed-legacy-code">KOB-0000</div>
+                <div class="bus-confirmed__card">
+                  <div class="bus-confirmed__code-label">Código da Reserva</div>
+                  <div class="bus-confirmed__code" id="confirmed-legacy-code">KOB-0000</div>
 
-                <div class="bus-confirmed__group-wrapper" id="confirmed-legacy-group-wrapper" hidden>
-                  <div class="bus-confirmed__group-label">Seu Grupo</div>
-                  <div class="bus-confirmed__group-name" id="confirmed-legacy-group-name"></div>
-                </div>
-
-                <div class="bus-confirmed__details">
-                  <div class="bus-confirmed__detail">
-                    <span>Passageiros</span>
-                    <strong id="confirmed-passengers-count">1 pessoa</strong>
+                  <div class="bus-confirmed__group-wrapper" id="confirmed-legacy-group-wrapper" hidden>
+                    <div class="bus-confirmed__group-label">Seu Grupo</div>
+                    <div class="bus-confirmed__group-name" id="confirmed-legacy-group-name"></div>
                   </div>
-                  <div class="bus-confirmed__detail">
-                    <span>Total Pago</span>
-                    <strong id="confirmed-total-paid">R$ 120,00</strong>
-                  </div>
-                  <div class="bus-confirmed__detail">
-                    <span>Status</span>
-                    <strong class="bus-badge bus-badge--paid">Pago</strong>
-                  </div>
-                </div>
 
-                <div class="bus-confirmed__group-cta">
-                  <p class="bus-confirmed__group-text">Entre no grupo oficial do WhatsApp do fretado para receber
-                    informações em tempo real sobre a viagem:</p>
-                  <a class="btn btn--whatsapp bus-confirmed__whatsapp-btn" id="confirmed-whatsapp-btn" href="#"
-                    target="_blank" rel="noopener noreferrer">
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
-                      <path
-                        d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.888 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.456 5.711 1.456h.005c6.554 0 11.89-5.336 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-                    </svg>
-                    <span>Entrar no Grupo Oficial do Fretado</span>
-                  </a>
-                  <span class="bus-confirmed__group-hint">Exclusivo para passageiros confirmados</span>
+                  <div class="bus-confirmed__details">
+                    <div class="bus-confirmed__detail">
+                      <span>Passageiros</span>
+                      <strong id="confirmed-passengers-count">1 pessoa</strong>
+                    </div>
+                    <div class="bus-confirmed__detail">
+                      <span>Total Pago</span>
+                      <strong id="confirmed-total-paid">R$ 120,00</strong>
+                    </div>
+                    <div class="bus-confirmed__detail">
+                      <span>Status</span>
+                      <strong class="bus-badge bus-badge--paid">Pago</strong>
+                    </div>
+                  </div>
+
+                  <div class="bus-confirmed__group-cta">
+                    <p class="bus-confirmed__group-text">Entre no grupo oficial do WhatsApp do fretado para receber
+                      informações em tempo real sobre a viagem:</p>
+                    <a class="btn btn--whatsapp bus-confirmed__whatsapp-btn" id="confirmed-whatsapp-btn" href="#"
+                      target="_blank" rel="noopener noreferrer">
+                      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
+                        <path
+                          d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.888 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.456 5.711 1.456h.005c6.554 0 11.89-5.336 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+                      </svg>
+                      <span>Entrar no Grupo Oficial do Fretado</span>
+                    </a>
+                    <span class="bus-confirmed__group-hint">Exclusivo para passageiros confirmados</span>
+                  </div>
                 </div>
-              </div>
               </div>
 
               <div class="bus-confirmed__next">
                 <h3>O que acontece agora</h3>
                 <ul>
-                  <li><strong>1. Comprovante de Reserva:</strong> Guarde o PDF enviado para o seu e-mail. Ele vale como comprovante oficial e pode ser apresentado pelo celular no embarque.</li>
-                  <li><strong>2. Ponto de Encontro &amp; Horários:</strong> Encontro às <strong>06h00</strong>, na Rua Tagipuru, altura do nº 552 – Barra Funda – SP (atrás do Memorial da América Latina).<br>
-                  A saída do ônibus será pontualmente às <strong>06h30</strong>, com tolerância máxima de 10 minutos (saída final às 06h40). Após esse horário limite, precisaremos seguir viagem e o ônibus não poderá aguardar passageiros atrasados.</li>
-                  <li><strong>3. Programe-se com Antecedência:</strong> Chegue para estar no local às 06h00 para conferência da lista e acomodação de bagagens.</li>
-                  <li><strong>4. Assentos Livres &amp; Integração:</strong> Os assentos não são exclusivos nem numerados. A ocupação é livre por ordem de chegada. Aproveite o trajeto para ir conhecendo os outros participantes e já começar a diversão! <em>(Válido para ida e volta; você não necessariamente retornará no mesmo assento em que foi).</em></li>
+                  <li><strong>1. Comprovante de Reserva:</strong> Guarde o PDF enviado para o seu e-mail. Ele vale como
+                    comprovante oficial e pode ser apresentado pelo celular no embarque.</li>
+                  <li><strong>2. Ponto de Encontro &amp; Horários:</strong> Encontro às <strong>06h00</strong>, na Rua
+                    Tagipuru, altura do nº 552 – Barra Funda – SP (atrás do Memorial da América Latina).<br>
+                    A saída do ônibus será pontualmente às <strong>06h30</strong>, com tolerância máxima de 10 minutos
+                    (saída final às 06h40). Após esse horário limite, precisaremos seguir viagem e o ônibus não poderá
+                    aguardar passageiros atrasados.</li>
+                  <li><strong>3. Programe-se com Antecedência:</strong> Chegue para estar no local às 06h00 para
+                    conferência da lista e acomodação de bagagens.</li>
+                  <li><strong>4. Assentos Livres &amp; Integração:</strong> Os assentos não são exclusivos nem
+                    numerados. A ocupação é livre por ordem de chegada. Aproveite o trajeto para ir conhecendo os outros
+                    participantes e já começar a diversão! <em>(Válido para ida e volta; você não necessariamente
+                      retornará no mesmo assento em que foi).</em></li>
                 </ul>
               </div>
 
@@ -781,6 +806,41 @@
                 <button id="still-here-continue" class="btn btn--primary" type="button" autofocus>Continuar
                   pagamento</button>
                 <button id="still-here-cancel" class="btn btn--ghost" type="button">Cancelar transação</button>
+              </div>
+            </dialog>
+
+            <!-- MODAL: Localização do Ponto de Encontro (Barra Funda) -->
+            <dialog class="tour360 map-modal" id="meetingMapModal" aria-labelledby="meetingMapTitle">
+              <div class="tour360__bar map-modal__bar">
+                <div class="map-modal__heading">
+                  <span class="map-modal__marker" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round">
+                      <path d="M12 21s6-5.15 6-11a6 6 0 1 0-12 0c0 5.85 6 11 6 11Z"></path>
+                      <circle cx="12" cy="10" r="2"></circle>
+                    </svg>
+                  </span>
+                  <span>
+                    <b class="tour360__label" id="meetingMapTitle">Ponto de Encontro · Barra Funda</b>
+                    <small class="map-modal__address">Rua Tagipuru, 552 · Barra Funda, São Paulo - SP</small>
+                  </span>
+                </div>
+                <button class="tour360__icon-btn tour360__close" id="meetingMapClose" type="button"
+                  aria-label="Fechar mapa do Ponto de Encontro">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    aria-hidden="true">
+                    <path d="M6 6l12 12M18 6 6 18"></path>
+                  </svg>
+                </button>
+              </div>
+              <div class="tour360__stage map-modal__stage">
+                <div class="tour360__spinner map-modal__spinner" aria-hidden="true">
+                  <div class="tour360__spinner-dots"><span></span><span></span><span></span></div>
+                </div>
+                <iframe class="map-modal__frame" id="meetingMapFrame"
+                  title="Mapa do Ponto de Encontro - Rua Tagipuru, 552"
+                  data-src="https://maps.google.com/maps?q=Rua+Tagipuru%2C+552+-+Barra+Funda%2C+S%C3%A3o+Paulo+-+SP&amp;t=&amp;z=16&amp;ie=UTF8&amp;iwloc=&amp;output=embed"
+                  loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
               </div>
             </dialog>
           </div>
@@ -828,7 +888,8 @@
             </div>
             <div class="bus-reassurance__content">
               <h3>Quórum mínimo &amp; Reembolso integral</h3>
-              <p>Se a meta mínima de passageiros para viabilizar o ônibus não for atingida, <strong>100% do valor pago via Pix será devolvido integralmente</strong> pela organização.</p>
+              <p>Se a meta mínima de passageiros para viabilizar o ônibus não for atingida, <strong>100% do valor pago
+                  via Pix será devolvido integralmente</strong> pela organização.</p>
             </div>
           </article>
 
@@ -844,7 +905,9 @@
             </div>
             <div class="bus-reassurance__content">
               <h3>Cancelamento &amp; Transferência de Vaga</h3>
-              <p>Reembolso integral em até <strong>7 dias</strong> após o Pix (CDC). Após esse prazo, você pode <strong>transferir sua vaga gratuitamente</strong> para outro amigo até 5 dias antes da viagem.</p>
+              <p>Reembolso integral em até <strong>7 dias</strong> após o Pix (CDC). Após esse prazo, você pode
+                <strong>transferir sua vaga gratuitamente</strong> para outro amigo até 5 dias antes da viagem.
+              </p>
             </div>
           </article>
 
@@ -862,7 +925,11 @@
             </div>
             <div class="bus-reassurance__content">
               <h3>Transporte completo de ida e volta</h3>
-              <p>O valor de <strong>R$ 120,00</strong> cobre ida e volta (Barra Funda ⇄ Porto de Santos) com bagagem incluída. <strong>Encontro:</strong> 06:00 hrs | <strong>Saída:</strong> 06:30 hrs (tolerância máx: 10 min &mdash; Rua Tagipuru, 552).</p>
+              <p>O transporte de ida e volta entre a Barra Funda e o Porto de Santos tem o valor de <strong>R$
+                  120,00</strong>, já com a bagagem inclusa. O ponto de encontro será na <strong>Rua Tagipuru,
+                  552</strong>, a partir das <strong>06:00 hrs</strong>, com saída programada pontualmente para as
+                <strong>06:30 hrs</strong> e tolerância máxima de 10 minutos.
+              </p>
             </div>
           </article>
         </div>
@@ -874,7 +941,8 @@
     <div class="container bus-footer__inner">
       <div class="bus-footer__identity">
         <a href="index.html" class="bus-footer__brand" aria-label="Voltar ao Kriativos On Board">
-          <img src="assets/images/brand/kriativos-on-board-logo.webp" alt="Kriativos On Board" width="2930" height="1796">
+          <img src="assets/images/brand/kriativos-on-board-logo.webp" alt="Kriativos On Board" width="2930"
+            height="1796">
         </a>
         <p>Prepare-se para embarcar com a gente.</p>
       </div>

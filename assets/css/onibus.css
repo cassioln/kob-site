@@ -755,6 +755,12 @@
   border-top: 1px solid var(--line-light, rgba(90, 113, 132, 0.15));
 }
 
+.bus-wizard__nav > .btn:only-child,
+.bus-wizard__nav > :first-child:last-child {
+  width: 100%;
+  justify-content: center;
+}
+
 .bus-wizard__nav--split {
   justify-content: space-between;
   gap: 16px;
@@ -1477,6 +1483,14 @@
   flex-direction: column;
   gap: 3px;
   min-width: 0;
+  flex: 1;
+}
+
+.bus-review-info-box__head-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
 }
 
 .bus-review-info-box__label {
@@ -1485,6 +1499,49 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: #64748b;
+}
+
+.bus-review-map-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  margin-top: 4px;
+  width: fit-content;
+  font-size: 0.74rem;
+  font-weight: 500;
+  color: #64748b;
+  text-decoration: underline;
+  text-decoration-color: rgba(100, 116, 139, 0.4);
+  text-underline-offset: 2px;
+  cursor: pointer;
+  line-height: 1.2;
+  transition: color 0.15s ease, text-decoration-color 0.15s ease;
+}
+
+.bus-review-map-btn:hover,
+.bus-review-map-btn:focus-visible {
+  color: var(--bus-ink, #0f2742);
+  text-decoration-color: currentColor;
+}
+
+.bus-review-map-btn svg {
+  width: 11px;
+  height: 11px;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.75;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.bus-review-map-btn:hover svg,
+.bus-review-map-btn:focus-visible svg {
+  opacity: 1;
+  transform: translateY(-1px);
 }
 
 .bus-review-info-box__main {
