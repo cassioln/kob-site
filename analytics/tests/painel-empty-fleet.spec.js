@@ -415,3 +415,66 @@ test('diferencia WhatsApp não informado de telefone não aplicável', async ({ 
   await expect(page.locator('.tabela__tel--vazio').filter({ hasText: 'Não informado' })).toHaveCount(1);
   await expect(page.locator('.tabela__tel--vazio').filter({ hasText: 'N/A' })).toHaveCount(1);
 });
+
+test('mantém WhatsApp antes de CPF e centraliza as células da tabela', async ({ page }) => {
+  await page.route('**/api/bus-admin-data*', route => route.fulfill({
+    status: 200,
+    contentType: 'application/json',
+    body: JSON.stringify({
+      reservas: [{
+        id: 'order-layout',
+        code: 'LAYOUT01',
+        status: 'confirmed',
+        status_chave: 'pago',
+        status_rotulo: 'Pagamento aprovado',
+        status_tom: 'ok',
+        contato: 'Pessoa Layout',
+        contato_cpf: '52998224725',
+        email: 'layout@email.com',
+        contato_whatsapp: '11999998888',
+        pagantes: 1,
+        criancas: 0,
+        grupo: null,
+        valor_centavos: 12000,
+        criado_em: '21/08/2026 11:00',
+        pago_em: '21/08/2026 11:01',
+        order_id: 'ORD-LAYOUT',
+        is_vip: false,
+        bus_number: 1,
+        passageiros: [{
+          posicao: 1,
+          nome: 'Pessoa Layout',
+          cpf: '529.982.247-25',
+          whatsapp: '11999998888',
+          responsavel: true,
+          menor: false,
+          crianca_colo: false
+        }]
+      }],
+      resumo: {
+        total_a_bordo: 1,
+        pagantes: 1,
+        criancas_no_colo: 0,
+        reservas_pagas: 1,
+        reservas_vip: 0,
+        reservas_pendentes: 0,
+        reservas_falha: 0,
+        receita_centavos: 12000,
+        sem_telefone: 0
+      },
+      frota: { capacidade: 46, minimo: 40, onibus: [] }
+    })
+  }));
+
+  await page.goto('/painel-onibus.html');
+
+  expect(await page.locator('.tabela thead th').allTextContents()).toEqual([
+    'Reserva', 'Passageiro', 'WhatsApp', 'CPF', 'Grupo', 'Ônibus', 'Status', 'Pago em'
+  ]);
+
+  const cells = page.locator('.tabela tbody tr').first().locator('td');
+  await expect(cells.nth(2)).toHaveAttribute('data-rotulo', 'WhatsApp');
+  await expect(cells.nth(3)).toHaveAttribute('data-rotulo', 'CPF');
+  await expect(cells.nth(2)).toHaveCSS('align-content', 'center');
+  await expect(cells.nth(2)).toHaveCSS('vertical-align', 'middle');
+});

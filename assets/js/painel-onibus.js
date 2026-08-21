@@ -585,8 +585,6 @@
       }
       celula('Passageiro', nomeWrap);
 
-      celula('CPF', p.cpf || '—', 'tabela__cpf');
-
       if (p.whatsapp) {
         var linkWhatsapp = criarLinkWhatsapp(p.whatsapp, p.nome || r.contato);
         if (linkWhatsapp) {
@@ -598,6 +596,8 @@
         var telefoneAusente = p.crianca_colo ? 'N/A' : 'Não informado';
         celula('WhatsApp', telefoneAusente, 'tabela__tel tabela__tel--vazio');
       }
+
+      celula('CPF', p.cpf || '—', 'tabela__cpf');
 
       // O nome do grupo substitui a antiga contagem de pessoas e e exibido apenas na
       // primeira linha da reserva para manter o alinhamento visual do grupo.

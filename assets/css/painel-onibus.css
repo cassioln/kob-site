@@ -560,6 +560,11 @@
   vertical-align: baseline;
 }
 
+.tabela tbody td[data-rotulo] {
+  align-content: center;
+  vertical-align: middle;
+}
+
 /* Linhas da MESMA reserva ficam visualmente ligadas: quem confere lê por
    grupo, não por linha solta. A régua mais forte marca onde um grupo começa. */
 .tabela tbody tr[data-grupo-inicio="true"] td {
