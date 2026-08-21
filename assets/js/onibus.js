@@ -238,19 +238,19 @@
   // Cabeçalho por etapa global
   var STEP_COPY = {
     cadastro: {
-      eyebrow: 'Etapa 1 de 3 · Cadastro',
+      eyebrow: 'Cadastro',
       title: 'Quem vai embarcar com você?',
       description: 'Comece pelo contato principal. Depois, informe o nome completo e o CPF de cada pessoa do grupo, incluindo você.'
     },
     pagamento: {
-      eyebrow: 'Etapa 2 de 3 · Pagamento',
-      title: 'Falta pouco: pague com Pix',
-      description: 'Abra o app do seu banco e escaneie o QR Code, ou use o Pix Copia e Cola. A confirmação aparece aqui automaticamente.'
+      eyebrow: 'Pagamento · aguardando confirmação',
+      title: 'Pague para confirmar sua reserva',
+      description: 'Abra o app do seu banco e escaneie o QR Code, ou use o Pix Copia e Cola. Depois, aguarde a confirmação nesta página.'
     },
     confirmacao: {
-      eyebrow: 'Etapa 3 de 3 · Confirmação',
-      title: 'Sua vaga está garantida',
-      description: 'Pagamento confirmado e assentos reservados. Guarde o código da reserva — é ele que identifica seu grupo no embarque.'
+      eyebrow: 'Reserva confirmada',
+      title: 'Pagamento confirmado. Sua reserva está registrada.',
+      description: 'Sua reserva foi registrada. Guarde o código da reserva — é ele que identifica seu grupo no embarque.'
     }
   };
 
@@ -275,19 +275,19 @@
     if (!stepHeading || currentStep !== 'cadastro') return;
     var stepInfo = {
       1: {
-        eyebrow: 'Etapa 1 de 3 · Contato Principal',
+        eyebrow: 'Etapa 1 de 3 · Contato',
         title: 'Quem é o responsável pela reserva?',
-        description: 'Comece informando os dados do contato principal. Esta pessoa será o responsável financeiro e o canal oficial do grupo.'
+        description: 'Informe os dados de quem ficará responsável pela reserva e pelo pagamento. Essa pessoa deve ter 18 anos ou mais.'
       },
       2: {
-        eyebrow: 'Etapa 2 de 3 · Grupo & Passageiros',
+        eyebrow: 'Etapa 2 de 3 · Passageiros',
         title: 'Quem vai embarcar com você?',
-        description: 'Informe se você viajará sozinho(a) ou adicione as pessoas que irão com você na viagem.'
+        description: 'Marque que vai sozinho(a) ou adicione cada pessoa que embarcará com você.'
       },
       3: {
-        eyebrow: 'Etapa 3 de 3 · Revisão do Pedido',
+        eyebrow: 'Etapa 3 de 3 · Revisão',
         title: 'Revise os dados antes do Pix',
-        description: 'Confira as informações da viagem e dos passageiros antes de gerar o código de pagamento.'
+        description: 'Confira a rota, os passageiros e o total. Depois, aceite os termos para gerar o Pix.'
       }
     };
 
@@ -782,7 +782,7 @@
   function validateStep2() {
     clearInvalid();
     if (!soloTraveler.checked && addedPassengers.length === 0) {
-      return invalid('Selecione "Vou Sozinho" ou adicione pessoas ao grupo para continuar.', soloTraveler);
+      return invalid('Marque “Vou sozinho(a)” ou adicione pelo menos uma pessoa ao grupo para continuar.', soloTraveler);
     }
     setStatus('', false);
     return true;
@@ -938,7 +938,7 @@
       ticketLink.hidden = false;
     }
 
-    paymentStatus.textContent = 'Retomando a confirmação do seu pagamento…';
+    paymentStatus.textContent = 'Retomando a consulta do pagamento…';
     startExpiryCountdown(activeRegistrationId);
     pollPaymentStatus(activeRegistrationId);
   }
@@ -1120,7 +1120,7 @@
         return;
       }
       if (['cancelled', 'refunded', 'payment_failed'].includes(data.status)) {
-        paymentStatus.textContent = 'Este pagamento não está ativo. Entre em contato com a organização para receber orientação.';
+        paymentStatus.textContent = 'Este pagamento não está ativo. Fale com a organização antes de tentar uma nova reserva.';
         paymentPanel.dataset.paymentState = data.status;
         stopExpiryCountdown();
         return;
@@ -1130,6 +1130,7 @@
         pollPaymentStatus(registrationId, options);
       }, 3000);
     }).catch(function () {
+      paymentStatus.textContent = 'Não conseguimos consultar o pagamento agora. Tentaremos novamente em instantes.';
       statusTimer = window.setTimeout(function () {
         pollPaymentStatus(registrationId, options);
       }, 5000);
@@ -1163,7 +1164,7 @@
       ticketLink.href = payment.ticketUrl;
       ticketLink.hidden = false;
     }
-    paymentStatus.textContent = 'Aguardando pagamento. Não feche esta página até concluir a transferência.';
+    paymentStatus.textContent = 'Aguardando pagamento. Depois de pagar, aguarde a confirmação nesta página.';
     startExpiryCountdown(payment.registrationId);
     pollPaymentStatus(payment.registrationId);
     paymentPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });

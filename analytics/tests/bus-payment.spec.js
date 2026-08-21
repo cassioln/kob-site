@@ -565,15 +565,15 @@ test('cabeçalho acompanha a etapa e o wizard reflete a navegação', async ({ p
   // Etapa de Pagamento
   await expect(page.locator('#payment-panel')).toBeVisible();
   await expect(page.locator('#step-heading')).toHaveAttribute('data-step', 'pagamento');
-  await expect(page.locator('#step-eyebrow')).toHaveText(/Etapa 2 de 3/);
-  await expect(page.locator('#form-title')).toHaveText(/Pix/i);
+  await expect(page.locator('#step-eyebrow')).toHaveText(/Pagamento · aguardando confirmação/i);
+  await expect(page.locator('#form-title')).toHaveText(/Pague para confirmar sua reserva/i);
 
   // Etapa de Confirmação
   confirmado = true;
   await expect(page.locator('#confirmation-panel')).toBeVisible({ timeout: 20000 });
   await expect(page.locator('#step-heading')).toHaveAttribute('data-step', 'confirmacao');
-  await expect(page.locator('#step-eyebrow')).toHaveText(/Etapa 3 de 3/);
-  await expect(page.locator('#form-title')).toHaveText(/garantida/i);
+  await expect(page.locator('#step-eyebrow')).toHaveText(/Reserva confirmada/i);
+  await expect(page.locator('#form-title')).toHaveText(/Pagamento confirmado.*reserva está registrada/i);
 });
 
 test('layout do checkout: ritmo por escala e colunas do painel alinhadas', async ({ page }) => {
