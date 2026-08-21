@@ -20,7 +20,7 @@ const CATALOGO = [
   'Twilight Struggle', 'Um Banquete a Odin', 'Everdell',
   'Mansions of Madness', 'Ticket to Ride', 'Zombicide', 'Scythe', 'Arnak',
   'Five Tribes', 'Caverna', 'On Mars', 'La Granja', 'Sky Team', 'Azul',
-  'Tiranos da Umbreterna', '7 Wonders', 'Pandemic Legacy', 'Eclipse',
+  'Tiranos da Umbreterna', '7 Wonders', 'Eclipse',
   'Agricola', 'Anachrony', 'As Viagens de Marco Polo', 'Robinson Crusoé',
   'World Wonders', 'Lords of Waterdeep', 'The White Castle', 'Stone Age',
   'El Grande', 'Teotihuacan', 'Orléans', 'Food Chain Magnate', 'Tikal',
@@ -48,9 +48,9 @@ function atribuir(usados, tentarGravar) {
   return null;
 }
 
-test('catálogo tem 51 nomes e nenhum repetido na origem', () => {
-  assert.equal(CATALOGO.length, 51);
-  assert.equal(new Set(CATALOGO).size, 51, 'catálogo com nome duplicado');
+test('catálogo tem 50 nomes e nenhum repetido na origem', () => {
+  assert.equal(CATALOGO.length, 50);
+  assert.equal(new Set(CATALOGO).size, 50, 'catálogo com nome duplicado');
 });
 
 test('só é grupo com 2 ou mais pessoas, contando criança de colo', () => {
@@ -69,8 +69,8 @@ test('nomes não repetem ao esgotar o catálogo inteiro', () => {
     const nome = atribuir(usados, n => { usados.push(n); return true; });
     emitidos.push(nome);
   }
-  assert.equal(emitidos.length, 51);
-  assert.equal(new Set(emitidos).size, 51, 'emitiu nome repetido');
+  assert.equal(emitidos.length, 50);
+  assert.equal(new Set(emitidos).size, 50, 'emitiu nome repetido');
 });
 
 test('esgotado o catálogo, cai para Monopoly sequencial', () => {

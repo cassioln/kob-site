@@ -31,7 +31,7 @@ function bus_catalogo_grupos(): array
         'Twilight Struggle', 'Um Banquete a Odin', 'Everdell',
         'Mansions of Madness', 'Ticket to Ride', 'Zombicide', 'Scythe', 'Arnak',
         'Five Tribes', 'Caverna', 'On Mars', 'La Granja', 'Sky Team', 'Azul',
-        'Tiranos da Umbreterna', '7 Wonders', 'Pandemic Legacy', 'Eclipse',
+        'Tiranos da Umbreterna', '7 Wonders', 'Eclipse',
         'Agricola', 'Anachrony', 'As Viagens de Marco Polo', 'Robinson Crusoé',
         'World Wonders', 'Lords of Waterdeep', 'The White Castle', 'Stone Age',
         'El Grande', 'Teotihuacan', 'Orléans', 'Food Chain Magnate', 'Tikal',
