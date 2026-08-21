@@ -770,21 +770,22 @@
   align-items: center;
   gap: 6px;
   min-height: 32px;
-  color: #168c4b;
+  color: #0f7a42;
   text-decoration: none;
   border-radius: 6px;
   transition: color var(--p-transicao), background var(--p-transicao);
 }
 
 .tabela__whatsapp-link:hover {
-  color: #0d6f3a;
-  text-decoration: underline;
-  text-underline-offset: 2px;
+  color: #0a6335;
+  text-decoration: none;
 }
 
 .tabela__whatsapp-link:focus-visible {
-  outline: 2px solid #168c4b;
+  color: #0a6335;
+  outline: 2px solid #0f7a42;
   outline-offset: 3px;
+  text-decoration: none;
 }
 
 .tabela__whatsapp-link svg {

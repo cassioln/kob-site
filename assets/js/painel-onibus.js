@@ -595,7 +595,8 @@
           celula('WhatsApp', p.whatsapp, 'tabela__tel');
         }
       } else {
-        celula('WhatsApp', 'N/A', 'tabela__tel tabela__tel--vazio');
+        var telefoneAusente = p.crianca_colo ? 'N/A' : 'Não informado';
+        celula('WhatsApp', telefoneAusente, 'tabela__tel tabela__tel--vazio');
       }
 
       // O nome do grupo substitui a antiga contagem de pessoas e e exibido apenas na

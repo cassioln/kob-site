@@ -327,3 +327,91 @@ test('cria atalho seguro de WhatsApp apenas para número válido', async ({ page
   await expect(links.first()).toHaveAttribute('target', '_blank');
   await expect(links.first()).toHaveAttribute('rel', 'noopener noreferrer');
 });
+
+test('diferencia WhatsApp não informado de telefone não aplicável', async ({ page }) => {
+  await page.route('**/api/bus-admin-data*', route => route.fulfill({
+    status: 200,
+    contentType: 'application/json',
+    body: JSON.stringify({
+      reservas: [
+        {
+          id: 'adult-without-whatsapp',
+          code: 'ADULT001',
+          status: 'confirmed',
+          status_chave: 'pago',
+          status_rotulo: 'Pagamento aprovado',
+          status_tom: 'ok',
+          contato: 'Pessoa adulta',
+          contato_cpf: '52998224725',
+          email: 'adulto@email.com',
+          contato_whatsapp: '',
+          pagantes: 1,
+          criancas: 0,
+          grupo: null,
+          valor_centavos: 12000,
+          criado_em: '21/08/2026 11:00',
+          pago_em: '21/08/2026 11:01',
+          order_id: 'ORD-ADULT',
+          is_vip: false,
+          bus_number: 1,
+          passageiros: [{
+            posicao: 1,
+            nome: 'Pessoa adulta',
+            cpf: '529.982.247-25',
+            whatsapp: null,
+            responsavel: true,
+            menor: false,
+            crianca_colo: false
+          }]
+        },
+        {
+          id: 'lap-child-without-whatsapp',
+          code: 'CHILD001',
+          status: 'confirmed',
+          status_chave: 'pago',
+          status_rotulo: 'Pagamento aprovado',
+          status_tom: 'ok',
+          contato: 'Responsável da criança',
+          contato_cpf: '52998224725',
+          email: 'responsavel@email.com',
+          contato_whatsapp: '',
+          pagantes: 0,
+          criancas: 1,
+          grupo: null,
+          valor_centavos: 0,
+          criado_em: '21/08/2026 10:00',
+          pago_em: '21/08/2026 10:01',
+          order_id: 'ORD-CHILD',
+          is_vip: false,
+          bus_number: 1,
+          passageiros: [{
+            posicao: 1,
+            nome: 'Bebê da reserva',
+            cpf: '529.982.247-25',
+            whatsapp: null,
+            responsavel: false,
+            menor: true,
+            crianca_colo: true
+          }]
+        }
+      ],
+      resumo: {
+        total_a_bordo: 1,
+        pagantes: 1,
+        criancas_no_colo: 1,
+        reservas_pagas: 2,
+        reservas_vip: 0,
+        reservas_pendentes: 0,
+        reservas_falha: 0,
+        receita_centavos: 12000,
+        sem_telefone: 2
+      },
+      frota: { capacidade: 46, minimo: 40, onibus: [] }
+    })
+  }));
+
+  await page.goto('/painel-onibus.html');
+
+  await expect(page.locator('.tabela__tel--vazio').filter({ hasText: 'Não informado' })).toHaveCount(1);
+  await expect(page.locator('.tabela__tel--vazio').filter({ hasText: 'N/A' })).toHaveCount(1);
+});
