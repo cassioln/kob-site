@@ -612,7 +612,25 @@
 
       celula('Status', primeiro ? badge(r.status_rotulo, r.status_tom) : null);
 
-      celula('Pago em', primeiro ? (r.is_vip ? '' : (r.pago_em || '—')) : '', 'tabela__num');
+      if (primeiro && !r.is_vip) {
+        var blocoPagamento = document.createElement('div');
+        blocoPagamento.className = 'tabela__pagamento';
+
+        var dataPagamento = document.createElement('span');
+        dataPagamento.textContent = r.pago_em || '—';
+        blocoPagamento.appendChild(dataPagamento);
+
+        if (r.criado_em) {
+          var criadoEm = document.createElement('span');
+          criadoEm.className = 'tabela__secundario tabela__pagamento-criado';
+          criadoEm.textContent = 'Criado em: ' + r.criado_em;
+          blocoPagamento.appendChild(criadoEm);
+        }
+
+        celula('Pago em', blocoPagamento, 'tabela__num');
+      } else {
+        celula('Pago em', '', 'tabela__num');
+      }
 
       el.corpo.appendChild(tr);
     });

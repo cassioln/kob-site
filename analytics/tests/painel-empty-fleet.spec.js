@@ -478,3 +478,95 @@ test('mantém WhatsApp antes de CPF e centraliza as células da tabela', async (
   await expect(cells.nth(2)).toHaveCSS('align-content', 'center');
   await expect(cells.nth(2)).toHaveCSS('vertical-align', 'middle');
 });
+
+test('mostra a emissão do QR Code abaixo da aprovação ou pendência do pagamento', async ({ page }) => {
+  await page.route('**/api/bus-admin-data*', route => route.fulfill({
+    status: 200,
+    contentType: 'application/json',
+    body: JSON.stringify({
+      reservas: [
+        {
+          id: 'paid-qr-date',
+          code: 'PAIDQR01',
+          status: 'confirmed',
+          status_chave: 'pago',
+          status_rotulo: 'Pagamento aprovado',
+          status_tom: 'ok',
+          contato: 'Pagamento aprovado',
+          contato_cpf: '52998224725',
+          email: 'pago@email.com',
+          contato_whatsapp: '11999998888',
+          pagantes: 1,
+          criancas: 0,
+          grupo: null,
+          valor_centavos: 12000,
+          criado_em: '21/08/2026 14:20',
+          pago_em: '21/08/2026 14:23',
+          order_id: 'ORD-PAID-QR',
+          is_vip: false,
+          bus_number: 1,
+          passageiros: [{
+            posicao: 1,
+            nome: 'Pagamento aprovado',
+            cpf: '529.982.247-25',
+            whatsapp: '11999998888',
+            responsavel: true,
+            menor: false,
+            crianca_colo: false
+          }]
+        },
+        {
+          id: 'pending-qr-date',
+          code: 'PENDING1',
+          status: 'pending',
+          status_chave: 'pendente',
+          status_rotulo: 'Aguardando pagamento',
+          status_tom: 'espera',
+          contato: 'Pagamento pendente',
+          contato_cpf: '52998224725',
+          email: 'pendente@email.com',
+          contato_whatsapp: '11999998888',
+          pagantes: 1,
+          criancas: 0,
+          grupo: null,
+          valor_centavos: 12000,
+          criado_em: '21/08/2026 14:30',
+          pago_em: null,
+          order_id: 'ORD-PENDING-QR',
+          is_vip: false,
+          bus_number: null,
+          passageiros: [{
+            posicao: 1,
+            nome: 'Pagamento pendente',
+            cpf: '529.982.247-25',
+            whatsapp: '11999998888',
+            responsavel: true,
+            menor: false,
+            crianca_colo: false
+          }]
+        }
+      ],
+      resumo: {
+        total_a_bordo: 2,
+        pagantes: 2,
+        criancas_no_colo: 0,
+        reservas_pagas: 1,
+        reservas_vip: 0,
+        reservas_pendentes: 1,
+        reservas_falha: 0,
+        receita_centavos: 12000,
+        sem_telefone: 0
+      },
+      frota: { capacidade: 46, minimo: 40, onibus: [] }
+    })
+  }));
+
+  await page.goto('/painel-onibus.html');
+
+  const datas = page.locator('.tabela tbody td[data-rotulo="Pago em"]');
+  await expect(datas.nth(0)).toContainText('21/08/2026 14:23');
+  await expect(datas.nth(0)).toContainText('Criado em: 21/08/2026 14:20');
+  await expect(datas.nth(1)).toContainText('—');
+  await expect(datas.nth(1)).toContainText('Criado em: 21/08/2026 14:30');
+  await expect(datas.nth(0).locator('.tabela__pagamento-criado')).toHaveCSS('font-size', '12px');
+});

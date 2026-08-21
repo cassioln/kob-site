@@ -813,6 +813,11 @@
   font-size: 0.8125rem;
 }
 
+.tabela__pagamento-criado {
+  margin-top: 2px;
+  font-size: 0.75rem;
+}
+
 .tabela__num {
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
