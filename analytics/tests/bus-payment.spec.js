@@ -32,9 +32,14 @@ test('cadastra o grupo, calcula o valor e exibe o Pix', async ({ page }) => {
   await page.goto('/onibus.html');
   await expect(page).toHaveTitle(/Ônibus.*Kriativos/i);
   await expect(page.getByRole('heading', { name: /ônibus fretado/i })).toBeVisible();
-  await expect(page.locator('.bus-hero__ticket').getByText('R$ 120,00', { exact: true })).toBeVisible();
-  await expect(page.locator('.bus-hero__ticket').getByText(/por pessoa pagante/i)).toBeVisible();
-  await expect(page.locator('.bus-route').getByText(/Barra Funda/i)).toBeVisible();
+  const farePanel = page.locator('#heroFarePanel');
+  await expect(farePanel.getByText('R$ 120,00', { exact: true })).toBeVisible();
+  await expect(farePanel.getByText('/ pessoa pagante', { exact: true })).toBeVisible();
+  await expect(page.locator('.bus-hero__lead').getByText(/Barra Funda/i)).toBeVisible();
+  const route = page.locator('.route-shuttle__route');
+  await expect(route.getByText('Ida e volta', { exact: true })).toBeVisible();
+  await expect(route.locator('.route-shuttle__stop').first()).toContainText('São Paulo');
+  await expect(route.locator('.route-shuttle__stop--arrival')).toContainText('Porto de Santos');
 
   // Etapa 1: Contato Principal
   await page.getByLabel('Nome completo (contato principal)').fill('Maria de Souza');
