@@ -30,40 +30,87 @@
     href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap"
     rel="stylesheet">
   <link rel="preload" href="assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
-  <link rel="stylesheet" href="assets/css/main.css?v=20260727-incluso-editorial-r2">
-  <link rel="stylesheet" href="assets/css/onibus.css?v=20260820-discreet-map-btn">
+  <link rel="stylesheet" href="assets/css/main.css?v=20260821-header-lead-flow">
+  <link rel="stylesheet" href="assets/css/onibus.css?v=20260821-header-subdomain-refactor">
   <link rel="stylesheet" href="assets/css/cookie-consent.css?v=20260820-fix-contrast">
   <script defer src="assets/js/cookie-consent.js?v=20260713-5"></script>
-  <script defer src="assets/js/onibus.js?v=20260820-discreet-map-btn"></script>
+  <script defer src="assets/js/onibus.js?v=20260821-header-subdomain-refactor"></script>
 </head>
 
 <body class="bus-page">
   <a class="skip-link" href="#main">Pular para o conteúdo</a>
 
   <header class="bus-header">
-    <a href="index.html" class="bus-header__brand" aria-label="Kriativos On Board — página inicial">
+    <a href="https://kriativosonboard.com.br/" class="bus-header__brand" aria-label="Kriativos On Board — Página principal do evento">
       <img src="assets/images/brand/kriativos-on-board-logo.webp" alt="Kriativos On Board" width="2930" height="1796">
     </a>
-    <a class="bus-header__back" href="index.html">Voltar ao evento <span aria-hidden="true">↗</span></a>
+    <a class="bus-header__main-link" href="https://kriativosonboard.com.br/" aria-label="Acessar a página principal do evento Kriativos On Board">
+      <span class="bus-header__main-link-text">Página principal do evento</span>
+      <span class="bus-header__main-link-text-short">Site do evento</span>
+      <svg class="bus-header__arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="7" y1="17" x2="17" y2="7"></line>
+        <polyline points="7 7 17 7 17 17"></polyline>
+      </svg>
+    </a>
   </header>
 
   <main id="main">
     <section class="bus-hero" aria-labelledby="page-title">
       <div class="container bus-hero__inner">
         <div class="bus-hero__copy">
+          <div class="bus-hero__badge">
+            <span class="bus-hero__badge-dot" aria-hidden="true"></span>
+            <span>TRANSPORTE OFICIAL DO EVENTO</span>
+          </div>
           <h1 id="page-title">Ônibus fretado para o <span>Kriativos OnBoard 2026</span></h1>
-          <p class="bus-hero__lead">Faça a ida e a volta com a turma: embarque na Barra Funda, chegue ao Porto de
-            Santos e retorne com a gente depois do cruzeiro.</p>
-          <div class="bus-route" aria-label="Ida e volta: Barra Funda, São Paulo, até o Porto de Santos">
-            <div class="bus-route__stop">
-              <span class="bus-route__dot bus-route__dot--start" aria-hidden="true">
-                <span class="bus-route__ping"></span>
-              </span>
-              <span><small>Ida · embarque</small><strong>Barra Funda · São Paulo</strong></span>
+          <p class="bus-hero__lead">Faça a ida e a volta com a turma: embarque na Barra Funda, chegue ao Porto de Santos e retorne com a gente depois do cruzeiro.</p>
+          
+          <div class="bus-hero__fare-panel" id="heroFarePanel" aria-label="Tarifa do transporte">
+            <div class="bus-hero__fare-main">
+              <span class="bus-hero__fare-label">Tarifa Oficial · Ida e Volta</span>
+              <div class="bus-hero__fare-price-row">
+                <strong class="bus-hero__fare-price">R$ 120,00</strong>
+                <span class="bus-hero__fare-unit">/ pessoa pagante</span>
+              </div>
             </div>
-            <div class="bus-route__track" aria-hidden="true">
-              <span class="bus-route__line"></span>
-              <span class="bus-route__beacon">
+            <div class="bus-hero__fare-meta">
+              <p class="bus-hero__fare-child">Crianças de até 5 anos no colo não pagam.</p>
+              <p class="bus-hero__fare-quorum">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                  <path d="m9 12 2 2 4-4"></path>
+                </svg>
+                Reserva sujeita ao quórum mínimo
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bus-hero__visual" id="heroVisual">
+          <div class="bus-hero__art-wrap">
+            <img src="assets/images/transport/kriativos-on-board-bus-hero.webp" 
+                 alt="Ilustração oficial do ônibus dos Kriativos On Board com passageiros viajando rumo ao Porto de Santos" 
+                 width="1024" height="660" 
+                 fetchpriority="high" 
+                 decoding="async">
+            <div class="bus-hero__headlight-beam" aria-hidden="true"></div>
+          </div>
+
+          <div class="route-shuttle__route" aria-label="Rota de ida e volta do ônibus fretado: São Paulo e Porto de Santos">
+            <span class="route-shuttle__trip-badge">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M5 8h12l-2.5-2.5M19 16H7l2.5 2.5"></path>
+              </svg>
+              Ida e volta
+            </span>
+            <span class="route-shuttle__stop">
+              <small>Embarque</small>
+              São Paulo
+            </span>
+            <span class="route-shuttle__track" aria-hidden="true">
+              <span class="route-shuttle__line"></span>
+              <span class="route-shuttle__beacon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                   stroke-linejoin="round">
                   <path d="M8 6v6"></path>
@@ -76,47 +123,13 @@
                   <circle cx="16.5" cy="17.5" r="2.5"></circle>
                 </svg>
               </span>
-            </div>
-            <div class="bus-route__stop">
-              <span class="bus-route__dot bus-route__dot--end" aria-hidden="true">
-                <span class="bus-route__ping"></span>
-              </span>
-              <span><small>Ida · desembarque</small><strong>Porto de Santos</strong></span>
-            </div>
+            </span>
+            <span class="route-shuttle__stop route-shuttle__stop--arrival">
+              <small>Destino</small>
+              Porto de Santos
+            </span>
           </div>
         </div>
-        <aside class="bus-hero__ticket" id="heroTicket" aria-label="Resumo do transporte">
-          <div class="bus-hero__ticket-shine" aria-hidden="true"></div>
-          <div class="bus-hero__ticket-notch bus-hero__ticket-notch--left" aria-hidden="true"></div>
-          <div class="bus-hero__ticket-notch bus-hero__ticket-notch--right" aria-hidden="true"></div>
-
-          <div class="bus-hero__ticket-head">
-            <span class="bus-hero__ticket-kicker">CARTÃO DE EMBARQUE</span>
-            <span class="bus-hero__ticket-code">KOB·2026</span>
-          </div>
-
-          <div class="bus-hero__ticket-main">
-            <span class="bus-hero__ticket-label">Ida e volta</span>
-            <strong class="bus-hero__ticket-price">R$ 120,00</strong>
-            <span class="bus-hero__ticket-sub">por pessoa pagante</span>
-          </div>
-
-          <div class="bus-hero__ticket-perforation" aria-hidden="true">
-            <span class="bus-hero__ticket-dash"></span>
-          </div>
-
-          <div class="bus-hero__ticket-foot">
-            <p>Crianças de até 5 anos não pagam e viajam no colo de um responsável.</p>
-            <div class="bus-hero__ticket-seal" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                stroke-linejoin="round">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                <path d="m9 12 2 2 4-4"></path>
-              </svg>
-              <span>Reserva sujeita ao quórum</span>
-            </div>
-          </div>
-        </aside>
       </div>
     </section>
 
@@ -776,7 +789,7 @@
               </div>
 
               <div class="bus-confirmed__actions">
-                <a class="btn btn--primary" href="index.html">Voltar para o evento</a>
+                <a class="btn btn--primary" href="https://kriativosonboard.com.br/">Página principal do evento</a>
                 <button id="print-confirmation" class="btn btn--ghost" type="button">Salvar comprovante <span
                     aria-hidden="true">↓</span></button>
               </div>
@@ -940,7 +953,7 @@
   <footer class="bus-footer">
     <div class="bus-footer__inner">
       <div class="bus-footer__identity">
-        <a href="index.html" class="bus-footer__brand" aria-label="Voltar ao Kriativos On Board">
+        <a href="https://kriativosonboard.com.br/" class="bus-footer__brand" aria-label="Página principal do evento Kriativos On Board">
           <img src="assets/images/brand/kriativos-on-board-logo.webp" alt="Kriativos On Board" width="2930"
             height="1796">
         </a>

@@ -1316,7 +1316,7 @@
       closeStillHereDialog();
       stopExpiryCountdown();
       window.clearTimeout(statusTimer);
-      window.location.href = 'index.html';
+      window.location.href = 'https://kriativosonboard.com.br/';
     });
   }
 
@@ -1352,55 +1352,47 @@
   syncGroupModeState();
   restoreCheckoutState();
 
-  // Hero: Cartão de embarque holográfico 3D (Overdrive)
+  // Hero: Efeito de perspectiva sutil na ilustração do ônibus (Editorial Craft)
   (function () {
-    var ticket = document.getElementById('heroTicket');
-    if (!ticket) return;
+    var visual = document.getElementById('heroVisual');
+    if (!visual) return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     if (!window.matchMedia('(pointer: fine)').matches) return;
 
-    var hero = ticket.closest('.bus-hero') || ticket;
+    var artWrap = visual.querySelector('.bus-hero__art-wrap') || visual;
+    var hero = visual.closest('.bus-hero') || visual;
     var targetX = 0;
     var targetY = 0;
     var currentX = 0;
     var currentY = 0;
-    var sheenX = 50;
-    var sheenY = 50;
     var isHovered = false;
     var rafId = null;
 
     function update() {
-      currentX += (targetX - currentX) * 0.12;
-      currentY += (targetY - currentY) * 0.12;
+      currentX += (targetX - currentX) * 0.1;
+      currentY += (targetY - currentY) * 0.1;
 
-      ticket.style.setProperty('--tilt-x', currentX.toFixed(2) + 'deg');
-      ticket.style.setProperty('--tilt-y', currentY.toFixed(2) + 'deg');
-      ticket.style.setProperty('--sheen-x', sheenX.toFixed(1) + '%');
-      ticket.style.setProperty('--sheen-y', sheenY.toFixed(1) + '%');
+      artWrap.style.setProperty('--tilt-x', currentX.toFixed(2) + 'deg');
+      artWrap.style.setProperty('--tilt-y', currentY.toFixed(2) + 'deg');
 
-      if (isHovered || Math.abs(targetX - currentX) > 0.05 || Math.abs(targetY - currentY) > 0.05) {
+      if (isHovered || Math.abs(targetX - currentX) > 0.04 || Math.abs(targetY - currentY) > 0.04) {
         rafId = requestAnimationFrame(update);
       } else {
-        ticket.style.setProperty('--tilt-x', '0deg');
-        ticket.style.setProperty('--tilt-y', '0deg');
+        artWrap.style.setProperty('--tilt-x', '0deg');
+        artWrap.style.setProperty('--tilt-y', '0deg');
         rafId = null;
       }
     }
 
     hero.addEventListener('pointermove', function (e) {
-      var rect = ticket.getBoundingClientRect();
+      var rect = visual.getBoundingClientRect();
       var centerX = rect.left + rect.width / 2;
       var centerY = rect.top + rect.height / 2;
       var dx = (e.clientX - centerX) / (window.innerWidth / 2);
       var dy = (e.clientY - centerY) / (window.innerHeight / 2);
 
-      targetY = Math.max(-14, Math.min(14, dx * 14));
-      targetX = Math.max(-12, Math.min(12, -dy * 12));
-
-      var localX = ((e.clientX - rect.left) / rect.width) * 100;
-      var localY = ((e.clientY - rect.top) / rect.height) * 100;
-      sheenX = Math.max(0, Math.min(100, localX));
-      sheenY = Math.max(0, Math.min(100, localY));
+      targetY = Math.max(-6, Math.min(6, dx * 6));
+      targetX = Math.max(-5, Math.min(5, -dy * 5));
 
       if (!rafId) {
         isHovered = true;
