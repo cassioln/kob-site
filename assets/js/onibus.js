@@ -211,7 +211,7 @@
     if (!/^\d+$/.test(national) || !brazilianDdds.has(national.slice(0, 2))) return false;
     var subscriber = national.slice(2);
     if (/^(\d)\1+$/.test(subscriber)) return false;
-    if (national.length === 10) return /^[2-5]\d{7}$/.test(subscriber);
+    if (national.length === 10) return /^[2-59]\d{7}$/.test(subscriber);
     if (national.length === 11) return /^9\d{8}$/.test(subscriber);
     return false;
   }

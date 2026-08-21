@@ -47,7 +47,8 @@ test('cadastra o grupo, calcula o valor e exibe o Pix', async ({ page }) => {
   await page.locator('#primary-birth').fill('15/05/1990');
   await page.locator('#primary-email').fill('MARIA@EXAMPLE.COM');
   await expect(page.locator('#primary-email')).toHaveValue('maria@example.com');
-  await page.locator('#primary-whatsapp').fill('11942554141');
+  await page.locator('#primary-whatsapp').fill('+55 85 9926-6494');
+  await expect(page.locator('#primary-whatsapp')).toHaveValue('(85) 9926-6494');
   await page.getByRole('button', { name: /continuar: grupo/i }).click();
 
   // Etapa 2: Grupo e Passageiros
@@ -111,7 +112,7 @@ test('cadastra o grupo, calcula o valor e exibe o Pix', async ({ page }) => {
       cpf: primaryCpf,
       birth_date: '1990-05-15',
       email: 'maria@example.com',
-      whatsapp: '11942554141'
+      whatsapp: '8599266494'
     }
   });
   expect(requestBody.passengers).toHaveLength(3);

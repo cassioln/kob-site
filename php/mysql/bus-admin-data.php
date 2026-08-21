@@ -127,6 +127,7 @@ try {
         'criancas_no_colo' => 0,
         'total_a_bordo' => 0,
         'receita_centavos' => 0,
+        'receita_liquida_centavos' => 0,
         'sem_telefone' => 0,
         'vip_seats' => 0,
     ];
@@ -345,7 +346,13 @@ try {
             $resumo['pagantes'] += (int) $r['passenger_count'];
             $resumo['criancas_no_colo'] += (int) $r['children_count'];
             $resumo['total_a_bordo'] += (int) $r['passenger_count'] + (int) $r['children_count'];
-            $resumo['receita_centavos'] += (int) $r['amount_cents'];
+            if (empty($r['is_vip'])) {
+                $valorCentavos = (int) $r['amount_cents'];
+                $resumo['receita_centavos'] += $valorCentavos;
+                // A taxa é arredondada por pagamento, como no crédito do Mercado Pago.
+                $taxaCentavos = intdiv($valorCentavos * 99 + 5000, 10000);
+                $resumo['receita_liquida_centavos'] += $valorCentavos - $taxaCentavos;
+            }
             foreach ($passageiros as $p) {
                 if ($p['whatsapp'] === null) {
                     $resumo['sem_telefone']++;
@@ -356,8 +363,6 @@ try {
         } else {
             $resumo['reservas_falha']++;
         }
-
-        $resumo['receita'] = number_format($resumo['receita_centavos'] / 100, 2, ',', '.');
 
         // Só reservas encerradas sem pagamento ganham o aviso de "tentou de
         // novo". Numa reserva paga o dado seria ruído: ela já está resolvida.
@@ -423,6 +428,9 @@ try {
             'passageiros' => $passageiros,
         ];
     }
+
+    $resumo['receita'] = number_format($resumo['receita_centavos'] / 100, 2, ',', '.');
+    $resumo['receita_liquida'] = number_format($resumo['receita_liquida_centavos'] / 100, 2, ',', '.');
 
     $semOnibusConfirmado = [];
     foreach ($reservas as $r) {

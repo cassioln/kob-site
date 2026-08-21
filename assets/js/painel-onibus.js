@@ -49,7 +49,7 @@
     rReservas: document.getElementById('r-reservas'),
     rPendentes: document.getElementById('r-pendentes'),
     rReceita: document.getElementById('r-receita'),
-    rSemTelefone: document.getElementById('r-sem-telefone'),
+    rReceitaLiquida: document.getElementById('r-receita-liquida'),
     filtroOnibus: document.getElementById('filtro-onibus'),
     abas: document.querySelectorAll('.painel-abas__botao'),
     conteudosAba: document.querySelectorAll('.painel-aba-conteudo'),
@@ -291,7 +291,7 @@
     if (!/^\d+$/.test(national) || !brazilianDdds.has(national.slice(0, 2))) return false;
     var subscriber = national.slice(2);
     if (/^(\d)\1+$/.test(subscriber)) return false;
-    if (national.length === 10) return /^[2-5]\d{7}$/.test(subscriber);
+    if (national.length === 10) return /^[2-59]\d{7}$/.test(subscriber);
     if (national.length === 11) return /^9\d{8}$/.test(subscriber);
     return false;
   }
@@ -667,7 +667,13 @@
     el.rPendentes.textContent = pend.length ? pend.join(' · ') : 'nada pendente';
     var rec = resumo.receita !== undefined ? resumo.receita : (resumo.receita_centavos ? (resumo.receita_centavos / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0,00');
     el.rReceita.textContent = 'R$ ' + rec;
-    el.rSemTelefone.textContent = resumo.sem_telefone;
+    var receitaLiquidaCentavos = Number(resumo.receita_liquida_centavos);
+    var receitaLiquida = resumo.receita_liquida !== undefined
+      ? resumo.receita_liquida
+      : (Number.isFinite(receitaLiquidaCentavos)
+        ? (receitaLiquidaCentavos / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+        : (Math.round(Number(resumo.receita_centavos || 0) * 0.9901) / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+    el.rReceitaLiquida.textContent = 'R$ ' + receitaLiquida;
   }
 
   // Objeto temporário para rastrear o que está sendo arrastado e validar vagas em tempo real
@@ -1818,7 +1824,7 @@
           : (campo.key === 'whatsapp' ? formatarWhatsapp(draft[campo.key]) : (draft[campo.key] || ''));
         if (campo.key === 'whatsapp') {
           input.inputMode = 'tel';
-          input.maxLength = 15;
+          input.maxLength = 17;
           input.placeholder = '(11) 90000-0000';
         }
         input.dataset.vipIndex = String(index);

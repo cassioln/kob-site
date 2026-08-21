@@ -224,13 +224,14 @@ test('normaliza dados do VIP e bloqueia WhatsApp inválido', async ({ page }) =>
   await expect(whatsapp).toHaveAttribute('aria-invalid', 'true');
   expect(vipRequestCount).toBe(0);
 
-  await whatsapp.fill('5511999998888');
+  await whatsapp.fill('+55 85 9926-6494');
+  await expect(whatsapp).toHaveValue('(85) 9926-6494');
   await page.getByRole('button', { name: /confirmar reservas vip/i }).click();
   await expect.poll(() => vipRequest).toEqual({
     vips: [{
       full_name: 'Samara Nascimento de Toledo',
       cpf: '529.982.247-25',
-      whatsapp: '11999998888',
+      whatsapp: '8599266494',
       email: 'usuario@email.com',
       bus_number: null
     }]
@@ -302,17 +303,47 @@ test('cria atalho seguro de WhatsApp apenas para número válido', async ({ page
             menor: false,
             crianca_colo: false
           }]
+        },
+        {
+          id: 'legacy-mobile-id',
+          code: 'L9G8C7Y6',
+          status: 'confirmed',
+          status_chave: 'pago',
+          status_rotulo: 'Pagamento aprovado',
+          status_tom: 'ok',
+          contato: 'Paulo Henrique Estevão de Vasconcelos',
+          contato_cpf: '52998224725',
+          email: 'paulo@email.com',
+          contato_whatsapp: '8599266494',
+          pagantes: 1,
+          criancas: 0,
+          grupo: null,
+          valor_centavos: 12000,
+          criado_em: '21/08/2026 11:00',
+          pago_em: '21/08/2026 11:01',
+          order_id: 'ORD-LEGACY',
+          is_vip: false,
+          bus_number: 1,
+          passageiros: [{
+            posicao: 1,
+            nome: 'Paulo Henrique Estevão de Vasconcelos',
+            cpf: '529.982.247-25',
+            whatsapp: '(85) 9926-6494',
+            responsavel: true,
+            menor: false,
+            crianca_colo: false
+          }]
         }
       ],
       resumo: {
-        total_a_bordo: 2,
-        pagantes: 2,
+        total_a_bordo: 3,
+        pagantes: 3,
         criancas_no_colo: 0,
-        reservas_pagas: 2,
+        reservas_pagas: 3,
         reservas_vip: 0,
         reservas_pendentes: 0,
         reservas_falha: 0,
-        receita_centavos: 24000,
+        receita_centavos: 36000,
         sem_telefone: 0
       },
       frota: { capacidade: 46, minimo: 40, onibus: [] }
@@ -322,8 +353,9 @@ test('cria atalho seguro de WhatsApp apenas para número válido', async ({ page
   await page.goto('/painel-onibus.html');
 
   const links = page.locator('.tabela__whatsapp-link');
-  await expect(links).toHaveCount(1);
+  await expect(links).toHaveCount(2);
   await expect(links.first()).toHaveAttribute('href', 'https://api.whatsapp.com/send?phone=5511999998888');
+  await expect(links.nth(1)).toHaveAttribute('href', 'https://api.whatsapp.com/send?phone=558599266494');
   await expect(links.first()).toHaveAttribute('target', '_blank');
   await expect(links.first()).toHaveAttribute('rel', 'noopener noreferrer');
 });
@@ -569,4 +601,34 @@ test('mostra a emissão do QR Code abaixo da aprovação ou pendência do pagame
   await expect(datas.nth(1)).toContainText('—');
   await expect(datas.nth(1)).toContainText('Criado em: 21/08/2026 14:30');
   await expect(datas.nth(0).locator('.tabela__pagamento-criado')).toHaveCSS('font-size', '12px');
+});
+
+test('mostra o total líquido com a taxa calculada por pagamento', async ({ page }) => {
+  await page.route('**/api/bus-admin-data*', route => route.fulfill({
+    status: 200,
+    contentType: 'application/json',
+    body: JSON.stringify({
+      reservas: [],
+      resumo: {
+        total_a_bordo: 0,
+        pagantes: 0,
+        criancas_no_colo: 0,
+        reservas_pagas: 2,
+        reservas_vip: 0,
+        reservas_pendentes: 0,
+        reservas_falha: 0,
+        receita_centavos: 48000,
+        receita_liquida_centavos: 47524,
+        receita_liquida: '475,24',
+        sem_telefone: 0
+      },
+      frota: { capacidade: 46, minimo: 40, onibus: [] }
+    })
+  }));
+
+  await page.goto('/painel-onibus.html');
+
+  await expect(page.getByText('Total líquido', { exact: true })).toBeVisible();
+  await expect(page.locator('#r-receita-liquida')).toHaveText('R$ 475,24');
+  await expect(page.getByText('Taxa Mercado Pago 0,99%', { exact: true })).toBeVisible();
 });

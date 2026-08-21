@@ -144,7 +144,7 @@ function is_valid_brazilian_phone_digits(string $national): bool
     }
 
     if (strlen($national) === 10) {
-        return preg_match('/^[2-5]\d{7}$/', $subscriber) === 1;
+        return preg_match('/^[2-59]\d{7}$/', $subscriber) === 1;
     }
 
     if (strlen($national) === 11) {
