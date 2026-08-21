@@ -21,6 +21,7 @@ Abrange:
 - normalização de nomes e e-mails antes da gravação;
 - atualização dos nomes e e-mails já existentes nas tabelas de reservas e
   passageiros.
+- atalho de WhatsApp na coluna correspondente do painel de reservas.
 
 Não abrange alteração automática de CPF, data de nascimento, ônibus, status,
 valor ou telefones antigos. Números antigos estruturalmente inválidos serão
@@ -93,6 +94,16 @@ colo e reservas VIP.
 - manter respostas de validação como erro de entrada (`400`), sem criar
   cobrança nem reserva quando o payload for inválido.
 
+### Painel de reservas
+
+- exibir um ícone do WhatsApp ao lado do número quando houver telefone
+  estruturalmente válido;
+- abrir `https://api.whatsapp.com/send?phone=55<numero-nacional>` em nova aba;
+- usar `target="_blank"` com `rel="noopener noreferrer"`;
+- fornecer um rótulo acessível, como “Conversar com [nome] pelo WhatsApp”;
+- não criar link para números vazios ou legados estruturalmente inválidos;
+- manter o número formatado visível mesmo quando não houver atalho disponível.
+
 ### Migração de dados existentes
 
 Será executada uma migração transacional que lê e regrava somente:
@@ -130,6 +141,8 @@ Adicionar ou atualizar testes para:
 - converter e-mails para minúsculas;
 - bloquear a progressão do checkout no navegador;
 - confirmar que o payload e a persistência usam o formato canônico;
+- confirmar que o painel gera o link correto com DDI `55`, abre em nova aba e
+  não cria link para telefone inválido;
 - confirmar que a migração altera apenas os campos previstos.
 
 Critério final: nenhum novo registro poderá ser criado com nome ou e-mail fora
