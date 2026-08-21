@@ -130,7 +130,7 @@
   <!-- Fontes da marca (banner KOB): Gobold Extra2 = display, Chantal = acento manuscrito -->
   <link rel="preload" href="assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
 
-  <link rel="stylesheet" href="assets/css/main.css?v=20260821-shuttle-left-layout">
+  <link rel="stylesheet" href="assets/css/main.css?v=20260821-header-lead-flow">
   <link rel="stylesheet" href="assets/css/cookie-consent.css?v=20260820-fix-contrast">
   <script defer src="assets/js/cookie-consent.js?v=20260713-5"></script>
 </head>
@@ -2213,10 +2213,20 @@
                 São Paulo
               </span>
               <span class="route-shuttle__track" aria-hidden="true">
-                <i></i>
-                <svg viewBox="0 0 24 24" fill="none">
-                  <path d="M5 12h14M13 6l6 6-6 6"></path>
-                </svg>
+                <span class="route-shuttle__line"></span>
+                <span class="route-shuttle__beacon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <path d="M8 6v6"></path>
+                    <path d="M15 6v6"></path>
+                    <path d="M2 12h19.6"></path>
+                    <path
+                      d="M18 18h3s.5-1.7.8-2.8c.1-.4.2-.8.2-1.2 0-.4-.1-.8-.2-1.2l-1.4-5C20 6.3 18.7 5 17.2 5H4.8C3.3 5 2 6.3 1.6 7.8L.2 12.8c-.1.4-.2.8-.2 1.2 0 .4.1.8.2 1.2.3 1.1.8 2.8.8 2.8h3">
+                    </path>
+                    <circle cx="6.5" cy="17.5" r="2.5"></circle>
+                    <circle cx="16.5" cy="17.5" r="2.5"></circle>
+                  </svg>
+                </span>
               </span>
               <span class="route-shuttle__stop route-shuttle__stop--arrival">
                 <small>Destino</small>
