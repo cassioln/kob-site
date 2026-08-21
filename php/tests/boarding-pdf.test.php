@@ -69,6 +69,29 @@ $pdf = bus_boarding_pdf([
         ]],
     ],
     [
+        'code' => 'CHILD001',
+        'group_name' => null,
+        'contato' => 'Responsável da criança',
+        'email' => '',
+        'contato_whatsapp' => '',
+        'pagantes' => 0,
+        'criancas' => 1,
+        'valor' => '0,00',
+        'pago_em' => '20/08/2026 10:02',
+        'order_id' => 'ORD-CHILD',
+        'bus_number' => 1,
+        'is_vip' => false,
+        'passageiros' => [[
+            'posicao' => 1,
+            'nome' => 'Bebê da reserva',
+            'cpf' => '529.982.247-25',
+            'whatsapp' => null,
+            'responsavel' => false,
+            'menor' => true,
+            'crianca_colo' => true,
+        ]],
+    ],
+    [
         'code' => 'WAIT0001',
         'group_name' => null,
         'contato' => 'Pessoa aguardando ônibus',
@@ -106,6 +129,15 @@ if ($vipPosition === false || $commonPosition === false || $vipPosition >= $comm
 }
 if (strpos($pdf, 'WAIT0001') !== false || strpos($pdf, 'Pessoa aguardando') !== false) {
     fwrite(STDERR, "FAIL: reserva sem ônibus não pode aparecer no PDF\n");
+    exit(1);
+}
+$naoInformadoPdf = iconv('UTF-8', 'CP1252', 'Não informado');
+if ($naoInformadoPdf === false || strpos($pdf, $naoInformadoPdf) === false) {
+    fwrite(STDERR, "FAIL: contato aplicável sem WhatsApp deve aparecer como Não informado\n");
+    exit(1);
+}
+if (strpos($pdf, 'N/A') === false) {
+    fwrite(STDERR, "FAIL: telefone de criança de colo deve aparecer como N/A\n");
     exit(1);
 }
 

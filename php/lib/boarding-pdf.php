@@ -16,6 +16,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/pdf.php';
 require_once __DIR__ . '/receipt-pdf.php';
+require_once __DIR__ . '/contact-display.php';
 
 const EMBARQUE_LINHA = 15.5;
 // Rodape real: regua em MARGEM+26 (82.7pt) mais o texto abaixo. Reservar
@@ -203,7 +204,9 @@ function bus_boarding_pdf(array $reservas, ?array $logo = null): string
                              'texto' => $prefixo . $nome, 'tamanho' => 9.5, 'negrito' => $eResp];
                 $blocos[] = ['tipo' => 'texto', 'x' => $colCpf, 'y' => $y,
                              'texto' => $p['cpf'] !== '' ? $p['cpf'] : '-', 'tamanho' => 9];
-                $tel = ($p['whatsapp'] ?? '') !== '' ? (string) $p['whatsapp'] : 'N/A';
+                $tel = ($p['whatsapp'] ?? '') !== ''
+                    ? bus_format_phone((string) $p['whatsapp'])
+                    : bus_missing_contact_label(null, !empty($p['crianca_colo']));
                 $blocos[] = ['tipo' => 'texto', 'x' => $colTel, 'y' => $y, 'texto' => $tel,
                              'tamanho' => 9];
                 $y -= EMBARQUE_LINHA;
