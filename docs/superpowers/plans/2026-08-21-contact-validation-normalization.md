@@ -64,7 +64,7 @@ validation_expect_same('usuario@email.com', normalize_email(' USUARIO@EMAIL.COM 
 validation_expect_same('11999998888', normalize_whatsapp('(11) 99999-8888'), 'celular nacional');
 validation_expect_same('11999998888', normalize_whatsapp('5511999998888'), 'celular com DDI');
 validation_expect_throws(fn () => normalize_whatsapp('55119958957'), 'WhatsApp incompleto');
-validation_expect_throws(fn () => normalize_whatsapp('11912345678'), 'celular sem prefixo 9');
+validation_expect_throws(fn () => normalize_whatsapp('11112345678'), 'celular sem prefixo 9');
 ```
 
 The helper `validation_expect_throws` must assert that the callable raises `ValidationError`; it must not connect to the database.
