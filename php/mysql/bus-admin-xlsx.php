@@ -79,7 +79,7 @@ try {
 
     $colunas = [
         ['titulo' => 'Reserva', 'largura' => 13],
-        ['titulo' => 'Ônibus', 'largura' => 12],
+        ['titulo' => 'Grupo', 'largura' => 22],
         ['titulo' => 'Nº', 'largura' => 5],
         ['titulo' => 'Passageiro', 'largura' => 30],
         ['titulo' => 'CPF', 'largura' => 16],
@@ -87,7 +87,7 @@ try {
         ['titulo' => 'WhatsApp', 'largura' => 17],
         ['titulo' => 'E-mail', 'largura' => 30],
         ['titulo' => 'Responsável', 'largura' => 30],
-        ['titulo' => 'Grupo', 'largura' => 22],
+        ['titulo' => 'Ônibus', 'largura' => 12],
         ['titulo' => 'Qtd Pessoas', 'largura' => 13],
         ['titulo' => 'Valor pago', 'largura' => 13],
         ['titulo' => 'Status', 'largura' => 22],
@@ -136,6 +136,7 @@ try {
         $grupo = $isVip ? '' : $r['passenger_count'] . ((int) $r['children_count'] > 0
             ? ' + ' . $r['children_count'] . ' colo' : '');
         $valor = $isVip ? '' : 'R$ ' . number_format(((int) $r['amount_cents']) / 100, 2, ',', '.');
+        $isFalha = !$isVip && ($st['chave'] ?? '') === 'falha';
 
         foreach ($passageiros as $i => $p) {
             $primeiro = $i === 0;
@@ -173,19 +174,27 @@ try {
                 $emailPassageiro = bus_missing_contact_label($r['email'] ?? null, false);
             }
 
+            if ($isVip) {
+                $estiloLinha = 'vip';
+            } elseif ($isFalha) {
+                $estiloLinha = $responsavel ? 'falha_responsavel' : ($primeiro ? 'falha_grupo' : 'falha');
+            } elseif ($responsavel) {
+                $estiloLinha = 'responsavel';
+            } elseif ($primeiro) {
+                $estiloLinha = 'grupo';
+            } else {
+                $estiloLinha = 'normal';
+            }
+
             // Reserva, Responsável e Grupo repetem em todas as linhas do grupo,
             // facilitando ordenação e conferência no Excel.
             $linhas[] = [
-                // Linha do responsável ganha destaque; a primeira linha de cada
-                // grupo ganha a borda superior que separa os blocos.
-                'estilo' => $isVip ? 'vip' : ($responsavel ? 'responsavel' : ($primeiro ? 'grupo' : 'normal')),
+                // Linha do responsável ganha destaque; canceladas/falhas ganham fundo vermelho claro;
+                // a primeira linha de cada grupo ganha a borda superior que separa os blocos.
+                'estilo' => $estiloLinha,
                 'celulas' => [
                     $code,
-                    [
-                        'tipo' => 'texto',
-                        'v' => $r['bus_number'] !== null ? 'Ônibus ' . $r['bus_number'] : ($isVip ? 'Sem ônibus confirmado' : '—'),
-                        'estilo' => 'texto',
-                    ],
+                    (string) ($r['group_name'] ?? ''),
                     [
                         'tipo' => 'numero',
                         'v' => $p['position'] ?? 1,
@@ -197,7 +206,11 @@ try {
                     $whatsappPassageiro,
                     $emailPassageiro,
                     (string) $r['primary_name'],
-                    (string) ($r['group_name'] ?? ''),
+                    [
+                        'tipo' => 'texto',
+                        'v' => $r['bus_number'] !== null ? 'Ônibus ' . $r['bus_number'] : ($isVip ? 'Sem ônibus confirmado' : '—'),
+                        'estilo' => 'texto',
+                    ],
                     $primeiro ? $grupo : '',
                     $primeiro ? $valor : '',
                     $primeiro

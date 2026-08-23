@@ -130,6 +130,7 @@
 
     if (btnFechar) {
       btnFechar.textContent = 'Entendido';
+      btnFechar.className = 'botao botao--primario';
       btnFechar.onclick = function () {
         dialog.close();
       };
@@ -179,18 +180,27 @@
       var encerrar = function (resultado) {
         if (resolvido) return;
         resolvido = true;
-        if (btnConfirmar) btnConfirmar.hidden = true;
-        if (btnFechar) btnFechar.textContent = 'Entendido';
+        if (btnConfirmar) {
+          btnConfirmar.hidden = true;
+          btnConfirmar.onclick = null;
+        }
+        if (btnFechar) {
+          btnFechar.textContent = 'Entendido';
+          btnFechar.className = 'botao botao--primario';
+          btnFechar.onclick = null;
+        }
         if (dialog.open) dialog.close();
         resolve(resultado);
       };
 
       if (btnFechar) {
         btnFechar.textContent = 'Cancelar';
+        btnFechar.className = 'botao botao--discreto';
         btnFechar.onclick = function () { encerrar(false); };
       }
       if (btnConfirmar) {
         btnConfirmar.hidden = false;
+        btnConfirmar.className = 'botao botao--primario';
         btnConfirmar.textContent = rotuloConfirmar || 'Confirmar';
         btnConfirmar.onclick = function () { encerrar(true); };
       }
@@ -1748,6 +1758,55 @@
     return { full_name: '', cpf: '', whatsapp: '', email: '', bus_number: '' };
   }
 
+  function vipTemDadosPreenchidos() {
+    if (!Array.isArray(estado.vipDrafts) || estado.vipDrafts.length === 0) return false;
+    if (estado.vipDrafts.length > 1) return true;
+
+    var temNoEstado = estado.vipDrafts.some(function (draft) {
+      if (!draft) return false;
+      return (
+        String(draft.full_name || '').trim() !== '' ||
+        String(draft.cpf || '').trim() !== '' ||
+        String(draft.whatsapp || '').trim() !== '' ||
+        String(draft.email || '').trim() !== '' ||
+        (draft.bus_number !== '' && draft.bus_number !== null && draft.bus_number !== undefined)
+      );
+    });
+    if (temNoEstado) return true;
+
+    if (el.vipFormularios) {
+      var inputs = el.vipFormularios.querySelectorAll('input, select');
+      for (var i = 0; i < inputs.length; i++) {
+        if (String(inputs[i].value || '').trim() !== '') {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  function fecharDialogVipComConfirmacao() {
+    if (!el.vipDialog || estado.vipEnviando) return;
+
+    if (vipTemDadosPreenchidos()) {
+      mostrarConfirmacaoModal(
+        'Descartar alterações?',
+        'Existem dados preenchidos no formulário VIP. Deseja realmente descartar e fechar?',
+        'Descartar e fechar'
+      ).then(function (confirmado) {
+        if (confirmado) {
+          if (el.vipDialog.open) el.vipDialog.close();
+          estado.vipDrafts = [];
+          erroVipForm('');
+        }
+      });
+    } else {
+      if (el.vipDialog.open) el.vipDialog.close();
+      estado.vipDrafts = [];
+      erroVipForm('');
+    }
+  }
+
   function erroVipForm(mensagem) {
     if (!el.vipFormErro) return;
     el.vipFormErro.textContent = mensagem || '';
@@ -2121,9 +2180,7 @@
   }
 
   if (el.vipCancelar && el.vipDialog) {
-    el.vipCancelar.addEventListener('click', function () {
-      if (!estado.vipEnviando) el.vipDialog.close();
-    });
+    el.vipCancelar.addEventListener('click', fecharDialogVipComConfirmacao);
   }
 
   if (el.vipAdicionarOutro) {
@@ -2139,8 +2196,9 @@
   }
 
   if (el.vipDialog) {
-    el.vipDialog.addEventListener('click', function (event) {
-      if (event.target === el.vipDialog && !estado.vipEnviando) el.vipDialog.close();
+    el.vipDialog.addEventListener('cancel', function (event) {
+      event.preventDefault();
+      fecharDialogVipComConfirmacao();
     });
   }
 

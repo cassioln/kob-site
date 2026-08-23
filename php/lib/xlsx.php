@@ -80,6 +80,15 @@ function xlsx_estilos_indices(): array
         'vip' => 10,
         'status_vip' => 11,
         'responsavel_centralizado' => 12,
+        'centralizado' => 13,
+        'falha' => 14,
+        'falha_responsavel' => 15,
+        'falha_centralizado' => 16,
+        'falha_responsavel_centralizado' => 17,
+        'vip_centralizado' => 18,
+        'grupo_centralizado' => 19,
+        'falha_grupo' => 20,
+        'falha_grupo_centralizado' => 21,
     ];
 }
 
@@ -161,6 +170,24 @@ function xlsx_styles(): string
         '<xf numFmtId="49" fontId="5" fillId="8" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>',
         // 12 responsavel_centralizado — mesmo destaque do responsável, com o Nº centralizado.
         '<xf numFmtId="49" fontId="7" fillId="4" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>',
+        // 13 centralizado — número de passageiro normal centralizado.
+        '<xf numFmtId="49" fontId="0" fillId="0" borderId="1" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>',
+        // 14 falha — linha de passageiro em reserva cancelada/com falha.
+        '<xf numFmtId="49" fontId="0" fillId="7" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment vertical="center"/></xf>',
+        // 15 falha_responsavel — linha do responsável em reserva cancelada/com falha.
+        '<xf numFmtId="49" fontId="7" fillId="7" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment vertical="center"/></xf>',
+        // 16 falha_centralizado — número de passageiro em reserva cancelada/com falha.
+        '<xf numFmtId="49" fontId="0" fillId="7" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>',
+        // 17 falha_responsavel_centralizado — número do responsável em reserva cancelada/com falha.
+        '<xf numFmtId="49" fontId="7" fillId="7" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>',
+        // 18 vip_centralizado — número em reserva VIP.
+        '<xf numFmtId="49" fontId="7" fillId="8" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>',
+        // 19 grupo_centralizado — número na primeira linha de grupo normal.
+        '<xf numFmtId="49" fontId="0" fillId="0" borderId="2" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>',
+        // 20 falha_grupo — primeira linha não responsável em reserva com falha.
+        '<xf numFmtId="49" fontId="0" fillId="7" borderId="2" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment vertical="center"/></xf>',
+        // 21 falha_grupo_centralizado — número na primeira linha não responsável em falha.
+        '<xf numFmtId="49" fontId="0" fillId="7" borderId="2" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>',
     ];
 
     return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
@@ -259,13 +286,23 @@ function xlsx_build(array $planilha): string
             $estiloCelula = is_array($celula) && !empty($celula['estilo'])
                 ? $celula['estilo']
                 : $estiloLinha;
-            if ($estiloLinha === 'vip' && in_array($estiloCelula, ['texto', 'centralizado'], true)) {
-                $estiloCelula = 'vip';
-            } elseif ($estiloLinha === 'responsavel') {
-                if ($estiloCelula === 'texto') {
-                    $estiloCelula = 'responsavel';
-                } elseif ($estiloCelula === 'centralizado') {
+            if ($estiloCelula === 'texto') {
+                $estiloCelula = $estiloLinha;
+            } elseif ($estiloCelula === 'centralizado') {
+                if ($estiloLinha === 'responsavel') {
                     $estiloCelula = 'responsavel_centralizado';
+                } elseif ($estiloLinha === 'falha_responsavel') {
+                    $estiloCelula = 'falha_responsavel_centralizado';
+                } elseif ($estiloLinha === 'falha') {
+                    $estiloCelula = 'falha_centralizado';
+                } elseif ($estiloLinha === 'falha_grupo') {
+                    $estiloCelula = 'falha_grupo_centralizado';
+                } elseif ($estiloLinha === 'vip') {
+                    $estiloCelula = 'vip_centralizado';
+                } elseif ($estiloLinha === 'grupo') {
+                    $estiloCelula = 'grupo_centralizado';
+                } else {
+                    $estiloCelula = 'centralizado';
                 }
             }
             $s = $indices[$estiloCelula] ?? $indices['normal'];
