@@ -166,6 +166,13 @@ try {
     }
     $resumo['vip_seats'] = $vipCount;
 
+    $lockedBuses = [];
+    try {
+        $lockedBuses = bus_fleet_load_locked_buses($pdo);
+    } catch (Throwable $e) {
+        // ignora
+    }
+
     $porOnibus = [];
     $maxBusNum = 1; // start with at least 1
     $vipsSemFixo = [];
@@ -256,6 +263,10 @@ try {
         
         $bNum = 1;
         while (true) {
+            if (in_array($bNum, $lockedBuses, true)) {
+                $bNum++;
+                continue;
+            }
             $ocupadosBusAtual = isset($porOnibus[$bNum]) ? $porOnibus[$bNum]['assentos'] : 0;
             if ($ocupadosBusAtual + $assentosGrupo <= 46) {
                 break;
@@ -303,6 +314,10 @@ try {
         $vipId = 'vip_' . $i;
         $bNum = 1;
         while (true) {
+            if (in_array($bNum, $lockedBuses, true)) {
+                $bNum++;
+                continue;
+            }
             $ocupadosBusAtual = isset($porOnibus[$bNum]) ? $porOnibus[$bNum]['assentos'] : 0;
             if ($ocupadosBusAtual + 1 <= 46) {
                 break;
@@ -476,13 +491,6 @@ try {
 
     // Constrói a lista de ônibus
     $listaOnibus = [];
-
-    $lockedBuses = [];
-    try {
-        $lockedBuses = bus_fleet_load_locked_buses($pdo);
-    } catch (Throwable $e) {
-        // ignora
-    }
 
     $totalBusesToShow = $maxBusNum;
     if (!empty($lockedBuses)) {

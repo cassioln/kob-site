@@ -801,9 +801,14 @@ function bus_assign_fleet(PDO $pdo, string $registrationId): void
     
     $legacyVip = bus_fleet_load_legacy_vip_settings($pdo);
     $legacyOccupancy = bus_fleet_vip_occupancy($legacyVip['effective_assignments']);
+    $lockedBuses = bus_fleet_load_locked_buses($pdo);
 
     $busNum = 1;
     while (true) {
+        if (in_array($busNum, $lockedBuses, true)) {
+            $busNum++;
+            continue;
+        }
         $current = bus_fleet_bus_occupancy($pdo, $busNum);
         $current += (int) ($legacyOccupancy[$busNum] ?? 0);
         if ($current + $tamanho <= 46) {
