@@ -474,15 +474,19 @@ try {
     unset($item);
 
 
-    // Constrói a lista de ônibus (exibe sempre no mínimo 3 ônibus)
+    // Constrói a lista de ônibus
     $listaOnibus = [];
-    $totalBusesToShow = $maxBusNum;
 
     $lockedBuses = [];
     try {
         $lockedBuses = bus_fleet_load_locked_buses($pdo);
     } catch (Throwable $e) {
         // ignora
+    }
+
+    $totalBusesToShow = $maxBusNum;
+    if (!empty($lockedBuses)) {
+        $totalBusesToShow = max($totalBusesToShow, max($lockedBuses));
     }
 
     for ($i = 1; $i <= $totalBusesToShow; $i++) {
