@@ -22,7 +22,7 @@ declare(strict_types=1);
  */
 
 /** Link do grupo oficial de WhatsApp do fretado. */
-const BUS_GRUPO_WHATSAPP = 'https://chat.whatsapp.com/DxTVSZrcKXa6WopHZkGL5N?s=cl&p=i&ilr=4';
+const BUS_GRUPO_WHATSAPP = 'https://chat.whatsapp.com/LAWcvbwe3Oh1PMvnS9XYUX';
 
 /**
  * Logo por URL absoluta, em PNG.

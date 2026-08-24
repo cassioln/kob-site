@@ -759,7 +759,7 @@ test('exibe o bloco e nome do grupo na confirmação apenas quando groupName est
   await expect(page.locator('#confirmation-panel')).toBeVisible({ timeout: 15000 });
   await expect(page.locator('#confirmed-group')).toBeVisible();
   await expect(page.locator('#confirmed-group-name')).toHaveText('Wingspan');
-  await expect(page.locator('.bus-confirmed__wa-btn')).toHaveAttribute('href', 'https://chat.whatsapp.com/DxTVSZrcKXa6WopHZkGL5N?s=cl&p=i&ilr=4');
+  await expect(page.locator('.bus-confirmed__wa-btn')).toHaveAttribute('href', 'https://chat.whatsapp.com/LAWcvbwe3Oh1PMvnS9XYUX');
 });
 
 test('navegação do wizard: voltar e avançar mantém dados e validações', async ({ page }) => {
