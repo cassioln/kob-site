@@ -67,6 +67,9 @@ try {
     foreach ($vips as $vip) {
         $bus = $vip['bus_number'];
         if ($bus !== null) {
+            if (bus_fleet_is_bus_locked($pdo, $bus, true)) {
+                throw new ValidationError('O Ônibus ' . $bus . ' está bloqueado para alterações.');
+            }
             if (!array_key_exists($bus, $batchOccupancy)) {
                 $batchOccupancy[$bus] = bus_fleet_bus_occupancy($pdo, $bus, null, true)
                     + (int) ($legacyOccupancy[$bus] ?? 0);

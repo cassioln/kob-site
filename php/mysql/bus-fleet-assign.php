@@ -52,8 +52,17 @@ try {
             throw new ValidationError('VIP não encontrado.');
         }
 
+        $origemBus = isset($effectiveVipAssignments[$registrationId]) ? (int) $effectiveVipAssignments[$registrationId] : 1;
+        if (bus_fleet_is_bus_locked($pdo, $origemBus, true)) {
+            throw new ValidationError('O Ônibus ' . $origemBus . ' está bloqueado para alterações.');
+        }
+
         if ($bus_number === null) {
             throw new ValidationError('Reservas VIP não podem ficar sem ônibus confirmado.');
+        }
+
+        if (bus_fleet_is_bus_locked($pdo, $bus_number, true)) {
+            throw new ValidationError('O Ônibus ' . $bus_number . ' está bloqueado para alterações.');
         }
 
         $tamanhoReserva = 1;
@@ -86,7 +95,7 @@ try {
     }
 
     // Tratamento para Reservas Reais
-    $stmt = $pdo->prepare('SELECT status, passenger_count, children_count FROM bus_registrations WHERE id = ? FOR UPDATE');
+    $stmt = $pdo->prepare('SELECT status, passenger_count, children_count, bus_number, is_vip FROM bus_registrations WHERE id = ? FOR UPDATE');
     $stmt->execute([$registrationId]);
     $reserva = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -96,6 +105,15 @@ try {
     
     if ($reserva['status'] !== 'confirmed') {
         throw new ValidationError('Apenas reservas com pagamento confirmado podem ser alocadas.');
+    }
+
+    $origemBus = $reserva['bus_number'] !== null ? (int) $reserva['bus_number'] : null;
+    if ($origemBus !== null && bus_fleet_is_bus_locked($pdo, $origemBus, true) && ($bus_number === null || $origemBus !== $bus_number)) {
+        throw new ValidationError('O Ônibus ' . $origemBus . ' está bloqueado para alterações.');
+    }
+
+    if ($bus_number !== null && bus_fleet_is_bus_locked($pdo, $bus_number, true) && $bus_number !== $origemBus) {
+        throw new ValidationError('O Ônibus ' . $bus_number . ' está bloqueado para alterações.');
     }
 
     $tamanhoReserva = bus_fleet_seat_count((int) $reserva['passenger_count'], (int) $reserva['children_count']);

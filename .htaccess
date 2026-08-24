@@ -63,6 +63,7 @@ RewriteRule ^api/bus-admin-reconcile/?$       php/mysql/bus-admin-reconcile.php 
 RewriteRule ^api/bus-admin-xlsx/?$            php/mysql/bus-admin-xlsx.php [QSA,L]
 # Configuracoes e alocacao de frota do painel
 RewriteRule ^api/bus-settings-update/?$       php/mysql/bus-settings-update.php [QSA,L]
+RewriteRule ^api/bus-fleet-lock/?$             php/mysql/bus-fleet-lock.php [QSA,L]
 RewriteRule ^api/bus-fleet-assign/?$          php/mysql/bus-fleet-assign.php [QSA,L]
 RewriteRule ^api/bus-fleet-auto-balance/?$    php/mysql/bus-fleet-auto-balance.php [QSA,L]
 RewriteRule ^api/bus-vip-create/?$            php/mysql/bus-vip-create.php [QSA,L]

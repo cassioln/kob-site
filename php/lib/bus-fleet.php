@@ -91,6 +91,73 @@ function bus_fleet_clear_legacy_vip_settings(PDO $pdo): void
 }
 
 /**
+ * Lê a lista de números de ônibus bloqueados para alterações.
+ *
+ * @return array<int>
+ */
+function bus_fleet_load_locked_buses(PDO $pdo, bool $forUpdate = false): array
+{
+    $lock = $forUpdate ? ' FOR UPDATE' : '';
+    $query = $pdo->query(
+        "SELECT setting_value FROM bus_settings WHERE setting_key = 'locked_buses'" . $lock
+    );
+    $raw = $query ? $query->fetchColumn() : null;
+    if (!$raw || !is_string($raw)) {
+        return [];
+    }
+    $decoded = json_decode($raw, true);
+    if (!is_array($decoded)) {
+        return [];
+    }
+    $locked = [];
+    foreach ($decoded as $num) {
+        $b = filter_var($num, FILTER_VALIDATE_INT);
+        if ($b !== false && $b >= 1 && $b <= 99) {
+            $locked[] = (int) $b;
+        }
+    }
+    $locked = array_values(array_unique($locked));
+    sort($locked, SORT_NUMERIC);
+    return $locked;
+}
+
+/**
+ * Salva a lista de números de ônibus bloqueados para alterações.
+ *
+ * @param array<int|string> $lockedBuses
+ */
+function bus_fleet_save_locked_buses(PDO $pdo, array $lockedBuses): array
+{
+    $filtered = [];
+    foreach ($lockedBuses as $num) {
+        $b = filter_var($num, FILTER_VALIDATE_INT);
+        if ($b !== false && $b >= 1 && $b <= 99) {
+            $filtered[] = (int) $b;
+        }
+    }
+    $filtered = array_values(array_unique($filtered));
+    sort($filtered, SORT_NUMERIC);
+
+    $stmt = $pdo->prepare("
+        INSERT INTO bus_settings (setting_key, setting_value)
+        VALUES ('locked_buses', ?)
+        ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)
+    ");
+    $stmt->execute([json_encode($filtered)]);
+
+    return $filtered;
+}
+
+/**
+ * Verifica se um ônibus específico está bloqueado.
+ */
+function bus_fleet_is_bus_locked(PDO $pdo, int $busNumber, bool $forUpdate = false): bool
+{
+    $locked = bus_fleet_load_locked_buses($pdo, $forUpdate);
+    return in_array($busNumber, $locked, true);
+}
+
+/**
  * Calcula a ocupação física de um ônibus usando a mesma regra da frota.
  * Crianças de colo estão armazenadas separadamente e não aumentam o tamanho
  * do card nem o número de assentos ocupados.
@@ -213,11 +280,22 @@ function bus_fleet_balance_signature(array $snapshot): string
     }
     ksort($vipOccupancy, SORT_NUMERIC);
 
+    $lockedBuses = [];
+    foreach ($snapshot['locked_buses'] ?? [] as $bus) {
+        $num = (int) $bus;
+        if ($num >= 1) {
+            $lockedBuses[] = $num;
+        }
+    }
+    $lockedBuses = array_values(array_unique($lockedBuses));
+    sort($lockedBuses, SORT_NUMERIC);
+
     $canonical = [
         'buses' => $buses,
         'groups' => $groups,
         'vip_occupancy' => $vipOccupancy,
         'vip_assignments' => $snapshot['vip_assignments'] ?? [],
+        'locked_buses' => $lockedBuses,
     ];
     ksort($canonical['vip_assignments']);
 
@@ -253,6 +331,7 @@ function bus_fleet_load_balance_snapshot(PDO $pdo, bool $forUpdate = false): arr
     // O painel trata VIP sem posição explícita como estando no ônibus 1. A
     // simulação precisa usar a mesma ocupação sem gravar essa normalização.
     $effectiveVipAssignments = $legacyVip['effective_assignments'];
+    $lockedBuses = bus_fleet_load_locked_buses($pdo, $forUpdate);
 
     $buses = [];
     foreach ($rows as $row) {
@@ -288,6 +367,7 @@ function bus_fleet_load_balance_snapshot(PDO $pdo, bool $forUpdate = false): arr
         'groups' => $groups,
         'vip_assignments' => $effectiveVipAssignments,
         'vip_occupancy' => bus_fleet_vip_occupancy($effectiveVipAssignments),
+        'locked_buses' => $lockedBuses,
     ];
 }
 
@@ -308,7 +388,7 @@ function bus_fleet_group_priority(array $group): array
  * O problema é uma alocação inteira pequena, então usamos busca com poda:
  * a capacidade do ônibus limita cada ramo e uma cota superior de fechamento
  * elimina estados que não podem superar o melhor plano já encontrado.
- * VIPs entram apenas como ocupação fixa.
+ * VIPs e grupos em ônibus bloqueados entram apenas como ocupação fixa.
  *
  * @return array<string, mixed>
  */
@@ -341,6 +421,16 @@ function bus_fleet_build_balance_plan(array $snapshot, int $capacity = 46, int $
     $busNumbers = array_keys($busNumbers);
     sort($busNumbers, SORT_NUMERIC);
 
+    $lockedBuses = [];
+    foreach ($snapshot['locked_buses'] ?? [] as $lb) {
+        $num = (int) $lb;
+        if ($num >= 1) {
+            $lockedBuses[] = $num;
+        }
+    }
+    $lockedBuses = array_values(array_unique($lockedBuses));
+    $candidateBusChoices = array_values(array_diff($busNumbers, $lockedBuses));
+
     $vipOccupancy = [];
     foreach ($busNumbers as $busNumber) {
         $vipOccupancy[$busNumber] = (int) ($snapshot['vip_occupancy'][$busNumber] ?? 0);
@@ -349,6 +439,8 @@ function bus_fleet_build_balance_plan(array $snapshot, int $capacity = 46, int $
     $groups = [];
     $currentOccupancy = $vipOccupancy;
     $currentWaiting = 0;
+    $lockedAssignments = [];
+
     foreach ($snapshot['groups'] ?? [] as $rawGroup) {
         $id = (string) ($rawGroup['id'] ?? '');
         $size = (int) ($rawGroup['size'] ?? 0);
@@ -358,9 +450,10 @@ function bus_fleet_build_balance_plan(array $snapshot, int $capacity = 46, int $
         $initialBus = ($rawGroup['bus_number'] ?? null) !== null ? (int) $rawGroup['bus_number'] : null;
         $status = ($rawGroup['fleet_assignment_status'] ?? 'assigned') === 'waiting' ? 'waiting' : 'assigned';
 
-        // VIPs reais são ocupação fixa para o auto-balanceamento. Eles podem
-        // ser movidos manualmente, mas nunca entram nos candidatos da busca.
-        if (!empty($rawGroup['is_vip'])) {
+        // VIPs reais e passageiros de ônibus bloqueados são ocupação fixa para o auto-balanceamento.
+        $isBusLocked = ($initialBus !== null && in_array($initialBus, $lockedBuses, true));
+
+        if (!empty($rawGroup['is_vip']) || $isBusLocked) {
             if ($status === 'assigned' && $initialBus !== null) {
                 if (!isset($currentOccupancy[$initialBus])) {
                     $currentOccupancy[$initialBus] = 0;
@@ -368,6 +461,9 @@ function bus_fleet_build_balance_plan(array $snapshot, int $capacity = 46, int $
                 }
                 $currentOccupancy[$initialBus] += $size;
                 $vipOccupancy[$initialBus] += $size;
+                if ($isBusLocked) {
+                    $lockedAssignments[$id] = $initialBus;
+                }
             } else {
                 $currentWaiting++;
             }
@@ -486,11 +582,11 @@ function bus_fleet_build_balance_plan(array $snapshot, int $capacity = 46, int $
     // Um plano inicial bom torna a poda útil mesmo quando há muitos grupos:
     // primeiro encontramos uma solução por heurística, depois a busca tenta
     // provar que existe uma com mais ônibus fechados.
-    $buildHeuristic = static function (array $orderedGroups, string $mode) use ($vipOccupancy, $busNumbers, $capacity, $minimum, $scoreCandidate): array {
+    $buildHeuristic = static function (array $orderedGroups, string $mode) use ($vipOccupancy, $candidateBusChoices, $capacity, $minimum, $scoreCandidate): array {
         $occupancy = $vipOccupancy;
         $assignments = [];
         foreach ($orderedGroups as $group) {
-            $choices = $busNumbers;
+            $choices = $candidateBusChoices;
             usort($choices, static function (int $a, int $b) use ($occupancy, $group, $minimum, $mode): int {
                 if ($mode === 'current') {
                     $aCurrent = $a === $group['initial_bus'] ? 0 : 1;
@@ -536,7 +632,7 @@ function bus_fleet_build_balance_plan(array $snapshot, int $capacity = 46, int $
         }
     }
 
-    $search = function (int $index, int $remainingSize) use (&$search, &$nodeCount, $nodeLimit, $groupCount, &$searchGroups, &$workingOccupancy, &$workingAssignments, &$best, $busNumbers, $capacity, $minimum, $globalUpperClosed, $scoreCandidate, $isBetter): void {
+    $search = function (int $index, int $remainingSize) use (&$search, &$nodeCount, $nodeLimit, $groupCount, &$searchGroups, &$workingOccupancy, &$workingAssignments, &$best, $candidateBusChoices, $capacity, $minimum, $globalUpperClosed, $scoreCandidate, $isBetter): void {
         if (++$nodeCount > $nodeLimit) {
             return;
         }
@@ -580,7 +676,7 @@ function bus_fleet_build_balance_plan(array $snapshot, int $capacity = 46, int $
         $id = $group['id'];
         $nextRemaining = $remainingSize - $size;
 
-        $choices = $busNumbers;
+        $choices = $candidateBusChoices;
         usort($choices, static function (int $a, int $b) use ($workingOccupancy, $group): int {
             $aCurrent = $a === $group['initial_bus'] ? 0 : 1;
             $bCurrent = $b === $group['initial_bus'] ? 0 : 1;

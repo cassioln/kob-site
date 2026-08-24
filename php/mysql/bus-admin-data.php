@@ -478,6 +478,13 @@ try {
     $listaOnibus = [];
     $totalBusesToShow = $maxBusNum;
 
+    $lockedBuses = [];
+    try {
+        $lockedBuses = bus_fleet_load_locked_buses($pdo);
+    } catch (Throwable $e) {
+        // ignora
+    }
+
     for ($i = 1; $i <= $totalBusesToShow; $i++) {
         $busData = $porOnibus[$i] ?? [
             'numero' => $i,
@@ -505,6 +512,7 @@ try {
         $busData['vip_inclusos'] = $vipsNoOnibus;
         $busData['vagas_vip'] = $vipsNoOnibus;
         $busData['fechado'] = $ocupados >= 40;
+        $busData['bloqueado'] = in_array($i, $lockedBuses, true);
         $listaOnibus[] = $busData;
     }
 
@@ -512,6 +520,7 @@ try {
         'capacidade' => 46,
         'minimo' => 40,
         'vip_seats' => $vipCount,
+        'locked_buses' => $lockedBuses,
         'onibus' => $listaOnibus,
         'sem_onibus_confirmado' => $semOnibusConfirmado,
     ];

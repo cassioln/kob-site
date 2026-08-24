@@ -30,14 +30,17 @@ try {
     $pdo->beginTransaction();
     $transactionOpen = true;
 
-    $find = $pdo->prepare('SELECT is_vip FROM bus_registrations WHERE id = ? FOR UPDATE');
+    $find = $pdo->prepare('SELECT is_vip, bus_number FROM bus_registrations WHERE id = ? FOR UPDATE');
     $find->execute([$registrationId]);
-    $isVip = $find->fetchColumn();
-    if ($isVip === false) {
+    $row = $find->fetch(PDO::FETCH_ASSOC);
+    if (!$row) {
         throw new ValidationError('Reserva não encontrada.');
     }
-    if ((int) $isVip !== 1) {
+    if ((int) $row['is_vip'] !== 1) {
         throw new ValidationError('Somente reservas VIP podem ser removidas por esta ação.');
+    }
+    if ($row['bus_number'] !== null && bus_fleet_is_bus_locked($pdo, (int) $row['bus_number'], true)) {
+        throw new ValidationError('Não é possível remover VIP de um ônibus bloqueado.');
     }
 
     $delete = $pdo->prepare('DELETE FROM bus_registrations WHERE id = ? AND is_vip = 1');

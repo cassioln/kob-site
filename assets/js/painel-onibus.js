@@ -15,6 +15,7 @@
   var API_AUTO_BALANCE = 'api/bus-fleet-auto-balance';
   var API_VIP_CREATE = 'api/bus-vip-create';
   var API_VIP_DELETE = 'api/bus-vip-delete';
+  var API_LOCK = 'api/bus-fleet-lock';
   var MEEPLE_PATH_D = 'M256 54.99c-27 0-46.418 14.287-57.633 32.23-10.03 16.047-14.203 34.66-15.017 50.962-30.608 15.135-64.515 30.394-91.815 45.994-14.32 8.183-26.805 16.414-36.203 25.26C45.934 218.28 39 228.24 39 239.99c0 5 2.44 9.075 5.19 12.065 2.754 2.99 6.054 5.312 9.812 7.48 7.515 4.336 16.99 7.95 27.412 11.076 15.483 4.646 32.823 8.1 47.9 9.577-14.996 25.84-34.953 49.574-52.447 72.315C56.65 378.785 39 403.99 39 431.99c0 4-.044 7.123.31 10.26.355 3.137 1.256 7.053 4.41 10.156 3.155 3.104 7.017 3.938 10.163 4.28 3.146.345 6.315.304 10.38.304h111.542c8.097 0 14.026.492 20.125-3.43 6.1-3.92 8.324-9.275 12.67-17.275l.088-.16.08-.166s9.723-19.77 21.324-39.388c5.8-9.808 12.097-19.576 17.574-26.498 2.74-3.46 5.304-6.204 7.15-7.754.564-.472.82-.56 1.184-.76.363.2.62.288 1.184.76 1.846 1.55 4.41 4.294 7.15 7.754 5.477 6.922 11.774 16.69 17.574 26.498 11.6 19.618 21.324 39.387 21.324 39.387l.08.165.088.16c4.346 8 6.55 13.323 12.61 17.254 6.058 3.93 11.974 3.45 19.957 3.45H448c4 0 7.12.043 10.244-.304 3.123-.347 6.998-1.21 10.12-4.332 3.12-3.122 3.984-6.997 4.33-10.12.348-3.122.306-6.244.306-10.244 0-28-17.65-53.205-37.867-79.488-17.493-22.74-37.45-46.474-52.447-72.315 15.077-1.478 32.417-4.93 47.9-9.576 10.422-3.125 19.897-6.74 27.412-11.075 3.758-2.168 7.058-4.49 9.81-7.48 2.753-2.99 5.192-7.065 5.192-12.065 0-11.75-6.934-21.71-16.332-30.554-9.398-8.846-21.883-17.077-36.203-25.26-27.3-15.6-61.207-30.86-91.815-45.994-.814-16.3-4.988-34.915-15.017-50.96C302.418 69.276 283 54.99 256 54.99z';
 
   var isLocalhost = Boolean(
@@ -724,11 +725,22 @@
       var card = document.createElement('div');
       card.className = 'onibus-card';
       card.dataset.bus = busNum;
+      var estaBloqueado = Boolean(info.bloqueado);
+      if (estaBloqueado) {
+        card.classList.add('onibus-card--bloqueado');
+      }
 
       // Eventos de drag and drop na dropzone com validação dinâmica de vagas
       card.addEventListener('dragover', function (ev) {
         ev.preventDefault();
         if (!itemArrastando) return;
+
+        if (estaBloqueado) {
+          card.classList.add('drag-error');
+          card.classList.remove('drag-over');
+          ev.dataTransfer.dropEffect = 'none';
+          return;
+        }
 
         var assentosDoItem = itemArrastando.assentos || 1;
         var mesmoOnibus = (itemArrastando.origemBus === busNum);
@@ -760,6 +772,11 @@
         card.classList.remove('drag-error');
         var rId = ev.dataTransfer.getData('text/plain');
         if (!rId) return;
+
+        if (estaBloqueado) {
+          mostrarAlertaModal('Ônibus Bloqueado', 'O Ônibus ' + busNum + ' está bloqueado para alterações. Desbloqueie o cadeado para alocar passageiros neste veículo.', 'aviso');
+          return;
+        }
 
         if (itemArrastando && itemArrastando.origemBus !== busNum) {
           var assentosDoItem = itemArrastando.assentos || 1;
@@ -970,9 +987,26 @@
         atualizarBotaoVista();
       });
       atualizarBotaoVista();
+
+      var botaoBloqueio = document.createElement('button');
+      botaoBloqueio.type = 'button';
+      botaoBloqueio.className = 'onibus-card__lock-toggle' + (estaBloqueado ? ' onibus-card__lock-toggle--bloqueado' : '');
+      botaoBloqueio.setAttribute('aria-pressed', estaBloqueado ? 'true' : 'false');
+      botaoBloqueio.setAttribute('aria-label', estaBloqueado ? 'Desbloquear Ônibus ' + busNum : 'Bloquear Ônibus ' + busNum);
+      botaoBloqueio.title = estaBloqueado ? 'Ônibus ' + busNum + ' bloqueado. Clique para desbloquear.' : 'Bloquear alterações no Ônibus ' + busNum;
+      botaoBloqueio.innerHTML = estaBloqueado
+        ? '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg><span>Bloqueado</span>'
+        : '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 9.9-1"></path></svg><span>Bloquear</span>';
+
+      botaoBloqueio.addEventListener('click', function (ev) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        alternarBloqueioOnibus(busNum, !estaBloqueado);
+      });
+
       var tituloLinha = document.createElement('div');
       tituloLinha.className = 'onibus-card__titulo-linha';
-      tituloLinha.append(botaoVista, titulo);
+      tituloLinha.append(botaoVista, botaoBloqueio, titulo);
       headerLeft.insertBefore(tituloLinha, statsGrid);
 
       var assentosGrid = document.createElement('div');
@@ -981,11 +1015,15 @@
       if (info.reservas && info.reservas.length) {
         info.reservas.forEach(function (r) {
           var item = document.createElement('div');
-          item.className = 'grupo-item' + (r.is_vip ? ' grupo-item--vip' : '');
-          item.draggable = true;
+          item.className = 'grupo-item' + (r.is_vip ? ' grupo-item--vip' : '') + (estaBloqueado ? ' grupo-item--bloqueado' : '');
+          item.draggable = !estaBloqueado;
           item.dataset.reserva = r.id;
 
           item.addEventListener('dragstart', function (ev) {
+            if (estaBloqueado) {
+              ev.preventDefault();
+              return;
+            }
             ev.dataTransfer.setData('text/plain', r.id);
             itemArrastando = {
               id: r.id,
@@ -1087,7 +1125,7 @@
           });
           tituloGrupoWrap.append(infoTrigger, tituloGrupo);
           itemTop.append(tituloGrupoWrap, codeTag);
-          if (r.is_vip && !String(r.id || '').startsWith('vip_')) {
+          if (r.is_vip && !String(r.id || '').startsWith('vip_') && !estaBloqueado) {
             var removerVip = document.createElement('button');
             removerVip.type = 'button';
             removerVip.className = 'grupo-item__vip-remover';
@@ -1169,96 +1207,114 @@
             meeplesContainer.innerHTML = htmlMeeples + htmlCompacto;
           }
 
-          // Menu de movimentação: opções visuais para ônibus e fila de espera.
-          var moverMenu = document.createElement('details');
-          moverMenu.className = 'grupo-item__mover';
+          if (!estaBloqueado) {
+            // Menu de movimentação: opções visuais para ônibus e fila de espera.
+            var moverMenu = document.createElement('details');
+            moverMenu.className = 'grupo-item__mover';
 
-          var moverTrigger = document.createElement('summary');
-          moverTrigger.className = 'grupo-item__mover-trigger';
-          moverTrigger.title = 'Mover para outro ônibus';
-          moverTrigger.setAttribute('aria-label', 'Mover para outro ônibus');
-          moverTrigger.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="13" rx="2"></rect><path d="M7 18v2M17 18v2M3 10h18"></path><circle cx="7" cy="15" r="1"></circle><circle cx="17" cy="15" r="1"></circle></svg><span>Mover</span><svg class="grupo-item__mover-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>';
-          moverMenu.appendChild(moverTrigger);
+            var moverTrigger = document.createElement('summary');
+            moverTrigger.className = 'grupo-item__mover-trigger';
+            moverTrigger.title = 'Mover para outro ônibus';
+            moverTrigger.setAttribute('aria-label', 'Mover para outro ônibus');
+            moverTrigger.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="13" rx="2"></rect><path d="M7 18v2M17 18v2M3 10h18"></path><circle cx="7" cy="15" r="1"></circle><circle cx="17" cy="15" r="1"></circle></svg><span>Mover</span><svg class="grupo-item__mover-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>';
+            moverMenu.appendChild(moverTrigger);
 
-          var moverOpcoes = document.createElement('div');
-          moverOpcoes.className = 'grupo-item__mover-opcoes';
-          moverOpcoes.setAttribute('role', 'listbox');
-          moverOpcoes.setAttribute('aria-label', 'Destinos disponíveis');
+            var moverOpcoes = document.createElement('div');
+            moverOpcoes.className = 'grupo-item__mover-opcoes';
+            moverOpcoes.setAttribute('role', 'listbox');
+            moverOpcoes.setAttribute('aria-label', 'Destinos disponíveis');
 
-          function adicionarOpcaoMover(valor, titulo, detalhe, tipo) {
-            var opcao = document.createElement('button');
-            opcao.type = 'button';
-            opcao.className = 'grupo-item__mover-opcao grupo-item__mover-opcao--' + tipo;
-            opcao.setAttribute('role', 'option');
-            var detalheHtml = detalhe ? '<small>' + detalhe + '</small>' : '';
-            opcao.innerHTML = (tipo === 'espera'
-              ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v12H4z"></path><path d="m4 7 4 5h8l4-5M8 12h8"></path></svg>'
-              : '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="13" rx="2"></rect><path d="M3 10h18M7 18v2M17 18v2"></path></svg>')
-              + '<span class="grupo-item__mover-opcao-copy"><strong>' + titulo + '</strong>' + detalheHtml + '</span>';
-            opcao.addEventListener('click', function (ev) {
-              ev.preventDefault();
+            function adicionarOpcaoMover(valor, titulo, detalhe, tipo, desabilitado) {
+              var opcao = document.createElement('button');
+              opcao.type = 'button';
+              opcao.className = 'grupo-item__mover-opcao grupo-item__mover-opcao--' + tipo;
+              opcao.setAttribute('role', 'option');
+              if (desabilitado) {
+                opcao.disabled = true;
+                opcao.classList.add('grupo-item__mover-opcao--desabilitada');
+              }
+              var detalheHtml = detalhe ? '<small>' + detalhe + '</small>' : '';
+              opcao.innerHTML = (tipo === 'espera'
+                ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v12H4z"></path><path d="m4 7 4 5h8l4-5M8 12h8"></path></svg>'
+                : (tipo === 'bloqueado'
+                  ? '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>'
+                  : '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="13" rx="2"></rect><path d="M3 10h18M7 18v2M17 18v2"></path></svg>'))
+                + '<span class="grupo-item__mover-opcao-copy"><strong>' + titulo + '</strong>' + detalheHtml + '</span>';
+              if (!desabilitado) {
+                opcao.addEventListener('click', function (ev) {
+                  ev.preventDefault();
+                  ev.stopPropagation();
+                  moverMenu.open = false;
+                  if (valor === null) {
+                    moverParaOnibus(r.id, null);
+                    return;
+                  }
+
+                  var novoBus = Number(valor);
+                  var destInfo = onibusList.find(function (o) { return Number(o.numero) === novoBus; });
+                  var ocupadosDest = assentosOcupadosDoOnibus(destInfo);
+                  var vagasDest = destInfo && destInfo.vagas_livres !== undefined
+                    ? Math.max(0, Number(destInfo.vagas_livres || 0))
+                    : Math.max(0, maxL - ocupadosDest);
+                  var assentosDoItem = Math.max(1, assentosDaReserva(r));
+                  if (vagasDest < assentosDoItem) {
+                    var vagasRestantesMsg = vagasDest;
+                    var pessoasDoItem = Math.max(1, Number(r.total || r.pagantes || 1));
+                    mostrarAlertaModal('Ônibus Lotado', 'O Ônibus ' + novoBus + ' não tem vagas suficientes (' + (vagasRestantesMsg === 1 ? '1 vaga restante' : vagasRestantesMsg + ' vagas restantes') + ') para acomodar este grupo de ' + (pessoasDoItem === 1 ? '1 pessoa' : pessoasDoItem + ' pessoas') + ' (' + assentosDoItem + (assentosDoItem === 1 ? ' assento).' : ' assentos).'), 'erro');
+                    return;
+                  }
+                  moverParaOnibus(r.id, novoBus);
+                });
+              }
+              moverOpcoes.appendChild(opcao);
+            }
+
+            onibusList.forEach(function (outro) {
+              var numOutro = Number(outro.numero);
+              if (numOutro !== busNum) {
+                var outroBloqueado = Boolean(outro.bloqueado);
+                var vagasLivresOutro = outro.vagas_livres !== undefined
+                  ? Math.max(0, Number(outro.vagas_livres || 0))
+                  : Math.max(0, maxL - assentosOcupadosDoOnibus(outro));
+                if (outroBloqueado) {
+                  adicionarOpcaoMover(numOutro, 'Ônibus ' + numOutro + ' (Bloqueado)', 'Veículo bloqueado para alterações', 'bloqueado', true);
+                } else {
+                  adicionarOpcaoMover(numOutro, 'Ônibus ' + numOutro, vagasLivresOutro + (vagasLivresOutro === 1 ? ' vaga livre' : ' vagas livres'), 'onibus', false);
+                }
+              }
+            });
+
+            adicionarOpcaoMover(
+              null,
+              'Sem ônibus confirmado',
+              r.is_vip ? '' : 'Enviar para a fila de espera',
+              'espera',
+              false
+            );
+
+            moverMenu.appendChild(moverOpcoes);
+            moverMenu.addEventListener('toggle', function () {
+              item.classList.toggle('grupo-item--menu-aberto', moverMenu.open);
+            });
+            moverMenu.addEventListener('focusout', function (ev) {
+              var proximoFoco = ev.relatedTarget;
+              if (!proximoFoco || !moverMenu.contains(proximoFoco)) {
+                moverMenu.open = false;
+              }
+            });
+            moverTrigger.addEventListener('click', function () {
+              document.querySelectorAll('.grupo-item__mover[open]').forEach(function (aberto) {
+                if (aberto !== moverMenu) aberto.open = false;
+              });
+            });
+            moverMenu.addEventListener('mousedown', function (ev) {
               ev.stopPropagation();
-              moverMenu.open = false;
-              if (valor === null) {
-                moverParaOnibus(r.id, null);
-                return;
-              }
-
-              var novoBus = Number(valor);
-              var destInfo = onibusList.find(function (o) { return Number(o.numero) === novoBus; });
-              var ocupadosDest = assentosOcupadosDoOnibus(destInfo);
-              var vagasDest = destInfo && destInfo.vagas_livres !== undefined
-                ? Math.max(0, Number(destInfo.vagas_livres || 0))
-                : Math.max(0, maxL - ocupadosDest);
-              var assentosDoItem = Math.max(1, assentosDaReserva(r));
-              if (vagasDest < assentosDoItem) {
-                var vagasRestantesMsg = vagasDest;
-                var pessoasDoItem = Math.max(1, Number(r.total || r.pagantes || 1));
-                mostrarAlertaModal('Ônibus Lotado', 'O Ônibus ' + novoBus + ' não tem vagas suficientes (' + (vagasRestantesMsg === 1 ? '1 vaga restante' : vagasRestantesMsg + ' vagas restantes') + ') para acomodar este grupo de ' + (pessoasDoItem === 1 ? '1 pessoa' : pessoasDoItem + ' pessoas') + ' (' + assentosDoItem + (assentosDoItem === 1 ? ' assento).' : ' assentos).'), 'erro');
-                return;
-              }
-              moverParaOnibus(r.id, novoBus);
             });
-            moverOpcoes.appendChild(opcao);
+
+            itemBottom.append(meeplesContainer, moverMenu);
+          } else {
+            itemBottom.append(meeplesContainer);
           }
-
-          onibusList.forEach(function (outro) {
-            var numOutro = Number(outro.numero);
-            if (numOutro !== busNum) {
-              var vagasLivresOutro = outro.vagas_livres !== undefined
-                ? Math.max(0, Number(outro.vagas_livres || 0))
-                : Math.max(0, maxL - assentosOcupadosDoOnibus(outro));
-              adicionarOpcaoMover(numOutro, 'Ônibus ' + numOutro, vagasLivresOutro + (vagasLivresOutro === 1 ? ' vaga livre' : ' vagas livres'), 'onibus');
-            }
-          });
-
-          adicionarOpcaoMover(
-            null,
-            'Sem ônibus confirmado',
-            r.is_vip ? '' : 'Enviar para a fila de espera',
-            'espera'
-          );
-
-          moverMenu.appendChild(moverOpcoes);
-          moverMenu.addEventListener('toggle', function () {
-            item.classList.toggle('grupo-item--menu-aberto', moverMenu.open);
-          });
-          moverMenu.addEventListener('focusout', function (ev) {
-            var proximoFoco = ev.relatedTarget;
-            if (!proximoFoco || !moverMenu.contains(proximoFoco)) {
-              moverMenu.open = false;
-            }
-          });
-          moverTrigger.addEventListener('click', function () {
-            document.querySelectorAll('.grupo-item__mover[open]').forEach(function (aberto) {
-              if (aberto !== moverMenu) aberto.open = false;
-            });
-          });
-          moverMenu.addEventListener('mousedown', function (ev) {
-            ev.stopPropagation();
-          });
-
-          itemBottom.append(meeplesContainer, moverMenu);
           item.appendChild(itemBottom);
 
           // Tooltip com Informações Extras no Hover
@@ -1646,11 +1702,17 @@
       (estado.frota.onibus || []).forEach(function (onibus) {
         var option = document.createElement('option');
         option.value = onibus.numero;
+        var estaBloqueado = Boolean(onibus.bloqueado);
         var vagasOnibus = onibus.vagas_livres !== undefined
           ? Math.max(0, Number(onibus.vagas_livres || 0))
           : Math.max(0, capacidade - assentosOcupadosDoOnibus(onibus));
-        option.textContent = 'Ônibus ' + onibus.numero + ' (' + vagasOnibus + (vagasOnibus === 1 ? ' vaga)' : ' vagas)');
-        option.disabled = vagasOnibus < Math.max(1, Number(item.pagantes || 0));
+        if (estaBloqueado) {
+          option.textContent = 'Ônibus ' + onibus.numero + ' (Bloqueado)';
+          option.disabled = true;
+        } else {
+          option.textContent = 'Ônibus ' + onibus.numero + ' (' + vagasOnibus + (vagasOnibus === 1 ? ' vaga)' : ' vagas)');
+          option.disabled = vagasOnibus < Math.max(1, Number(item.pagantes || 0));
+        }
         select.appendChild(option);
       });
       select.addEventListener('change', function () {
@@ -1749,6 +1811,43 @@
       carregar();
     }).catch(function (err) {
       mostrarAlertaModal('Não foi possível mover passageiros', err.message, 'erro');
+    }).finally(function () {
+      el.frotaContainer.style.opacity = '1';
+    });
+  }
+
+  function alternarBloqueioOnibus(busNum, novoStatus) {
+    if (!estado.token) return;
+    el.frotaContainer.style.opacity = '0.5';
+    fetch(API_LOCK + '?token=' + encodeURIComponent(estado.token), {
+      method: 'POST',
+      headers: {
+        'X-Admin-Token': estado.token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        bus_number: busNum,
+        locked: Boolean(novoStatus)
+      })
+    }).then(function (resp) {
+      return resp.json().then(function (data) {
+        if (!resp.ok) throw new Error(data.error || 'Erro ao alterar status de bloqueio');
+        return data;
+      });
+    }).then(function (data) {
+      if (estado.frota && Array.isArray(estado.frota.onibus)) {
+        var busObj = estado.frota.onibus.find(function (b) { return Number(b.numero) === busNum; });
+        if (busObj) busObj.bloqueado = Boolean(novoStatus);
+        if (Array.isArray(data.locked_buses)) {
+          estado.frota.locked_buses = data.locked_buses;
+          estado.frota.onibus.forEach(function (b) {
+            b.bloqueado = data.locked_buses.includes(Number(b.numero));
+          });
+        }
+      }
+      renderizarFrota();
+    }).catch(function (err) {
+      mostrarAlertaModal('Não foi possível alterar o bloqueio', err.message, 'erro');
     }).finally(function () {
       el.frotaContainer.style.opacity = '1';
     });
@@ -1930,13 +2029,19 @@
       select.appendChild(waiting);
       onibus.forEach(function (info) {
         var number = Number(info.numero);
+        var estaBloqueado = Boolean(info.bloqueado);
         var free = info.vagas_livres !== undefined
           ? Math.max(0, Number(info.vagas_livres || 0))
           : Math.max(0, Number(estado.frota.capacidade || 46) - assentosOcupadosDoOnibus(info));
         var option = document.createElement('option');
         option.value = String(number);
-        option.textContent = 'Ônibus ' + number + ' (' + free + (free === 1 ? ' vaga livre)' : ' vagas livres)');
-        option.disabled = free < 1;
+        if (estaBloqueado) {
+          option.textContent = 'Ônibus ' + number + ' (Bloqueado)';
+          option.disabled = true;
+        } else {
+          option.textContent = 'Ônibus ' + number + ' (' + free + (free === 1 ? ' vaga livre)' : ' vagas livres)');
+          option.disabled = free < 1;
+        }
         select.appendChild(option);
       });
       select.value = draft.bus_number || '';
