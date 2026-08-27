@@ -2,37 +2,26 @@
 
 A página `onibus.html` coleta o contato principal e os passageiros, calcula uma prévia do valor no navegador e envia o cadastro para uma API server-side. O valor definitivo é calculado novamente no servidor.
 
-## Banco escolhido
+## Banco escolhido: MySQL (Percona 5.7) na Locaweb
 
-A implementação usa PostgreSQL. **Banco provisionado e schema já aplicado** (2026-08-14):
+A produção real roda em **PHP 8.0 + MySQL (Percona 5.7.32)** na Locaweb (`186.202.152.70:3306`, base `db_kob_msql`):
 
 | Item | Valor |
 |---|---|
-| Host | `db_kob.postgresql.dbaas.com.br` (`179.188.16.134`) |
-| Porta | `5432`, acessível externamente |
-| Usuário / base | `db_kob` / `db_kob` |
-| Versão | PostgreSQL 15.6 |
-| Tabelas | `bus_registrations`, `bus_passengers`, `bus_payment_proofs` |
-
-### Certificado TLS expirado — leia antes de depurar
-
-O servidor responde com **certificado expirado** (`CERT_HAS_EXPIRED`). É preciso
-`PGSSL_REJECT_UNAUTHORIZED=false`, ou o driver recusa a conexão e nada é gravado.
-A conexão segue cifrada; abre-se mão apenas da validação da cadeia. Remova a flag
-quando a Locaweb renovar o certificado.
-
-Cuidado com uma pegadinha do driver: em `pg` >= 9, o `sslmode` da URL vence o
-objeto `ssl` e `require` é tratado como `verify-full`. Por isso
-`buildPoolConfig()` remove `sslmode` da connection string e decide a política de
-TLS em um só lugar — coberto por `server/tests/postgres-ssl.test.mjs`.
+| Host | `186.202.152.70` (Locaweb MySQL) |
+| Porta | `3306` |
+| Driver | PHP 8.0 `pdo_mysql` / `mysqlnd` |
+| Base | `db_kob_msql` |
+| Tabelas | `bus_registrations`, `bus_passengers`, `bus_payment_proofs`, `bus_settings` |
+| Triggers | 6 triggers ativas (integridade, CPF único, validação de capacidade e valores) |
 
 O fluxo grava:
 
 - cadastro do grupo e status da reserva;
 - passageiros relacionados ao cadastro;
-- comprovante (JPG, PNG, WebP ou PDF, até 2 MB) vinculado ao cadastro;
+- comprovante vinculado ao cadastro (se anexado manualmente);
 - referência externa, order e payment ID do Mercado Pago;
-- valor em centavos, sem confiar no valor exibido no navegador.
+- valor em centavos, recalculado com segurança no servidor.
 
 CPF e demais dados de passageiros ficam apenas no banco operacional; não entram em analytics, URLs ou logs da aplicação.
 

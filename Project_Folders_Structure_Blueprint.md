@@ -169,14 +169,11 @@ kob-site/
 │   ├── cors.mjs
 │   ├── http.mjs
 │   ├── mercadopago.mjs
-│   ├── db/
-│   │   └── postgres.mjs
 │   └── tests/                              # Testes automatizados do backend Node
 │       ├── bus-payment.test.mjs
 │       ├── cors.test.mjs
 │       ├── group-names.test.mjs
 │       ├── mp-signature.test.mjs
-│       ├── postgres-ssl.test.mjs
 │       └── xlsx-coluna-letra.test.mjs
 ├── .htaccess                               # Regras Apache, versão do PHP e rewrites de API
 ├── index.html                              # Landing page principal do evento
@@ -190,6 +187,7 @@ kob-site/
 ├── router.php                              # Router para desenvolvimento local (`php -S`)
 ├── netlify.toml / vercel.json              # Configurações de deploy Serverless/Edge
 ├── package.json                            # Scripts de teste, lint e dependências Node
+├── knip.json                               # Configuração de auditoria de dead code / knip
 ├── robots.txt / sitemap.xml                # Configurações de indexação SEO
 ├── README.md                               # Guia de início rápido e visão geral
 └── Project_Folders_Structure_Blueprint.md  # Blueprint da estrutura de pastas

@@ -1,5 +1,4 @@
 import { createHash, randomUUID } from 'node:crypto';
-import { createPostgresRepository } from './db/postgres.mjs';
 import {
   createMercadoPagoOrder,
   getMercadoPagoOrder,
@@ -75,7 +74,10 @@ export async function handleCreatePixRequest({
   }
 
   try {
-    const db = dependencies.db || createPostgresRepository(env);
+    const db = dependencies.db;
+    if (!db) {
+      return respond({ statusCode: 503, body: { error: 'O pagamento está temporariamente indisponível.' } });
+    }
     const mercadoPago = dependencies.mercadoPago || {
       createOrder: (params) => createMercadoPagoOrder({
         ...params,
@@ -148,7 +150,8 @@ export async function handleMercadoPagoWebhook({
   if (!orderId) return { statusCode: 400, body: { error: 'Identificador da order ausente.' } };
 
   try {
-    const db = dependencies.db || createPostgresRepository(env);
+    const db = dependencies.db;
+    if (!db) return { statusCode: 503, body: { error: 'Não foi possível processar a notificação.' } };
     const mercadoPago = dependencies.mercadoPago || {
       getOrder: (id) => getMercadoPagoOrder({
         orderId: id,
@@ -192,8 +195,8 @@ export async function handleRegistrationStatusRequest({
   }
 
   try {
-    const db = dependencies.db || createPostgresRepository(env);
-    if (typeof db.getRegistrationStatus !== 'function') {
+    const db = dependencies.db;
+    if (!db || typeof db.getRegistrationStatus !== 'function') {
       return respond({ statusCode: 503, body: { error: 'Consulta temporariamente indisponível.' } });
     }
     const registration = await db.getRegistrationStatus(registrationId);
@@ -258,8 +261,8 @@ export async function handlePaymentProofRequest({
     const mimeType = String(payload.mime_type || '').toLowerCase();
     if (!PROOF_TYPES[mimeType]) throw new ValidationError('Envie um comprovante em JPG, PNG, WebP ou PDF.');
     const fileData = decodeProof(payload.content_base64, mimeType);
-    const db = dependencies.db || createPostgresRepository(env);
-    if (typeof db.getRegistrationStatus !== 'function' || typeof db.createPaymentProof !== 'function') {
+    const db = dependencies.db;
+    if (!db || typeof db.getRegistrationStatus !== 'function' || typeof db.createPaymentProof !== 'function') {
       throw new Error('Repositório de comprovante não configurado.');
     }
     const registration = await db.getRegistrationStatus(registrationId);
