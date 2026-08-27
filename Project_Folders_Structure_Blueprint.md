@@ -1,21 +1,19 @@
 # Project Folders Structure Blueprint — Kriativos On Board (kob-site)
 
-> **Document Version:** 1.0.0  
-> **Last Updated:** 2026-08-27  
-> **Repository:** `cassioln/kob-site`  
-> **Primary Technology Stack:** HTML5 / Modern CSS / Vanilla JS (Frontend) + Node.js ES Modules (Serverless API) + PHP 8.0 / MySQL (Locaweb Production Backend)
+> **Document Version:** 1.1.0
+> **Last Updated:** 2026-08-27
+> **Repository:** `cassioln/kob-site`
+> **Primary Technology Stack:** HTML5 / Modern CSS / Vanilla JS (Frontend) + PHP 8.0 / MySQL (Locaweb Production Backend) + Node.js (E2E Tests & Analytics Governance)
 
 ---
 
 ## 1. Structural Overview
 
-O **Kriativos On Board (kob-site)** é uma aplicação web híbrida de alto desempenho que combina uma landing page rica e imersiva para evento temático (cruzeiro gamer), páginas satélites de conversão e transporte fretado, um sistema de gestão de reservas com checkout Pix via Mercado Pago, painel administrativo operacional e pipeline de conformidade com LGPD e Web Analytics.
+O **Kriativos On Board (kob-site)** é uma aplicação web de alto desempenho que combina uma landing page rica e imersiva para evento temático (cruzeiro gamer), páginas satélites de conversão e transporte fretado, um sistema de gestão de reservas com checkout Pix via Mercado Pago, painel administrativo operacional e pipeline de conformidade com LGPD e Web Analytics.
 
 ### Princípios Arquiteturais:
-1. **Zero-Build Frontend:** O site público utiliza HTML5 semântico, CSS modular nativo e Vanilla JavaScript sem a necessidade de bundlers pesados, garantindo carregamento instantâneo e publicação simples via CDN/FTP.
-2. **Dual-Runtime API / Backend Híbrido:**
-   * **Produção Apache / Locaweb (`php/mysql/`):** Camada de produção oficial em PHP 8.0 + MySQL Percona 5.7, consumida através de rewrites do `.htaccess` e roteada localmente via `router.php`.
-   * **Serverless Node.js (`api/` + `server/`):** Handlers serverless em Node.js (ESM) para Vercel e Netlify Functions, com suíte completa de testes automatizados (`node --test`).
+1. **Zero-Build Frontend:** O site público utiliza HTML5 semântico, CSS modular nativo e Vanilla JavaScript sem a necessidade de bundlers pesados, garantindo carregamento instantâneo e publicação direta via CDN/FTP.
+2. **Backend de Produção Oficial (Apache / Locaweb - `php/mysql/`):** Camada de produção oficial em PHP 8.0 + MySQL Percona 5.7, consumida através de rewrites do `.htaccess` e roteada localmente via `router.php`.
 3. **Isolamento de Domínio e Operações:**
    * **Landing Page Principal:** `index.html` (experiência institucional, galeria responsiva, atrações, compra de cabines).
    * **Sistema de Ônibus Fretado:** `onibus.html` (checkout e cadastro de passageiros) e `painel-onibus.html` (gestão operacional de frota e exportação).
@@ -55,11 +53,6 @@ kob-site/
 │   │   └── validate-config.mjs
 │   └── tests/                              # Testes automatizados de eventos e PII (Playwright)
 │       └── helpers/
-├── api/                                    # Handlers de API Serverless (Vercel/Node.js ESM)
-│   ├── bus-payment-proof.mjs
-│   ├── bus-registration-status.mjs
-│   ├── create-pix-order.mjs
-│   └── mercadopago-webhook.mjs
 ├── assets/                                 # Recursos estáticos públicos do frontend
 │   ├── css/                                # Folhas de estilo modulares
 │   │   ├── cookie-consent.css
@@ -107,8 +100,6 @@ kob-site/
 │   ├── DESIGN.md                           # Design system, tokens e direção de arte
 │   ├── ONIBUS-PAGAMENTO.md                 # Arquitetura do checkout Pix e banco
 │   └── PRODUCT.md                          # Contexto de negócio e produto
-├── netlify/                                # Configurações e functions específicas da Netlify
-│   └── functions/
 ├── php/                                    # Backend de Produção PHP 8.0 + MySQL
 │   ├── db/                                 # Migrations SQL e scripts de banco de dados
 │   │   ├── 001_bus_registrations_mysql.sql
@@ -185,7 +176,6 @@ kob-site/
 ├── whatsapp.html                           # Redirecionamento canônico de WhatsApp
 ├── preview.sh                              # Script para subida do servidor de preview local
 ├── router.php                              # Router para desenvolvimento local (`php -S`)
-├── netlify.toml / vercel.json              # Configurações de deploy Serverless/Edge
 ├── package.json                            # Scripts de teste, lint e dependências Node
 ├── knip.json                               # Configuração de auditoria de dead code / knip
 ├── robots.txt / sitemap.xml                # Configurações de indexação SEO
@@ -205,7 +195,7 @@ kob-site/
 | **`php/mysql/`** | Endpoints de produção acessados pelo frontend. | PHP 8.0 + PDO MySQL | `declare(strict_types=1);`, autenticação via token Bearer quando administrativo, respostas JSON. |
 | **`php/lib/`** | Biblioteca de classes e helpers reutilizáveis. | PHP 8.0 | Funções puras e classes de domínio (geração de PDF nativo sem lib externa, envio SMTP, sanitização). |
 | **`php/tests/`** | Testes de integração e validação de regras de negócio. | PHP CLI | Scripts executáveis diretamente via terminal (`php php/tests/*.php`). |
-| **`api/` & `server/`** | Handlers e serviços Serverless Node. | Node.js ESM (`.mjs`) | Validações rigorosas de schema, CORS dinâmico por allowlist, suíte com `node --test`. |
+| **`server/`** | Regras de negócio e contratos de validação Node. | Node.js ESM (`.mjs`) | Validações rigorosas de schema, CORS dinâmico por allowlist, suíte com `node --test`. |
 | **`analytics/`** | Governança de tags, eventos e auditoria de PII. | Playwright, JSON Schema | Schemas declarativos de eventos e testes para garantir que nenhum CPF/email vaze em tags. |
 | **`docs/`** | Especificações de negócio e arquitetura. | Markdown | Planos de execução e documentação de APIs em `docs/superpowers/`. |
 
@@ -220,7 +210,6 @@ kob-site/
 | **Nova Classe/Helper PHP** | `php/lib/` | `php/lib/novo-helper.php` |
 | **Nova Migration MySQL** | `php/db/` (sequencial) | `php/db/009_nova_tabela.sql` |
 | **Novo Teste Backend PHP** | `php/tests/` | `php/tests/novo-recurso.test.php` |
-| **Novo Endpoint Serverless (Node)** | `api/` | `api/novo-recurso.mjs` |
 | **Novo Módulo Compartilhado Node** | `server/` | `server/novo-servico.mjs` |
 | **Novo Teste Node** | `server/tests/` | `server/tests/novo-servico.test.mjs` |
 | **Nova Folha de Estilo** | `assets/css/` | `assets/css/novo-modulo.css` |
@@ -270,7 +259,10 @@ npm run validate:analytics
 npm run test:analytics
 
 # Executar suíte de testes de integração PHP:
-for f in php/tests/*.test.php; do php "$f"; done
+for f in php/tests/*.php; do php "$f"; done
+
+# Executar auditoria de código morto:
+npm run lint:knip
 ```
 
 ---
@@ -279,11 +271,9 @@ for f in php/tests/*.test.php; do php "$f"; done
 
 * **Hospedagem de Produção (Locaweb):**
   * Servidor Apache com PHP 8.0 (`php80-script`) e MySQL 5.7.
-  * O arquivo `.htaccess` gerencia o rewrite transparente de `/api/<endpoint>` para `php/mysql/<endpoint>.php` e os subdomínios `busao.kriativosonboard.com.br` e `painel.kriativosonboard.com.br`.
-* **Deploy Serverless Alternativo (Vercel / Netlify):**
-  * `vercel.json` e `netlify.toml` mapeiam rotas `/api/*` para os handlers em `api/*.mjs` e `netlify/functions/*.mjs`.
+  * O arquivo `.htaccess` gerencia o rewrite transparente de `/api/<endpoint>` para `php/mysql/<endpoint>.php`.
 * **CI/CD:**
-  * GitHub Actions configurado em `.github/workflows/deploy.yml`.
+  * GitHub Actions configurado em `.github/workflows/deploy.yml` para publicação via FTP seguro.
 
 ---
 
@@ -333,7 +323,7 @@ test('deve processar regra de negócio com sucesso', () => {
 ## 9. Structure Enforcement & Governance
 
 Para manter este blueprint respeitado nas próximas alterações:
-1. **Auditoria Contínua:** Utilizar periodicamente a skill [`site-cleanup-and-organize`](file:///Users/cassio/GitHubPessoal/kob-site/.agents/skills/site-cleanup-and-organize/SKILL.md) para verificar novos assets órfãos ou código morto.
+1. **Auditoria Contínua:** Utilizar periodicamente a skill [`site-cleanup-and-organize`](./.agents/skills/site-cleanup-and-organize/SKILL.md) e `npm run lint:knip` para verificar novos assets órfãos ou código morto.
 2. **Proteção de Assets na Raiz:** Nunca salvar arquivos `.png`, `.jpg`, `.css` ou `.js` diretamente na raiz do projeto.
 3. **Validação de Sintaxe PHP:** Rodar periodicamente o linter em lote: `for f in php/mysql/*.php php/lib/*.php; do php -l "$f"; done`.
 4. **Git Cleanliness:** Manter `.gitignore` atualizado contra artefatos locais de teste (`test-results/`), logs e caches do sistema.

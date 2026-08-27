@@ -337,14 +337,10 @@ Em ambiente de teste, `payer.email` que não termine em `@testuser.com` recebe
 `mp_request()` agora registra o `code` do provedor em `error_log` — antes todo
 erro virava a mesma frase genérica e a depuração ficava cega.
 
-## Netlify e Vercel (alternativa Node)
+## Ambiente de Produção Oficial
 
-- Netlify: `netlify.toml` aponta para `netlify/functions` e redireciona `/api/*` para as funções.
-- Vercel: os adaptadores em `api/` são reconhecidos como funções Node.
+O ambiente de produção opera exclusivamente em **Apache + PHP 8.0 + MySQL Percona 5.7** na Locaweb. As credenciais de banco e tokens do Mercado Pago são configurados em `~/kob-config/bus-secrets.php`, isolado fora do diretório público (`public_html/`).
 
-Como o comprovante é armazenado em `bytea`, mantenha a política de retenção do evento sob controle e faça backup do PostgreSQL. O limite intencional de 2 MB evita transformar o banco em armazenamento de mídia.
-
-A hospedagem precisa permitir que a função Node acesse o PostgreSQL. Se o banco do plano bloquear conexões externas, não coloque a senha no frontend: nesse caso, use a API PHP da própria hospedagem para o banco ou um PostgreSQL gerenciado com acesso restrito.
 
 ## Testes locais
 

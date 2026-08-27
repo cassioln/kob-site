@@ -9,16 +9,16 @@
 O **Kriativos On Board (kob-site)** é a plataforma web oficial do **Kriativos On Board 2026** — o primeiro e maior cruzeiro temático de jogos de tabuleiro e RPG do Brasil, realizado a bordo do transatlântico **MSC Musica** (20 a 23 de novembro de 2026, Santos-SP a Búzios-RJ).
 
 ### Objetivos e Páginas Principais:
-1. **Landing Page Principal ([`index.html`](file:///Users/cassio/GitHubPessoal/kob-site/index.html)):** Experiência imersiva que apresenta o evento, o navio, as atrações, criadores convidados, cronograma, galeria histórica e tabela de lotes de cabines com conversão para WhatsApp.
-2. **Sistema de Ônibus Fretado ([`onibus.html`](file:///Users/cassio/GitHubPessoal/kob-site/onibus.html)):** Fluxo multi-step de reserva de transporte rodoviário fretado (SP ⇄ Santos), cálculo automático de valores, checkout Pix via Mercado Pago e upload de comprovante.
-3. **Painel de Gestão Operacional ([`painel-onibus.html`](file:///Users/cassio/GitHubPessoal/kob-site/painel-onibus.html)):** Dashboard administrativo autenticado para acompanhamento de reservas em tempo real, balanceamento de frota, alocação de passageiros por ônibus e exportação de manifestos em XLSX/PDF.
-4. **Páginas Legais & Compliance:** [`politica-de-privacidade.html`](file:///Users/cassio/GitHubPessoal/kob-site/politica-de-privacidade.html), [`politica-de-cookies.html`](file:///Users/cassio/GitHubPessoal/kob-site/politica-de-cookies.html), [`termos-de-transporte.html`](file:///Users/cassio/GitHubPessoal/kob-site/termos-de-transporte.html).
+1. **Landing Page Principal ([`index.html`](./index.html)):** Experiência imersiva que apresenta o evento, o navio, as atrações, criadores convidados, cronograma, galeria histórica e tabela de lotes de cabines com conversão para WhatsApp.
+2. **Sistema de Ônibus Fretado ([`onibus.html`](./onibus.html)):** Fluxo multi-step de reserva de transporte rodoviário fretado (SP ⇄ Santos), cálculo automático de valores, checkout Pix via Mercado Pago e upload de comprovante.
+3. **Painel de Gestão Operacional ([`painel-onibus.html`](./painel-onibus.html)):** Dashboard administrativo autenticado para acompanhamento de reservas em tempo real, balanceamento de frota, alocação de passageiros por ônibus e exportação de manifestos em XLSX/PDF.
+4. **Páginas Legais & Compliance:** [`politica-de-privacidade.html`](./politica-de-privacidade.html), [`politica-de-cookies.html`](./politica-de-cookies.html), [`termos-de-transporte.html`](./termos-de-transporte.html).
 
 ---
 
 ## 🏛️ 2. Arquitetura Técnica & Stack
 
-O projeto adota uma arquitetura híbrida de alto desempenho com separação clara de responsabilidades:
+O projeto adota uma arquitetura focada em performance máxima, simplicidade operacional e custo zero de build:
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -26,20 +26,20 @@ O projeto adota uma arquitetura híbrida de alto desempenho com separação clar
 │  HTML5 Semântico + Vanilla CSS (Design Tokens) + Vanilla JS (Zero-Build)   │
 └──────────────────────────────────────┬──────────────────────────────────────┘
                                        │ Chamadas AJAX / Fetch (/api/*)
-                   ┌───────────────────┴───────────────────┐
-                   ▼                                       ▼
-┌──────────────────────────────────────┐┌─────────────────────────────────────┐
-│     BACKEND PRODUÇÃO (LOCAWEB)       ││     BACKEND SERVERLESS (NODE.JS)    │
-│  • Apache (.htaccess rewrites)       ││  • Vercel / Netlify Functions (ESM) │
-│  • PHP 8.0 (strict_types=1)          ││  • Módulos server/ + api/*.mjs      │
-│  • MySQL 5.7 (Percona / pdo_mysql)   ││  • Suíte node --test automatizada   │
-│  • php/mysql/*.php + php/lib/*.php   ││  • Validações de CORS e Schemas     │
-└──────────────────────────────────────┘└─────────────────────────────────────┘
+                                       ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                     BACKEND PRODUÇÃO (APACHE + PHP LOCAWEB)                 │
+│  • Apache 2.4 com .htaccess (roteamento /api/* -> php/mysql/*.php)          │
+│  • PHP 8.0 (strict_types=1, pdo_mysql, curl, mbstring, openssl)             │
+│  • MySQL 5.7 (Percona / 6 Triggers de integridade e regras de negócio)      │
+│  • php/mysql/*.php (Endpoints da API) + php/lib/*.php (Classes utilitárias) │
+│  • Segredos e chaves em bus-secrets.php fora do document root                │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-* **Frontend Zero-Build:** Não utiliza bundlers (Webpack/Vite) nem frameworks (React/Vue). O deploy é estático e direto.
+* **Frontend Zero-Build:** Não utiliza bundlers (Webpack/Vite) nem frameworks pesados (React/Vue). O deploy é estático, direto e com carregamento instantâneo.
 * **Backend de Produção Oficial (Locaweb):** PHP 8.0 com MySQL 5.7 em `php/mysql/`. O arquivo `.htaccess` roteia automaticamente as requisições `/api/<endpoint>` para `php/mysql/<endpoint>.php`.
-* **Backend Serverless Alternativo:** Handlers em `api/*.mjs` que compartilham regras com `server/` e servem de base para a suíte de testes de integração Node.
+* **Suíte de Testes e Governança:** Módulos em `server/` fornecem suíte de testes de unidade e regras de negócio via `node --test`, além de testes E2E/LGPD via Playwright em `analytics/tests/`.
 * **Segurança e Isolamento:** Credenciais e tokens de API em produção ficam no arquivo `bus-secrets.php` fora do document root do servidor web.
 
 ---
@@ -50,13 +50,13 @@ Todas as documentações especializadas do projeto estão organizadas em `docs/`
 
 | Documento | Localização | Para que serve |
 | :--- | :--- | :--- |
-| **Blueprint de Pastas** | [`Project_Folders_Structure_Blueprint.md`](file:///Users/cassio/GitHubPessoal/kob-site/Project_Folders_Structure_Blueprint.md) | Guia detalhado da árvore de diretórios, convenções de código, regras de posicionamento de novos arquivos e templates de código. |
-| **Contexto do Produto** | [`docs/PRODUCT.md`](file:///Users/cassio/GitHubPessoal/kob-site/docs/PRODUCT.md) | Definição de personas, tom de voz da marca, objetivos de conversão, princípios de acessibilidade e anti-referências. |
-| **Design System & Tokens** | [`docs/DESIGN.md`](file:///Users/cassio/GitHubPessoal/kob-site/docs/DESIGN.md) | Cores oficiais da marca KOB, tipografia, espaçamentos, raios de borda, micro-animações e componentes da interface. |
-| **Manual de Pagamentos & Banco** | [`docs/ONIBUS-PAGAMENTO.md`](file:///Users/cassio/GitHubPessoal/kob-site/docs/ONIBUS-PAGAMENTO.md) | Arquitetura completa do checkout de ônibus, integração Mercado Pago Pix, webhooks, idempotência, migrations MySQL e regras de concorrência. |
-| **Governança de Analytics & PII** | [`docs/ANALYTICS-PREREQUISITES.md`](file:///Users/cassio/GitHubPessoal/kob-site/docs/ANALYTICS-PREREQUISITES.md) | Contratos de dados GA4/GTM, parametrização UTM, allowlist de eventos e testes automatizados contra vazamento de dados sensíveis (PII). |
-| **Visualizador de E-mails** | [`docs/email-previews/`](file:///Users/cassio/GitHubPessoal/kob-site/docs/email-previews) | Ferramenta interativa (`preview-emails.html`) para inspecionar os templates de e-mail transacional (Pix pendente, confirmação, passageiro, administrativo). |
-| **Planos & Specs Técnicas** | [`docs/superpowers/`](file:///Users/cassio/GitHubPessoal/kob-site/docs/superpowers) | Planos de implementação e especificações detalhadas de features históricas e em andamento. |
+| **Blueprint de Pastas** | [`Project_Folders_Structure_Blueprint.md`](./Project_Folders_Structure_Blueprint.md) | Guia detalhado da árvore de diretórios, convenções de código, regras de posicionamento de novos arquivos e templates de código. |
+| **Contexto do Produto** | [`docs/PRODUCT.md`](./docs/PRODUCT.md) | Definição de personas, tom de voz da marca, objetivos de conversão, princípios de acessibilidade e anti-referências. |
+| **Design System & Tokens** | [`docs/DESIGN.md`](./docs/DESIGN.md) | Cores oficiais da marca KOB, tipografia, espaçamentos, raios de borda, micro-animações e componentes da interface. |
+| **Manual de Pagamentos & Banco** | [`docs/ONIBUS-PAGAMENTO.md`](./docs/ONIBUS-PAGAMENTO.md) | Arquitetura completa do checkout de ônibus, integração Mercado Pago Pix, webhooks, idempotência, migrations MySQL e regras de concorrência. |
+| **Governança de Analytics & PII** | [`docs/ANALYTICS-PREREQUISITES.md`](./docs/ANALYTICS-PREREQUISITES.md) | Contratos de dados GA4/GTM, parametrização UTM, allowlist de eventos e testes automatizados contra vazamento de dados sensíveis (PII). |
+| **Visualizador de E-mails** | [`docs/email-previews/`](./docs/email-previews) | Ferramenta interativa (`preview-emails.html`) para inspecionar os templates de e-mail transacional (Pix pendente, confirmação, passageiro, administrativo). |
+| **Planos & Specs Técnicas** | [`docs/superpowers/`](./docs/superpowers) | Planos de implementação e especificações detalhadas de features históricas e em andamento. |
 
 ---
 
@@ -65,13 +65,12 @@ Todas as documentações especializadas do projeto estão organizadas em `docs/`
 ```
 kob-site/
 ├── .agents/                    # Skills e configurações de agentes de IA locais
-├── .github/workflows/          # Pipelines de CI/CD para deploy automatizado
+├── .github/workflows/          # Pipelines de CI/CD para deploy automatizado (FTP Locaweb)
 ├── analytics/                  # Configurações GA4/GTM, schemas e testes de PII
 │   ├── ga4/                    # Definições de eventos GA4
 │   ├── gtm/                    # Exportações e contêineres GTM
 │   ├── scripts/                # Validadores de configuração
 │   └── tests/                  # Testes Playwright de eventos e PII
-├── api/                        # Handlers da API Serverless (Node.js ESM)
 ├── assets/                     # Recursos estáticos públicos do frontend
 │   ├── css/                    # Folhas de estilo modulares (main, onibus, painel)
 │   ├── fonts/                  # Fontes locais WOFF2 (Chantal, Gobold)
@@ -92,14 +91,12 @@ kob-site/
 ├── docs/                       # Manuais técnicos, design system e previews
 │   ├── email-previews/         # Templates e visualizador de e-mails
 │   └── superpowers/            # Specs e planos de implementação
-├── netlify/functions/          # Funções serverless Netlify
 ├── php/                        # Backend oficial de produção (PHP 8.0 + MySQL)
 │   ├── db/                     # Migrations e scripts SQL sequenciais
 │   ├── lib/                    # Classes utilitárias (PDF, SMTP, validação)
 │   ├── mysql/                  # Endpoints de produção da API
 │   └── tests/                  # Testes de integração PHP
 ├── server/                     # Módulos Node compartilhados e suíte de testes
-│   ├── db/                     # Camada de dados Node
 │   └── tests/                  # Testes automatizados node --test
 ├── .htaccess                   # Configuração Apache Locaweb (versão PHP e rewrites)
 ├── index.html                  # Landing page principal
@@ -107,7 +104,7 @@ kob-site/
 ├── painel-onibus.html          # Painel de gestão da frota
 ├── preview.sh                  # Servidor local de desenvolvimento
 ├── router.php                  # Roteador embutido para PHP CLI
-├── netlify.toml / vercel.json  # Configurações de hospedagem Edge
+├── knip.json                   # Configuração de auditoria de dead code / knip
 ├── package.json                # Dependências de teste e validação
 └── robots.txt / sitemap.xml    # Indexação e SEO
 ```
@@ -159,7 +156,7 @@ Ao realizar alterações no código, **sempre respeite as seguintes regras inego
 4. **Idempotência no Checkout Pix:**
    * Toda criação de pedido envia um cabeçalho `X-Idempotency-Key` único para evitar cobranças duplicadas em caso de reenvio de formulário.
 5. **Assets Órfãos e Código Zumbi:**
-   * Nunca deixe código comentado ou assets não utilizados. Execute periodicamente a skill [`site-cleanup-and-organize`](file:///Users/cassio/GitHubPessoal/kob-site/.agents/skills/site-cleanup-and-organize/SKILL.md).
+   * Nunca deixe código comentado ou assets não utilizados. Execute periodicamente a skill [`site-cleanup-and-organize`](./.agents/skills/site-cleanup-and-organize/SKILL.md) e `npm run lint:knip`.
 
 ---
 
@@ -191,7 +188,13 @@ npm run test:analytics
 # 4. Lint de sintaxe PHP em lote:
 for f in php/mysql/*.php php/lib/*.php; do php -l "$f"; done
 
-# 5. Rodar bateria completa de testes:
+# 5. Executar testes unitários do backend PHP:
+for f in php/tests/*.php; do php "$f"; done
+
+# 6. Auditoria de código morto e dependências:
+npm run lint:knip
+
+# 7. Rodar bateria completa de testes:
 npm test
 ```
 
@@ -200,7 +203,5 @@ npm test
 ## 🚀 8. Publicação & Deploy
 
 * **Produção (Hospedagem Locaweb):**
-  * O deploy é acionado automaticamente via GitHub Actions ([`.github/workflows/deploy.yml`](file:///Users/cassio/GitHubPessoal/kob-site/.github/workflows/deploy.yml)) ao realizar push na branch principal.
-  * O workflow publica o conteúdo da raiz diretamente para o `public_html/` via FTP seguro.
-* **Serverless / Edge (Vercel / Netlify):**
-  * Configurados via [`vercel.json`](file:///Users/cassio/GitHubPessoal/kob-site/vercel.json) e [`netlify.toml`](file:///Users/cassio/GitHubPessoal/kob-site/netlify.toml).
+  * O deploy é acionado automaticamente via GitHub Actions ([`.github/workflows/deploy.yml`](./.github/workflows/deploy.yml)) ao realizar push na branch principal.
+  * O workflow publica o conteúdo estático e os scripts PHP diretamente para o `public_html/` via FTP seguro com exclusão automática de arquivos de desenvolvimento (`analytics/`, `server/`, `node_modules/`, `.git/`, etc.).

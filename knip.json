@@ -1,8 +1,6 @@
 {
   "$schema": "https://unpkg.com/knip@5/overview.json",
   "entry": [
-    "api/*.mjs",
-    "netlify/functions/*.mjs",
     "assets/js/*.js",
     "php/db/*.mjs",
     "analytics/scripts/*.mjs",
@@ -11,9 +9,7 @@
     "analytics/tests/helpers/*.js"
   ],
   "project": [
-    "api/**/*.mjs",
     "server/**/*.mjs",
-    "netlify/**/*.mjs",
     "assets/js/**/*.js",
     "analytics/**/*.{js,mjs}",
     "php/db/**/*.mjs",
