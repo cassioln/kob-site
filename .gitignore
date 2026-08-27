@@ -1,60 +1,100 @@
-# Backups e rascunhos locais (snapshots do browser, drafts de recuperação)
-bkp/
-
-# Arquivos da ferramenta Hermes (attachments, cache)
-.hermes/
-
-# Worktrees locais de desenvolvimento
-.worktrees/
-
-# Sistema
+# ==========================================
+# 1. Sistema Operacional (macOS, Windows, Linux)
+# ==========================================
 .DS_Store
-*.log
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+*~
 
-# Credenciais server-side (mantenha apenas o modelo versionado)
+# ==========================================
+# 2. Editores de Código e IDEs
+# ==========================================
+.vscode/
+.idea/
+.cursor/
+.windsurf/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+
+# ==========================================
+# 3. Credenciais, Chaves e Segredos
+# ==========================================
 .env
 .env.*
-!.env.example
+bus-secrets.php
+*.pem
+*.key
 
-# Dependências e artefatos de testes locais
+# ==========================================
+# 4. Logs e Depuração (PHP, Node, Servidor)
+# ==========================================
+*.log
+error_log
+php_error.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ==========================================
+# 5. Dependências e Gerenciadores de Pacote
+# ==========================================
 node_modules/
 **/node_modules/
 .npm/
 .pnp.*
+
+# ==========================================
+# 6. Testes, Relatórios e Cobertura
+# ==========================================
 test-results/
 playwright-report/
 blob-report/
 .cache/
 .playwright/
 playwright/.cache/
+coverage/
+.nyc_output/
 
-# Scripts temporários de automação (CDP/Playwright ad-hoc na raiz)
-# NÃO ignora playwright.config.mjs / playwright.live.config.mjs (versionados).
+# ==========================================
+# 7. Ferramentas de AI, Agentes e Hooks Locais
+# ==========================================
+.hermes/
+.hermes-tmp/
+.impeccable/
+.github/agents/
+.github/hooks/
+.github/skills/
+.agents/mcp_config.json
+.agents/*.local.*
+
+# ==========================================
+# 8. Caches de Deploy Serverless & CLI
+# ==========================================
+.vercel/
+.netlify/
+.turbo/
+
+# ==========================================
+# 9. Backups, Scripts e Temporários
+# ==========================================
+bkp/
+.worktrees/
+loop_finder/*
+.preview-email-*.html
 /gtm-*.mjs
 /ga4-*.mjs
 /ta-*.mjs
 /prod-*.mjs
 /realtime-*.mjs
 /final-*.mjs
-
-# Loop finder
-loop_finder/*
-
-# Scripts temporários de operação/diagnóstico (caminhos e fluxos locais)
-.hermes-tmp/
-
-# Ferramentas de agente instaladas localmente pela skill impeccable (3,4 MB de
-# scripts de build/preview). São ferramenta de trabalho de quem edita, não código
-# do site: entram no repositório sem servir a ninguém que só faça deploy.
-# O workflow de deploy (.github/workflows/) continua rastreado.
-.github/agents/
-.github/hooks/
-.github/skills/
-
-# Preview HTML emails
-.preview-email-*.html
-
-# Configurações de MCP locais com credenciais
-.agents/
-.cursor/
-
+*.bak
+*.tmp
+*.temp

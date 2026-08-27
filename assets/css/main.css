@@ -9970,6 +9970,7 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
   border-bottom: 1px solid var(--line-mid);
   border-radius: 0;
   background: transparent;
+  padding: 0 10px;
 }
 
 #faq .faq details[open] {
@@ -9981,7 +9982,7 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
 #faq .faq summary {
   position: relative;
   min-height: 72px;
-  padding: 20px 58px 20px 15px;
+  padding: 20px 58px 20px 0px;
   color: var(--ink-strong);
   font-size: clamp(0.98rem, 1.35vw, 1.08rem);
   line-height: 1.45;
@@ -10013,7 +10014,7 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
 
 #faq .faq details>div {
   max-width: 70ch;
-  padding: 0 58px 24px 15px;
+  padding: 0 58px 24px 0px;
   color: var(--ink-soft);
   line-height: 1.72;
   text-wrap: pretty;

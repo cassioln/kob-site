@@ -10,14 +10,13 @@
     "test:analytics:pii": "playwright test --config=playwright.live.config.mjs --grep @code",
     "test:analytics:live": "playwright test --config=playwright.live.config.mjs",
     "test:analytics:headed": "playwright test --headed",
-    "validate:analytics": "node analytics/scripts/validate-config.mjs"
+    "validate:analytics": "node analytics/scripts/validate-config.mjs",
+    "lint:knip": "knip"
   },
   "devDependencies": {
     "@playwright/test": "1.61.1",
     "ajv": "8.20.0",
+    "knip": "^6.32.3",
     "yaml": "2.9.0"
-  },
-  "dependencies": {
-    "pg": "^8.16.3"
   }
 }

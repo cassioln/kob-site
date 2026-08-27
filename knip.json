@@ -1,0 +1,22 @@
+{
+  "$schema": "https://unpkg.com/knip@5/overview.json",
+  "entry": [
+    "assets/js/*.js",
+    "php/db/*.mjs",
+    "analytics/scripts/*.mjs",
+    "server/tests/*.test.mjs",
+    "analytics/tests/**/*.spec.js",
+    "analytics/tests/helpers/*.js"
+  ],
+  "project": [
+    "server/**/*.mjs",
+    "assets/js/**/*.js",
+    "analytics/**/*.{js,mjs}",
+    "php/db/**/*.mjs",
+    "*.{js,mjs}"
+  ],
+  "ignoreDependencies": [
+    "mysql2"
+  ],
+  "ignoreExportsUsedInFile": true
+}
