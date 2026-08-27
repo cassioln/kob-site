@@ -7,6 +7,18 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://busao.kriativosonboard.com.br/</loc>
+    <lastmod>2026-08-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://kriativosonboard.com.br/onibus.html</loc>
+    <lastmod>2026-08-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://kriativosonboard.com.br/politica-de-privacidade.html</loc>
     <lastmod>2026-08-27</lastmod>
     <changefreq>monthly</changefreq>
