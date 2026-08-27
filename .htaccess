@@ -20,11 +20,28 @@ suPHP_ConfigPath /home/kriativosonboard2/
 
 RewriteEngine On
 
+# Forçar HTTPS seguro em todo o domínio e subdomínios
+RewriteCond %{HTTPS} off
+RewriteCond %{HTTP:X-Forwarded-Proto} !https
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
 # Redireciona www -> dominio raiz (ajuste se preferir com www)
 RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
 RewriteRule ^ https://%1%{REQUEST_URI} [L,R=301]
 
+# ---- Redirecionamento 301 de URLs legadas do antigo WordPress e plugins ----
+# Transfere autoridade e evita erros 404 de indexação no Google Search Console
+RewriteRule ^events(/.*)?$ / [R=301,L,NC]
+RewriteRule ^wp-content(/.*)?$ / [R=301,L,NC]
+RewriteRule ^wp-includes(/.*)?$ / [R=301,L,NC]
+RewriteRule ^wp-admin(/.*)?$ / [R=301,L,NC]
+RewriteRule ^wp-login\.php$ / [R=301,L,NC]
+
 # ---- Subdominio busao.kriativosonboard.com.br (e onibus.kriativosonboard.com.br) ----
+# Redireciona /onibus.html no domínio principal para o subdomínio oficial
+RewriteCond %{HTTP_HOST} ^(www\.)?kriativosonboard\.com\.br$ [NC]
+RewriteRule ^onibus\.html$ https://busao.kriativosonboard.com.br/ [R=301,L]
+
 # Serve onibus.html diretamente ao acessar a raiz do subdominio, mantendo a URL limpa
 RewriteCond %{HTTP_HOST} ^(busao|onibus)\.kriativosonboard\.com\.br$ [NC]
 RewriteRule ^$ onibus.html [L]

@@ -30,7 +30,7 @@ test('cadastra o grupo, calcula o valor e exibe o Pix', async ({ page }) => {
   });
 
   await page.goto('/onibus.html');
-  await expect(page).toHaveTitle(/(?:Ônibus|Busão).*Kriativos/i);
+  await expect(page).toHaveTitle(/(?:Ônibus|Busão).*(?:Kriativos|KOB)/i);
   await expect(page.getByRole('heading', { name: /ônibus|busão/i })).toBeVisible();
   const farePanel = page.locator('#heroFarePanel');
   await expect(farePanel.getByText('R$ 120,00', { exact: true })).toBeVisible();

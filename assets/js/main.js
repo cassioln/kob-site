@@ -2266,7 +2266,7 @@ document.documentElement.classList.add('js');
       if (searchStatus) {
         searchStatus.textContent = term
           ? (visible === 1 ? '1 resposta encontrada' : visible + ' respostas encontradas')
-          : '27 respostas organizadas por tema';
+          : '28 respostas organizadas por tema';
       }
     }
 
