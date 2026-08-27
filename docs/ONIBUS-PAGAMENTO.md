@@ -41,9 +41,7 @@ CPF e demais dados de passageiros ficam apenas no banco operacional; não entram
 Configure na hospedagem, nunca no HTML:
 
 - `DATABASE_URL`: conexão PostgreSQL com SSL quando suportado;
-- `MERCADOPAGO_ACCESS_TOKEN`: Access Token privado do ambiente escolhido (sandbox ou produção).
-
-O arquivo `.env.example` contém apenas o formato. Não copie um token real para ele.
+As credenciais de runtime são lidas de `bus-secrets.php` (no PHP) ou `.env` (no Node local). Nunca versione chaves reais.
 
 ## Mercado Pago
 
@@ -260,7 +258,7 @@ stubs CGI no lugar do PHP para ler `QUERY_STRING` e `REQUEST_METHOD`:
 | `POST` sobrevive ao rewrite | `REQUEST_METHOD=POST` |
 | `php/lib/`, `php/mysql/lib/`, `php/db/`, `server/`, `netlify/`, `api/*.mjs` | 403 |
 | `php/*.php` (endpoints PostgreSQL, código morto aqui) | 403 |
-| `.env`, `.env.example`, `package.json` | 403 |
+| `.env`, `package.json` | 403 |
 | `/`, `index.html`, `onibus.html`, assets | 200 |
 
 Total: 25 asserções, 0 falhas.
