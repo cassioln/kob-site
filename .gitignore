@@ -59,6 +59,7 @@ playwright-report/
 blob-report/
 .cache/
 .playwright/
+.playwright-mcp/
 playwright/.cache/
 coverage/
 .nyc_output/
