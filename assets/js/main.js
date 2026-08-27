@@ -2444,23 +2444,25 @@ document.documentElement.classList.add('js');
     } else { inView = true; }
   })();
 
-  // Parceiros: ordem aleatória dos logos a cada visita
+  // Parceiros: ordem aleatória dos logos dentro de cada grupo a cada visita
   (function () {
-    var container = document.querySelector('#parceiros .logo-row');
-    if (!container) return;
-    var items = Array.prototype.slice.call(container.children);
-    if (items.length <= 1) return;
-    for (var i = items.length - 1; i > 0; i--) {
-      var j = Math.floor(Math.random() * (i + 1));
-      var temp = items[i];
-      items[i] = items[j];
-      items[j] = temp;
-    }
-    var fragment = document.createDocumentFragment();
-    items.forEach(function (item) {
-      fragment.appendChild(item);
+    var grids = document.querySelectorAll('#parceiros .partners-grid, #parceiros .logo-row');
+    if (!grids || !grids.length) return;
+    grids.forEach(function (container) {
+      var items = Array.prototype.slice.call(container.children);
+      if (items.length <= 1) return;
+      for (var i = items.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = items[i];
+        items[i] = items[j];
+        items[j] = temp;
+      }
+      var fragment = document.createDocumentFragment();
+      items.forEach(function (item) {
+        fragment.appendChild(item);
+      });
+      container.appendChild(fragment);
     });
-    container.appendChild(fragment);
   })();
 
 })();
