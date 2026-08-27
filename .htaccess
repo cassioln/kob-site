@@ -38,6 +38,10 @@ RewriteRule ^wp-admin(/.*)?$ / [R=301,L,NC]
 RewriteRule ^wp-login\.php$ / [R=301,L,NC]
 
 # ---- Subdominio busao.kriativosonboard.com.br (e onibus.kriativosonboard.com.br) ----
+# Redireciona /onibus.html no domínio principal para o subdomínio oficial
+RewriteCond %{HTTP_HOST} ^(www\.)?kriativosonboard\.com\.br$ [NC]
+RewriteRule ^onibus\.html$ https://busao.kriativosonboard.com.br/ [R=301,L]
+
 # Serve onibus.html diretamente ao acessar a raiz do subdominio, mantendo a URL limpa
 RewriteCond %{HTTP_HOST} ^(busao|onibus)\.kriativosonboard\.com\.br$ [NC]
 RewriteRule ^$ onibus.html [L]
