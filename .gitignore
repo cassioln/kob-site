@@ -14,7 +14,6 @@ bkp/
 # Credenciais server-side (mantenha apenas o modelo versionado)
 .env
 .env.*
-!.env.example
 
 # Dependências e artefatos de testes locais
 node_modules/
