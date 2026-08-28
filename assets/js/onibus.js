@@ -1821,7 +1821,7 @@
 
   // Persistência da preferência manual de idioma
   document.addEventListener('click', function (e) {
-    var btn = e.target && e.target.closest && e.target.closest('.lang-switch__btn');
+    var btn = e.target && e.target.closest && e.target.closest('.lang-switch__btn, .lang-switch__item');
     if (!btn) return;
     var hreflang = btn.getAttribute('hreflang') || '';
     if (hreflang.toLowerCase().indexOf('pt') !== -1) {

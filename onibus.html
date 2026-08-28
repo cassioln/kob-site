@@ -23,8 +23,9 @@
         var savedPref = localStorage.getItem('kob_lang_pref');
         if (savedPref === 'pt') return;
         var isBusSubdomain = /^(busao|onibus)\./i.test(window.location.hostname);
-        var targetEn = isBusSubdomain ? '/en/' : '/en/onibus.html';
-        var targetEs = isBusSubdomain ? '/es/' : '/es/onibus.html';
+        var isLocal = /^(localhost|127\.0\.0\.1)/i.test(window.location.hostname);
+        var targetEn = isBusSubdomain ? '/en/' : (isLocal ? '/en/onibus.html' : 'https://busao.kriativosonboard.com.br/en/');
+        var targetEs = isBusSubdomain ? '/es/' : (isLocal ? '/es/onibus.html' : 'https://busao.kriativosonboard.com.br/es/');
         if (savedPref === 'en') {
           window.location.replace(targetEn + window.location.search + window.location.hash);
           return;
@@ -50,7 +51,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Busão Kriativo 2026 | Ônibus Fretado SP → Santos — Kriativos On Board (KOB)</title>
   <meta name="description"
-    content="Garanta seu assento no transporte fretado oficial do Kriativos On Board (KOB 2026). Ida e volta de São Paulo (Metrô Santos-Imigrantes) ao Porto de Santos com segurança via Pix.">
+    content="Garanta seu assento no transporte fretado oficial do Kriativos On Board (KOB 2026). Ida e volta de São Paulo (Barra Funda - Rua Tagipuru, 552) ao Porto de Santos com segurança via Pix.">
   <meta name="robots" content="index, follow">
   <script type="application/ld+json">
     {
@@ -67,7 +68,7 @@
         "@type": "City",
         "name": "São Paulo"
       },
-      "description": "Transporte rodoviário executivo ida e volta de São Paulo (Metrô Santos-Imigrantes) ao Porto de Santos para os passageiros do cruzeiro Kriativos On Board 2026."
+      "description": "Transporte rodoviário executivo ida e volta de São Paulo (Barra Funda - Rua Tagipuru, 552) ao Porto de Santos para os passageiros do cruzeiro Kriativos On Board 2026."
     }
   </script>
   <meta name="theme-color" content="#041d3a">
@@ -650,8 +651,8 @@
 
                   <label class="bus-consent" for="bus-terms">
                     <input id="bus-terms" type="checkbox" required>
-                    <span>Li e concordo com os <a href="termos-de-transporte.html" target="_blank" rel="noopener">Termos
-                        do Transporte</a> e com a <a href="politica-de-privacidade.html" target="_blank"
+                    <span>Li e concordo com os <a href="/termos-de-transporte.html" target="_blank" rel="noopener">Termos
+                        do Transporte</a> e com a <a href="/politica-de-privacidade.html" target="_blank"
                         rel="noopener">Política de Privacidade</a> (LGPD). Declaro ser maior de 18 anos e, ao cadastrar
                       menores de idade ou crianças de colo, declaro ser pai/mãe ou responsável legal autorizado a
                       fornecer seus dados para a emissão do seguro de viagem e lista regulatória de embarque.</span>
@@ -1046,9 +1047,9 @@
         <p>Prepare-se para embarcar com a gente.</p>
       </div>
       <nav class="bus-footer__nav" aria-label="Links rápidos">
-        <a href="politica-de-cookies.html">Política de cookies</a>
-        <a href="termos-de-transporte.html">Termos do transporte</a>
-        <a href="politica-de-privacidade.html">Política de privacidade</a>
+        <a href="/politica-de-cookies.html">Política de cookies</a>
+        <a href="/termos-de-transporte.html">Termos do transporte</a>
+        <a href="/politica-de-privacidade.html">Política de privacidade</a>
       </nav>
     </div>
     <div class="bus-footer__powered">
@@ -1067,7 +1068,7 @@
           </h2>
           <p id="cookie-consent-description" class="cookie-consent__description">Usamos apenas cookies necessários por
             padrão. Você decide se quer permitir análise de navegação.</p>
-          <a class="cookie-consent__policy" href="politica-de-cookies.html">Ler a política de cookies</a>
+          <a class="cookie-consent__policy" href="/politica-de-cookies.html">Ler a política de cookies</a>
         </div>
         <div class="cookie-consent__actions" aria-label="Escolhas de cookies">
           <button class="cookie-consent__button cookie-consent__button--essential" type="button"

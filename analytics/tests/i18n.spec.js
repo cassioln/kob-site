@@ -6,7 +6,7 @@ test.describe('Internacionalização e Validação de Páginas /en/ e /es/', () 
     await page.setViewportSize({ width: 1280, height: 800 });
     await page.goto('/en/');
     await expect(page).toHaveTitle(/Kriativos On Board/i);
-    
+
     // Valida atributo lang
     const htmlLang = await page.locator('html').getAttribute('lang');
     expect(htmlLang).toBe('en');
@@ -56,7 +56,7 @@ test.describe('Internacionalização e Validação de Páginas /en/ e /es/', () 
     await page.setViewportSize({ width: 1280, height: 800 });
     await page.goto('/es/');
     await expect(page).toHaveTitle(/Kriativos On Board/i);
-    
+
     // Valida atributo lang
     const htmlLang = await page.locator('html').getAttribute('lang');
     expect(htmlLang).toBe('es');
@@ -395,5 +395,35 @@ test.describe('Internacionalização e Validação de Páginas /en/ e /es/', () 
     await contextOverride.close();
   });
 
-});
+  test('Links legais em /en/, /es/, /en/onibus.html e /es/onibus.html são absolutos e válidos', async ({ page }) => {
+    // Valida links no rodapé de /en/
+    await page.goto('/en/');
+    const privacyEn = page.locator('.footer__privacy-controls a[href*="politica-de-privacidade"]');
+    const cookieEn = page.locator('.footer__privacy-controls a[href*="politica-de-cookies"]');
+    await expect(privacyEn).toHaveAttribute('href', '/politica-de-privacidade.html');
+    await expect(cookieEn).toHaveAttribute('href', '/politica-de-cookies.html');
 
+    // Valida links no rodapé de /es/
+    await page.goto('/es/');
+    const privacyEs = page.locator('.footer__privacy-controls a[href*="politica-de-privacidade"]');
+    const cookieEs = page.locator('.footer__privacy-controls a[href*="politica-de-cookies"]');
+    await expect(privacyEs).toHaveAttribute('href', '/politica-de-privacidade.html');
+    await expect(cookieEs).toHaveAttribute('href', '/politica-de-cookies.html');
+
+    // Valida links no ônibus /en/onibus.html
+    await page.goto('/en/onibus.html');
+    const transportBusEn = page.locator('.bus-footer__nav a[href*="termos-de-transporte"]');
+    const privacyBusEn = page.locator('.bus-footer__nav a[href*="politica-de-privacidade"]');
+    await expect(transportBusEn).toHaveAttribute('href', '/termos-de-transporte.html');
+    await expect(privacyBusEn).toHaveAttribute('href', '/politica-de-privacidade.html');
+
+    // Valida clique no seletor de idioma do ônibus salva localStorage
+    await page.evaluate(() => {
+      document.querySelector('.bus-header .lang-switch__item[hreflang="es"]').addEventListener('click', e => e.preventDefault());
+    });
+    await page.locator('.bus-header .lang-switch__item[hreflang="es"]').click();
+    const savedPref = await page.evaluate(() => localStorage.getItem('kob_lang_pref'));
+    expect(savedPref).toBe('es');
+  });
+
+});
