@@ -400,7 +400,13 @@ document.documentElement.classList.add('js');
       }
     });
 
-    var totalLabel = 'Ver todas as ' + memories.length + ' fotografias';
+    var lang = (document.documentElement.lang || 'pt').slice(0, 2).toLowerCase();
+    var totalLabel = lang === 'en'
+      ? ('View all ' + memories.length + ' photos')
+      : (lang === 'es' ? ('Ver todas las ' + memories.length + ' fotos') : ('Ver todas as ' + memories.length + ' fotografias'));
+    var collapseGalleryLabel = lang === 'en'
+      ? 'Collapse gallery'
+      : (lang === 'es' ? 'Recoger galería' : 'Recolher galeria');
     var archiveMaterialized = false;
     galleryExpand.addEventListener('click', function () {
       var expanded = galleryExpand.getAttribute('aria-expanded') === 'true';
@@ -419,12 +425,12 @@ document.documentElement.classList.add('js');
       track.dataset.expanded = nextState ? 'true' : 'false';
       if (nextState) trackContentExpand('gallery', 'edition_2025_gallery');
       if (galleryExpandLabel) {
-        galleryExpandLabel.textContent = nextState ? 'Recolher galeria' : totalLabel;
+        galleryExpandLabel.textContent = nextState ? collapseGalleryLabel : totalLabel;
       }
       if (galleryStatus) {
         galleryStatus.textContent = nextState
-          ? 'Galeria expandida. ' + memories.length + ' fotografias disponíveis.'
-          : 'Galeria recolhida. ' + highlights.length + ' destaques disponíveis.';
+          ? (lang === 'en' ? 'Gallery expanded. ' + memories.length + ' photos available.' : (lang === 'es' ? 'Galería expandida. ' + memories.length + ' fotos disponibles.' : 'Galeria expandida. ' + memories.length + ' fotografias disponíveis.'))
+          : (lang === 'en' ? 'Gallery collapsed. ' + highlights.length + ' highlights available.' : (lang === 'es' ? 'Galería recogida. ' + highlights.length + ' destacados disponibles.' : 'Galeria recolhida. ' + highlights.length + ' destaques disponíveis.'));
       }
     });
   }
@@ -459,6 +465,10 @@ document.documentElement.classList.add('js');
     setVoicesVisibility(false);
     var voicesExpandLabel = voicesExpand.querySelector('[data-voices-expand-label]');
     var voicesStatus = document.getElementById('voicesStatus');
+    var vLang = (document.documentElement.lang || 'pt').slice(0, 2).toLowerCase();
+    var moreVoicesLabel = vLang === 'en' ? 'View more' : (vLang === 'es' ? 'Ver más' : 'Ver mais');
+    var collapseVoicesLabel = vLang === 'en' ? 'Collapse testimonials' : (vLang === 'es' ? 'Recoger testimonios' : 'Recolher depoimentos');
+
     voicesExpand.addEventListener('click', function () {
       var expanded = voicesExpand.getAttribute('aria-expanded') === 'true';
       var nextState = !expanded;
@@ -467,18 +477,204 @@ document.documentElement.classList.add('js');
       voicesDeck.dataset.expanded = nextState ? 'true' : 'false';
       if (nextState) trackContentExpand('testimonials', 'participant_voices');
       if (voicesExpandLabel) {
-        voicesExpandLabel.textContent = nextState ? 'Recolher depoimentos' : 'Ver mais';
+        voicesExpandLabel.textContent = nextState ? collapseVoicesLabel : moreVoicesLabel;
       }
       if (voicesStatus) {
         voicesStatus.textContent = nextState
-          ? 'Todos os ' + (featuredVoiceCount + randomVoices.length) + ' depoimentos estão visíveis.'
-          : 'Depoimentos recolhidos. ' + (featuredVoiceCount + collapsedRandomCount()) + ' relatos estão visíveis.';
+          ? (vLang === 'en' ? 'All ' + (featuredVoiceCount + randomVoices.length) + ' testimonials are visible.' : (vLang === 'es' ? 'Todos los ' + (featuredVoiceCount + randomVoices.length) + ' testimonios están visibles.' : 'Todos os ' + (featuredVoiceCount + randomVoices.length) + ' depoimentos estão visíveis.'))
+          : (vLang === 'en' ? 'Testimonials collapsed. ' + (featuredVoiceCount + collapsedRandomCount()) + ' stories are visible.' : (vLang === 'es' ? 'Testimonios recogidos. ' + (featuredVoiceCount + collapsedRandomCount()) + ' historias visibles.' : 'Depoimentos recolhidos. ' + (featuredVoiceCount + collapsedRandomCount()) + ' relatos estão visíveis.'));
       }
     });
     mobileVoices.addEventListener('change', function () {
       if (voicesExpand.getAttribute('aria-expanded') !== 'true') setVoicesVisibility(false);
     });
+
+    // Dicionário de traduções dos depoimentos
+    var VOICE_TRANSLATIONS = {
+      vital: {
+        orig: 'pt',
+        pt: '“Foi uma experiência única. O calor dos Kriativos on Board, os amigos que fiz, a alegria de fazer um cruzeiro onde podemos jogar, conviver e conhecer muita gente boa é inesquecível, e sem dúvida a não perder.”',
+        en: '“It was a unique experience. The warmth of the Kriativos on Board, the friends I made, the joy of taking a cruise where we can play, socialize, and meet wonderful people is unforgettable, and definitely not to be missed.”',
+        es: '“Fue una experiencia única. La calidez de los Kriativos on Board, los amigos que hice, la alegría de hacer un crucero donde podemos jugar, convivir y conocer gente increíble es inolvidable, y sin duda algo que no hay que perderse.”'
+      },
+      david: {
+        orig: 'en',
+        en: '“Epitome of friendliness and fun, wrapped in an awesome boat! 🙂 Game on!!!”',
+        pt: '“O epítome da simpatia e da diversão, em um navio incrível! 🙂 Que comecem os jogos!!!”',
+        es: '“¡El epítome de la amabilidad y la diversión, a bordo de un barco increíble! 🙂 ¡¡¡A jugar!!!”'
+      },
+      turnobgames: {
+        orig: 'pt',
+        pt: '“Nós adoramos o evento! O Kriativos On Board chegou de forma inovadora e kriativa! É muito legal você estar em um cruzeiro, com tudo o que ele oferece e ainda poder ter a opção com diversos jogos de tabuleiro à disposição! Inclusive com lançamentos! E o melhor, com uma monitoria especializada! Tudo estava super bem organizado, com diversos sorteios e gente bacana! Vale muito a pena conhecer e ter essa experiência incrível!”',
+        en: '“We loved the event! Kriativos On Board arrived in an innovative and creative way! It’s amazing to be on a cruise with everything it offers and still have a vast selection of board games at your disposal—including new releases! Best of all, with specialized rules coaching! Everything was super well organized, with lots of giveaways and great people. It\'s truly worth experiencing!”',
+        es: '“¡Nos encantó el evento! Kriativos On Board llegó de forma innovadora y creativa. Es genial estar en un crucero con todo lo que ofrece y además tener a disposición una enorme ludoteca, ¡incluso con novedades! Y lo mejor, ¡con monitores especializados! Todo estuvo súper bien organizado, con sorteos y gente fantástica. ¡Vale muchísimo la pena vivir esta experiencia!”'
+      },
+      qeojogo: {
+        orig: 'pt',
+        pt: '“Estar nesse evento foi um sonho, estar em uma viagem incrível, com ótima comida à vontade, shows, piscina e muito mais, com pessoas que compartilham o mesmo hobby que você, e poder jogar vários tipos de jogos diferentes 24 horas por dia, foi mágico, surreal de bom! Foram dias incríveis onde fiz muitos amigos novos.”',
+        en: '“Being at this event was a dream—an incredible trip with endless great food, shows, pools, and more, surrounded by people who share your hobby, playing all kinds of board games 24/7. It was magical and surreal! Incredible days where I made so many new friends.”',
+        es: '“Estar en este evento fue un sueño: un viaje increíble con comida deliciosa ilimitada, espectáculos, piscina y mucho más, con personas que comparten tu misma pasión y pudiendo jugar a todo tipo de juegos las 24 horas. ¡Fue mágico e increíble! Días inolvidables donde hice muchos amigos nuevos.”'
+      },
+      viajanerd: {
+        orig: 'pt',
+        pt: '“É muito bom estar em um lugar onde todos são do hobby. Conhecemos pessoas, jogamos, comemos bem e tudo isso viajando para um lugar maravilhoso! Percebemos o carinho de todos que realizaram o Kriativos on Board 2023 e já estamos com as malas prontas para o próximo!”',
+        en: '“It\'s wonderful to be in a place where everyone shares the same hobby. We met people, played, ate well, all while traveling to a gorgeous destination! We felt the care from everyone organizing Kriativos on Board and our bags are already packed for the next one!”',
+        es: '“Es genial estar en un lugar donde todos comparten la misma afición. Conocimos gente, jugamos, comimos rico ¡y todo mientras viajábamos a un destino maravilloso! Sentimos el cariño de todo el equipo de Kriativos on Board y ¡ya tenemos las maletas listas para el próximo!”'
+      },
+      gambiarraboardgames: {
+        orig: 'pt',
+        pt: '“O Kriativos On Board foi uma experiência muito mais surpreendente do que eu poderia esperar. Nunca tinha feito um cruzeiro e não apenas aproveitei o navio em si, a estrutura que ele ofereceu, mas também compartilhei essa experiência com as pessoas que o evento trouxe, jogando e curtindo sem preocupações.”',
+        en: '“Kriativos On Board was a far more surprising experience than I could have imagined. I had never been on a cruise before and not only enjoyed the ship and its amenities, but also shared this experience with all the people the event brought together, playing and having fun without worries.”',
+        es: '“Kriativos On Board fue una experiencia mucho más sorprendente de lo que esperaba. Nunca había hecho un crucero y no solo disfruté del barco y sus comodidades, sino que también compartí la experiencia con toda la comunidad que reunió el evento, jugando y disfrutando sin preocupaciones.”'
+      },
+      bgzosp: {
+        orig: 'pt',
+        pt: '“Estar presente no evento ao lado de pessoas como Vital Lacerda, Lucy, Doffa, produtores de conteúdo, editoras e jogadores de todo o Brasil foi uma experiência fantástica. A equipe da organização fez um trabalho excepcional antes, durante e depois do evento, o que me fez sentir especial e perceber que o evento foi marcante na história do hobby no Brasil. Estar rodeado de pessoas durante o evento me fez entender que uma das melhores coisas em nosso hobby são as amizades que fazemos ao jogar.”',
+        en: '“Being present at the event alongside people like Vital Lacerda, Lucy, Doffa, content creators, publishers, and players from all over Brazil was fantastic. The organizing team did an exceptional job before, during, and after the event, making everyone feel special. It made me realize that one of the best things in our hobby is the friendships we forge while playing.”',
+        es: '“Estar presente en el evento junto a figuras como Vital Lacerda, Lucy, Doffa, creadores de contenido, editoriales y jugadores de todo Brasil fue fantástico. El equipo organizador hizo un trabajo excepcional antes, durante y después del evento, haciéndonos sentir especiales. Estar rodeado de tanta gente me hizo entender que lo mejor de nuestra afición son las amistades que nacen jugando.”'
+      },
+      nickbgg: {
+        orig: 'pt',
+        pt: '“Jogos e cruzeiro são duas coisas que eu amo muito! Agora, ter o privilégio dessas duas coisas ao mesmo tempo NÃO TEM PREÇO! Foi isso que o Kriativos on Board pôde me proporcionar. E se você acha que não sobra tempo pra jogar, você está MUUUITO enganado! Foram três dias que passaram num piscar, com muito jogo, muita risada, festa, comida e bebida! Com toda certeza um dos melhores eventos do nicho!”',
+        en: '“Games and cruises are two things I love! Having the privilege of both at the same time is PRICELESS! That’s what Kriativos on Board delivered. And if you think there\'s no time to play, you’re WRONG! Three days flew by with tons of games, laughs, parties, food, and drinks! Hands down one of the best events in the hobby!”',
+        es: '“¡Los juegos de mesa y los cruceros son dos cosas que amo! ¡Tener el privilegio de ambas cosas al mismo tiempo NO TIENE PRECIO! Eso es lo que Kriativos on Board me brindó. Y si crees que no queda tiempo para jugar, ¡te equivocas! Fueron tres días que pasaron volando con muchísimos juegos, risas, fiesta, comida y bebida. ¡Sin duda uno de los mejores eventos del nicho!”'
+      }
+    };
+
+    function initVoiceTranslations(deck, lang) {
+      var translateLabel = lang === 'en' ? 'Translate' : (lang === 'es' ? 'Traducir' : 'Traduzir');
+      var originalLabel = lang === 'en' ? 'Original' : (lang === 'es' ? 'Original' : 'Original');
+      var allQuotes = deck.querySelectorAll('.quote');
+
+      allQuotes.forEach(function (quote) {
+        var id = quote.dataset.voiceId;
+        if (!id) {
+          if (quote.classList.contains('quote--vital')) id = 'vital';
+          else if (quote.classList.contains('quote--david')) id = 'david';
+          else {
+            var footerText = (quote.querySelector('footer') || {}).textContent || '';
+            if (footerText.indexOf('turnobgames') !== -1) id = 'turnobgames';
+            else if (footerText.indexOf('qeojogo') !== -1) id = 'qeojogo';
+            else if (footerText.indexOf('viajanerd') !== -1) id = 'viajanerd';
+            else if (footerText.indexOf('gambiarraboardgames') !== -1) id = 'gambiarraboardgames';
+            else if (footerText.indexOf('bgzosp') !== -1) id = 'bgzosp';
+            else if (footerText.indexOf('nickbgg') !== -1) id = 'nickbgg';
+          }
+        }
+        if (!id || !VOICE_TRANSLATIONS[id]) return;
+
+        var voiceData = VOICE_TRANSLATIONS[id];
+        var origLang = voiceData.orig;
+
+        // Se o idioma original for igual ao idioma configurado na página, NÃO adiciona o botão
+        if (origLang === lang) return;
+
+        var p = quote.querySelector('p');
+        var footer = quote.querySelector('footer');
+        if (!p || !footer) return;
+
+        if (quote.querySelector('.quote__trans-btn')) return;
+
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'quote__trans-btn';
+        btn.setAttribute('aria-pressed', 'false');
+        btn.setAttribute('aria-label', (lang === 'en' ? 'Translate testimonial to English' : (lang === 'es' ? 'Traducir testimonio al español' : 'Traduzir depoimento para português')));
+        btn.innerHTML = '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 8 6 6"></path><path d="m4 14 6-6 2-3"></path><path d="M2 5h12"></path><path d="M7 2h1"></path><path d="m22 22-5-10-5 10"></path><path d="M14 18h6"></path></svg><span>' + translateLabel + '</span>';
+
+        var span = btn.querySelector('span');
+        var isTranslated = false;
+
+        p.textContent = voiceData[origLang] || p.textContent;
+
+        btn.addEventListener('click', function () {
+          isTranslated = !isTranslated;
+          btn.setAttribute('aria-pressed', isTranslated ? 'true' : 'false');
+          if (isTranslated) {
+            p.textContent = voiceData[lang] || voiceData[origLang];
+            if (span) span.textContent = originalLabel;
+            btn.setAttribute('aria-label', (lang === 'en' ? 'View original testimonial' : (lang === 'es' ? 'Ver testimonio original' : 'Ver depoimento original')));
+          } else {
+            p.textContent = voiceData[origLang];
+            if (span) span.textContent = translateLabel;
+            btn.setAttribute('aria-label', (lang === 'en' ? 'Translate testimonial to English' : (lang === 'es' ? 'Traducir testimonio al español' : 'Traduzir depoimento para português')));
+          }
+        });
+
+        quote.insertBefore(btn, footer);
+      });
+    }
+
+    initVoiceTranslations(voicesDeck, vLang);
   }
+
+  // Câmbio de moedas para visitantes internacionais (USD/EUR para BRL)
+  function initCurrencyRates() {
+    var rateEls = document.querySelectorAll('[data-currency-rate]');
+    if (!rateEls.length) return;
+
+    var CACHE_KEY = 'kob_fx_rates_v1';
+    var cached = null;
+    try {
+      var raw = sessionStorage.getItem(CACHE_KEY);
+      if (raw) {
+        var parsed = JSON.parse(raw);
+        if (Date.now() - parsed.t < 3600000) cached = parsed.data;
+      }
+    } catch (e) {}
+
+    function applyRates(rates) {
+      rateEls.forEach(function (el) {
+        var cur = el.getAttribute('data-currency-rate');
+        if (rates && rates[cur]) {
+          var val = parseFloat(rates[cur]);
+          if (!isNaN(val) && val > 0) {
+            el.textContent = 'R$ ' + val.toFixed(2).replace('.', ',');
+          }
+        }
+      });
+    }
+
+    if (cached) {
+      applyRates(cached);
+      return;
+    }
+
+    if (typeof fetch === 'function') {
+      fetch('https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL')
+        .then(function (res) {
+          if (!res.ok) throw new Error('FX API status ' + res.status);
+          return res.json();
+        })
+        .then(function (data) {
+          var rates = {};
+          if (data.USDBRL && data.USDBRL.bid) rates.USD = data.USDBRL.bid;
+          if (data.EURBRL && data.EURBRL.bid) rates.EUR = data.EURBRL.bid;
+          try {
+            sessionStorage.setItem(CACHE_KEY, JSON.stringify({ t: Date.now(), data: rates }));
+          } catch (e) {}
+          applyRates(rates);
+        })
+        .catch(function () {
+          // Mantém valores de referência estáticos em caso de indisponibilidade
+        });
+    }
+  }
+  initCurrencyRates();
+
+  // Persistência da preferência manual de idioma
+  document.addEventListener('click', function (e) {
+    var btn = e.target && e.target.closest && e.target.closest('.lang-switch__btn');
+    if (!btn) return;
+    var hreflang = btn.getAttribute('hreflang') || '';
+    if (hreflang.toLowerCase().indexOf('pt') !== -1) {
+      try { localStorage.setItem('kob_lang_pref', 'pt'); } catch (err) {}
+    } else if (hreflang.toLowerCase().indexOf('en') !== -1) {
+      try { localStorage.setItem('kob_lang_pref', 'en'); } catch (err) {}
+    } else if (hreflang.toLowerCase().indexOf('es') !== -1) {
+      try { localStorage.setItem('kob_lang_pref', 'es'); } catch (err) {}
+    }
+  });
 
   // Slideshow de banners do navio (autoplay + setas + dots, pausa no hover)
   var show = document.getElementById('shipShow');
@@ -884,7 +1080,7 @@ document.documentElement.classList.add('js');
           framesLoaded++;
           syncPendingScrub();
         };
-        img.src = 'assets/hero-frames/frame-' + String(i).padStart(3, '0') + '.webp';
+        img.src = '/assets/hero-frames/frame-' + String(i).padStart(3, '0') + '.webp';
         frames.push(img);
       }
     }
@@ -1372,126 +1568,380 @@ document.documentElement.classList.add('js');
     var currentKey = null;
 
     var WA = 'https://api.whatsapp.com/send?phone=5513981580498&text=';
-    var DATA = {
-      interna: {
-        cabin: 'Cabine interna',
-        img: 'assets/images/cabins/cabine-interna.avif',
-        alt: 'Cabine interna do MSC Música com duas camas de solteiro, penteadeira e iluminação aconchegante',
-        tour: 'https://virtual-tours.msccruises.com/MSC-Musica/en-gl/index.html?sc=scene_inside',
-        title: 'O conforto e a elegância de que você precisa',
-        lead: 'A opção mais econômica para desfrutar do seu cruzeiro, com todo o conforto a bordo.',
-        groups: [{
-          items: [
-            'Cabines (aprox. 14 m²), 5º-15º andares',
-            'Poltrona relaxante',
-            'Banheiro com chuveiro, penteadeira e secador de cabelo',
-            'Duas camas de solteiro confortáveis que podem ser convertidas em cama de casal (mediante solicitação)*',
-            'TV interativa, telefone, conexão Wi-Fi disponível (mediante taxa), cofre e minibar'
-          ]
-        }],
-        note: '* Cabines para hóspedes com necessidades especiais ou mobilidade reduzida possuem apenas camas de solteiro. A imagem é apenas ilustrativa; o tamanho, layout e mobília podem variar (dentro da mesma categoria de cabine).',
-        wa: WA + encodeURIComponent('Olá, Royal Trip! Vi a Cabine Interna na seção de valores do Kriativos On Board 2026 e quero reservar essa opção no 2º lote.')
+    var DATA_ALL = {
+      pt: {
+        interna: {
+          cabin: 'Cabine interna',
+          img: '/assets/images/cabins/cabine-interna.avif',
+          alt: 'Cabine interna do MSC Música com duas camas de solteiro, penteadeira e iluminação aconchegante',
+          tour: 'https://virtual-tours.msccruises.com/MSC-Musica/en-gl/index.html?sc=scene_inside',
+          title: 'O conforto e a elegância de que você precisa',
+          lead: 'A opção mais econômica para desfrutar do seu cruzeiro, com todo o conforto a bordo.',
+          groups: [{
+            items: [
+              'Cabines (aprox. 14 m²), 5º-15º andares',
+              'Poltrona relaxante',
+              'Banheiro com chuveiro, penteadeira e secador de cabelo',
+              'Duas camas de solteiro confortáveis que podem ser convertidas em cama de casal (mediante solicitação)*',
+              'TV interativa, telefone, conexão Wi-Fi disponível (mediante taxa), cofre e minibar'
+            ]
+          }],
+          note: '* Cabines para hóspedes com necessidades especiais ou mobilidade reduzida possuem apenas camas de solteiro. A imagem é apenas ilustrativa; o tamanho, layout e mobília podem variar (dentro da mesma categoria de cabine).',
+          wa: WA + encodeURIComponent('Olá, Royal Trip! Vi a Cabine Interna na seção de valores do Kriativos On Board 2026 e quero reservar essa opção no 2º lote.'),
+          cta: 'Reservar agora'
+        },
+        janela: {
+          cabin: 'Cabine janela',
+          img: '/assets/images/cabins/cabine-janela.avif',
+          alt: 'Cabine janela do MSC Música com vista para o mar e luz natural entrando pela janela',
+          tour: 'https://virtual-tours.msccruises.com/MSC-Musica/en-gl/index.html?sc=scene_ocean_view',
+          title: 'Aprecie a vista do oceano de sua cabine',
+          lead: 'Confortável e elegante, com janela para o mar.',
+          groups: [{
+            items: [
+              'Cabines (aprox. 16-17 m²)',
+              'Janela com vista para o mar',
+              'Poltrona relaxante',
+              'Banheiro com chuveiro, penteadeira com secador de cabelo',
+              'Duas camas de solteiro confortáveis que podem ser convertidas em cama de casal (mediante solicitação)*',
+              'TV interativa, telefone, conexão Wi-Fi disponível (mediante taxa), cofre e minibar'
+            ]
+          }],
+          note: '* Cabines para hóspedes com necessidades especiais ou mobilidade reduzida possuem apenas camas de solteiro. A imagem é apenas ilustrativa; o tamanho, layout e mobília podem variar (dentro da mesma categoria de cabine).',
+          wa: WA + encodeURIComponent('Olá, Royal Trip! Vi a Cabine Janela na seção de valores do Kriativos On Board 2026 e quero reservar essa opção no 2º lote.'),
+          cta: 'Reservar agora'
+        },
+        varanda: {
+          cabin: 'Cabine varanda',
+          img: '/assets/images/cabins/cabine-varanda.avif',
+          alt: 'Cabine varanda do MSC Música com sacada privativa de frente para o mar',
+          tour: 'https://virtual-tours.msccruises.com/MSC-Musica/en-gl/index.html?sc=scene_balcony',
+          title: 'Relaxe com o sol e a brisa do mar',
+          lead: 'Aproveite o conforto da sua varanda privativa.',
+          groups: [{
+            items: [
+              'Cabines (aprox. 15-18 m²) com varanda (aprox. 4-5 m²)',
+              'Área de estar com sofá',
+              'Banheiro com chuveiro, penteadeira com secador de cabelo',
+              'Duas camas de solteiro confortáveis que podem ser convertidas em cama de casal (mediante solicitação)*',
+              'TV interativa, telefone, conexão Wi-Fi disponível (mediante taxa), cofre e minibar'
+            ]
+          }],
+          note: '* As cabines para hóspedes com necessidades especiais ou mobilidade reduzida possuem apenas cama de solteiro (exceto cabines 15025). A imagem é apenas ilustrativa; o tamanho, layout e mobília podem variar (dentro da mesma categoria de cabine).',
+          wa: WA + encodeURIComponent('Olá, Royal Trip! Vi a Cabine Varanda na seção de valores do Kriativos On Board 2026 e quero reservar essa opção no 2º lote.'),
+          cta: 'Reservar agora'
+        },
+        easy: {
+          cabin: 'Pacote Easy · 12x R$ 58,88 por pessoa',
+          img: '/assets/images/drinks/pacote-easy.webp',
+          alt: 'Seleção de bebidas do Pacote Easy servidas a bordo do MSC Música',
+          title: 'Um cruzeiro tranquilo, com bebida o dia inteiro',
+          lead: 'Desfrute de uma ampla seleção de bebidas ao longo do dia. Disponível em bares, buffets e restaurantes principais selecionados.',
+          groups: [{
+            items: [
+              'Café, chá e bebidas quentes',
+              'Refrigerantes e sucos',
+              'Água com e sem gás — AQUA by MSC*',
+              'Cerveja em garrafa e chope — marcas selecionadas',
+              'Vinho da casa e espumante em taça',
+              'Coquetéis clássicos e drinks com destilados da casa',
+              'Opções sem álcool, como mocktails, vinhos e cervejas'
+            ]
+          }],
+          note: '* AQUA by MSC: água enriquecida com minerais servida em copos nos bares e buffets, em garrafas de vidro reutilizáveis de 1L nos principais restaurantes e em estações de recarga, mediante solicitação. Taxas de serviço incluídas. Valores e itens do cardápio podem sofrer alterações; imagens e descrições são ilustrativas.',
+          wa: WA + encodeURIComponent('Olá, Royal Trip! Vi o Pacote de Bebidas Easy na seção de bebidas do Kriativos On Board 2026 e quero contratar essa opção.')
+        },
+        premium: {
+          cabin: 'Pacote Premium Extra · 12x R$ 86,29 por pessoa',
+          img: '/assets/images/drinks/pacote-premium.webp',
+          alt: 'Bebidas premium do Pacote Premium servidas a bordo do MSC Música',
+          title: 'Bebidas de primeira qualidade em todo o navio',
+          lead: 'Torne cada momento especial. Disponível em bares, bufês, restaurantes principais, restaurantes de especialidades selecionados e em ilhas privativas.',
+          groups: [{
+            items: [
+              'Cafés especiais, chás e bebidas quentes variadas',
+              'Refrigerantes e energéticos',
+              'Sucos, coquetéis de frutas frescas, smoothies e shakes de proteína',
+              'Água com e sem gás — AQUA by MSC*',
+              'Cervejas, vinhos e coquetéis sem álcool',
+              'Ampla seleção de chope e cervejas em garrafa',
+              'Vinhos e espumantes premium em taça',
+              'Destilados e licores premium',
+              'Coquetéis e drinks elaborados com marcas premium'
+            ]
+          }],
+          note: '* AQUA by MSC: água enriquecida com minerais servida em copos, em garrafas de vidro reutilizáveis de 1L e em estações de recarga, mediante solicitação. Taxas de serviço incluídas. Valores e itens do cardápio podem sofrer alterações; imagens e descrições são ilustrativas.',
+          wa: WA + encodeURIComponent('Olá, Royal Trip! Vi o Pacote de Bebidas Premium Extra na seção de bebidas do Kriativos On Board 2026 e quero contratar essa opção.')
+        },
+        naoalcoolico: {
+          cabin: 'Não alcoólico · 12x R$ 51,25 por pessoa',
+          img: '/assets/images/drinks/pacote-nao-alcoolico.webp',
+          alt: 'Bebidas sem álcool do Pacote Não Alcoólico servidas a bordo do MSC Música',
+          title: 'Revigorante, sem álcool, para adultos',
+          lead: 'Perfeito para quem prefere opções sem álcool. Disponível em bares, buffets e restaurantes principais selecionados.',
+          groups: [{
+            items: [
+              'Cafés especiais, chás e bebidas quentes variadas',
+              'Refrigerantes e energéticos',
+              'Sucos, coquetéis de frutas frescas, smoothies e shakes de proteína',
+              'Água com e sem gás — AQUA by MSC*',
+              'Cervejas, vinhos e coquetéis sem álcool'
+            ]
+          }],
+          note: '* AQUA by MSC: água enriquecida com minerais servida em copos, em garrafas de vidro reutilizáveis de 1L e em estações de recarga, mediante solicitação. Taxas de serviço incluídas. O pacote não é aceito em restaurantes de especialidades e ilhas particulares. Valores e itens do cardápio podem sofrer alterações; imagens e descrições são ilustrativas.',
+          wa: WA + encodeURIComponent('Olá, Royal Trip! Vi o Pacote de Bebidas Não Alcoólico na seção de bebidas do Kriativos On Board 2026 e quero contratar essa opção.')
+        }
       },
-      janela: {
-        cabin: 'Cabine janela',
-        img: 'assets/images/cabins/cabine-janela.avif',
-        alt: 'Cabine janela do MSC Música com vista para o mar e luz natural entrando pela janela',
-        tour: 'https://virtual-tours.msccruises.com/MSC-Musica/en-gl/index.html?sc=scene_ocean_view',
-        title: 'Aprecie a vista do oceano de sua cabine',
-        lead: 'Confortável e elegante, com janela para o mar.',
-        groups: [{
-          items: [
-            'Cabines (aprox. 16-17 m²)',
-            'Janela com vista para o mar',
-            'Poltrona relaxante',
-            'Banheiro com chuveiro, penteadeira com secador de cabelo',
-            'Duas camas de solteiro confortáveis que podem ser convertidas em cama de casal (mediante solicitação)*',
-            'TV interativa, telefone, conexão Wi-Fi disponível (mediante taxa), cofre e minibar'
-          ]
-        }],
-        note: '* Cabines para hóspedes com necessidades especiais ou mobilidade reduzida possuem apenas camas de solteiro. A imagem é apenas ilustrativa; o tamanho, layout e mobília podem variar (dentro da mesma categoria de cabine).',
-        wa: WA + encodeURIComponent('Olá, Royal Trip! Vi a Cabine Janela na seção de valores do Kriativos On Board 2026 e quero reservar essa opção no 2º lote.')
+      en: {
+        interna: {
+          cabin: 'Interior Cabin',
+          img: '/assets/images/cabins/cabine-interna.avif',
+          alt: 'Interior cabin of MSC Musica with twin beds, vanity, and warm lighting',
+          tour: 'https://virtual-tours.msccruises.com/MSC-Musica/en-gl/index.html?sc=scene_inside',
+          title: 'The comfort and elegance you need',
+          lead: 'The most cost-effective way to enjoy your cruise with complete comfort on board.',
+          groups: [{
+            items: [
+              'Cabins (approx. 14 m²), decks 5–15',
+              'Relaxing armchair',
+              'Bathroom with shower, vanity area and hairdryer',
+              'Two comfortable single beds that can be converted into a double bed (upon request)*',
+              'Interactive TV, telephone, Wi-Fi connection available (fee applies), safe and minibar'
+            ]
+          }],
+          note: '* Cabins for guests with disabilities or reduced mobility feature single beds only. Image is illustrative; size, layout, and furniture may vary within the same cabin category.',
+          wa: WA + encodeURIComponent('Hello, Royal Trip! I saw the Interior Cabin on the Kriativos On Board 2026 website and would like to book this option in the 2nd batch.'),
+          cta: 'Reserve Now'
+        },
+        janela: {
+          cabin: 'Ocean View Cabin',
+          img: '/assets/images/cabins/cabine-janela.avif',
+          alt: 'Ocean view cabin of MSC Musica with sea view window and natural daylight',
+          tour: 'https://virtual-tours.msccruises.com/MSC-Musica/en-gl/index.html?sc=scene_ocean_view',
+          title: 'Enjoy the ocean view right from your cabin',
+          lead: 'Comfortable and stylish, with a window facing the open sea.',
+          groups: [{
+            items: [
+              'Cabins (approx. 16–17 m²)',
+              'Window with ocean view',
+              'Relaxing armchair',
+              'Bathroom with shower, vanity area with hairdryer',
+              'Two comfortable single beds that can be converted into a double bed (upon request)*',
+              'Interactive TV, telephone, Wi-Fi connection available (fee applies), safe and minibar'
+            ]
+          }],
+          note: '* Cabins for guests with disabilities or reduced mobility feature single beds only. Image is illustrative; size, layout, and furniture may vary within the same cabin category.',
+          wa: WA + encodeURIComponent('Hello, Royal Trip! I saw the Ocean View Cabin on the Kriativos On Board 2026 website and would like to book this option in the 2nd batch.'),
+          cta: 'Reserve Now'
+        },
+        varanda: {
+          cabin: 'Balcony Cabin',
+          img: '/assets/images/cabins/cabine-varanda.avif',
+          alt: 'Balcony cabin of MSC Musica with private balcony overlooking the sea',
+          tour: 'https://virtual-tours.msccruises.com/MSC-Musica/en-gl/index.html?sc=scene_balcony',
+          title: 'Relax with sunshine and sea breeze',
+          lead: 'Enjoy the comfort and tranquility of your private balcony.',
+          groups: [{
+            items: [
+              'Cabins (approx. 15–18 m²) with private balcony (approx. 4–5 m²)',
+              'Sitting area with sofa',
+              'Bathroom with shower, vanity area with hairdryer',
+              'Two comfortable single beds that can be converted into a double bed (upon request)*',
+              'Interactive TV, telephone, Wi-Fi connection available (fee applies), safe and minibar'
+            ]
+          }],
+          note: '* Cabins for guests with disabilities or reduced mobility feature single beds only. Image is illustrative; size, layout, and furniture may vary within the same cabin category.',
+          wa: WA + encodeURIComponent('Hello, Royal Trip! I saw the Balcony Cabin on the Kriativos On Board 2026 website and would like to book this option in the 2nd batch.'),
+          cta: 'Reserve Now'
+        },
+        easy: {
+          cabin: 'Easy Package · 12x R$ 58.88 per person',
+          img: '/assets/images/drinks/pacote-easy.webp',
+          alt: 'Selection of Easy Package beverages served on board MSC Musica',
+          title: 'A relaxed cruise with beverages all day long',
+          lead: 'Enjoy a wide selection of drinks throughout the day. Available in selected bars, buffets, and main restaurants.',
+          groups: [{
+            items: [
+              'Coffee, tea and hot beverages',
+              'Sodas and fruit juices',
+              'Mineral water still and sparkling — AQUA by MSC*',
+              'Bottled beer and draft beer — selected brands',
+              'House wine and sparkling wine by the glass',
+              'Classic cocktails and drinks with house spirits',
+              'Non-alcoholic options: mocktails, non-alcoholic wines and beers'
+            ]
+          }],
+          note: '* Service charges included. Menu prices and items subject to change; images and descriptions are illustrative.',
+          wa: WA + encodeURIComponent('Hello, Royal Trip! I saw the Easy Drink Package on the Kriativos On Board 2026 website and would like to add this option.')
+        },
+        premium: {
+          cabin: 'Premium Extra Package · 12x R$ 86.29 per person',
+          img: '/assets/images/drinks/pacote-premium.webp',
+          alt: 'Premium beverages served on board MSC Musica',
+          title: 'Top-tier drinks throughout the entire ship',
+          lead: 'Make every moment extraordinary. Available in all bars, buffets, main dining rooms, specialty venues, and private destinations.',
+          groups: [{
+            items: [
+              'Specialty coffees, teas and hot beverages',
+              'Sodas and energy drinks',
+              'Fresh fruit juices, smoothies and shakes',
+              'Mineral water still and sparkling — AQUA by MSC*',
+              'Non-alcoholic beers, wines and mocktails',
+              'Extensive selection of draft and bottled beers',
+              'Premium wines and champagne by the glass',
+              'Premium spirits, liqueurs and craft cocktails'
+            ]
+          }],
+          note: '* Service charges included. Menu prices and items subject to change; images and descriptions are illustrative.',
+          wa: WA + encodeURIComponent('Hello, Royal Trip! I saw the Premium Extra Drink Package on the Kriativos On Board 2026 website and would like to add this option.')
+        },
+        naoalcoolico: {
+          cabin: 'Non-Alcoholic Package · 12x R$ 51.25 per person',
+          img: '/assets/images/drinks/pacote-nao-alcoolico.webp',
+          alt: 'Non-alcoholic drinks selection on board MSC Musica',
+          title: 'Refreshing non-alcoholic beverages for adults',
+          lead: 'Ideal for guests preferring alcohol-free choices. Available in selected bars, buffets, and main dining rooms.',
+          groups: [{
+            items: [
+              'Specialty coffees, teas and hot beverages',
+              'Sodas and energy drinks',
+              'Fresh fruit juices, smoothies and shakes',
+              'Mineral water still and sparkling — AQUA by MSC*',
+              'Non-alcoholic beers, wines and mocktails'
+            ]
+          }],
+          note: '* Service charges included. Menu prices and items subject to change; images and descriptions are illustrative.',
+          wa: WA + encodeURIComponent('Hello, Royal Trip! I saw the Non-Alcoholic Drink Package on the Kriativos On Board 2026 website and would like to add this option.')
+        }
       },
-      varanda: {
-        cabin: 'Cabine varanda',
-        img: 'assets/images/cabins/cabine-varanda.avif',
-        alt: 'Cabine varanda do MSC Música com sacada privativa de frente para o mar',
-        tour: 'https://virtual-tours.msccruises.com/MSC-Musica/en-gl/index.html?sc=scene_balcony',
-        title: 'Relaxe com o sol e a brisa do mar',
-        lead: 'Aproveite o conforto da sua varanda privativa.',
-        groups: [{
-          items: [
-            'Cabines (aprox. 15-18 m²) com varanda (aprox. 4-5 m²)',
-            'Área de estar com sofá',
-            'Banheiro com chuveiro, penteadeira com secador de cabelo',
-            'Duas camas de solteiro confortáveis que podem ser convertidas em cama de casal (mediante solicitação)*',
-            'TV interativa, telefone, conexão Wi-Fi disponível (mediante taxa), cofre e minibar'
-          ]
-        }],
-        note: '* As cabines para hóspedes com necessidades especiais ou mobilidade reduzida possuem apenas cama de solteiro (exceto cabines 15025). A imagem é apenas ilustrativa; o tamanho, layout e mobília podem variar (dentro da mesma categoria de cabine).',
-        wa: WA + encodeURIComponent('Olá, Royal Trip! Vi a Cabine Varanda na seção de valores do Kriativos On Board 2026 e quero reservar essa opção no 2º lote.')
-      },
-      easy: {
-        cabin: 'Pacote Easy · 12x R$ 58,88 por pessoa',
-        img: 'assets/images/drinks/pacote-easy.webp',
-        alt: 'Seleção de bebidas do Pacote Easy servidas a bordo do MSC Música',
-        title: 'Um cruzeiro tranquilo, com bebida o dia inteiro',
-        lead: 'Desfrute de uma ampla seleção de bebidas ao longo do dia. Disponível em bares, buffets e restaurantes principais selecionados.',
-        groups: [{
-          items: [
-            'Café, chá e bebidas quentes',
-            'Refrigerantes e sucos',
-            'Água com e sem gás — AQUA by MSC*',
-            'Cerveja em garrafa e chope — marcas selecionadas',
-            'Vinho da casa e espumante em taça',
-            'Coquetéis clássicos e drinks com destilados da casa',
-            'Opções sem álcool, como mocktails, vinhos e cervejas'
-          ]
-        }],
-        note: '* AQUA by MSC: água enriquecida com minerais servida em copos nos bares e buffets, em garrafas de vidro reutilizáveis de 1L nos principais restaurantes e em estações de recarga, mediante solicitação. Taxas de serviço incluídas. Valores e itens do cardápio podem sofrer alterações; imagens e descrições são ilustrativas.',
-        wa: WA + encodeURIComponent('Olá, Royal Trip! Vi o Pacote de Bebidas Easy na seção de bebidas do Kriativos On Board 2026 e quero contratar essa opção.')
-      },
-      premium: {
-        cabin: 'Pacote Premium Extra · 12x R$ 86,29 por pessoa',
-        img: 'assets/images/drinks/pacote-premium.webp',
-        alt: 'Bebidas premium do Pacote Premium servidas a bordo do MSC Música',
-        title: 'Bebidas de primeira qualidade em todo o navio',
-        lead: 'Torne cada momento especial. Disponível em bares, bufês, restaurantes principais, restaurantes de especialidades selecionados e em ilhas privativas.',
-        groups: [{
-          items: [
-            'Cafés especiais, chás e bebidas quentes variadas',
-            'Refrigerantes e energéticos',
-            'Sucos, coquetéis de frutas frescas, smoothies e shakes de proteína',
-            'Água com e sem gás — AQUA by MSC*',
-            'Cervejas, vinhos e coquetéis sem álcool',
-            'Ampla seleção de chope e cervejas em garrafa',
-            'Vinhos e espumantes premium em taça',
-            'Destilados e licores premium',
-            'Coquetéis e drinks elaborados com marcas premium'
-          ]
-        }],
-        note: '* AQUA by MSC: água enriquecida com minerais servida em copos, em garrafas de vidro reutilizáveis de 1L e em estações de recarga, mediante solicitação. Taxas de serviço incluídas. Valores e itens do cardápio podem sofrer alterações; imagens e descrições são ilustrativas.',
-        wa: WA + encodeURIComponent('Olá, Royal Trip! Vi o Pacote de Bebidas Premium Extra na seção de bebidas do Kriativos On Board 2026 e quero contratar essa opção.')
-      },
-      naoalcoolico: {
-        cabin: 'Não alcoólico · 12x R$ 51,25 por pessoa',
-        img: 'assets/images/drinks/pacote-nao-alcoolico.webp',
-        alt: 'Bebidas sem álcool do Pacote Não Alcoólico servidas a bordo do MSC Música',
-        title: 'Revigorante, sem álcool, para adultos',
-        lead: 'Perfeito para quem prefere opções sem álcool. Disponível em bares, buffets e restaurantes principais selecionados.',
-        groups: [{
-          items: [
-            'Cafés especiais, chás e bebidas quentes variadas',
-            'Refrigerantes e energéticos',
-            'Sucos, coquetéis de frutas frescas, smoothies e shakes de proteína',
-            'Água com e sem gás — AQUA by MSC*',
-            'Cervejas, vinhos e coquetéis sem álcool'
-          ]
-        }],
-        note: '* AQUA by MSC: água enriquecida com minerais servida em copos, em garrafas de vidro reutilizáveis de 1L e em estações de recarga, mediante solicitação. Taxas de serviço incluídas. O pacote não é aceito em restaurantes de especialidades e ilhas particulares. Valores e itens do cardápio podem sofrer alterações; imagens e descrições são ilustrativas.',
-        wa: WA + encodeURIComponent('Olá, Royal Trip! Vi o Pacote de Bebidas Não Alcoólico na seção de bebidas do Kriativos On Board 2026 e quero contratar essa opção.')
+      es: {
+        interna: {
+          cabin: 'Cabina Interna',
+          img: '/assets/images/cabins/cabine-interna.avif',
+          alt: 'Cabina interna del MSC Musica con dos camas individuales, tocador e iluminación acogedora',
+          tour: 'https://virtual-tours.msccruises.com/MSC-Musica/en-gl/index.html?sc=scene_inside',
+          title: 'El confort y la elegancia que necesita',
+          lead: 'La opción más económica para disfrutar de su crucero con todo el confort a bordo.',
+          groups: [{
+            items: [
+              'Cabinas (aprox. 14 m²), pisos 5–15',
+              'Sillón de descanso',
+              'Baño con ducha, tocador y secador de pelo',
+              'Dos camas individuales confortables convertibles en cama matrimonial (bajo petición)*',
+              'TV interactiva, teléfono, Wi-Fi disponible (de pago), caja fuerte y minibar'
+            ]
+          }],
+          note: '* Cabinas para huéspedes con movilidad reducida disponen de camas individuales. Imagen ilustrativa; tamaño y mobiliario pueden variar dentro de la categoría.',
+          wa: WA + encodeURIComponent('Hola, Royal Trip! Vi la Cabina Interna en la sección de precios de Kriativos On Board 2026 y quiero reservar esta opción en el 2º lote.'),
+          cta: 'Reservar Ahora'
+        },
+        janela: {
+          cabin: 'Cabina con Ventana',
+          img: '/assets/images/cabins/cabine-janela.avif',
+          alt: 'Cabina con ventana del MSC Musica con vista al mar y luz natural',
+          tour: 'https://virtual-tours.msccruises.com/MSC-Musica/en-gl/index.html?sc=scene_ocean_view',
+          title: 'Disfrute de la vista al océano desde su cabina',
+          lead: 'Confortable y elegante, con ventana panorámica al mar.',
+          groups: [{
+            items: [
+              'Cabinas (aprox. 16–17 m²)',
+              'Ventana con vista al mar',
+              'Sillón de descanso',
+              'Baño con ducha, tocador con secador de pelo',
+              'Dos camas individuales convertibles en cama matrimonial (bajo petición)*',
+              'TV interactiva, teléfono, Wi-Fi disponible (de pago), caja fuerte y minibar'
+            ]
+          }],
+          note: '* Cabinas para huéspedes con movilidad reducida disponen de camas individuales. Imagen ilustrativa; tamaño y mobiliario pueden variar dentro de la categoría.',
+          wa: WA + encodeURIComponent('Hola, Royal Trip! Vi la Cabina con Ventana en la sección de precios de Kriativos On Board 2026 y quiero reservar esta opción en el 2º lote.'),
+          cta: 'Reservar Ahora'
+        },
+        varanda: {
+          cabin: 'Cabina con Balcón',
+          img: '/assets/images/cabins/cabine-varanda.avif',
+          alt: 'Cabina con balcón del MSC Musica con terraza privada frente al mar',
+          tour: 'https://virtual-tours.msccruises.com/MSC-Musica/en-gl/index.html?sc=scene_balcony',
+          title: 'Relájese con el sol y la brisa marina',
+          lead: 'Aproveche el confort de su balcón privado hacia el mar.',
+          groups: [{
+            items: [
+              'Cabinas (aprox. 15–18 m²) con balcón privado (aprox. 4–5 m²)',
+              'Zona de estar con sofá',
+              'Baño con ducha, tocador con secador de pelo',
+              'Dos camas individuales convertibles en cama matrimonial (bajo petición)*',
+              'TV interactiva, teléfono, Wi-Fi disponible (de pago), caja fuerte y minibar'
+            ]
+          }],
+          note: '* Cabinas para huéspedes con movilidad reducida disponen de camas individuales. Imagen ilustrativa; tamaño y mobiliario pueden variar dentro de la categoría.',
+          wa: WA + encodeURIComponent('Hola, Royal Trip! Vi la Cabina con Balcón en la sección de precios de Kriativos On Board 2026 y quiero reservar esta opção no 2º lote.'),
+          cta: 'Reservar Ahora'
+        },
+        easy: {
+          cabin: 'Paquete Easy · 12x R$ 58,88 por persona',
+          img: '/assets/images/drinks/pacote-easy.webp',
+          alt: 'Selección de bebidas del Paquete Easy a bordo de MSC Musica',
+          title: 'Un crucero relajado con bebidas durante todo el día',
+          lead: 'Disfrute de una amplia variedad de bebidas a lo largo del día en bares, bufés y restaurantes seleccionados.',
+          groups: [{
+            items: [
+              'Café, té y bebidas calientes',
+              'Refrescos y jugos',
+              'Agua mineral con y sin gas — AQUA by MSC*',
+              'Cerveza en botella y tirada — marcas seleccionadas',
+              'Vino de la casa y espumante por copa',
+              'Cócteles clásicos y destilados de la casa',
+              'Opciones sin alcohol: mocktails, vinos y cervezas sin alcohol'
+            ]
+          }],
+          note: '* Cargos de servicio incluidos. Precios y elementos sujetos a modificación; imágenes ilustrativas.',
+          wa: WA + encodeURIComponent('Hola, Royal Trip! Vi el Paquete de Bebidas Easy en la sección de bebidas de Kriativos On Board 2026 y quiero contratar esta opción.')
+        },
+        premium: {
+          cabin: 'Paquete Premium Extra · 12x R$ 86,29 por persona',
+          img: '/assets/images/drinks/pacote-premium.webp',
+          alt: 'Bebidas premium del Paquete Premium a bordo de MSC Musica',
+          title: 'Bebidas de primera calidad en todo el barco',
+          lead: 'Haga cada momento inolvidable. Disponible en bares, bufés, restaurantes principales y de especialidades.',
+          groups: [{
+            items: [
+              'Cafés especiales, tés y bebidas calientes variadas',
+              'Refrescos y bebidas energéticas',
+              'Jugos frescos, smoothies y batidos',
+              'Agua mineral con y sin gas — AQUA by MSC*',
+              'Cervezas, vinos y cócteles sin alcohol',
+              'Amplia selección de cervezas tiradas y en botella',
+              'Vinos y espumantes premium por copa',
+              'Destilados, licores y cócteles de marcas premium'
+            ]
+          }],
+          note: '* Cargos de servicio incluidos. Precios y elementos sujetos a modificación; imágenes ilustrativas.',
+          wa: WA + encodeURIComponent('Hola, Royal Trip! Vi el Paquete de Bebidas Premium Extra en la sección de bebidas de Kriativos On Board 2026 y quiero contratar esta opción.')
+        },
+        naoalcoolico: {
+          cabin: 'Paquete Sin Alcohol · 12x R$ 51,25 por persona',
+          img: '/assets/images/drinks/pacote-nao-alcoolico.webp',
+          alt: 'Selección de bebidas sin alcohol a bordo de MSC Musica',
+          title: 'Refrescante, sin alcohol, para adultos',
+          lead: 'Ideal para quienes prefieren opciones libres de alcohol. Disponible en bares, bufés y restaurantes seleccionados.',
+          groups: [{
+            items: [
+              'Cafés especiales, tés y bebidas calientes variadas',
+              'Refrescos y bebidas energéticas',
+              'Jugos de frutas frescas, smoothies y batidos',
+              'Agua mineral con y sin gas — AQUA by MSC*',
+              'Cervezas, vinos y cócteles sin alcohol'
+            ]
+          }],
+          note: '* Cargos de servicio incluidos. Precios y elementos sujetos a modificación; imágenes ilustrativas.',
+          wa: WA + encodeURIComponent('Hola, Royal Trip! Vi el Paquete de Bebidas Sin Alcohol en la sección de bebidas de Kriativos On Board 2026 y quiero contratar esta opción.')
+        }
       }
     };
+
+    function getLangKey() {
+      var l = (document.documentElement.lang || 'pt').slice(0, 2).toLowerCase();
+      return DATA_ALL[l] ? l : 'pt';
+    }
 
     function buildBody(groups) {
       elBody.textContent = '';
@@ -1513,7 +1963,8 @@ document.documentElement.classList.add('js');
 
     var DRINK_KEYS = { easy: 1, premium: 1, naoalcoolico: 1 };
     function open(key) {
-      var d = DATA[key];
+      var langKey = getLangKey();
+      var d = (DATA_ALL[langKey] || DATA_ALL.pt)[key];
       if (!d) return;
       var analyticsSelection = findAnalyticsItem(key);
       currentKey = key;
@@ -1532,6 +1983,9 @@ document.documentElement.classList.add('js');
       if (elCta) {
         var isDrink = !!DRINK_KEYS[key];
         elCta.hidden = isDrink;
+        if (d.cta) {
+          elCta.textContent = d.cta;
+        }
         if (isDrink) {
           whatsappDestinations.delete(elCta);
           delete elCta.dataset.kobWhatsappBound;
@@ -1626,7 +2080,8 @@ document.documentElement.classList.add('js');
       }
 
       function openTour() {
-        var d = DATA[currentKey];
+        var langKey = getLangKey();
+        var d = (DATA_ALL[langKey] || DATA_ALL.pt)[currentKey];
         if (!d || !d.tour) return;
         tourFocus = document.activeElement;
         setMaximized(false);
@@ -1666,44 +2121,119 @@ document.documentElement.classList.add('js');
     }
 
     var TOUR = 'https://virtual-tours.msccruises.com/MSC-Musica/en-gl/index.html?sc=';
-    var THUMBS = 'assets/images/tour-thumbs/';
-    // grupo -> [ [scene, nome] ]. A miniatura vem de THUMBS + scene + '.jpg'.
-    var GROUPS = [
-      ['Áreas comuns', [
-        ['scene_reception_la_cascata', 'Recepção La Cascata'],
-        ['scene_crystal_lounge', 'Crystal Lounge'],
-        ['scene_teatro_la_scala', 'Teatro La Scala'],
-        ['scene_sanremo_casino', 'Cassino Sanremo'],
-        ['scene_copacabana', 'Piscina Copacabana'],
-        ['scene_l_oleandro', 'Restaurante L\u2019Oleandro'],
-        ['scene_restaurant', 'Restaurante Il Giardino'],
-        ['scene_kaito_sushi_bar', 'Kaito Sushi Bar'],
-        ['scene_blue_velvet_bar', 'Blue Velvet Bar'],
-        ['scene_havana_club', 'Havana Club'],
-        ['scene_il_tucano_lounge', 'Il Tucano Lounge'],
-        ['scene_gli_archi_cafeteria', 'Gli Archi Cafeteria'],
-        ['scene_q32_disco', 'Discoteca Q32'],
-        ['scene_top_16', 'Top 16'],
-        ['scene_space_trip', 'Space Trip'],
-        ['scene_card_room', 'Sala de jogos'],
-        ['scene_library', 'Biblioteca'],
-        ['scene_the_mini_mall', 'Mini Mall'],
-        ['scene_l_angolo_dell_oggetto', 'L\u2019Angolo dell\u2019Oggetto'],
-        ['scene_gym', 'Academia']
-      ]],
-      ['Cabines', [
-        ['scene_inside', 'Cabine interna'],
-        ['scene_ocean_view', 'Cabine janela'],
-        ['scene_balcony', 'Cabine varanda']
-      ]],
-      ['SPA & Bem-estar', [
-        ['scene_spa_reception', 'Recepção do SPA'],
-        ['scene_beauty_parlour', 'Salão de beleza'],
-        ['scene_spa_massage_room', 'Sala de massagem'],
-        ['scene_steam_bath', 'Banho a vapor'],
-        ['scene_yoga_room', 'Sala de yoga']
-      ]]
-    ];
+    var THUMBS = '/assets/images/tour-thumbs/';
+    var tLang = (document.documentElement.lang || 'pt').slice(0, 2).toLowerCase();
+    var GROUPS_DATA = {
+      pt: [
+        ['Áreas comuns', [
+          ['scene_reception_la_cascata', 'Recepção La Cascata'],
+          ['scene_crystal_lounge', 'Crystal Lounge'],
+          ['scene_teatro_la_scala', 'Teatro La Scala'],
+          ['scene_sanremo_casino', 'Cassino Sanremo'],
+          ['scene_copacabana', 'Piscina Copacabana'],
+          ['scene_l_oleandro', 'Restaurante L\u2019Oleandro'],
+          ['scene_restaurant', 'Restaurante Il Giardino'],
+          ['scene_kaito_sushi_bar', 'Kaito Sushi Bar'],
+          ['scene_blue_velvet_bar', 'Blue Velvet Bar'],
+          ['scene_havana_club', 'Havana Club'],
+          ['scene_il_tucano_lounge', 'Il Tucano Lounge'],
+          ['scene_gli_archi_cafeteria', 'Gli Archi Cafeteria'],
+          ['scene_q32_disco', 'Discoteca Q32'],
+          ['scene_top_16', 'Top 16'],
+          ['scene_space_trip', 'Space Trip'],
+          ['scene_card_room', 'Sala de jogos'],
+          ['scene_library', 'Biblioteca'],
+          ['scene_the_mini_mall', 'Mini Mall'],
+          ['scene_l_angolo_dell_oggetto', 'L\u2019Angolo dell\u2019Oggetto'],
+          ['scene_gym', 'Academia']
+        ]],
+        ['Cabines', [
+          ['scene_inside', 'Cabine interna'],
+          ['scene_ocean_view', 'Cabine janela'],
+          ['scene_balcony', 'Cabine varanda']
+        ]],
+        ['SPA & Bem-estar', [
+          ['scene_spa_reception', 'Recepção do SPA'],
+          ['scene_beauty_parlour', 'Salão de beleza'],
+          ['scene_spa_massage_room', 'Sala de massagem'],
+          ['scene_steam_bath', 'Banho a vapor'],
+          ['scene_yoga_room', 'Sala de yoga']
+        ]]
+      ],
+      en: [
+        ['Public Areas', [
+          ['scene_reception_la_cascata', 'La Cascata Reception'],
+          ['scene_crystal_lounge', 'Crystal Lounge'],
+          ['scene_teatro_la_scala', 'Teatro La Scala'],
+          ['scene_sanremo_casino', 'Sanremo Casino'],
+          ['scene_copacabana', 'Copacabana Pool'],
+          ['scene_l_oleandro', 'L\u2019Oleandro Restaurant'],
+          ['scene_restaurant', 'Il Giardino Restaurant'],
+          ['scene_kaito_sushi_bar', 'Kaito Sushi Bar'],
+          ['scene_blue_velvet_bar', 'Blue Velvet Bar'],
+          ['scene_havana_club', 'Havana Club'],
+          ['scene_il_tucano_lounge', 'Il Tucano Lounge'],
+          ['scene_gli_archi_cafeteria', 'Gli Archi Cafeteria'],
+          ['scene_q32_disco', 'Q32 Disco'],
+          ['scene_top_16', 'Top 16 Solarium'],
+          ['scene_space_trip', 'Space Trip'],
+          ['scene_card_room', 'Card & Game Room'],
+          ['scene_library', 'Library'],
+          ['scene_the_mini_mall', 'Mini Mall'],
+          ['scene_l_angolo_dell_oggetto', 'L\u2019Angolo dell\u2019Oggetto'],
+          ['scene_gym', 'Fitness Center']
+        ]],
+        ['Cabins', [
+          ['scene_inside', 'Interior Cabin'],
+          ['scene_ocean_view', 'Ocean View Cabin'],
+          ['scene_balcony', 'Balcony Cabin']
+        ]],
+        ['Spa & Wellness', [
+          ['scene_spa_reception', 'Spa Reception'],
+          ['scene_beauty_parlour', 'Beauty Parlour'],
+          ['scene_spa_massage_room', 'Massage Room'],
+          ['scene_steam_bath', 'Steam Bath'],
+          ['scene_yoga_room', 'Yoga Room']
+        ]]
+      ],
+      es: [
+        ['Áreas comunes', [
+          ['scene_reception_la_cascata', 'Recepción La Cascata'],
+          ['scene_crystal_lounge', 'Crystal Lounge'],
+          ['scene_teatro_la_scala', 'Teatro La Scala'],
+          ['scene_sanremo_casino', 'Casino Sanremo'],
+          ['scene_copacabana', 'Piscina Copacabana'],
+          ['scene_l_oleandro', 'Restaurante L\u2019Oleandro'],
+          ['scene_restaurant', 'Restaurante Il Giardino'],
+          ['scene_kaito_sushi_bar', 'Kaito Sushi Bar'],
+          ['scene_blue_velvet_bar', 'Blue Velvet Bar'],
+          ['scene_havana_club', 'Havana Club'],
+          ['scene_il_tucano_lounge', 'Il Tucano Lounge'],
+          ['scene_gli_archi_cafeteria', 'Cafetería Gli Archi'],
+          ['scene_q32_disco', 'Discoteca Q32'],
+          ['scene_top_16', 'Solarium Top 16'],
+          ['scene_space_trip', 'Space Trip'],
+          ['scene_card_room', 'Sala de juegos'],
+          ['scene_library', 'Biblioteca'],
+          ['scene_the_mini_mall', 'Mini Mall'],
+          ['scene_l_angolo_dell_oggetto', 'L\u2019Angolo dell\u2019Oggetto'],
+          ['scene_gym', 'Gimnasio']
+        ]],
+        ['Cabinas', [
+          ['scene_inside', 'Cabina interna'],
+          ['scene_ocean_view', 'Cabina con ventana'],
+          ['scene_balcony', 'Cabina con balcón']
+        ]],
+        ['Spa y Bienestar', [
+          ['scene_spa_reception', 'Recepción del Spa'],
+          ['scene_beauty_parlour', 'Salón de belleza'],
+          ['scene_spa_massage_room', 'Sala de masajes'],
+          ['scene_steam_bath', 'Baño de vapor'],
+          ['scene_yoga_room', 'Sala de yoga']
+        ]]
+      ]
+    };
+    var GROUPS = GROUPS_DATA[tLang] || GROUPS_DATA.pt;
 
     var nav = document.getElementById('shipTourNav');
     var stage = dialog.querySelector('.shiptour__stage');
@@ -2234,7 +2764,7 @@ document.documentElement.classList.add('js');
     }
 
     function normalize(value) {
-      return value.toLocaleLowerCase('pt-BR').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      return value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
     }
 
     function filterQuestions() {
@@ -2264,9 +2794,20 @@ document.documentElement.classList.add('js');
 
       if (faq) faq.classList.toggle('is-searching', Boolean(term));
       if (searchStatus) {
-        searchStatus.textContent = term
-          ? (visible === 1 ? '1 resposta encontrada' : visible + ' respostas encontradas')
-          : '28 respostas organizadas por tema';
+        var lang = (document.documentElement.lang || 'pt').slice(0, 2).toLowerCase();
+        if (lang === 'en') {
+          searchStatus.textContent = term
+            ? (visible === 1 ? '1 answer found' : visible + ' answers found')
+            : '28 answers organized by topic';
+        } else if (lang === 'es') {
+          searchStatus.textContent = term
+            ? (visible === 1 ? '1 respuesta encontrada' : visible + ' respuestas encontradas')
+            : '28 respuestas organizadas por tema';
+        } else {
+          searchStatus.textContent = term
+            ? (visible === 1 ? '1 resposta encontrada' : visible + ' respostas encontradas')
+            : '28 respostas organizadas por tema';
+        }
       }
     }
 
