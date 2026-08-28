@@ -6,59 +6,22 @@
   FIRST VIEWPORT: título + rota à esquerda; valor e começo do cadastro à direita.
   FORM: formulário em etapas, hierarquia editorial, estados de erro e espera visíveis.
 -->
-<html lang="pt-BR" class="no-js">
+<html lang="en" class="no-js">
 
 <head>
   <meta charset="UTF-8">
   <script>document.documentElement.classList.replace('no-js', 'js');</script>
-  <!-- Detecção de Idioma do Navegador e Redirecionamento Inteligente -->
-  <script>
-    (function () {
-      try {
-        var params = new URLSearchParams(window.location.search);
-        if (params.get('lang') === 'pt' || params.get('noredirect') === '1') {
-          localStorage.setItem('kob_lang_pref', 'pt');
-          return;
-        }
-        var savedPref = localStorage.getItem('kob_lang_pref');
-        if (savedPref === 'pt') return;
-        var isBusSubdomain = /^(busao|onibus)\./i.test(window.location.hostname);
-        var isLocal = /^(localhost|127\.0\.0\.1)/i.test(window.location.hostname);
-        var targetEn = isBusSubdomain ? '/en/' : (isLocal ? '/en/onibus.html' : 'https://busao.kriativosonboard.com.br/en/');
-        var targetEs = isBusSubdomain ? '/es/' : (isLocal ? '/es/onibus.html' : 'https://busao.kriativosonboard.com.br/es/');
-        if (savedPref === 'en') {
-          window.location.replace(targetEn + window.location.search + window.location.hash);
-          return;
-        }
-        if (savedPref === 'es') {
-          window.location.replace(targetEs + window.location.search + window.location.hash);
-          return;
-        }
-        var isBot = /bot|googlebot|crawler|spider|robot|crawling/i.test(navigator.userAgent || '');
-        if (isBot) return;
-        var browserLang = (navigator.languages && navigator.languages[0]) || navigator.language || '';
-        browserLang = browserLang.toLowerCase();
-        if (browserLang.startsWith('en')) {
-          sessionStorage.setItem('kob_lang_pref', 'en');
-          window.location.replace(targetEn + window.location.search + window.location.hash);
-        } else if (browserLang.startsWith('es')) {
-          sessionStorage.setItem('kob_lang_pref', 'es');
-          window.location.replace(targetEs + window.location.search + window.location.hash);
-        }
-      } catch (e) {}
-    })();
-  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Busão Kriativo 2026 | Ônibus Fretado SP → Santos — Kriativos On Board (KOB)</title>
+  <title>Kriativo Shuttle 2026 | Official Charter Bus SP → Santos — Kriativos On Board (KOB)</title>
   <meta name="description"
-    content="Garanta seu assento no transporte fretado oficial do Kriativos On Board (KOB 2026). Ida e volta de São Paulo (Barra Funda - Rua Tagipuru, 552) ao Porto de Santos com segurança via Pix.">
+    content="Book your seat on the official charter bus for Kriativos On Board (KOB 2026). Round trip from São Paulo (Barra Funda) to Santos Harbor with security via Pix.">
   <meta name="robots" content="index, follow">
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "Service",
-      "name": "Busão Kriativo — Transporte Fretado Oficial KOB 2026",
-      "serviceType": "Transporte Rodoviário Fretado",
+      "name": "Kriativo Shuttle — Official Charter Bus KOB 2026",
+      "serviceType": "Charter Passenger Road Transport",
       "provider": {
         "@type": "Organization",
         "name": "Kriativos On Board (KOB)",
@@ -68,35 +31,35 @@
         "@type": "City",
         "name": "São Paulo"
       },
-      "description": "Transporte rodoviário executivo ida e volta de São Paulo (Barra Funda - Rua Tagipuru, 552) ao Porto de Santos para os passageiros do cruzeiro Kriativos On Board 2026."
+      "description": "Executive round-trip charter road transportation from São Paulo (Barra Funda) to Santos Harbor for Kriativos On Board 2026 cruise passengers."
     }
   </script>
   <meta name="theme-color" content="#041d3a">
-  <meta http-equiv="content-language" content="pt-BR">
-  <link rel="canonical" href="https://busao.kriativosonboard.com.br/">
+  <meta http-equiv="content-language" content="en">
+  <link rel="canonical" href="https://busao.kriativosonboard.com.br/en/">
   <link rel="alternate" hreflang="pt-BR" href="https://busao.kriativosonboard.com.br/">
   <link rel="alternate" hreflang="en" href="https://busao.kriativosonboard.com.br/en/">
   <link rel="alternate" hreflang="es" href="https://busao.kriativosonboard.com.br/es/">
   <link rel="alternate" hreflang="x-default" href="https://busao.kriativosonboard.com.br/">
   <meta property="og:type" content="website">
-  <meta property="og:locale" content="pt_BR">
-  <meta property="og:locale:alternate" content="en_US">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:locale:alternate" content="pt_BR">
   <meta property="og:locale:alternate" content="es_ES">
   <meta property="og:site_name" content="KOB — Kriativos On Board">
-  <meta property="og:title" content="Busão Kriativo 2026 | Ônibus Fretado SP → Santos — KOB">
+  <meta property="og:title" content="Kriativo Shuttle 2026 | Official Charter Bus SP → Santos — KOB">
   <meta property="og:description"
-    content="Garanta seu assento no transporte fretado oficial do Kriativos On Board (KOB 2026). Ida e volta de São Paulo ao Porto de Santos com segurança via Pix.">
-  <meta property="og:url" content="https://busao.kriativosonboard.com.br/">
+    content="Book your seat on the official charter bus for Kriativos On Board (KOB 2026). Round trip from São Paulo to Santos Harbor securely via Pix.">
+  <meta property="og:url" content="https://busao.kriativosonboard.com.br/en/">
   <meta property="og:image" content="https://busao.kriativosonboard.com.br/assets/images/transport/og-busao.jpg">
   <meta property="og:image:secure_url" content="https://busao.kriativosonboard.com.br/assets/images/transport/og-busao.jpg">
   <meta property="og:image:type" content="image/jpeg">
   <meta property="og:image:width" content="640">
   <meta property="og:image:height" content="640">
-  <meta property="og:image:alt" content="Ilustração do Busão Kriativo com os passageiros a caminho do Porto de Santos">
+  <meta property="og:image:alt" content="Official illustration of the Kriativos On Board charter bus heading to Santos Harbor">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Busão Kriativo 2026 | Ônibus Fretado SP → Santos — KOB">
+  <meta name="twitter:title" content="Kriativo Shuttle 2026 | Official Charter Bus SP → Santos — KOB">
   <meta name="twitter:description"
-    content="Garanta seu assento no transporte fretado oficial do Kriativos On Board (KOB 2026). Ida e volta de São Paulo ao Porto de Santos com segurança via Pix.">
+    content="Book your seat on the official charter bus for Kriativos On Board (KOB 2026). Round trip from São Paulo to Santos Harbor securely via Pix.">
   <meta name="twitter:image" content="https://busao.kriativosonboard.com.br/assets/images/transport/og-busao.jpg">
   <link rel="icon" href="/assets/images/brand/favicon-32.png" sizes="32x32">
   <link rel="apple-touch-icon" href="/assets/images/brand/apple-touch-icon.png">
@@ -114,23 +77,23 @@
 </head>
 
 <body class="bus-page">
-  <a class="skip-link" href="#main">Pular para o conteúdo</a>
+  <a class="skip-link" href="#main">Skip to content</a>
 
   <header class="bus-header">
-    <a href="https://kriativosonboard.com.br/" class="bus-header__brand"
-      aria-label="Kriativos On Board — Página principal do evento">
+    <a href="https://kriativosonboard.com.br/en/" class="bus-header__brand"
+      aria-label="Kriativos On Board — Main event page">
       <img src="/assets/images/brand/kriativos-on-board-logo.webp" alt="Kriativos On Board" width="2930" height="1796">
     </a>
     <div class="bus-header__right">
-      <nav class="lang-switch" aria-label="Idioma / Language / Idioma">
-        <span class="lang-switch__item is-active" aria-current="page">PT</span>
-        <a href="https://busao.kriativosonboard.com.br/en/" class="lang-switch__item" hreflang="en" lang="en">EN</a>
+      <nav class="lang-switch" aria-label="Language / Idioma">
+        <a href="https://busao.kriativosonboard.com.br/" class="lang-switch__item" hreflang="pt-BR" lang="pt-BR">PT</a>
+        <span class="lang-switch__item is-active" aria-current="page">EN</span>
         <a href="https://busao.kriativosonboard.com.br/es/" class="lang-switch__item" hreflang="es" lang="es">ES</a>
       </nav>
-      <a class="bus-header__main-link" href="https://kriativosonboard.com.br/"
-        aria-label="Acessar a página principal do evento Kriativos On Board">
-        <span class="bus-header__main-link-text">Página principal do evento</span>
-        <span class="bus-header__main-link-text-short">Site do evento</span>
+      <a class="bus-header__main-link" href="https://kriativosonboard.com.br/en/"
+        aria-label="Go to the main Kriativos On Board event page">
+        <span class="bus-header__main-link-text">Main event page</span>
+        <span class="bus-header__main-link-text-short">Event website</span>
         <svg class="bus-header__arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
           stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <line x1="7" y1="17" x2="17" y2="7"></line>
@@ -146,29 +109,33 @@
         <div class="bus-hero__copy">
           <div class="bus-hero__badge">
             <span class="bus-hero__badge-dot" aria-hidden="true"></span>
-            <span>TRANSPORTE OFICIAL DO EVENTO</span>
+            <span>OFFICIAL EVENT TRANSPORT</span>
           </div>
-          <h1 id="page-title">Busão exclusivo para o <span>Kriativos OnBoard 2026</span></h1>
-          <p class="bus-hero__lead">Faça a ida e a volta com a turma: embarque na Barra Funda, chegue ao Porto de Santos
-            e retorne com a gente depois do cruzeiro.</p>
+          <h1 id="page-title">Exclusive Shuttle for <span>Kriativos OnBoard 2026</span></h1>
+          <p class="bus-hero__lead">Travel round-trip with the group: depart from Barra Funda, arrive at Santos Harbor
+            and return with us after the cruise.</p>
 
-          <div class="bus-hero__fare-panel" id="heroFarePanel" aria-label="Tarifa do transporte">
+          <div class="bus-hero__fare-panel" id="heroFarePanel" aria-label="Transport fare">
             <div class="bus-hero__fare-main">
-              <span class="bus-hero__fare-label">Tarifa Oficial · Ida e Volta</span>
+              <span class="bus-hero__fare-label">Official Fare · Round Trip</span>
               <div class="bus-hero__fare-price-row">
                 <strong class="bus-hero__fare-price">R$ 120,00</strong>
-                <span class="bus-hero__fare-unit">/ pessoa pagante</span>
+                <span class="bus-hero__fare-unit">/ paying passenger</span>
+              </div>
+              <div class="bus-hero__currency-hint">
+                <span>Brazilian Reais (BRL)</span> ·
+                <span>1 USD ≈ <strong data-currency-rate="USD">R$ 5,45</strong> · 1 EUR ≈ <strong data-currency-rate="EUR">R$ 5,95</strong></span>
               </div>
             </div>
             <div class="bus-hero__fare-meta">
-              <p class="bus-hero__fare-child">Crianças de até 5 anos no colo não pagam.</p>
+              <p class="bus-hero__fare-child">Lap infants up to 5 years travel free.</p>
               <p class="bus-hero__fare-quorum">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                   stroke-linejoin="round" aria-hidden="true">
                   <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                   <path d="m9 12 2 2 4-4"></path>
                 </svg>
-                Reserva sujeita ao quórum mínimo
+                Booking subject to minimum quorum
               </p>
             </div>
           </div>
@@ -177,21 +144,21 @@
         <div class="bus-hero__visual" id="heroVisual">
           <div class="bus-hero__art-wrap">
             <img src="/assets/images/transport/kriativos-on-board-bus-hero.webp"
-              alt="Ilustração oficial do ônibus dos Kriativos On Board com passageiros viajando rumo ao Porto de Santos"
+              alt="Official illustration of the Kriativos On Board shuttle bus traveling to Santos Harbor"
               width="1024" height="660" fetchpriority="high" decoding="async">
             <div class="bus-hero__headlight-beam" aria-hidden="true"></div>
           </div>
 
           <div class="route-shuttle__route"
-            aria-label="Rota de ida e volta do ônibus fretado: São Paulo e Porto de Santos">
+            aria-label="Charter bus round-trip route: São Paulo and Santos Harbor">
             <span class="route-shuttle__trip-badge">
               <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path d="M5 8h12l-2.5-2.5M19 16H7l2.5 2.5"></path>
               </svg>
-              Ida e volta
+              Round trip
             </span>
             <span class="route-shuttle__stop">
-              <small>Embarque</small>
+              <small>Boarding</small>
               São Paulo
             </span>
             <span class="route-shuttle__track" aria-hidden="true">
@@ -211,8 +178,8 @@
               </span>
             </span>
             <span class="route-shuttle__stop route-shuttle__stop--arrival">
-              <small>Destino</small>
-              Porto de Santos
+              <small>Destination</small>
+              Santos Harbor
             </span>
           </div>
         </div>
@@ -222,10 +189,10 @@
     <section class="bus-intro" aria-labelledby="how-title">
       <div class="container">
         <div class="bus-section-heading">
-          <p class="eyebrow">Como reservar</p>
-          <h2 id="how-title">Seu caminho até a reserva.</h2>
-          <p>Você informa o contato principal, cadastra quem vai embarcar e gera o Pix. A confirmação chega
-            automaticamente depois que o pagamento for identificado.</p>
+          <p class="eyebrow">How to book</p>
+          <h2 id="how-title">Your steps to reservation.</h2>
+          <p>Enter the primary contact, register who will board, and generate the Pix payment. Confirmation arrives
+            automatically once payment is verified.</p>
         </div>
         <ol class="bus-flow">
           <li class="bus-flow__step">
@@ -237,8 +204,8 @@
                 <path d="M19 8v6M22 11h-6"></path>
               </svg>
             </span>
-            <strong>Contato</strong>
-            <p>Informe quem será o responsável pela reserva e pelo pagamento.</p>
+            <strong>Contact</strong>
+            <p>Enter the person responsible for the booking and payment.</p>
           </li>
           <li class="bus-flow__step">
             <span class="bus-flow__marker" aria-hidden="true">
@@ -249,8 +216,8 @@
                 <path d="M6 15h4"></path>
               </svg>
             </span>
-            <strong>Passageiros</strong>
-            <p>Escolha se vai sozinho ou adicione as pessoas que embarcarão com você.</p>
+            <strong>Passengers</strong>
+            <p>Choose solo travel or add the people boarding with you.</p>
           </li>
           <li class="bus-flow__step">
             <span class="bus-flow__marker" aria-hidden="true">
@@ -260,8 +227,8 @@
                 <path d="M8.5 11.8 12 15.3l9.2-9.2"></path>
               </svg>
             </span>
-            <strong>Revisão e Pix</strong>
-            <p>Confira o total, gere o Pix e aguarde a confirmação automática do pagamento.</p>
+            <strong>Review & Pix</strong>
+            <p>Check the total, generate the Pix code and await automatic confirmation.</p>
           </li>
         </ol>
       </div>
@@ -273,16 +240,16 @@
              pagamento → confirmação). O JS troca o conteúdo; estes valores são
              o estado inicial e o que aparece sem JS. -->
         <div class="bus-section-heading bus-section-heading--form" id="step-heading">
-          <p class="eyebrow" id="step-eyebrow">Cadastro dos passageiros</p>
-          <h2 id="form-title">Quem vai embarcar com você?</h2>
-          <p id="step-description">Comece pelo contato principal. Depois, informe o nome completo e o CPF de cada
-            pessoa do grupo, incluindo você.</p>
+          <p class="eyebrow" id="step-eyebrow">Passenger registration</p>
+          <h2 id="form-title">Who is boarding with you?</h2>
+          <p id="step-description">Start with the primary contact. Then enter the full name and CPF / ID of each
+            person in the group, including yourself.</p>
         </div>
 
         <div class="bus-checkout__grid">
           <div class="bus-form-column">
             <!-- Stepper / Indicador de Progresso do Wizard -->
-            <nav class="bus-stepper" aria-label="Progresso do cadastro" id="bus-stepper">
+            <nav class="bus-stepper" aria-label="Registration progress" id="bus-stepper">
               <div class="bus-stepper__track">
                 <div class="bus-stepper__bar" id="bus-stepper-bar"></div>
               </div>
@@ -296,7 +263,7 @@
                       <polyline points="20 6 9 17 4 12"></polyline>
                     </svg>
                   </span>
-                  <span class="bus-stepper__label">Contato</span>
+                  <span class="bus-stepper__label">Contact</span>
                 </li>
                 <li class="bus-stepper__item" data-step-target="2" id="step-tab-2">
                   <span class="bus-stepper__badge">
@@ -307,7 +274,7 @@
                       <polyline points="20 6 9 17 4 12"></polyline>
                     </svg>
                   </span>
-                  <span class="bus-stepper__label">Passageiros</span>
+                  <span class="bus-stepper__label">Passengers</span>
                 </li>
                 <li class="bus-stepper__item" data-step-target="3" id="step-tab-3">
                   <span class="bus-stepper__badge">
@@ -318,7 +285,7 @@
                       <polyline points="20 6 9 17 4 12"></polyline>
                     </svg>
                   </span>
-                  <span class="bus-stepper__label">Revisão</span>
+                  <span class="bus-stepper__label">Review</span>
                 </li>
               </ol>
             </nav>
@@ -327,26 +294,26 @@
               <!-- ETAPA 1: CONTATO PRINCIPAL -->
               <div class="bus-wizard-step is-active" data-wizard-step="1">
                 <fieldset class="bus-fieldset">
-                  <legend><span>01</span> Contato principal</legend>
-                  <p class="bus-fieldset__note">Esta pessoa será o contato do grupo com a organização e o responsável
-                    pelo pagamento. <strong>É obrigatório ter 18 anos ou mais.</strong>
+                  <legend><span>01</span> Primary contact</legend>
+                  <p class="bus-fieldset__note">This person will be the group’s main contact with organizers and responsible
+                    for payment. <strong>Must be 18 years of age or older.</strong>
                   </p>
                   <div class="bus-form__grid">
                     <div class="bus-field bus-field--wide">
-                      <label for="primary-name">Nome completo (contato principal) <b aria-hidden="true">*</b></label>
-                      <input id="primary-name" aria-label="Nome completo (contato principal)" name="primary_name"
+                      <label for="primary-name">Full name (primary contact) <b aria-hidden="true">*</b></label>
+                      <input id="primary-name" aria-label="Full name (primary contact)" name="primary_name"
                         type="text" autocomplete="name" minlength="3" required>
                     </div>
                     <div class="bus-field">
-                      <label for="primary-cpf">CPF <b aria-hidden="true">*</b></label>
-                      <input id="primary-cpf" aria-label="CPF do contato principal" name="primary_cpf" type="text"
+                      <label for="primary-cpf">CPF / ID <b aria-hidden="true">*</b></label>
+                      <input id="primary-cpf" aria-label="Primary contact CPF / ID" name="primary_cpf" type="text"
                         inputmode="numeric" autocomplete="off" maxlength="14" placeholder="000.000.000-00" required>
                     </div>
                     <div class="bus-field">
-                      <label for="primary-birth">Data de nascimento <b aria-hidden="true">*</b></label>
-                      <input id="primary-birth" aria-label="Data de nascimento do contato principal"
+                      <label for="primary-birth">Date of birth <b aria-hidden="true">*</b></label>
+                      <input id="primary-birth" aria-label="Primary contact date of birth"
                         name="primary_birth" type="text" inputmode="numeric" autocomplete="bday" maxlength="10"
-                        placeholder="DD/MM/AAAA" required>
+                        placeholder="DD/MM/YYYY" required>
                     </div>
                     <div class="bus-field">
                       <label for="primary-whatsapp">WhatsApp <b aria-hidden="true">*</b></label>
@@ -362,7 +329,7 @@
                 </fieldset>
                 <div class="bus-wizard__nav">
                   <button type="button" class="btn btn--primary btn--lg bus-wizard__btn-next" data-action="next-step">
-                    Continuar: Grupo e passageiros <span aria-hidden="true">→</span>
+                    Continue: Group and passengers <span aria-hidden="true">→</span>
                   </button>
                 </div>
               </div>
@@ -370,9 +337,9 @@
               <!-- ETAPA 2: GRUPO & PASSAGEIROS -->
               <div class="bus-wizard-step" data-wizard-step="2" hidden>
                 <fieldset class="bus-fieldset">
-                  <legend><span>02</span> Grupo e passageiros</legend>
-                  <p class="bus-fieldset__note" id="group-step-note">Indique se você viajará sozinho(a) ou adicione os
-                    membros do seu grupo.</p>
+                  <legend><span>02</span> Group and passengers</legend>
+                  <p class="bus-fieldset__note" id="group-step-note">Indicate whether you are traveling solo or add
+                    members of your group.</p>
 
                   <!-- Visão Principal da Etapa 2 -->
                   <div id="group-main-view">
@@ -381,14 +348,14 @@
                       <div class="bus-passenger bus-passenger--primary-summary" id="primary-summary-card">
                         <div class="bus-passenger__header">
                           <div class="bus-passenger__header-title">
-                            <span class="bus-passenger__header-num">PASSAGEIRO 1</span>
+                            <span class="bus-passenger__header-num">PASSENGER 1</span>
                             <span class="bus-passenger__pipe">|</span>
-                            <span class="bus-passenger__category">CONTATO PRINCIPAL</span>
+                            <span class="bus-passenger__category">PRIMARY CONTACT</span>
                           </div>
                         </div>
                         <div class="bus-passenger__added-details" id="primary-summary-details">
-                          <span id="primary-summary-name-wrap">Nome: <strong id="primary-summary-name">—</strong></span>
-                          <span id="primary-summary-cpf-wrap">CPF: <strong id="primary-summary-cpf">—</strong></span>
+                          <span id="primary-summary-name-wrap">Name: <strong id="primary-summary-name">—</strong></span>
+                          <span id="primary-summary-cpf-wrap">CPF / ID: <strong id="primary-summary-cpf">—</strong></span>
                           <span id="primary-summary-wa-wrap" hidden>WhatsApp: <strong
                               id="primary-summary-whatsapp">—</strong></span>
                           <span id="primary-summary-email-wrap" hidden>E-mail: <strong
@@ -403,13 +370,13 @@
                       <label class="bus-solo-checkbox" for="solo-traveler">
                         <input type="checkbox" id="solo-traveler" name="solo_traveler">
                         <div class="bus-solo-checkbox__content">
-                          <strong>Vou Sozinho(a)</strong>
-                          <span>Apenas você embarcará nesta reserva</span>
+                          <strong>Traveling Solo</strong>
+                          <span>Only you will board on this reservation</span>
                         </div>
                       </label>
 
                       <div class="bus-group-divider">
-                        <span>ou</span>
+                        <span>or</span>
                       </div>
 
                       <button type="button" id="btn-open-add-passenger"
@@ -419,17 +386,17 @@
                           <line x1="12" y1="5" x2="12" y2="19"></line>
                           <line x1="5" y1="12" x2="19" y2="12"></line>
                         </svg>
-                        Adicionar Pessoas ao Grupo
+                        Add People to Group
                       </button>
                     </div>
 
                     <div class="bus-wizard__nav bus-wizard__nav--split" id="group-main-nav">
                       <button type="button" class="btn btn--ghost bus-wizard__btn-back" data-action="prev-step">
-                        <span aria-hidden="true">←</span> Voltar ao contato
+                        <span aria-hidden="true">←</span> Back to contact
                       </button>
                       <button type="button" class="btn btn--primary btn--lg bus-wizard__btn-next"
                         data-action="next-step" id="btn-group-next">
-                        Continuar para revisão <span aria-hidden="true">→</span>
+                        Continue to review <span aria-hidden="true">→</span>
                       </button>
                     </div>
                   </div>
@@ -437,28 +404,28 @@
                   <!-- Painel do Mini Multi-step de Adição de Passageiro -->
                   <div id="add-passenger-panel" class="bus-substep-panel" hidden>
                     <div class="bus-substep-panel__header">
-                      <h3 class="bus-substep-panel__title" id="add-passenger-title">Adicionar pessoa ao grupo</h3>
+                      <h3 class="bus-substep-panel__title" id="add-passenger-title">Add person to group</h3>
                       <button type="button" class="btn btn--ghost bus-substep-panel__btn-cancel"
-                        id="btn-cancel-add-passenger">Cancelar</button>
+                        id="btn-cancel-add-passenger">Cancel</button>
                     </div>
 
                     <!-- Sub-passo 1: Faixa Etária -->
                     <div class="bus-substep" id="substep-age" data-substep="1">
                       <div class="bus-field">
-                        <label for="new-passenger-age">Selecione a faixa etária da pessoa <b
+                        <label for="new-passenger-age">Select age group <b
                             aria-hidden="true">*</b></label>
                         <select id="new-passenger-age" required>
-                          <option value="" disabled selected hidden>Selecione a faixa etária...</option>
-                          <option value="child">0 a 5 anos (Criança de colo · Cortesia)</option>
-                          <option value="minor">6 a 17 anos (Menor pagante)</option>
-                          <option value="adult">18 anos ou mais (Adulto pagante)</option>
+                          <option value="" disabled selected hidden>Select age group...</option>
+                          <option value="child">0 to 5 years (Lap infant · Free)</option>
+                          <option value="minor">6 to 17 years (Paying minor)</option>
+                          <option value="adult">18 years or older (Paying adult)</option>
                         </select>
-                        <small id="substep-age-hint" class="bus-field__hint">Crianças de 0 a 5 anos viajam no colo de um
-                          adulto pagante (máximo de 1 por adulto). Cortesia.</small>
+                        <small id="substep-age-hint" class="bus-field__hint">Children aged 0 to 5 travel on the lap of a paying
+                          adult (maximum 1 per adult). Free courtesy.</small>
                       </div>
                       <div id="substep-age-alert" class="bus-form__alert" hidden></div>
                       <div class="bus-substep__nav">
-                        <button type="button" class="btn btn--primary" id="btn-substep-age-next">Continuar <span
+                        <button type="button" class="btn btn--primary" id="btn-substep-age-next">Continue <span
                             aria-hidden="true">→</span></button>
                       </div>
                     </div>
@@ -467,32 +434,31 @@
                     <div class="bus-substep" id="substep-fields" data-substep="2" hidden>
                       <div class="bus-form__grid" id="new-passenger-form-grid">
                         <div class="bus-field bus-field--wide">
-                          <label for="new-p-name">Nome completo <b aria-hidden="true">*</b></label>
+                          <label for="new-p-name">Full name <b aria-hidden="true">*</b></label>
                           <input id="new-p-name" type="text" autocomplete="off" minlength="3"
-                            placeholder="Nome e sobrenome" required>
+                            placeholder="First and last name" required>
                         </div>
                         <div class="bus-field bus-field--wide">
-                          <label for="new-p-cpf">CPF <b aria-hidden="true">*</b></label>
+                          <label for="new-p-cpf">CPF / ID <b aria-hidden="true">*</b></label>
                           <input id="new-p-cpf" type="text" inputmode="numeric" autocomplete="off" maxlength="14"
                             placeholder="000.000.000-00" required>
-                          <small class="bus-field__hint">O CPF é obrigatório para emissão da apólice de seguro e lista
-                            de embarque.</small>
+                          <small class="bus-field__hint">CPF / ID is required for travel insurance policy and boarding list.</small>
                         </div>
                         <div class="bus-field" id="new-p-wa-wrapper">
-                          <label for="new-p-whatsapp">WhatsApp <small>(opcional)</small></label>
+                          <label for="new-p-whatsapp">WhatsApp <small>(optional)</small></label>
                           <input id="new-p-whatsapp" type="tel" inputmode="tel" autocomplete="off" maxlength="17"
                             placeholder="(11) 90000-0000">
                         </div>
                         <div class="bus-field" id="new-p-email-wrapper">
-                          <label for="new-p-email">E-mail <small>(opcional)</small></label>
+                          <label for="new-p-email">E-mail <small>(optional)</small></label>
                           <input id="new-p-email" type="email" autocomplete="off" placeholder="exemplo@email.com">
                         </div>
                       </div>
                       <div id="substep-fields-alert" class="bus-form__alert" hidden></div>
                       <div class="bus-substep__nav bus-substep__nav--split">
                         <button type="button" class="btn btn--ghost" id="btn-substep-fields-back"><span
-                            aria-hidden="true">←</span> Voltar</button>
-                        <button type="button" class="btn btn--primary" id="btn-substep-fields-next">Revisar dados <span
+                            aria-hidden="true">←</span> Back</button>
+                        <button type="button" class="btn btn--primary" id="btn-substep-fields-next">Review details <span
                             aria-hidden="true">→</span></button>
                       </div>
                     </div>
@@ -500,18 +466,18 @@
                     <!-- Sub-passo 3: Revisão e Confirmação da Pessoa -->
                     <div class="bus-substep" id="substep-confirm" data-substep="3" hidden>
                       <div class="bus-person-review">
-                        <h4 class="bus-person-review__title">Confira os dados preenchidos</h4>
+                        <h4 class="bus-person-review__title">Check entered details</h4>
                         <dl class="bus-person-review__dl">
                           <div>
-                            <dt>Faixa etária:</dt>
+                            <dt>Age group:</dt>
                             <dd id="review-person-age">—</dd>
                           </div>
                           <div>
-                            <dt>Nome completo:</dt>
+                            <dt>Full name:</dt>
                             <dd id="review-person-name">—</dd>
                           </div>
                           <div>
-                            <dt>CPF:</dt>
+                            <dt>CPF / ID:</dt>
                             <dd id="review-person-cpf">—</dd>
                           </div>
                           <div id="review-person-wa-row">
@@ -525,10 +491,10 @@
                         </dl>
                       </div>
                       <div class="bus-substep__nav bus-substep__nav--split">
-                        <button type="button" class="btn btn--ghost" id="btn-substep-confirm-edit">Editar
-                          dados</button>
-                        <button type="button" class="btn btn--primary" id="btn-substep-confirm-save">✓ Confirmar e
-                          adicionar</button>
+                        <button type="button" class="btn btn--ghost" id="btn-substep-confirm-edit">Edit
+                          details</button>
+                        <button type="button" class="btn btn--primary" id="btn-substep-confirm-save">✓ Confirm and
+                          add</button>
                       </div>
                     </div>
                   </div>
@@ -538,21 +504,21 @@
               <!-- ETAPA 3: REVISÃO E CONFIRMAÇÃO -->
               <div class="bus-wizard-step" data-wizard-step="3" hidden>
                 <fieldset class="bus-fieldset">
-                  <legend><span>03</span> Revisão do pedido</legend>
-                  <p class="bus-fieldset__note">Confira todos os detalhes antes de gerar o código Pix para pagamento.
+                  <legend><span>03</span> Order review</legend>
+                  <p class="bus-fieldset__note">Review all details before generating the Pix payment code.
                   </p>
 
                   <div class="bus-review-card">
                     <div class="bus-review-card__section bus-review-card__section--trip">
                       <div class="bus-review-card__header-row">
-                        <h3 class="bus-review-card__title">Resumo da viagem</h3>
-                        <span class="bus-review-card__badge-tag">Ida e Volta</span>
+                        <h3 class="bus-review-card__title">Trip summary</h3>
+                        <span class="bus-review-card__badge-tag">Round Trip</span>
                       </div>
 
                       <!-- Trajeto / Rotas -->
                       <div class="bus-review-trip">
                         <div class="bus-review-trip__leg">
-                          <span class="bus-review-trip__pill bus-review-trip__pill--ida">IDA</span>
+                          <span class="bus-review-trip__pill bus-review-trip__pill--ida">OUTBOUND</span>
                           <div class="bus-review-trip__route">
                             <span class="bus-review-trip__origin">Barra Funda (SP)</span>
                             <svg class="bus-review-trip__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -560,14 +526,14 @@
                               <line x1="5" y1="12" x2="19" y2="12"></line>
                               <polyline points="12 5 19 12 12 19"></polyline>
                             </svg>
-                            <span class="bus-review-trip__dest">Porto de Santos (Concais)</span>
+                            <span class="bus-review-trip__dest">Santos Harbor (Concais)</span>
                           </div>
                         </div>
 
                         <div class="bus-review-trip__leg">
-                          <span class="bus-review-trip__pill bus-review-trip__pill--volta">VOLTA</span>
+                          <span class="bus-review-trip__pill bus-review-trip__pill--volta">RETURN</span>
                           <div class="bus-review-trip__route">
-                            <span class="bus-review-trip__origin">Porto de Santos (Concais)</span>
+                            <span class="bus-review-trip__origin">Santos Harbor (Concais)</span>
                             <svg class="bus-review-trip__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                               stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                               <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -589,12 +555,11 @@
                             </svg>
                           </div>
                           <div class="bus-review-info-box__body">
-                            <span class="bus-review-info-box__label">Ponto de Encontro</span>
+                            <span class="bus-review-info-box__label">Meeting Point</span>
                             <strong class="bus-review-info-box__main">Rua Tagipuru, nº 552</strong>
-                            <span class="bus-review-info-box__sub">Barra Funda · São Paulo (atrás do Memorial da América
-                              Latina)</span>
+                            <span class="bus-review-info-box__sub">Barra Funda · São Paulo (behind Memorial da América Latina)</span>
                             <button class="bus-review-map-btn" id="meetingMapOpen" type="button" aria-haspopup="dialog">
-                              <span>Ver mapa</span>
+                              <span>View map</span>
                               <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                                 <path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Z"></path>
                                 <path d="M9 3v15M15 6v15"></path>
@@ -612,14 +577,14 @@
                             </svg>
                           </div>
                           <div class="bus-review-info-box__body">
-                            <span class="bus-review-info-box__label">Horários de Embarque</span>
+                            <span class="bus-review-info-box__label">Boarding Times</span>
                             <div class="bus-review-info-box__times">
-                              <span>Encontro: <strong>06:00</strong></span>
+                              <span>Meeting: <strong>06:00</strong></span>
                               <span class="bus-review-info-box__times-sep" aria-hidden="true">·</span>
-                              <span>Saída prevista: <strong>06:30</strong></span>
+                              <span>Departure: <strong>06:30</strong></span>
                             </div>
-                            <span class="bus-review-info-box__sub bus-review-info-box__sub--warn">Chegue às 06:00 ·
-                              tolerância máxima de 10 minutos</span>
+                            <span class="bus-review-info-box__sub bus-review-info-box__sub--warn">Arrive at 06:00 ·
+                              10-minute maximum grace period</span>
                           </div>
                         </div>
                       </div>
@@ -627,23 +592,23 @@
 
                     <div class="bus-review-card__section">
                       <div class="bus-review-card__header-row">
-                        <h3 class="bus-review-card__title">Passageiros Cadastrados</h3>
+                        <h3 class="bus-review-card__title">Registered Passengers</h3>
                       </div>
                       <ul class="bus-review-card__list" id="review-passengers-list"></ul>
                     </div>
 
                     <div class="bus-review-card__section bus-review-card__section--pricing">
                       <div class="bus-review-card__price-row">
-                        <span>Passagens pagantes (<span id="review-paying-count">1</span>x R$ 120,00)</span>
+                        <span>Paying tickets (<span id="review-paying-count">1</span>x R$ 120,00)</span>
                         <strong id="review-paying-subtotal">R$ 120,00</strong>
                       </div>
                       <div class="bus-review-card__price-row bus-review-card__price-row--free" id="review-children-row"
                         hidden>
-                        <span>Crianças de colo (<span id="review-children-count">0</span>x Cortesia)</span>
-                        <strong class="text-free">Grátis</strong>
+                        <span>Lap infants (<span id="review-children-count">0</span>x Free)</span>
+                        <strong class="text-free">Free</strong>
                       </div>
                       <div class="bus-review-card__price-total">
-                        <span>Total a pagar via Pix</span>
+                        <span>Total to pay via Pix</span>
                         <span class="bus-review-card__total-val" id="review-total-amount">R$ 120,00</span>
                       </div>
                     </div>
@@ -651,20 +616,16 @@
 
                   <label class="bus-consent" for="bus-terms">
                     <input id="bus-terms" type="checkbox" required>
-                    <span>Li e concordo com os <a href="/termos-de-transporte.html" target="_blank" rel="noopener">Termos
-                        do Transporte</a> e com a <a href="/politica-de-privacidade.html" target="_blank"
-                        rel="noopener">Política de Privacidade</a> (LGPD). Declaro ser maior de 18 anos e, ao cadastrar
-                      menores de idade ou crianças de colo, declaro ser pai/mãe ou responsável legal autorizado a
-                      fornecer seus dados para a emissão do seguro de viagem e lista regulatória de embarque.</span>
+                    <span>I have read and agree to the <a href="/termos-de-transporte.html" target="_blank" rel="noopener">Terms of Transport</a> and the <a href="/politica-de-privacidade.html" target="_blank" rel="noopener">Privacy Policy</a> (LGPD). I declare that I am 18 years or older and authorized to provide group details for travel insurance and regulatory boarding lists.</span>
                   </label>
                 </fieldset>
 
                 <div class="bus-wizard__nav bus-wizard__nav--split">
                   <button type="button" class="btn btn--ghost bus-wizard__btn-back" data-action="prev-step">
-                    <span aria-hidden="true">←</span> Voltar e editar grupo
+                    <span aria-hidden="true">←</span> Back and edit group
                   </button>
                   <button class="btn btn--primary btn--lg bus-form__submit" type="submit">
-                    Gerar pagamento Pix <span aria-hidden="true">→</span>
+                    Generate Pix payment <span aria-hidden="true">→</span>
                   </button>
                 </div>
               </div>
@@ -674,11 +635,10 @@
 
             <section id="payment-panel" class="bus-payment-panel" hidden aria-labelledby="payment-title">
               <div class="bus-payment-panel__header">
-                <p class="eyebrow">Cadastro recebido</p>
-                <h2 id="payment-title">Pague para confirmar sua reserva.</h2>
-                <p>O pedido está <strong>aguardando pagamento</strong>. Depois de concluir o Pix, permaneça nesta
-                  página:
-                  o Mercado Pago identifica a transferência e atualiza o status automaticamente.</p>
+                <p class="eyebrow">Registration received</p>
+                <h2 id="payment-title">Pay to confirm your booking.</h2>
+                <p>The order is <strong>awaiting payment</strong>. After completing the Pix transfer, please stay on this
+                  page: Mercado Pago will recognize the payment and update the status automatically.</p>
               </div>
 
               <div class="bus-payment-panel__notice" role="note">
@@ -695,9 +655,9 @@
                   </span>
                 </div>
                 <div class="bus-payment-panel__notice-content">
-                  <strong class="bus-payment-panel__notice-title">Após pagar no app do seu banco:</strong>
-                  <p class="bus-payment-panel__notice-desc">Depois de pagar, aguarde <strong>até 1 minuto</strong>.
-                    A confirmação é automática e aparecerá nesta página assim que o pagamento for identificado.
+                  <strong class="bus-payment-panel__notice-title">After paying in your banking app:</strong>
+                  <p class="bus-payment-panel__notice-desc">After paying, please wait <strong>up to 1 minute</strong>.
+                    Confirmation is automatic and will display on this page as soon as payment is recognized.
                   </p>
                 </div>
               </div>
@@ -707,26 +667,25 @@
                   <!-- Rótulo paralelo ao "Pix Copia e Cola" da coluna vizinha: são
                      dois caminhos equivalentes para o mesmo pagamento, e sem esse
                      par as colunas começavam 47px desalinhadas (medido). -->
-                  <p class="bus-payment-panel__way-label">Pix por QR Code</p>
+                  <p class="bus-payment-panel__way-label">Pix via QR Code</p>
                   <img id="pix-qr" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
                     alt="QR Code para pagamento Pix" width="280" height="280">
-                  <span>Abra o app do seu banco e escaneie o código.</span>
+                  <span>Open your banking app and scan the code.</span>
                 </div>
                 <div class="bus-payment-panel__copy">
-                  <label for="pix-copy-code">Pix Copia e Cola</label>
+                  <label for="pix-copy-code">Pix Copy and Paste</label>
                   <textarea id="pix-copy-code" rows="5" readonly spellcheck="false"></textarea>
-                  <button id="copy-pix" class="btn btn--ghost" type="button">Copiar código <span
+                  <button id="copy-pix" class="btn btn--ghost" type="button">Copy code <span
                       aria-hidden="true">⧉</span></button>
                   <a id="pix-ticket-link" class="bus-payment-panel__ticket" href="#" target="_blank" rel="noopener"
-                    hidden>Ou abrir instruções do Mercado Pago ↗</a>
-                  <p id="pix-expiry" class="bus-payment-panel__expiry" role="timer" aria-live="off" hidden>Tempo para
-                    concluir: <strong id="pix-expiry-countdown">10:00</strong></p>
-                  <p id="payment-status" class="bus-payment-panel__status" role="status" aria-live="polite">Aguardando
-                    pagamento. Depois de pagar, aguarde a confirmação nesta página.</p>
+                    hidden>Or open Mercado Pago instructions ↗</a>
+                  <p id="pix-expiry" class="bus-payment-panel__expiry" role="timer" aria-live="off" hidden>Time to
+                    complete: <strong id="pix-expiry-countdown">10:00</strong></p>
+                  <p id="payment-status" class="bus-payment-panel__status" role="status" aria-live="polite">Awaiting payment. After paying, please wait on this page for confirmation.</p>
                 </div>
               </div>
-              <p class="bus-payment-panel__footnote">A confirmação automática depende do Mercado Pago. Se precisar de
-                ajuda, fale com a organização pelo WhatsApp do evento.</p>
+              <p class="bus-payment-panel__footnote">Automatic confirmation is handled via Mercado Pago. If you need
+                assistance, reach out to organizers on the event WhatsApp.</p>
             </section>
 
             <!-- Substitui o painel de pagamento quando a vaga é confirmada. O
@@ -741,32 +700,32 @@
                 </svg>
               </div>
 
-              <p class="eyebrow">Reserva confirmada</p>
-              <h2 id="confirmed-title">Pagamento confirmado. Sua reserva está registrada.</h2>
-              <p class="bus-confirmed__lead">Recebemos seu pagamento e registramos sua reserva no ônibus fretado.
-                Se o quórum mínimo não for atingido, a organização devolverá integralmente o valor pago.
+              <p class="eyebrow">Booking confirmed</p>
+              <h2 id="confirmed-title">Payment confirmed. Your booking is registered.</h2>
+              <p class="bus-confirmed__lead">We received your payment and registered your seat on the charter shuttle.
+                If minimum quorum is not met, the organization will issue a 100% full refund.
               </p>
 
               <dl class="bus-confirmed__facts">
                 <div>
-                  <dt>Rota</dt>
-                  <dd>Barra Funda <span aria-hidden="true">↔</span> Porto de Santos</dd>
+                  <dt>Route</dt>
+                  <dd>Barra Funda <span aria-hidden="true">↔</span> Santos Harbor</dd>
                 </div>
                 <div>
-                  <dt>Encontro</dt>
+                  <dt>Meeting</dt>
                   <dd>06:00 · Barra Funda</dd>
                 </div>
                 <div>
-                  <dt>Valor pago</dt>
+                  <dt>Amount paid</dt>
                   <dd id="confirmed-amount">—</dd>
                 </div>
                 <div>
-                  <dt>Código da reserva</dt>
+                  <dt>Booking code</dt>
                   <dd><code id="confirmed-code">—</code></dd>
                 </div>
                 <!-- Só no comprovante impresso: um documento precisa de data. -->
                 <div class="bus-confirmed__printonly">
-                  <dt>Emitido em</dt>
+                  <dt>Issued on</dt>
                   <dd id="confirmed-issued">—</dd>
                 </div>
                 <!-- Identificador da transação no Mercado Pago. Serve para a
@@ -774,7 +733,7 @@
                    é o que o suporte deles pede. Só no impresso: na tela ele
                    competiria com o código curto da reserva. -->
                 <div class="bus-confirmed__printonly">
-                  <dt>Transação (Mercado Pago)</dt>
+                  <dt>Transaction (Mercado Pago)</dt>
                   <dd><code id="confirmed-order">—</code></dd>
                 </div>
               </dl>
@@ -788,8 +747,7 @@
                     </div>
                   </div>
                 </div>
-                <p class="bus-confirmed__group-text">Entre no grupo oficial do WhatsApp do fretado para receber
-                  informações em tempo real sobre a viagem:</p>
+                <p class="bus-confirmed__group-text">Join the official charter bus WhatsApp group for real-time travel updates:</p>
                 <div class="bus-confirmed__group-action-row">
                   <a class="bus-confirmed__wa-btn"
                     href="https://chat.whatsapp.com/LAWcvbwe3Oh1PMvnS9XYUX" target="_blank"
@@ -799,9 +757,9 @@
                         d="M20.5 3.5A11.8 11.8 0 0 0 12.1 0C5.6 0 .3 5.3.3 11.8c0 2.1.5 4.1 1.6 5.9L0 24l6.4-1.7a11.9 11.9 0 0 0 5.7 1.5h.1c6.5 0 11.8-5.3 11.8-11.9 0-3.2-1.2-6.1-3.5-8.4ZM12.1 21.9h-.1a9.8 9.8 0 0 1-5-1.4l-.4-.2-3.8 1 1-3.7-.2-.4a9.8 9.8 0 0 1-1.5-5.3c0-5.4 4.4-9.8 9.9-9.8 2.6 0 5.1 1 7 2.9a9.8 9.8 0 0 1 2.9 7c0 5.4-4.4 9.9-9.8 9.9Zm5.4-7.4c-.3-.1-1.8-.9-2.1-1-.3-.1-.5-.1-.7.2-.2.3-.8 1-1 1.2-.2.2-.4.2-.7.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.3Z">
                       </path>
                     </svg>
-                    <span>Entrar no Grupo Oficial do Fretado</span>
+                    <span>Join Official Shuttle WhatsApp Group</span>
                   </a>
-                  <span class="bus-confirmed__group-hint">Exclusivo para passageiros confirmados</span>
+                  <span class="bus-confirmed__group-hint">Exclusive for confirmed passengers</span>
                 </div>
               </div>
               <div class="bus-confirmed__manifest">
@@ -812,99 +770,87 @@
               <!-- Bloco legado preservado apenas para compatibilidade visual; a
                    confirmação atual usa os elementos acima e IDs únicos. -->
               <div class="bus-confirmed__legacy" hidden aria-hidden="true">
-                <h2 class="bus-confirmed__title" id="confirmed-legacy-title">Reserva Confirmada!</h2>
-                <p class="bus-confirmed__lead">Seu pagamento foi identificado e suas vagas estão garantidas.</p>
+                <h2 class="bus-confirmed__title" id="confirmed-legacy-title">Booking Confirmed!</h2>
+                <p class="bus-confirmed__lead">Your payment has been received and your seats are guaranteed.</p>
 
                 <div class="bus-confirmed__card">
-                  <div class="bus-confirmed__code-label">Código da Reserva</div>
+                  <div class="bus-confirmed__code-label">Booking Code</div>
                   <div class="bus-confirmed__code" id="confirmed-legacy-code">KOB-0000</div>
 
                   <div class="bus-confirmed__group-wrapper" id="confirmed-legacy-group-wrapper" hidden>
-                    <div class="bus-confirmed__group-label">Seu Grupo</div>
+                    <div class="bus-confirmed__group-label">Your Group</div>
                     <div class="bus-confirmed__group-name" id="confirmed-legacy-group-name"></div>
                   </div>
 
                   <div class="bus-confirmed__details">
                     <div class="bus-confirmed__detail">
-                      <span>Passageiros</span>
-                      <strong id="confirmed-passengers-count">1 pessoa</strong>
+                      <span>Passengers</span>
+                      <strong id="confirmed-passengers-count">1 person</strong>
                     </div>
                     <div class="bus-confirmed__detail">
-                      <span>Total Pago</span>
+                      <span>Total Paid</span>
                       <strong id="confirmed-total-paid">R$ 120,00</strong>
                     </div>
                     <div class="bus-confirmed__detail">
                       <span>Status</span>
-                      <strong class="bus-badge bus-badge--paid">Pago</strong>
+                      <strong class="bus-badge bus-badge--paid">Paid</strong>
                     </div>
                   </div>
 
                   <div class="bus-confirmed__group-cta">
-                    <p class="bus-confirmed__group-text">Entre no grupo oficial do WhatsApp do fretado para receber
-                      informações em tempo real sobre a viagem:</p>
+                    <p class="bus-confirmed__group-text">Join the official shuttle WhatsApp group to receive real-time updates about the trip:</p>
                     <a class="btn btn--whatsapp bus-confirmed__whatsapp-btn" id="confirmed-whatsapp-btn" href="#"
                       target="_blank" rel="noopener noreferrer">
                       <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
                         <path
                           d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.888 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.456 5.711 1.456h.005c6.554 0 11.89-5.336 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
                       </svg>
-                      <span>Entrar no Grupo Oficial do Fretado</span>
+                      <span>Join Official Shuttle WhatsApp Group</span>
                     </a>
-                    <span class="bus-confirmed__group-hint">Exclusivo para passageiros confirmados</span>
+                    <span class="bus-confirmed__group-hint">Exclusive for confirmed passengers</span>
                   </div>
                 </div>
               </div>
 
               <div class="bus-confirmed__next">
-                <h3>O que acontece agora</h3>
+                <h3>What happens next</h3>
                 <ul>
-                  <li><strong>1. Comprovante da reserva:</strong> Guarde o PDF enviado para o seu e-mail. Ele vale como
-                    comprovante oficial e pode ser apresentado pelo celular no embarque.</li>
-                  <li><strong>2. Ponto de encontro e horários:</strong> Encontro às <strong>06h00</strong>, na Rua
-                    Tagipuru, altura do nº 552 – Barra Funda – SP (atrás do Memorial da América Latina).<br>
-                    A saída do ônibus será pontualmente às <strong>06h30</strong>, com tolerância máxima de 10 minutos
-                    (saída final às 06h40). Após esse horário limite, precisaremos seguir viagem e o ônibus não poderá
-                    aguardar passageiros atrasados.</li>
-                  <li><strong>3. Programe-se com antecedência:</strong> Chegue para estar no local às 06h00 para
-                    conferência da lista e acomodação de bagagens.</li>
-                  <li><strong>4. Assentos livres e integração:</strong> Os assentos não são exclusivos nem
-                    numerados. A ocupação é livre por ordem de chegada. Aproveite o trajeto para ir conhecendo os outros
-                    participantes e já começar a diversão! <em>(Válido para ida e volta; você não necessariamente
-                      retornará no mesmo assento em que foi).</em></li>
+                  <li><strong>1. Booking receipt:</strong> Keep the receipt sent to your email. It serves as official proof and can be presented on your phone at boarding.</li>
+                  <li><strong>2. Meeting point & schedule:</strong> Meet at <strong>06:00 AM</strong> at Rua Tagipuru, nº 552 – Barra Funda – SP (behind Memorial da América Latina).<br>The shuttle departs promptly at <strong>06:30 AM</strong>, with a 10-minute maximum grace period (final departure at 06:40 AM).</li>
+                  <li><strong>3. Plan ahead:</strong> Arrive at the meeting point at 06:00 AM for list verification and luggage loading.</li>
+                  <li><strong>4. Open seating & community:</strong> Seats are unassigned on a first-come, first-served basis. Use the trip to meet fellow attendees and kick off the fun! <em>(Valid for both legs).</em></li>
                 </ul>
               </div>
 
               <div class="bus-confirmed__actions">
-                <a class="btn btn--primary" href="https://kriativosonboard.com.br/">Página principal do evento</a>
-                <button id="print-confirmation" class="btn btn--ghost" type="button">Salvar comprovante <span
+                <a class="btn btn--primary" href="/en/">Event Main Page</a>
+                <button id="print-confirmation" class="btn btn--ghost" type="button">Save receipt <span
                     aria-hidden="true">↓</span></button>
               </div>
             </section>
 
             <!-- Modal de Confirmação para Remover Passageiro Adicional -->
             <dialog id="remove-passenger-dialog" class="bus-dialog" aria-labelledby="remove-dialog-title">
-              <h2 id="remove-dialog-title">Remover passageiro</h2>
-              <p id="remove-dialog-text">Tem certeza que deseja remover este passageiro do grupo?</p>
+              <h2 id="remove-dialog-title">Remove passenger</h2>
+              <p id="remove-dialog-text">Are you sure you want to remove this passenger from your group?</p>
               <div id="remove-dialog-warning" class="bus-dialog__warning" hidden></div>
               <div class="bus-dialog__actions">
-                <button id="btn-cancel-remove-passenger" class="btn btn--ghost" type="button">Cancelar</button>
-                <button id="btn-confirm-remove-passenger" class="btn btn--danger" type="button">Remover</button>
+                <button id="btn-cancel-remove-passenger" class="btn btn--ghost" type="button">Cancel</button>
+                <button id="btn-confirm-remove-passenger" class="btn btn--danger" type="button">Remove</button>
               </div>
             </dialog>
 
             <!-- Perguntado quando a janela de 10 minutos zera e o pagamento
                continua pendente. <dialog> nativo: foco preso e Esc de graça. -->
             <dialog id="still-here-dialog" class="bus-dialog" aria-labelledby="still-here-title">
-              <h2 id="still-here-title">Você ainda está aí?</h2>
-              <p>Ainda <strong>não identificamos seu pagamento</strong> e a vaga não está garantida até a transferência
-                ser confirmada.</p>
-              <p class="bus-dialog__hint">Se você já pagou, aguarde alguns instantes: a confirmação chega
-                automaticamente.
+              <h2 id="still-here-title">Are you still there?</h2>
+              <p>We have <strong>not yet recognized your payment</strong> and seats are only guaranteed once payment is confirmed.</p>
+              <p class="bus-dialog__hint">If you have already paid, please wait a moment: confirmation arrives automatically.
               </p>
               <div class="bus-dialog__actions">
-                <button id="still-here-continue" class="btn btn--primary" type="button" autofocus>Continuar
-                  pagamento</button>
-                <button id="still-here-cancel" class="btn btn--ghost" type="button">Cancelar transação</button>
+                <button id="still-here-continue" class="btn btn--primary" type="button" autofocus>Continue
+                  payment</button>
+                <button id="still-here-cancel" class="btn btn--ghost" type="button">Cancel transaction</button>
               </div>
             </dialog>
 
@@ -920,12 +866,12 @@
                     </svg>
                   </span>
                   <span>
-                    <b class="tour360__label" id="meetingMapTitle">Ponto de Encontro · Barra Funda</b>
+                    <b class="tour360__label" id="meetingMapTitle">Meeting Point · Barra Funda</b>
                     <small class="map-modal__address">Rua Tagipuru, 552 · Barra Funda, São Paulo - SP</small>
                   </span>
                 </div>
                 <button class="tour360__icon-btn tour360__close" id="meetingMapClose" type="button"
-                  aria-label="Fechar mapa do Ponto de Encontro">
+                  aria-label="Close Meeting Point map">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                     aria-hidden="true">
                     <path d="M6 6l12 12M18 6 6 18"></path>
@@ -937,33 +883,35 @@
                   <div class="tour360__spinner-dots"><span></span><span></span><span></span></div>
                 </div>
                 <iframe class="map-modal__frame" id="meetingMapFrame"
-                  title="Mapa do Ponto de Encontro - Rua Tagipuru, 552"
+                  title="Meeting Point Map - Rua Tagipuru, 552"
                   data-src="https://maps.google.com/maps?q=Rua+Tagipuru%2C+552+-+Barra+Funda%2C+S%C3%A3o+Paulo+-+SP&amp;t=&amp;z=16&amp;ie=UTF8&amp;iwloc=&amp;output=embed"
                   loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
               </div>
             </dialog>
           </div>
 
-          <aside class="bus-summary" aria-label="Resumo da reserva">
+          <aside class="bus-summary" aria-label="Reservation summary">
             <div class="bus-summary__pin" aria-hidden="true"></div>
-            <h2>Transporte oficial · ida e volta</h2>
+            <h2>Official shuttle · round trip</h2>
             <dl>
               <div>
-                <dt>Rota</dt>
-                <dd>Barra Funda ↔ Porto de Santos</dd>
+                <dt>Route</dt>
+                <dd>Barra Funda ↔ Santos Harbor</dd>
               </div>
               <div>
-                <dt>Passageiros</dt>
-                <dd id="bus-summary-count">1 passageiro</dd>
+                <dt>Passengers</dt>
+                <dd id="bus-summary-count">1 passenger</dd>
               </div>
               <div>
-                <dt>Pagantes</dt>
-                <dd id="bus-summary-paying">1 passageiro</dd>
+                <dt>Paying</dt>
+                <dd id="bus-summary-paying">1 passenger</dd>
               </div>
             </dl>
-            <div class="bus-summary__total"><span>Total do Pix</span><strong id="bus-total">R$ 120,00</strong></div>
-            <p class="bus-summary__warning"><span aria-hidden="true">!</span> O fretado só será contratado se o quórum
-              mínimo for atingido. Caso contrário, a organização devolverá integralmente o valor pago.</p>
+            <div class="bus-summary__total"><span>Pix Total</span><strong id="bus-total">R$ 120,00</strong></div>
+            <div class="bus-summary__currency-hint">
+              <span>BRL</span> · <span>1 USD ≈ <strong data-currency-rate="USD">R$ 5,45</strong> · 1 EUR ≈ <strong data-currency-rate="EUR">R$ 5,95</strong></span>
+            </div>
+            <p class="bus-summary__warning"><span aria-hidden="true">!</span> The shuttle will only run if minimum quorum is reached. Otherwise, the organization will issue a 100% full refund.</p>
           </aside>
         </div>
       </div>
@@ -972,9 +920,8 @@
     <section class="bus-reassurance" aria-labelledby="conditions-title">
       <div class="container bus-reassurance__inner">
         <div class="bus-reassurance__head">
-          <h2 id="conditions-title">Antes de pagar, entenda a contratação.</h2>
-          <p class="bus-reassurance__lead">O fretado depende de um quórum mínimo. Se a meta não for atingida, o valor
-            pago será devolvido integralmente.</p>
+          <h2 id="conditions-title">Before paying, understand the booking terms.</h2>
+          <p class="bus-reassurance__lead">The shuttle depends on a minimum quorum. If the target is not reached, 100% of the amount will be fully refunded.</p>
         </div>
         <div class="bus-reassurance__cards">
           <article class="bus-reassurance__card">
@@ -986,9 +933,8 @@
               </svg>
             </div>
             <div class="bus-reassurance__content">
-              <h3>Quórum mínimo e reembolso integral</h3>
-              <p>Se a meta mínima de passageiros para viabilizar o ônibus não for atingida, <strong>100% do valor pago
-                  via Pix será devolvido integralmente</strong> pela organização.</p>
+              <h3>Minimum quorum & full refund</h3>
+              <p>If the minimum passenger threshold is not met, <strong>100% of the amount paid via Pix will be fully refunded</strong> by the organization.</p>
             </div>
           </article>
 
@@ -1003,9 +949,8 @@
               </svg>
             </div>
             <div class="bus-reassurance__content">
-              <h3>Cancelamento e transferência de vaga</h3>
-              <p>Reembolso integral em até <strong>7 dias</strong> após o Pix (CDC). Após esse prazo, você pode
-                <strong>transferir sua vaga gratuitamente</strong> para outro amigo até 5 dias antes da viagem.
+              <h3>Cancellation & seat transfer</h3>
+              <p>Full refund within <strong>7 days</strong> of Pix payment (CDC). After that, you can <strong>transfer your seat for free</strong> to a friend up to 5 days before the trip.
               </p>
             </div>
           </article>
@@ -1023,11 +968,8 @@
               </svg>
             </div>
             <div class="bus-reassurance__content">
-              <h3>Transporte completo de ida e volta</h3>
-              <p>O transporte de ida e volta entre a Barra Funda e o Porto de Santos tem o valor de <strong>R$
-                  120,00</strong>, já com a bagagem inclusa. O ponto de encontro será na <strong>Rua Tagipuru,
-                  552</strong>, a partir das <strong>06:00 hrs</strong>, com saída programada pontualmente para as
-                <strong>06:30 hrs</strong> e tolerância máxima de 10 minutos.
+              <h3>Complete round-trip shuttle</h3>
+              <p>Round-trip transportation between Barra Funda and Santos Harbor is <strong>R$ 120,00</strong>, luggage included. Meeting point at <strong>Rua Tagipuru, 552</strong> starting at <strong>06:00 AM</strong>, departure at <strong>06:30 AM</strong> sharp with a 10-minute grace window.
               </p>
             </div>
           </article>
@@ -1039,17 +981,17 @@
   <footer class="bus-footer">
     <div class="bus-footer__inner">
       <div class="bus-footer__identity">
-        <a href="https://kriativosonboard.com.br/" class="bus-footer__brand"
-          aria-label="Página principal do evento Kriativos On Board">
+        <a href="https://kriativosonboard.com.br/en/" class="bus-footer__brand"
+          aria-label="Main Kriativos On Board event page">
           <img src="/assets/images/brand/kriativos-on-board-logo.webp" alt="Kriativos On Board" width="2930"
             height="1796">
         </a>
-        <p>Prepare-se para embarcar com a gente.</p>
+        <p>Get ready to board with us.</p>
       </div>
-      <nav class="bus-footer__nav" aria-label="Links rápidos">
-        <a href="/politica-de-cookies.html">Política de cookies</a>
-        <a href="/termos-de-transporte.html">Termos do transporte</a>
-        <a href="/politica-de-privacidade.html">Política de privacidade</a>
+      <nav class="bus-footer__nav" aria-label="Quick links">
+        <a href="/politica-de-cookies.html">Cookie policy</a>
+        <a href="/termos-de-transporte.html">Transport terms</a>
+        <a href="/politica-de-privacidade.html">Privacy policy</a>
       </nav>
     </div>
     <div class="bus-footer__powered">
@@ -1064,17 +1006,16 @@
     <div class="cookie-consent__surface">
       <div class="cookie-consent__summary">
         <div class="cookie-consent__copy">
-          <h2 id="cookie-consent-title" class="cookie-consent__title" tabindex="-1" data-cookie-title>Nós usamos cookies
+          <h2 id="cookie-consent-title" class="cookie-consent__title" tabindex="-1" data-cookie-title>We use cookies
           </h2>
-          <p id="cookie-consent-description" class="cookie-consent__description">Usamos apenas cookies necessários por
-            padrão. Você decide se quer permitir análise de navegação.</p>
-          <a class="cookie-consent__policy" href="/politica-de-cookies.html">Ler a política de cookies</a>
+          <p id="cookie-consent-description" class="cookie-consent__description">We only use necessary cookies by default. You choose whether to allow analytics.</p>
+          <a class="cookie-consent__policy" href="/politica-de-cookies.html">Read cookie policy</a>
         </div>
-        <div class="cookie-consent__actions" aria-label="Escolhas de cookies">
+        <div class="cookie-consent__actions" aria-label="Cookie choices">
           <button class="cookie-consent__button cookie-consent__button--essential" type="button"
-            data-cookie-action="deny">Rejeitar</button>
+            data-cookie-action="deny">Decline</button>
           <button class="cookie-consent__button cookie-consent__button--accept" type="button"
-            data-cookie-action="accept">Aceitar</button>
+            data-cookie-action="accept">Accept</button>
         </div>
       </div>
     </div>

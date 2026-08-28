@@ -239,8 +239,280 @@
     return String(value || '').trim().toLocaleLowerCase('pt-BR');
   }
 
+  var langAttr = (document.documentElement.lang || 'pt-BR').toLowerCase();
+  var langKey = langAttr.startsWith('es') ? 'es' : (langAttr.startsWith('en') ? 'en' : 'pt');
+
+  var I18N_BUS = {
+    pt: {
+      passenger: 'passageiro',
+      passengers: 'passageiros',
+      primaryContact: 'Contato Principal',
+      primaryContactUpper: 'CONTATO PRINCIPAL',
+      passengerUpper: 'PASSAGEIRO',
+      childAgeUpper: '0 A 5 ANOS',
+      minorAgeUpper: '6 A 17 ANOS',
+      adultAgeUpper: '18 ANOS OU MAIS',
+      notInformed: 'Não informado',
+      removePassengerTitle: 'Remover passageiro',
+      removePassengerConfirm: 'Tem certeza que deseja remover o passageiro <strong>{name}</strong> do grupo?',
+      removeAdultWarning: '<strong>Atenção:</strong> Ao remover este adulto, não haverá responsáveis suficientes para todas as crianças de colo (0 a 5 anos) no grupo. Remova primeiro uma das crianças de colo antes de remover este adulto.',
+      ageAlertChildLimit: '<strong>Atenção:</strong> Cada criança de 0 a 5 anos precisa viajar no colo de um adulto (18+). No momento, todas as vagas de colo já possuem responsável. Adicione primeiro mais um adulto (18+) ao grupo antes de adicionar outra criança de colo.',
+      ageAlertSelect: 'Selecione a faixa etária da pessoa para continuar.',
+      fieldAlertFullName: 'Informe o nome completo (nome e sobrenome).',
+      fieldAlertCpf: 'Informe um CPF válido.',
+      fieldAlertCpfPrimary: 'Este CPF já pertence ao contato principal da reserva.',
+      fieldAlertCpfDuplicate: 'Este CPF já foi adicionado a outro passageiro do grupo.',
+      fieldAlertWa: 'Informe um WhatsApp válido com DDD ou deixe o campo em branco.',
+      fieldAlertEmail: 'Informe um e-mail válido ou deixe o campo em branco.',
+      ageLabels: {
+        child: '0 a 5 anos (Criança de colo · Cortesia)',
+        minor: '6 a 17 anos (Menor pagante)',
+        adult: '18 anos ou mais (Adulto pagante)'
+      },
+      stepCopy: {
+        cadastro: {
+          eyebrow: 'Cadastro',
+          title: 'Quem vai embarcar com você?',
+          description: 'Comece pelo contato principal. Depois, informe o nome completo e o CPF de cada pessoa do grupo, incluindo você.'
+        },
+        pagamento: {
+          eyebrow: 'Pagamento · aguardando confirmação',
+          title: 'Pague para confirmar sua reserva',
+          description: 'Abra o app do seu banco e escaneie o QR Code, ou use o Pix Copia e Cola. Depois, aguarde a confirmação nesta página.'
+        },
+        confirmacao: {
+          eyebrow: 'Reserva confirmada',
+          title: 'Pagamento confirmado. Sua reserva está registrada.',
+          description: 'Sua reserva foi registrada. Guarde o código da reserva — é ele que identifica seu grupo no embarque.'
+        }
+      },
+      stepInfo: {
+        1: {
+          eyebrow: 'Etapa 1 de 3 · Contato',
+          title: 'Quem é o responsável pela reserva?',
+          description: 'Informe os dados de quem ficará responsável pela reserva e pelo pagamento. Essa pessoa deve ter 18 anos ou mais.'
+        },
+        2: {
+          eyebrow: 'Etapa 2 de 3 · Passageiros',
+          title: 'Quem vai embarcar com você?',
+          description: 'Marque que vai sozinho(a) ou adicione cada pessoa que embarcará com você.'
+        },
+        3: {
+          eyebrow: 'Etapa 3 de 3 · Revisão',
+          title: 'Revise os dados antes do Pix',
+          description: 'Confira a rota, os passageiros e o total. Depois, aceite os termos para gerar o Pix.'
+        }
+      },
+      validation: {
+        primaryName: 'Informe o nome completo do contato principal.',
+        primaryCpf: 'Informe um CPF válido para o contato principal.',
+        primaryBirth: 'Informe uma data de nascimento válida (DD/MM/AAAA) para o contato principal.',
+        primaryAge18: 'O contato principal / responsável financeiro deve ter 18 anos ou mais.',
+        primaryWa: 'Informe um WhatsApp válido com DDD.',
+        primaryEmail: 'Informe um e-mail válido.',
+        step2SoloOrGroup: 'Marque “Vou sozinho(a)” ou adicione pelo menos uma pessoa ao grupo para continuar.',
+        step3Terms: 'Leia e aceite as condições para continuar.',
+        submitting: 'Gerando seu Pix com segurança…',
+        submitErrorDefault: 'Não foi possível gerar o Pix. Tente novamente.'
+      },
+      pix: {
+        resuming: 'Retomando a consulta do pagamento…',
+        copiedSuccess: 'Código copiado! <span aria-hidden="true">✓</span>',
+        copiedStatus: 'Código Pix copiado. Agora é só colar no app do seu banco.',
+        copyManual: 'Selecione e copie o código Pix manualmente.',
+        inactivePayment: 'Este pagamento não está ativo. Fale com a organização antes de tentar uma nova reserva.',
+        statusUnavailable: 'Não conseguimos consultar o pagamento agora. Tentaremos novamente em instantes.',
+        awaiting: 'Aguardando pagamento. Depois de pagar, aguarde a confirmação nesta página.'
+      },
+      confirmation: {
+        dateLocale: 'pt-BR',
+        childTag: 'Criança de colo {num} (até 5 anos) · Cortesia',
+        childNote1: '+ 1 criança de até 5 anos, no colo de um responsável (sem cobrança).',
+        childNotePlural: '+ {count} crianças de até 5 anos, no colo de um responsável (sem cobrança).'
+      }
+    },
+    en: {
+      passenger: 'passenger',
+      passengers: 'passengers',
+      primaryContact: 'Primary Contact',
+      primaryContactUpper: 'PRIMARY CONTACT',
+      passengerUpper: 'PASSENGER',
+      childAgeUpper: '0 TO 5 YEARS',
+      minorAgeUpper: '6 TO 17 YEARS',
+      adultAgeUpper: '18 YEARS OR OLDER',
+      notInformed: 'Not provided',
+      removePassengerTitle: 'Remove passenger',
+      removePassengerConfirm: 'Are you sure you want to remove <strong>{name}</strong> from the group?',
+      removeAdultWarning: '<strong>Warning:</strong> Removing this adult leaves insufficient supervisors for lap infants (0-5 yrs). Please remove a lap infant first.',
+      ageAlertChildLimit: '<strong>Notice:</strong> Each child aged 0 to 5 travels on the lap of a paying adult (18+). All lap slots are currently occupied. Please add another adult (18+) first.',
+      ageAlertSelect: 'Please select an age group to proceed.',
+      fieldAlertFullName: 'Please enter the full name (first and last name).',
+      fieldAlertCpf: 'Please enter a valid CPF / ID number.',
+      fieldAlertCpfPrimary: 'This CPF / ID already belongs to the primary contact.',
+      fieldAlertCpfDuplicate: 'This CPF / ID has already been added to another passenger in your group.',
+      fieldAlertWa: 'Please enter a valid WhatsApp number with area code or leave it blank.',
+      fieldAlertEmail: 'Please enter a valid email address or leave it blank.',
+      ageLabels: {
+        child: '0 to 5 years (Lap infant · Free)',
+        minor: '6 to 17 years (Paying minor)',
+        adult: '18 years or older (Paying adult)'
+      },
+      stepCopy: {
+        cadastro: {
+          eyebrow: 'Registration',
+          title: 'Who is boarding with you?',
+          description: 'Start with the primary contact. Then enter the full name and CPF / ID of each group member, including yourself.'
+        },
+        pagamento: {
+          eyebrow: 'Payment · awaiting confirmation',
+          title: 'Pay to confirm your booking',
+          description: 'Open your banking app and scan the QR Code, or copy & paste the Pix code. Then wait on this page for confirmation.'
+        },
+        confirmacao: {
+          eyebrow: 'Booking confirmed',
+          title: 'Payment confirmed. Your booking is registered.',
+          description: 'Your booking has been registered. Keep your booking code — it identifies your group at boarding.'
+        }
+      },
+      stepInfo: {
+        1: {
+          eyebrow: 'Step 1 of 3 · Contact',
+          title: 'Who is responsible for the booking?',
+          description: 'Enter the details of the person managing the reservation and payment. Must be 18 or older.'
+        },
+        2: {
+          eyebrow: 'Step 2 of 3 · Passengers',
+          title: 'Who is boarding with you?',
+          description: 'Select solo travel or add each person joining your group.'
+        },
+        3: {
+          eyebrow: 'Step 3 of 3 · Review',
+          title: 'Review your details before payment',
+          description: 'Check route, passengers and total. Then accept the terms to generate Pix payment.'
+        }
+      },
+      validation: {
+        primaryName: 'Please enter the full name of the primary contact.',
+        primaryCpf: 'Please enter a valid CPF / ID for the primary contact.',
+        primaryBirth: 'Please enter a valid date of birth (DD/MM/YYYY) for the primary contact.',
+        primaryAge18: 'The primary contact must be 18 years of age or older.',
+        primaryWa: 'Please enter a valid WhatsApp number with area code.',
+        primaryEmail: 'Please enter a valid email address.',
+        step2SoloOrGroup: 'Check “Traveling solo” or add at least one person to your group to continue.',
+        step3Terms: 'Please read and accept the conditions to proceed.',
+        submitting: 'Generating your Pix payment securely…',
+        submitErrorDefault: 'Could not generate Pix payment. Please try again.'
+      },
+      pix: {
+        resuming: 'Resuming payment status check…',
+        copiedSuccess: 'Code copied! <span aria-hidden="true">✓</span>',
+        copiedStatus: 'Pix code copied. Now paste it into your banking app.',
+        copyManual: 'Please select and copy the Pix code manually.',
+        inactivePayment: 'This payment is no longer active. Please contact the organizers before trying a new booking.',
+        statusUnavailable: 'Could not check payment status right now. We will retry in a moment.',
+        awaiting: 'Awaiting payment. After paying, please wait on this page for automatic confirmation.'
+      },
+      confirmation: {
+        dateLocale: 'en-US',
+        childTag: 'Lap infant {num} (up to 5 yrs) · Free',
+        childNote1: '+ 1 child up to 5 yrs on an adult’s lap (no extra fee).',
+        childNotePlural: '+ {count} children up to 5 yrs on an adult’s lap (no extra fee).'
+      }
+    },
+    es: {
+      passenger: 'pasajero',
+      passengers: 'pasajeros',
+      primaryContact: 'Contacto Principal',
+      primaryContactUpper: 'CONTACTO PRINCIPAL',
+      passengerUpper: 'PASAJERO',
+      childAgeUpper: '0 A 5 AÑOS',
+      minorAgeUpper: '6 A 17 AÑOS',
+      adultAgeUpper: '18 AÑOS O MÁS',
+      notInformed: 'No informado',
+      removePassengerTitle: 'Eliminar pasajero',
+      removePassengerConfirm: '¿Estás seguro de que deseas eliminar a <strong>{name}</strong> del grupo?',
+      removeAdultWarning: '<strong>Atención:</strong> Al eliminar este adulto, no habrá suficientes acompañantes para los niños de falda (0 a 5 años). Elimina primero a un niño de falda.',
+      ageAlertChildLimit: '<strong>Atención:</strong> Cada niño de 0 a 5 años debe viajar en la falda de un adulto (18+). En este momento todos los cupos de falda están ocupados. Añade primero a otro adulto (18+) al grupo.',
+      ageAlertSelect: 'Selecciona el rango de edad para continuar.',
+      fieldAlertFullName: 'Ingresa el nombre completo (nombre y apellido).',
+      fieldAlertCpf: 'Ingresa un CPF / documento válido.',
+      fieldAlertCpfPrimary: 'Este CPF / documento ya pertenece al contacto principal de la reserva.',
+      fieldAlertCpfDuplicate: 'Este CPF / documento ya fue añadido a otro pasajero del grupo.',
+      fieldAlertWa: 'Ingresa un WhatsApp válido con código de área o deja el campo vacío.',
+      fieldAlertEmail: 'Ingresa un e-mail válido o deja el campo vacío.',
+      ageLabels: {
+        child: '0 a 5 años (Niño en falda · Cortesía)',
+        minor: '6 a 17 años (Menor pagante)',
+        adult: '18 anos o más (Adulto pagante)'
+      },
+      stepCopy: {
+        cadastro: {
+          eyebrow: 'Registro',
+          title: '¿Quién viajará contigo?',
+          description: 'Comienza con el contacto principal. Luego ingresa el nombre completo y CPF / documento de cada persona del grupo, incluyéndote a ti.'
+        },
+        pagamento: {
+          eyebrow: 'Pago · esperando confirmación',
+          title: 'Paga para confirmar tu reserva',
+          description: 'Abre la app de tu banco y escanea el código QR, o usa el Pix Copiar y Pegar. Luego espera la confirmación en esta página.'
+        },
+        confirmacao: {
+          eyebrow: 'Reserva confirmada',
+          title: 'Pago confirmado. Tu reserva está registrada.',
+          description: 'Tu reserva ha sido registrada. Guarda el código de reserva — es el que identifica a tu grupo en el embarque.'
+        }
+      },
+      stepInfo: {
+        1: {
+          eyebrow: 'Paso 1 de 3 · Contacto',
+          title: '¿Quién es el responsable de la reserva?',
+          description: 'Ingresa los datos de la persona responsable de la reserva y del pago. Debe tener 18 años o más.'
+        },
+        2: {
+          eyebrow: 'Paso 2 de 3 · Pasajeros',
+          title: '¿Quién viajará contigo?',
+          description: 'Indica si viajas solo(a) o añade a cada persona que abordará contigo.'
+        },
+        3: {
+          eyebrow: 'Paso 3 de 3 · Revisión',
+          title: 'Revisa los datos antes del pago',
+          description: 'Verifica la ruta, los pasajeros y el total. Luego acepta los términos para generar el pago Pix.'
+        }
+      },
+      validation: {
+        primaryName: 'Ingresa el nombre completo del contacto principal.',
+        primaryCpf: 'Ingresa un CPF / documento válido para el contacto principal.',
+        primaryBirth: 'Ingresa una fecha de nacimiento válida (DD/MM/AAAA) para el contacto principal.',
+        primaryAge18: 'El contacto principal / responsable financiero debe tener 18 años o más.',
+        primaryWa: 'Ingresa un WhatsApp válido con código de área.',
+        primaryEmail: 'Ingresa un e-mail válido.',
+        step2SoloOrGroup: 'Marca “Viajo solo(a)” o añade al menos a una persona al grupo para continuar.',
+        step3Terms: 'Lee y acepta los términos para continuar.',
+        submitting: 'Generando tu pago Pix con total seguridad…',
+        submitErrorDefault: 'No fue posible generar el Pix. Inténtalo de nuevo.'
+      },
+      pix: {
+        resuming: 'Reanudando la verificación del pago…',
+        copiedSuccess: '¡Código copiado! <span aria-hidden="true">✓</span>',
+        copiedStatus: 'Código Pix copiado. Ahora pégalo en la app de tu banco.',
+        copyManual: 'Selecciona y copia el código Pix manualmente.',
+        inactivePayment: 'Este pago no está activo. Habla con la organización antes de intentar una nueva reserva.',
+        statusUnavailable: 'No pudimos verificar el pago ahora. Lo reintentaremos en unos instantes.',
+        awaiting: 'Esperando el pago. Luego de pagar, espera la confirmación automática en esta página.'
+      },
+      confirmation: {
+        dateLocale: 'es-ES',
+        childTag: 'Niño en falda {num} (hasta 5 años) · Cortesía',
+        childNote1: '+ 1 niño de hasta 5 años en la falda de un responsable (sin costo).',
+        childNotePlural: '+ {count} niños de hasta 5 años en la falda de un responsable (sin costo).'
+      }
+    }
+  };
+
+  var t = I18N_BUS[langKey] || I18N_BUS.pt;
+
   function displayUppercase(value) {
-    return String(value || '').toLocaleUpperCase('pt-BR');
+    return String(value || '').toLocaleUpperCase(t.confirmation.dateLocale || 'pt-BR');
   }
 
   function displayCount(count, singular, plural) {
@@ -280,8 +552,8 @@
     var totalP = getTotalPassengersCount();
     var paying = getPayingCount();
     var amount = (paying * priceCents / 100).toFixed(2).replace('.', ',');
-    if (summaryCount) summaryCount.textContent = displayCount(totalP, 'passageiro', 'passageiros');
-    if (summaryPaying) summaryPaying.textContent = displayCount(paying, 'passageiro', 'passageiros');
+    if (summaryCount) summaryCount.textContent = displayCount(totalP, t.passenger, t.passengers);
+    if (summaryPaying) summaryPaying.textContent = displayCount(paying, t.passenger, t.passengers);
     if (total) {
       var prevText = total.textContent;
       var newText = 'R$ ' + amount;
@@ -294,27 +566,8 @@
     }
   }
 
-  // Cabeçalho por etapa global
-  var STEP_COPY = {
-    cadastro: {
-      eyebrow: 'Cadastro',
-      title: 'Quem vai embarcar com você?',
-      description: 'Comece pelo contato principal. Depois, informe o nome completo e o CPF de cada pessoa do grupo, incluindo você.'
-    },
-    pagamento: {
-      eyebrow: 'Pagamento · aguardando confirmação',
-      title: 'Pague para confirmar sua reserva',
-      description: 'Abra o app do seu banco e escaneie o QR Code, ou use o Pix Copia e Cola. Depois, aguarde a confirmação nesta página.'
-    },
-    confirmacao: {
-      eyebrow: 'Reserva confirmada',
-      title: 'Pagamento confirmado. Sua reserva está registrada.',
-      description: 'Sua reserva foi registrada. Guarde o código da reserva — é ele que identifica seu grupo no embarque.'
-    }
-  };
-
   function setStep(step) {
-    var copy = STEP_COPY[step];
+    var copy = t.stepCopy[step];
     if (!copy) return;
     if (stepHeading) stepHeading.dataset.step = step;
     currentStep = step;
@@ -332,25 +585,7 @@
 
   function updateWizardHeaderCopy() {
     if (!stepHeading || currentStep !== 'cadastro') return;
-    var stepInfo = {
-      1: {
-        eyebrow: 'Etapa 1 de 3 · Contato',
-        title: 'Quem é o responsável pela reserva?',
-        description: 'Informe os dados de quem ficará responsável pela reserva e pelo pagamento. Essa pessoa deve ter 18 anos ou mais.'
-      },
-      2: {
-        eyebrow: 'Etapa 2 de 3 · Passageiros',
-        title: 'Quem vai embarcar com você?',
-        description: 'Marque que vai sozinho(a) ou adicione cada pessoa que embarcará com você.'
-      },
-      3: {
-        eyebrow: 'Etapa 3 de 3 · Revisão',
-        title: 'Revise os dados antes do Pix',
-        description: 'Confira a rota, os passageiros e o total. Depois, aceite os termos para gerar o Pix.'
-      }
-    };
-
-    var currentInfo = stepInfo[currentWizardStep] || stepInfo[1];
+    var currentInfo = t.stepInfo[currentWizardStep] || t.stepInfo[1];
     if (stepEyebrow) stepEyebrow.textContent = currentInfo.eyebrow;
     if (stepTitle) stepTitle.textContent = currentInfo.title;
     if (stepDescription) stepDescription.textContent = currentInfo.description;
@@ -410,7 +645,7 @@
     addedPassengersList.replaceChildren();
 
     if (primarySummaryCard && primaryName && primaryCpf) {
-      var pName = normalizeFullName(primaryName.value) || 'CONTATO PRINCIPAL';
+      var pName = normalizeFullName(primaryName.value) || t.primaryContactUpper;
       var pCpf = maskCpf(primaryCpf.value) || '—';
       var pWa = primaryWhatsapp ? digits(primaryWhatsapp.value) : '';
       var pEmail = primaryEmail ? normalizeEmail(primaryEmail.value) : '';
@@ -446,11 +681,11 @@
 
     addedPassengers.forEach(function (p, index) {
       var pNum = index + 2;
-      var roleText = '18 ANOS OU MAIS';
+      var roleText = t.adultAgeUpper;
       if (p.ageGroup === 'child') {
-        roleText = '0 A 5 ANOS';
+        roleText = t.childAgeUpper;
       } else if (p.ageGroup === 'minor') {
-        roleText = '6 A 17 ANOS';
+        roleText = t.minorAgeUpper;
       }
 
       var card = document.createElement('div');
@@ -460,15 +695,15 @@
       var detailsHtml = '';
       if (p.ageGroup === 'child') {
         detailsHtml = '<div class="bus-passenger__child-layout">' +
-          '<img src="assets/images/brand/meeple-baby.webp" alt="Criança de colo (0 a 5 anos)" class="bus-passenger__meeple-img" width="48" height="48" loading="lazy">' +
+          '<img src="/assets/images/brand/meeple-baby.webp" alt="Criança (0 a 5 anos)" class="bus-passenger__meeple-img" width="48" height="48" loading="lazy">' +
           '<div class="bus-passenger__child-data">' +
           '<span>Nome: <strong>' + escapeHtml(displayUppercase(p.fullName)) + '</strong></span>' +
-          '<span>CPF: <strong>' + maskCpf(p.cpf) + '</strong></span>' +
+          '<span>CPF / ID: <strong>' + maskCpf(p.cpf) + '</strong></span>' +
           '</div>' +
           '</div>';
       } else {
         detailsHtml = '<span>Nome: <strong>' + escapeHtml(displayUppercase(p.fullName)) + '</strong></span>' +
-          '<span>CPF: <strong>' + maskCpf(p.cpf) + '</strong></span>';
+          '<span>CPF / ID: <strong>' + maskCpf(p.cpf) + '</strong></span>';
         if (p.whatsapp) {
           detailsHtml += '<span>WhatsApp: <strong>' + maskWhatsapp(p.whatsapp) + '</strong></span>';
         }
@@ -479,7 +714,7 @@
 
       card.innerHTML = '<div class="bus-passenger__header">' +
         '<div class="bus-passenger__header-title">' +
-        '<span class="bus-passenger__header-num">PASSAGEIRO ' + pNum + '</span>' +
+        '<span class="bus-passenger__header-num">' + t.passengerUpper + ' ' + pNum + '</span>' +
         '<span class="bus-passenger__pipe">|</span>' +
         '<span class="bus-passenger__category">' + roleText + '</span>' +
         '</div>' +
@@ -533,7 +768,7 @@
     var selectedAge = newPassengerAge ? newPassengerAge.value : '';
     if (!selectedAge) {
       if (substepAgeAlert) {
-        substepAgeAlert.textContent = 'Selecione a faixa etária da pessoa para continuar.';
+        substepAgeAlert.textContent = t.ageAlertSelect;
         substepAgeAlert.hidden = false;
       }
       if (newPassengerAge) newPassengerAge.focus();
@@ -545,7 +780,7 @@
       var currentChildren = getChildrenCount();
       if (currentChildren >= availableAdults) {
         if (substepAgeAlert) {
-          substepAgeAlert.innerHTML = '<strong>Atenção:</strong> Cada criança de 0 a 5 anos precisa viajar no colo de um adulto (18+). No momento, todas as vagas de colo já possuem responsável. Adicione primeiro mais um adulto (18+) ao grupo antes de adicionar outra criança de colo.';
+          substepAgeAlert.innerHTML = t.ageAlertChildLimit;
           substepAgeAlert.hidden = false;
         }
         return;
@@ -573,7 +808,7 @@
     var name = normalizeFullName(newPName ? newPName.value : '');
     if (name.split(' ').length < 2) {
       if (substepFieldsAlert) {
-        substepFieldsAlert.textContent = 'Informe o nome completo (nome e sobrenome).';
+        substepFieldsAlert.textContent = t.fieldAlertFullName;
         substepFieldsAlert.hidden = false;
       }
       if (newPName) newPName.focus();
@@ -583,7 +818,7 @@
     var cpfVal = newPCpf ? newPCpf.value : '';
     if (!validCpf(cpfVal)) {
       if (substepFieldsAlert) {
-        substepFieldsAlert.textContent = 'Informe um CPF válido.';
+        substepFieldsAlert.textContent = t.fieldAlertCpf;
         substepFieldsAlert.hidden = false;
       }
       if (newPCpf) newPCpf.focus();
@@ -593,7 +828,7 @@
     var cpfD = digits(cpfVal);
     if (cpfD === digits(primaryCpf.value)) {
       if (substepFieldsAlert) {
-        substepFieldsAlert.textContent = 'Este CPF já pertence ao contato principal da reserva.';
+        substepFieldsAlert.textContent = t.fieldAlertCpfPrimary;
         substepFieldsAlert.hidden = false;
       }
       if (newPCpf) newPCpf.focus();
@@ -605,7 +840,7 @@
     });
     if (duplicatePassenger) {
       if (substepFieldsAlert) {
-        substepFieldsAlert.textContent = 'Este CPF já foi adicionado a outro passageiro do grupo.';
+        substepFieldsAlert.textContent = t.fieldAlertCpfDuplicate;
         substepFieldsAlert.hidden = false;
       }
       if (newPCpf) newPCpf.focus();
@@ -616,7 +851,7 @@
     var waVal = waRaw.trim() ? normalizeWhatsappDigits(waRaw) : '';
     if (waRaw.trim() && !waVal) {
       if (substepFieldsAlert) {
-        substepFieldsAlert.textContent = 'Informe um WhatsApp válido com DDD ou deixe o campo em branco.';
+        substepFieldsAlert.textContent = t.fieldAlertWa;
         substepFieldsAlert.hidden = false;
       }
       if (newPWhatsapp) newPWhatsapp.focus();
@@ -626,7 +861,7 @@
     var emailVal = newPEmail ? normalizeEmail(newPEmail.value) : '';
     if (emailVal && !newPEmail.validity.valid) {
       if (substepFieldsAlert) {
-        substepFieldsAlert.textContent = 'Informe um e-mail válido ou deixe o campo em branco.';
+        substepFieldsAlert.textContent = t.fieldAlertEmail;
         substepFieldsAlert.hidden = false;
       }
       if (newPEmail) newPEmail.focus();
@@ -638,12 +873,7 @@
     pendingNewPassenger.whatsapp = waVal;
     pendingNewPassenger.email = emailVal;
 
-    var ageLabels = {
-      child: '0 a 5 anos (Criança de colo · Cortesia)',
-      minor: '6 a 17 anos (Menor pagante)',
-      adult: '18 anos ou mais (Adulto pagante)'
-    };
-    if (reviewPersonAge) reviewPersonAge.textContent = ageLabels[pendingNewPassenger.ageGroup] || '—';
+    if (reviewPersonAge) reviewPersonAge.textContent = t.ageLabels[pendingNewPassenger.ageGroup] || '—';
     if (reviewPersonName) reviewPersonName.textContent = displayUppercase(pendingNewPassenger.fullName);
     if (reviewPersonCpf) reviewPersonCpf.textContent = maskCpf(pendingNewPassenger.cpf);
 
@@ -653,11 +883,11 @@
     } else {
       if (reviewPersonWaRow) {
         reviewPersonWaRow.hidden = false;
-        if (reviewPersonWhatsapp) reviewPersonWhatsapp.textContent = pendingNewPassenger.whatsapp ? maskWhatsapp(pendingNewPassenger.whatsapp) : 'Não informado';
+        if (reviewPersonWhatsapp) reviewPersonWhatsapp.textContent = pendingNewPassenger.whatsapp ? maskWhatsapp(pendingNewPassenger.whatsapp) : t.notInformed;
       }
       if (reviewPersonEmailRow) {
         reviewPersonEmailRow.hidden = false;
-        if (reviewPersonEmail) reviewPersonEmail.textContent = pendingNewPassenger.email ? normalizeEmail(pendingNewPassenger.email) : 'Não informado';
+        if (reviewPersonEmail) reviewPersonEmail.textContent = pendingNewPassenger.email ? normalizeEmail(pendingNewPassenger.email) : t.notInformed;
       }
     }
 
@@ -684,7 +914,7 @@
 
     passengerToRemoveId = passengerId;
     if (removeDialogText) {
-      removeDialogText.innerHTML = 'Tem certeza que deseja remover o passageiro <strong>' + escapeHtml(p.fullName) + '</strong> do grupo?';
+      removeDialogText.innerHTML = t.removePassengerConfirm.replace('{name}', escapeHtml(p.fullName));
     }
 
     if (removeDialogWarning) {
@@ -692,7 +922,7 @@
         var remainingAdults = 1 + addedPassengers.filter(function (x) { return x.ageGroup === 'adult' && x.id !== passengerId; }).length;
         var currentChildren = getChildrenCount();
         if (currentChildren > remainingAdults) {
-          removeDialogWarning.innerHTML = '<strong>Atenção:</strong> Ao remover este adulto, não haverá responsáveis suficientes para todas as crianças de colo (0 a 5 anos) no grupo. Remova primeiro uma das crianças de colo antes de remover este adulto.';
+          removeDialogWarning.innerHTML = t.removeAdultWarning;
           removeDialogWarning.hidden = false;
           if (btnConfirmRemovePassenger) btnConfirmRemovePassenger.disabled = true;
         } else {
@@ -747,8 +977,8 @@
     // Passageiro 1 (Contato Principal)
     var p1Item = document.createElement('li');
     p1Item.className = 'bus-review-card__item';
-    p1Item.innerHTML = '<span class="bus-review-card__item-name">1. ' + (escapeHtml(displayUppercase(normalizeFullName(primaryName.value))) || 'CONTATO PRINCIPAL') + '</span>' +
-      '<span class="bus-review-card__item-details"><small class="bus-passenger__tag bus-passenger__tag--primary">Contato Principal</small></span>';
+    p1Item.innerHTML = '<span class="bus-review-card__item-name">1. ' + (escapeHtml(displayUppercase(normalizeFullName(primaryName.value))) || t.primaryContactUpper) + '</span>' +
+      '<span class="bus-review-card__item-details"><small class="bus-passenger__tag bus-passenger__tag--primary">' + t.primaryContact + '</small></span>';
     reviewPassengersList.appendChild(p1Item);
 
     // Passageiros Adicionais
@@ -758,11 +988,11 @@
       item.className = 'bus-review-card__item';
       var tagHtml = '';
       if (p.ageGroup === 'child') {
-        tagHtml = '<small class="bus-passenger__tag">0 a 5 anos</small>';
+        tagHtml = '<small class="bus-passenger__tag">' + (t.ageLabels.child.split('(')[0].trim()) + '</small>';
       } else if (p.ageGroup === 'minor') {
-        tagHtml = '<small class="bus-passenger__tag bus-passenger__tag--minor">6 a 17 anos</small>';
+        tagHtml = '<small class="bus-passenger__tag bus-passenger__tag--minor">' + (t.ageLabels.minor.split('(')[0].trim()) + '</small>';
       } else {
-        tagHtml = '<small class="bus-passenger__tag bus-passenger__tag--adult">18 anos ou mais</small>';
+        tagHtml = '<small class="bus-passenger__tag bus-passenger__tag--adult">' + (t.ageLabels.adult.split('(')[0].trim()) + '</small>';
       }
 
       item.innerHTML = '<span class="bus-review-card__item-name">' + pNum + '. ' + escapeHtml(displayUppercase(p.fullName)) + '</span>' +
@@ -828,15 +1058,15 @@
   function validateStep1() {
     clearInvalid();
     var name = normalizeFullName(primaryName.value);
-    if (name.split(' ').length < 2) return invalid('Informe o nome completo do contato principal.', primaryName);
-    if (!validCpf(primaryCpf.value)) return invalid('Informe um CPF válido para o contato principal.', primaryCpf);
+    if (name.split(' ').length < 2) return invalid(t.validation.primaryName, primaryName);
+    if (!validCpf(primaryCpf.value)) return invalid(t.validation.primaryCpf, primaryCpf);
     var birthParsed = primaryBirth ? parseBirthDate(primaryBirth.value) : null;
-    if (!birthParsed) return invalid('Informe uma data de nascimento válida (DD/MM/AAAA) para o contato principal.', primaryBirth);
-    if (birthParsed.age < 18) return invalid('O contato principal / responsável financeiro deve ter 18 anos ou mais.', primaryBirth);
+    if (!birthParsed) return invalid(t.validation.primaryBirth, primaryBirth);
+    if (birthParsed.age < 18) return invalid(t.validation.primaryAge18, primaryBirth);
     if (!normalizeWhatsappDigits(primaryWhatsapp.value)) {
-      return invalid('Informe um WhatsApp válido com DDD.', primaryWhatsapp);
+      return invalid(t.validation.primaryWa, primaryWhatsapp);
     }
-    if (!primaryEmail.validity.valid) return invalid('Informe um e-mail válido.', primaryEmail);
+    if (!primaryEmail.validity.valid) return invalid(t.validation.primaryEmail, primaryEmail);
     setStatus('', false);
     return true;
   }
@@ -844,7 +1074,7 @@
   function validateStep2() {
     clearInvalid();
     if (!soloTraveler.checked && addedPassengers.length === 0) {
-      return invalid('Marque “Vou sozinho(a)” ou adicione pelo menos uma pessoa ao grupo para continuar.', soloTraveler);
+      return invalid(t.validation.step2SoloOrGroup, soloTraveler);
     }
     setStatus('', false);
     return true;
@@ -854,7 +1084,7 @@
     clearInvalid();
     var terms = document.getElementById('bus-terms');
     if (!terms || !terms.checked) {
-      setStatus('Leia e aceite as condições para continuar.', true);
+      setStatus(t.validation.step3Terms, true);
       if (terms) terms.focus();
       return false;
     }
@@ -1000,7 +1230,7 @@
       ticketLink.hidden = false;
     }
 
-    paymentStatus.textContent = 'Retomando a consulta do pagamento…';
+    paymentStatus.textContent = t.pix.resuming;
     startExpiryCountdown(activeRegistrationId);
     pollPaymentStatus(activeRegistrationId);
   }
@@ -1079,7 +1309,7 @@
     }
 
     if (confirmedIssued) {
-      confirmedIssued.textContent = new Date().toLocaleString('pt-BR', {
+      confirmedIssued.textContent = new Date().toLocaleString(t.confirmation.dateLocale || 'pt-BR', {
         day: '2-digit', month: '2-digit', year: 'numeric',
         hour: '2-digit', minute: '2-digit'
       });
@@ -1095,9 +1325,9 @@
       var label = document.createElement('span');
       label.textContent = name;
       var tag = document.createElement('small');
-      var papel = index === 0 ? 'Contato principal' : 'Passageiro ' + (index + 1);
+      var papel = index === 0 ? t.primaryContact : t.passenger + ' ' + (index + 1);
       if (isMinor) {
-        papel += ' · 6 a 17 anos';
+        papel += ' · ' + t.minorAgeUpper;
       }
       tag.textContent = phone ? papel + ' · ' + maskWhatsapp(phone) : papel;
       item.append(label, tag);
@@ -1109,7 +1339,7 @@
       var label = document.createElement('span');
       label.textContent = child.name;
       var tag = document.createElement('small');
-      tag.textContent = 'Criança de colo ' + (index + 1) + ' (até 5 anos) · Cortesia';
+      tag.textContent = t.confirmation.childTag.replace('{num}', String(index + 1));
       item.append(label, tag);
       confirmedPassengers.appendChild(item);
     });
@@ -1118,8 +1348,8 @@
     if (kids > 0) {
       confirmedChildren.hidden = false;
       confirmedChildren.textContent = kids === 1
-        ? '+ 1 criança de até 5 anos, no colo de um responsável (sem cobrança).'
-        : '+ ' + kids + ' crianças de até 5 anos, no colo de um responsável (sem cobrança).';
+        ? t.confirmation.childNote1
+        : t.confirmation.childNotePlural.replace('{count}', String(kids));
     } else {
       confirmedChildren.hidden = true;
     }
@@ -1182,7 +1412,7 @@
         return;
       }
       if (['cancelled', 'refunded', 'payment_failed'].includes(data.status)) {
-        paymentStatus.textContent = 'Este pagamento não está ativo. Fale com a organização antes de tentar uma nova reserva.';
+        paymentStatus.textContent = t.pix.inactivePayment;
         paymentPanel.dataset.paymentState = data.status;
         stopExpiryCountdown();
         return;
@@ -1192,7 +1422,7 @@
         pollPaymentStatus(registrationId, options);
       }, 3000);
     }).catch(function () {
-      paymentStatus.textContent = 'Não conseguimos consultar o pagamento agora. Tentaremos novamente em instantes.';
+      paymentStatus.textContent = t.pix.statusUnavailable;
       statusTimer = window.setTimeout(function () {
         pollPaymentStatus(registrationId, options);
       }, 5000);
@@ -1226,7 +1456,7 @@
       ticketLink.href = payment.ticketUrl;
       ticketLink.hidden = false;
     }
-    paymentStatus.textContent = 'Aguardando pagamento. Depois de pagar, aguarde a confirmação nesta página.';
+    paymentStatus.textContent = t.pix.awaiting;
     startExpiryCountdown(payment.registrationId);
     pollPaymentStatus(payment.registrationId);
     paymentPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1237,7 +1467,7 @@
     if (!validateForm()) return;
 
     submit.disabled = true;
-    setStatus('Gerando seu Pix com segurança…', false);
+    setStatus(t.validation.submitting, false);
     try {
       var response = await fetch('/api/create-pix-order', {
         method: 'POST',
@@ -1248,10 +1478,10 @@
         body: JSON.stringify(getPayload())
       });
       var data = await response.json().catch(function () { return {}; });
-      if (!response.ok) throw new Error(data.error || 'Não foi possível gerar o Pix.');
+      if (!response.ok) throw new Error(data.error || t.validation.submitErrorDefault);
       showPayment(data);
     } catch (error) {
-      setStatus(error.message || 'Não foi possível gerar o Pix. Tente novamente.', true);
+      setStatus(error.message || t.validation.submitErrorDefault, true);
       submit.disabled = false;
     }
   }
@@ -1271,7 +1501,7 @@
       return;
     }
     primaryWhatsapp.setAttribute('aria-invalid', 'true');
-    setStatus('Informe um WhatsApp válido com DDD.', true);
+    setStatus(t.validation.primaryWa, true);
   });
 
   // Mascaras nos inputs do Mini Multi-step
@@ -1287,7 +1517,7 @@
       }
       newPWhatsapp.setAttribute('aria-invalid', 'true');
       if (substepFieldsAlert) {
-        substepFieldsAlert.textContent = 'Informe um WhatsApp válido com DDD ou deixe o campo em branco.';
+        substepFieldsAlert.textContent = t.fieldAlertWa;
         substepFieldsAlert.hidden = false;
       }
     });
@@ -1427,16 +1657,16 @@
       try {
         await navigator.clipboard.writeText(pixCopyCode.value);
         copyPix.classList.add('is-copied');
-        copyPix.innerHTML = 'Código copiado! <span aria-hidden="true">✓</span>';
+        copyPix.innerHTML = t.pix.copiedSuccess;
         setTimeout(function () {
           copyPix.classList.remove('is-copied');
           copyPix.innerHTML = originalHTML;
         }, 2200);
-        paymentStatus.textContent = 'Código Pix copiado. Agora é só colar no app do seu banco.';
+        paymentStatus.textContent = t.pix.copiedStatus;
       } catch (_error) {
         pixCopyCode.focus();
         pixCopyCode.select();
-        paymentStatus.textContent = 'Selecione e copie o código Pix manualmente.';
+        paymentStatus.textContent = t.pix.copyManual;
       }
     });
   }
@@ -1535,5 +1765,72 @@
       openBtn.focus();
     });
   })();
+
+  // Câmbio de moedas para visitantes internacionais (USD/EUR para BRL)
+  (function initCurrencyRates() {
+    var rateEls = document.querySelectorAll('[data-currency-rate]');
+    if (!rateEls.length) return;
+
+    var CACHE_KEY = 'kob_fx_rates_v1';
+    var cached = null;
+    try {
+      var raw = sessionStorage.getItem(CACHE_KEY);
+      if (raw) {
+        var parsed = JSON.parse(raw);
+        if (Date.now() - parsed.t < 3600000) cached = parsed.data;
+      }
+    } catch (e) {}
+
+    function applyRates(rates) {
+      rateEls.forEach(function (el) {
+        var cur = el.getAttribute('data-currency-rate');
+        if (rates && rates[cur]) {
+          var val = parseFloat(rates[cur]);
+          if (!isNaN(val) && val > 0) {
+            el.textContent = 'R$ ' + val.toFixed(2).replace('.', ',');
+          }
+        }
+      });
+    }
+
+    if (cached) {
+      applyRates(cached);
+      return;
+    }
+
+    if (typeof fetch === 'function') {
+      fetch('https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL')
+        .then(function (res) {
+          if (!res.ok) throw new Error('FX API status ' + res.status);
+          return res.json();
+        })
+        .then(function (data) {
+          var rates = {};
+          if (data.USDBRL && data.USDBRL.bid) rates.USD = data.USDBRL.bid;
+          if (data.EURBRL && data.EURBRL.bid) rates.EUR = data.EURBRL.bid;
+          try {
+            sessionStorage.setItem(CACHE_KEY, JSON.stringify({ t: Date.now(), data: rates }));
+          } catch (e) {}
+          applyRates(rates);
+        })
+        .catch(function () {
+          // Mantém valores de referência estáticos
+        });
+    }
+  })();
+
+  // Persistência da preferência manual de idioma
+  document.addEventListener('click', function (e) {
+    var btn = e.target && e.target.closest && e.target.closest('.lang-switch__btn, .lang-switch__item');
+    if (!btn) return;
+    var hreflang = btn.getAttribute('hreflang') || '';
+    if (hreflang.toLowerCase().indexOf('pt') !== -1) {
+      try { localStorage.setItem('kob_lang_pref', 'pt'); } catch (err) {}
+    } else if (hreflang.toLowerCase().indexOf('en') !== -1) {
+      try { localStorage.setItem('kob_lang_pref', 'en'); } catch (err) {}
+    } else if (hreflang.toLowerCase().indexOf('es') !== -1) {
+      try { localStorage.setItem('kob_lang_pref', 'es'); } catch (err) {}
+    }
+  });
 
 })();
