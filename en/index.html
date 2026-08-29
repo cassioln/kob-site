@@ -426,20 +426,18 @@
   <!-- DRAWER MOBILE -->
   <div class="drawer" id="drawer" data-open="false" aria-hidden="true" inert="">
     <div class="drawer__head">
-      <span class="nav__brand"><img src="/assets/images/brand/kriativos-on-board-menu.png"
-          alt="KOB — Kriativos On Board" width="300" height="192"></span>
+      <div class="lang-switch lang-switch--mobile" role="group" aria-label="Language selector">
+        <a href="/" class="lang-switch__btn" hreflang="pt-BR" title="Português (Brasil)">PT</a>
+        <span class="lang-switch__sep" aria-hidden="true">|</span>
+        <a href="/en/" class="lang-switch__btn is-active" hreflang="en" aria-current="page" title="English">EN</a>
+        <span class="lang-switch__sep" aria-hidden="true">|</span>
+        <a href="/es/" class="lang-switch__btn" hreflang="es" title="Español">ES</a>
+      </div>
       <button type="button" class="drawer__close" id="drawerClose" aria-label="Close menu">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round">
           <path d="M6 6l12 12M18 6L6 18"></path>
         </svg>
       </button>
-    </div>
-    <div class="lang-switch lang-switch--mobile" role="group" aria-label="Language selector">
-      <a href="/" class="lang-switch__btn" hreflang="pt-BR" title="Português (Brasil)">PT</a>
-      <span class="lang-switch__sep" aria-hidden="true">|</span>
-      <a href="/en/" class="lang-switch__btn is-active" hreflang="en" aria-current="page" title="English">EN</a>
-      <span class="lang-switch__sep" aria-hidden="true">|</span>
-      <a href="/es/" class="lang-switch__btn" hreflang="es" title="Español">ES</a>
     </div>
     <nav aria-label="Mobile navigation">
       <a href="#evento">The Event</a>

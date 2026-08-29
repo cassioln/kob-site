@@ -426,4 +426,16 @@ test.describe('Internacionalização e Validação de Páginas /en/ e /es/', () 
     expect(savedPref).toBe('es');
   });
 
+  test('Seletor de idioma mobile está posicionado dentro de drawer__head ao lado oposto do botão fechar', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 667 });
+    await page.goto('/');
+
+    const drawerHead = page.locator('#drawer .drawer__head');
+    const mobileSwitch = drawerHead.locator('.lang-switch--mobile');
+    const closeBtn = drawerHead.locator('#drawerClose');
+
+    await expect(mobileSwitch).toBeAttached();
+    await expect(closeBtn).toBeAttached();
+  });
+
 });

@@ -571,25 +571,26 @@ h4 {
 /* Mobile Drawer Language Switcher */
 .lang-switch--mobile {
   display: inline-flex;
-  align-self: center;
-  justify-content: center;
-  gap: 4px;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 3px;
   background: rgba(4, 29, 58, 0.05);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   border: 1px solid rgba(4, 29, 58, 0.12);
-  padding: 4px;
+  padding: 3px;
   border-radius: 6px;
-  margin: var(--sp-md) auto var(--sp-sm);
+  margin: 0;
   box-shadow: none;
 }
 
 .lang-switch--mobile .lang-switch__btn {
-  min-width: 48px;
-  height: 36px;
-  padding: 0 14px;
+  min-width: 38px;
+  height: 34px;
+  padding: 0 10px;
   color: var(--ink-soft, #47627d);
-  font-size: 0.86rem;
+  font-size: 0.82rem;
+  font-weight: 700;
   border-radius: 4px;
 }
 
@@ -657,11 +658,16 @@ h4 {
 }
 
 .drawer__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: transparent;
   border: 1px solid var(--line-mid);
   border-radius: var(--r-sm);
   width: 44px;
   height: 44px;
+  cursor: pointer;
+  margin-left: auto;
 }
 
 .drawer__close svg {
