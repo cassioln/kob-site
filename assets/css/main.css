@@ -641,9 +641,10 @@ h4 {
   background: var(--surface-0);
   display: flex;
   flex-direction: column;
-  padding: var(--gutter);
+  padding: max(14px, env(safe-area-inset-top, 14px)) var(--gutter) max(20px, env(safe-area-inset-bottom, 20px));
   transform: translateX(100%);
   transition: transform var(--dur-state) var(--ease-quart);
+  overflow-y: auto;
 }
 
 .drawer[data-open="true"] {
@@ -654,7 +655,7 @@ h4 {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--sp-lg);
+  margin-bottom: 12px;
 }
 
 .drawer__close {
@@ -679,7 +680,7 @@ h4 {
 .drawer nav {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 
 .drawer nav a {
@@ -687,8 +688,8 @@ h4 {
   text-decoration: none;
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 1.6rem;
-  padding: 14px 0px;
+  font-size: 1.5rem;
+  padding: 10px 0px;
   border-bottom: 1px solid var(--line-soft);
 }
 
