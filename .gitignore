@@ -99,3 +99,10 @@ loop_finder/*
 *.bak
 *.tmp
 *.temp
+
+# ==========================================
+# 10. Previews e Templates de E-mail
+# ==========================================
+docs/email-previews/
+email-previews/
+

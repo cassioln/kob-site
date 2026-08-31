@@ -260,3 +260,4 @@ As variáveis `--i` (índice), `--x` (offset horizontal %), `--y` (offset vertic
 - **Don't** poluir com animação por animação: nada de movimento que compita com a leitura ou atrase o caminho até a reserva.
 - **Don't** usar azul (Ocean Blue) nem dourado como cor de botão de reserva — CTA de conversão é sempre roxo (#71206c).
 - **Don't** empilhar sombra cinza neutra em card estático (a assinatura do visual datado).
+- **Don't** aplicar efeito pílula/badge com fundo ou moldura em subtítulos e eyebrows (ex: "Transporte Oficial · Kriativos On Board 2026"). Subtítulos e eyebrows devem ser puramente tipográficos (caixa alta com tracking largo e cor de realce direta), sem cápsulas artificiais que poluem a hierarquia.
