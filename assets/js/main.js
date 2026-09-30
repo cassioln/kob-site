@@ -2892,6 +2892,11 @@ document.documentElement.classList.add('js');
     document.addEventListener('click', function (event) {
       var link = event.target.closest('a[data-analytics-channel="whatsapp"]');
       if (!link) return;
+      if (link.getAttribute('aria-disabled') === 'true' || link.classList.contains('btn--disabled')) {
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+      }
       event.preventDefault();
       trackAnalytics('kob_whatsapp_click', {
         cta_id: link.dataset.analyticsCtaId,
