@@ -26,8 +26,11 @@ jobs:
             --delete
             -x ^\.git/
             -x ^\.github/
+            -x ^\.agents/
             -x ^\.hermes/
             -x ^\.hermes-tmp/
+            -x ^\.impeccable/
+            -x ^\.codex/
             -x ^\.worktrees/
             -x ^\.od-skills/
             -x ^\.playwright-mcp/
