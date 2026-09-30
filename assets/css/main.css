@@ -4151,25 +4151,25 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 16px 24px;
-  margin-top: clamp(24px, 3.5vw, 32px);
-  margin-bottom: clamp(16px, 2.5vw, 24px);
-  padding: 20px 24px;
+  gap: 14px 20px;
+  margin-top: clamp(16px, 2.5vw, 24px);
+  margin-bottom: clamp(12px, 2vw, 18px);
+  padding: 14px 20px;
   background: linear-gradient(135deg, rgba(229, 0, 126, 0.14) 0%, rgba(123, 31, 162, 0.16) 50%, rgba(4, 29, 58, 0.8) 100%);
-  border: 1px solid rgba(229, 0, 126, 0.38);
-  border-radius: var(--r-md, 14px);
+  border: 1px solid rgba(229, 0, 126, 0.35);
+  border-radius: var(--r-md, 12px);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  box-shadow: 0 8px 32px rgba(4, 29, 58, 0.4), 0 0 24px rgba(229, 0, 126, 0.12);
+  box-shadow: 0 6px 24px rgba(4, 29, 58, 0.35), 0 0 16px rgba(229, 0, 126, 0.1);
   position: relative;
   overflow: hidden;
 }
 
 .cabins-alert__main {
-  flex: 1 1 320px;
+  flex: 1 1 300px;
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
 }
 
 .cabins-alert__icon {
@@ -4177,9 +4177,9 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 42px;
-  height: 42px;
-  border-radius: 10px;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.15);
   color: var(--sunset-gold, #ffc20e);
@@ -4188,8 +4188,8 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
 .cabins-alert__text {
   margin: 0px;
   font-family: var(--font-body, system-ui, sans-serif);
-  font-size: 1.05rem;
-  line-height: 1.5;
+  font-size: 0.94rem;
+  line-height: 1.45;
   color: var(--foam-white, #ffffff);
 }
 
@@ -4209,16 +4209,16 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding: 12px 24px;
+  gap: 8px;
+  padding: 9px 18px;
   border-radius: var(--r-pill, 999px);
   background: #25d366;
   color: #041d3a;
   font-family: var(--font-body, system-ui, sans-serif);
-  font-size: 0.92rem;
+  font-size: 0.88rem;
   font-weight: 700;
   text-decoration: none;
-  box-shadow: 0 4px 16px rgba(37, 211, 102, 0.35);
+  box-shadow: 0 4px 14px rgba(37, 211, 102, 0.32);
   white-space: nowrap;
   flex-shrink: 0;
   transition: transform var(--dur-fast, 180ms) ease, box-shadow var(--dur-fast, 180ms) ease, background-color var(--dur-fast, 180ms) ease;
@@ -4228,7 +4228,7 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
   background: #20ba59;
   color: #041d3a;
   transform: translateY(-2px);
-  box-shadow: 0 6px 22px rgba(37, 211, 102, 0.45);
+  box-shadow: 0 6px 20px rgba(37, 211, 102, 0.42);
 }
 
 .cabins-alert__btn:active {
@@ -4236,23 +4236,46 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
 }
 
 .cabins-alert__btn .btn__wa {
-  width: 1.2em;
-  height: 1.2em;
+  width: 1.15em;
+  height: 1.15em;
   fill: #041d3a;
 }
 
 @media (max-width: 860px) {
   .cabins-alert {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 18px 20px;
+    padding: 12px 14px;
+    gap: 10px;
+    margin-top: 14px;
+    margin-bottom: 12px;
+    border-radius: 10px;
   }
   .cabins-alert__main {
+    gap: 10px;
+    align-items: flex-start;
+    flex: 1 1 100%;
     width: 100%;
+  }
+  .cabins-alert__icon {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    margin-top: 2px;
+  }
+  .cabins-alert__icon svg {
+    width: 15px;
+    height: 15px;
+  }
+  .cabins-alert__text {
+    font-size: 0.82rem;
+    line-height: 1.4;
   }
   .cabins-alert__btn {
     width: 100%;
-    margin-top: 6px;
+    padding: 8px 14px;
+    font-size: 0.82rem;
+    min-height: 38px;
+    border-radius: 8px;
+    margin-top: 2px;
   }
 }
 
