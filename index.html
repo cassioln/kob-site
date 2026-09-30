@@ -1158,7 +1158,8 @@
         </div>
 
         <div class="value-panel" id="panel-cabines" role="tabpanel" aria-labelledby="tab-cabines" tabindex="0">
-          <div class="price-grid reveal">
+          <div class="price-grid-wrap">
+            <div class="price-grid reveal">
             <article class="price-card">
               <div class="price-card__head">
                 <span class="price-card__cabin">Cabine interna</span>
@@ -1239,6 +1240,12 @@
                   target="_blank" rel="noopener">Reservar agora</a>
               </div>
             </article>
+          </div>
+          <div class="price-stamp-overlay" aria-hidden="true">
+              <div class="price-stamp-badge">
+                <span class="price-stamp-badge__inner">ESGOTADO</span>
+              </div>
+            </div>
           </div>
 
           <div class="cabins-alert reveal" role="status">

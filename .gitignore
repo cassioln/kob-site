@@ -70,11 +70,13 @@ coverage/
 .hermes/
 .hermes-tmp/
 .impeccable/
+.codex/
 .github/agents/
 .github/hooks/
 .github/skills/
 .agents/mcp_config.json
 .agents/*.local.*
+.agents/**/bin/
 
 # ==========================================
 # 8. Caches de Deploy Serverless & CLI
