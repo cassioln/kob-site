@@ -2688,6 +2688,61 @@
   font-weight: 600;
 }
 
+.bus-reassurance__list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bus-reassurance__item {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 0.91rem;
+  line-height: 1.48;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.bus-reassurance__dot {
+  flex: 0 0 auto;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--sunset-gold);
+  transform: translateY(-2px);
+}
+
+.bus-reassurance__item--cyan .bus-reassurance__dot {
+  background: var(--ocean-cyan);
+}
+
+.bus-reassurance__item--purple .bus-reassurance__dot {
+  background: #c47cb6;
+}
+
+.bus-reassurance__item--gold .bus-reassurance__dot {
+  background: var(--sunset-gold);
+}
+
+.bus-reassurance__item strong {
+  color: var(--ink-invert);
+  font-weight: 700;
+}
+
+.bus-reassurance__note {
+  margin: 10px 0 0 !important;
+  font-size: 0.86rem !important;
+  color: rgba(255, 255, 255, 0.68) !important;
+  line-height: 1.5 !important;
+}
+
+.bus-reassurance__note strong {
+  color: rgba(255, 255, 255, 0.92);
+}
+
 @media (max-width: 768px) {
   .bus-reassurance__cards {
     grid-template-columns: 1fr;
