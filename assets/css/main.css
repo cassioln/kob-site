@@ -10095,12 +10095,62 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
   border-radius: 50%;
 }
 
-#hospedagem.preboard-route .route-shuttle__copy>p:last-child {
-  max-width: 35ch;
+#hospedagem.preboard-route .route-shuttle__copy p {
+  max-width: 44ch;
   color: rgba(255, 255, 255, 0.78);
   font-size: 0.96rem;
-  line-height: 1.58;
+  line-height: 1.55;
   text-wrap: pretty;
+}
+
+#hospedagem.preboard-route .route-shuttle__schedule {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+#hospedagem.preboard-route .route-shuttle__schedule-item {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 0.91rem;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+#hospedagem.preboard-route .route-shuttle__schedule-dot {
+  flex: 0 0 auto;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--sunset-gold);
+  transform: translateY(-2px);
+}
+
+#hospedagem.preboard-route .route-shuttle__schedule-name {
+  color: var(--foam-white);
+  font-weight: 750;
+}
+
+#hospedagem.preboard-route .route-shuttle__schedule-time {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+#hospedagem.preboard-route .route-shuttle__schedule-time strong {
+  color: var(--foam-white);
+  font-weight: 750;
+}
+
+#hospedagem.preboard-route .route-shuttle__schedule-status--sold {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.82rem;
+}
+
+#hospedagem.preboard-route .route-shuttle__schedule-status--open {
+  color: var(--ocean-cyan);
+  font-weight: 750;
+  font-size: 0.86rem;
 }
 
 .route-shuttle__route {
