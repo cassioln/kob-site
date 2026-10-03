@@ -24,19 +24,19 @@ test.describe('Internacionalização e Validação de Páginas /en/ e /es/', () 
     const navLinks = faq.locator('[data-faq-nav]');
     await expect(navLinks).toHaveCount(4);
 
-    // Valida total de 28 perguntas no FAQ
+    // Valida total de 34 perguntas no FAQ
     const details = faq.locator('.faq__list details');
-    await expect(details).toHaveCount(28);
+    await expect(details).toHaveCount(34);
 
     // Valida busca no FAQ em inglês
     const searchInput = page.locator('#faq-search');
     await searchInput.fill('luggage');
     const status = page.locator('#faq-search-status');
-    await expect(status).toHaveText(/1 answer found/i);
+    await expect(status).toHaveText(/\d+ answers found/i);
 
     // Limpa busca
     await searchInput.fill('');
-    await expect(status).toHaveText(/28 answers organized by topic/i);
+    await expect(status).toHaveText(/34 answers organized by category/i);
 
     // Valida modal de cabines em inglês
     await page.getByRole('tab', { name: /Cabins/i }).click();
@@ -74,19 +74,19 @@ test.describe('Internacionalização e Validação de Páginas /en/ e /es/', () 
     const navLinks = faq.locator('[data-faq-nav]');
     await expect(navLinks).toHaveCount(4);
 
-    // Valida total de 28 perguntas no FAQ
+    // Valida total de 34 perguntas no FAQ
     const details = faq.locator('.faq__list details');
-    await expect(details).toHaveCount(28);
+    await expect(details).toHaveCount(34);
 
     // Valida busca no FAQ em espanhol
     const searchInput = page.locator('#faq-search');
     await searchInput.fill('equipaje');
     const status = page.locator('#faq-search-status');
-    await expect(status).toHaveText(/1 respuesta encontrada/i);
+    await expect(status).toHaveText(/\d+ respuestas encontradas/i);
 
     // Limpa busca
     await searchInput.fill('');
-    await expect(status).toHaveText(/28 respuestas organizadas por tema/i);
+    await expect(status).toHaveText(/34 respuestas organizadas por tema/i);
 
     // Valida modal de cabines em espanhol
     await page.getByRole('tab', { name: /Cabinas/i }).click();

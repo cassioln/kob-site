@@ -2798,15 +2798,15 @@ document.documentElement.classList.add('js');
         if (lang === 'en') {
           searchStatus.textContent = term
             ? (visible === 1 ? '1 answer found' : visible + ' answers found')
-            : '28 answers organized by topic';
+            : '34 answers organized by category';
         } else if (lang === 'es') {
           searchStatus.textContent = term
             ? (visible === 1 ? '1 respuesta encontrada' : visible + ' respuestas encontradas')
-            : '28 respuestas organizadas por tema';
+            : '34 respuestas organizadas por tema';
         } else {
           searchStatus.textContent = term
             ? (visible === 1 ? '1 resposta encontrada' : visible + ' respostas encontradas')
-            : '28 respostas organizadas por tema';
+            : '34 respostas organizadas por tema';
         }
       }
     }
