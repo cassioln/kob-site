@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/pdf.php';
+require_once __DIR__ . '/bus-travel.php';
 
 /**
  * Monta o comprovante de reserva em PDF A4, preto e branco.
@@ -23,6 +24,7 @@ require_once __DIR__ . '/pdf.php';
  */
 function bus_receipt_pdf(array $dados): string
 {
+    $travel = bus_travel_details($dados);
     $blocos = [];
     $esq = PDF_MARGEM;
     $dir = PDF_A4_LARGURA - PDF_MARGEM;
@@ -60,7 +62,8 @@ function bus_receipt_pdf(array $dados): string
         $linhas[] = ['Crianças de até 5 anos', $dados['childrenCount'] . ' (não pagante, no colo)'];
     }
     $linhas[] = ['Rota', 'Barra Funda (SP) — Porto de Santos'];
-    $linhas[] = ['Encontro do grupo', '1º Ônibus: 06h00 (Saída 06h30) | 2º: 06h40 (Saída 07h20)'];
+    $linhas[] = ['Ônibus da reserva', $travel['label']];
+    $linhas[] = ['Encontro do grupo', $travel['schedule']];
     $linhas[] = ['Local de encontro', 'Rua Tagipuru, alt. 552 (atrás Memorial)'];
     if (!empty($dados['orderId'])) {
         $linhas[] = ['Transação (Mercado Pago)', $dados['orderId']];
@@ -133,9 +136,10 @@ function bus_receipt_pdf(array $dados): string
                  'espessura' => 0.5];
     $blocos[] = ['tipo' => 'texto', 'x' => $esq, 'y' => $rodape,
                  'texto' => 'Via do passageiro — página 1 de 1', 'tamanho' => 8];
-    $aviso = 'O ônibus só será contratado se o mínimo de passageiros for atingido.';
-    $blocos[] = ['tipo' => 'texto', 'x' => $dir - pdf_largura_texto($aviso, 8) - 4, 'y' => $rodape,
-                 'texto' => $aviso, 'tamanho' => 8];
+    foreach (explode("\n", wordwrap($travel['operation'], 100, "\n")) as $i => $aviso) {
+        $blocos[] = ['tipo' => 'texto', 'x' => $esq, 'y' => $rodape - 12 - ($i * 10),
+                     'texto' => $aviso, 'tamanho' => 8];
+    }
 
     return pdf_montar(pdf_conteudo($blocos));
 }

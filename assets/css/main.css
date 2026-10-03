@@ -4651,6 +4651,20 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
   white-space: nowrap;
 }
 
+.insurance-coverage--guidance .insurance-coverage__group dl div {
+  grid-template-columns: 1fr;
+  gap: 6px;
+}
+
+.insurance-coverage--guidance dt {
+  font-weight: 700;
+}
+
+.insurance-coverage--guidance dd {
+  font-weight: 400;
+  white-space: normal;
+}
+
 @media (max-width: 680px) {
   .insurance-coverage {
     grid-template-columns: 1fr;

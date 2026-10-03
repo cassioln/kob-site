@@ -58,7 +58,7 @@ function bus_pix_email_html(array $dados): string
         ['Valor a pagar', 'R$ ' . str_replace('.', ',', $dados['amount'])],
         ['Passageiros', (string) $dados['passengerCount']],
         ['Rota', 'Barra Funda (SP) &rarr; Porto de Santos'],
-        ['Encontro do grupo', '1º Ônibus: 06h00 (Saída: 06h30) | 2º Ônibus: 06h40 (Saída: 07h20) &middot; Rua Tagipuru, 552 (Barra Funda)'],
+        ['Horários de referência', '1º Ônibus: 06h00 (Saída: 06h30) | 2º Ônibus: 06h40 (Saída: 07h20) &middot; Rua Tagipuru, 552 (Barra Funda)'],
     ];
 
     $linhasFatos = '';
@@ -66,8 +66,8 @@ function bus_pix_email_html(array $dados): string
         $borda = $i === 0 ? '' : 'border-top:1px solid rgba(255,255,255,0.09);';
         $destaque = str_contains($rotulo, 'Valor');
         $corValor = $destaque ? 'color:#29c3f5;font-weight:700;' : 'color:#ffffff;';
-        $rotuloSeguro = in_array($rotulo, ['Rota', 'Encontro do grupo'], true) ? $rotulo : $e($rotulo);
-        $valorSeguro = in_array($rotulo, ['Rota', 'Encontro do grupo'], true) ? $valor : $e($valor);
+        $rotuloSeguro = in_array($rotulo, ['Rota', 'Horários de referência'], true) ? $rotulo : $e($rotulo);
+        $valorSeguro = in_array($rotulo, ['Rota', 'Horários de referência'], true) ? $valor : $e($valor);
         $linhasFatos .= '
             <tr>
               <td style="' . $borda . 'padding:10px 0;font:400 13px/1.4 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.65);">'
@@ -80,7 +80,7 @@ function bus_pix_email_html(array $dados): string
     $qrCodeUrl = 'https://quickchart.io/qr?size=300&text=' . urlencode($dados['qrCode']);
 
     $html = bus_email_abertura(
-        'Finalize seu pagamento para garantir sua vaga no ônibus fretado.'
+        'Finalize seu pagamento para registrar sua reserva no ônibus fretado.'
     );
 
     $html .= bus_email_cabecalho(
@@ -98,7 +98,7 @@ function bus_pix_email_html(array $dados): string
                 ' . $e($primeiroNome) . ', sua reserva está quase lá.
               </h1>
               <p style="margin:0;font:400 15px/1.6 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.82);">
-                Seu código Pix foi gerado com sucesso. Escaneie o QR Code ou copie a chave abaixo no app do seu banco para confirmar suas vagas. <strong>Vence em 24 horas.</strong>
+                Seu código Pix foi gerado com sucesso. Escaneie o QR Code ou copie a chave abaixo no app do seu banco para registrar sua reserva. <strong>Vence em 24 horas.</strong><br>O ônibus da sua reserva será informado após a confirmação do pagamento. O ônibus 1 está confirmado; o ônibus 2 e veículos adicionais dependem do mínimo de passageiros, com devolução integral via Pix se não for atingido. Confira seu veículo e horário na confirmação e no grupo do fretado antes de sair de casa.
               </p>
             </td>
           </tr>
@@ -199,11 +199,13 @@ function bus_pix_email_text(array $dados): string
     $linhas[] = '';
     $linhas[] = 'AVISO: Se você já realizou o pagamento, desconsidere este e-mail. A confirmação oficial chegará em instantes.';
     $linhas[] = '';
+    $linhas[] = 'O ônibus da sua reserva será informado após a confirmação do pagamento. O ônibus 1 está confirmado; o ônibus 2 e veículos adicionais dependem do mínimo de passageiros, com devolução integral via Pix se não for atingido. Confira seu veículo e horário na confirmação e no grupo do fretado antes de sair de casa.';
+    $linhas[] = '';
     $linhas[] = 'Resumo da reserva:';
     $linhas[] = '- Valor a pagar: R$ ' . str_replace('.', ',', $dados['amount']);
     $linhas[] = '- Passageiros: ' . $dados['passengerCount'];
     $linhas[] = '- Rota: Barra Funda (SP) -> Porto de Santos';
-    $linhas[] = '- Encontro do grupo Barra Funda: 1º Onibus: 06h00 (Saida: 06h30) | 2º Onibus: 06h40 (Saida: 07h20) - Rua Tagipuru, 552 (atras Memorial)';
+    $linhas[] = '- Horários de referência (confirme o ônibus atribuído após o pagamento): 1º Onibus: 06h00 (Saida: 06h30) | 2º Onibus: 06h40 (Saida: 07h20) - Rua Tagipuru, 552 (atras Memorial)';
 
     
     $linhas[] = '';

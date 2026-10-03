@@ -83,7 +83,7 @@ function bus_confirmation_payload(PDO $pdo, string $registrationId): array
 {
     $q = $pdo->prepare(
         'SELECT id, status, email, primary_name, primary_cpf, whatsapp,
-                passenger_count, children_count, group_name,
+                passenger_count, children_count, group_name, bus_number, fleet_assignment_status,
                 amount_cents, mercadopago_order_id, mercadopago_payment_id,
                 confirmation_email_sent_at, admin_email_sent_at,
                 DATE_FORMAT(CONVERT_TZ(paid_at, "+00:00", "-03:00"), "%d/%m/%Y às %H:%i") AS pago_em
@@ -141,6 +141,7 @@ function bus_confirmation_payload(PDO $pdo, string $registrationId): array
             'passengerCount' => (int) $reg['passenger_count'],
             'childrenCount' => (int) $reg['children_count'],
             'groupName' => $grupo,
+            'busNumber' => bus_assigned_number($reg),
             'contactName' => (string) $reg['primary_name'],
             'contactCpf' => bus_format_cpf((string) $reg['primary_cpf']),
             'contactEmail' => (string) $reg['email'],
@@ -208,7 +209,7 @@ function bus_send_confirmation_email(PDO $pdo, array $config, string $registrati
                 $config,
                 $prep['email'],
                 $dados['contactName'],
-                'Reserva confirmada · Ônibus Kriativos On Board 2026',
+                'Pagamento confirmado · Ônibus Kriativos On Board 2026',
                 bus_confirmation_email_html($dados),
                 bus_confirmation_email_text($dados),
                 [[
@@ -258,7 +259,7 @@ function bus_send_confirmation_email(PDO $pdo, array $config, string $registrati
                 $config,
                 (string) $p['email'],
                 $p['name'],
-                'Sua vaga no ônibus está confirmada · Kriativos On Board 2026',
+                'Reserva registrada · Ônibus Kriativos On Board 2026',
                 bus_passenger_email_html($dados, $p['name']),
                 bus_passenger_email_text($dados, $p['name'])
             );

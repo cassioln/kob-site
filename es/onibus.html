@@ -70,10 +70,10 @@
     rel="stylesheet">
   <link rel="preload" href="/assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
   <link rel="stylesheet" href="/assets/css/main.css?v=20260821-header-lead-flow">
-  <link rel="stylesheet" href="/assets/css/onibus.css?v=20260821-contact-validation-v2">
+  <link rel="stylesheet" href="/assets/css/onibus.css?v=20261003-live-content">
   <link rel="stylesheet" href="/assets/css/cookie-consent.css?v=20260820-fix-contrast">
   <script defer src="/assets/js/cookie-consent.js?v=20260713-5"></script>
-  <script defer src="/assets/js/onibus.js?v=20260821-contact-validation-v3"></script>
+  <script defer src="/assets/js/onibus.js?v=20261003-live-content"></script>
 </head>
 
 <body class="bus-page">
@@ -135,7 +135,7 @@
                   <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                   <path d="m9 12 2 2 4-4"></path>
                 </svg>
-                Reserva sujeta a quórum mínimo
+                Autobús 1 confirmado · Autobús 2 sujeto a quórum mínimo
               </p>
             </div>
           </div>
@@ -703,9 +703,8 @@
 
               <p class="eyebrow">Reserva confirmada</p>
               <h2 id="confirmed-title">Pago confirmado. Tu reserva está registrada.</h2>
-              <p class="bus-confirmed__lead">Recibimos tu pago y registramos tu reserva en el autobús fletado.
-                Si no se alcanza el quórum mínimo, la organización devolverá el valor íntegro.
-              </p>
+              <p class="bus-confirmed__lead">Recibimos tu pago y registramos tu reserva en el autobús fletado.</p>
+              <p class="bus-confirmed__lead" id="confirmed-operation">El autobús 1 está confirmado. El autobús 2 y los vehículos adicionales dependen del mínimo de pasajeros. Si no se alcanza, la organización devuelve el 100% del valor pagado.</p>
 
               <dl class="bus-confirmed__facts">
                 <div>
@@ -713,8 +712,12 @@
                   <dd>Barra Funda <span aria-hidden="true">↔</span> Puerto de Santos</dd>
                 </div>
                 <div>
+                  <dt>Autobús de la reserva</dt>
+                  <dd id="confirmed-bus">Autobús por confirmar</dd>
+                </div>
+                <div>
                   <dt>Encuentro y Salida</dt>
-                  <dd>2.º Autobús: Encuentro 06:40 (Salida 07:20) · Barra Funda · 1.er Autobús: salida 06:30 (completo)</dd>
+                  <dd id="confirmed-meeting">Confirma tu autobús y horario en el grupo del transporte antes de salir de casa.</dd>
                 </div>
                 <div>
                   <dt>Valor pagado</dt>
@@ -772,7 +775,7 @@
                    confirmação atual usa os elementos acima e IDs únicos. -->
               <div class="bus-confirmed__legacy" hidden aria-hidden="true">
                 <h2 class="bus-confirmed__title" id="confirmed-legacy-title">¡Reserva Confirmada!</h2>
-                <p class="bus-confirmed__lead">Tu pago ha sido identificado y tus lugares están garantizados.</p>
+                <p class="bus-confirmed__lead">Tu pago ha sido identificado y tu reserva está registrada.</p>
 
                 <div class="bus-confirmed__card">
                   <div class="bus-confirmed__code-label">Código de Reserva</div>
@@ -818,9 +821,7 @@
                 <ul>
                   <li><strong>1. Comprobante de reserva:</strong> Guarda el comprobante enviado a tu e-mail. Sirve como constancia oficial y se puede presentar en el celular al embarcar.</li>
                   <li><strong>2. Punto de encuentro y horarios:</strong> Barra Funda – SP (Rua Tagipuru, nº 552 – detrás del Memorial da América Latina).<br>
-                    • <strong>1.er Autobús (Completo):</strong> Encuentro a las <strong>06:00</strong>, salida puntual a las <strong>06:30</strong> (tolerancia máxima hasta 06:40).<br>
-                    • <strong>2.º Autobús (Plazas actuales):</strong> Encuentro a las <strong>06:40</strong>, salida puntual a las <strong>07:20</strong> (tolerancia máxima hasta 07:30).<br>
-                    Tras estos horarios límite, el vehículo iniciará el viaje y no podrá esperar a pasajeros retrasados.</li>
+                    <span id="confirmed-instructions">Confirma tu autobús y horario en el grupo del transporte antes de salir de casa.</span></li>
                   <li><strong>3. Llega con antelación:</strong> Llega al lugar a la hora de encuentro de tu autobús para verificación de la lista y carga de equipajes. Regreso el lunes (23/11) a las <strong>10:30</strong> desde el Puerto de Santos.</li>
                   <li><strong>4. Asientos libres e integración:</strong> Los asientos no están numerados. La ocupación es libre por orden de llegada. ¡Aprovecha el viaje para conocer a otros participantes y comenzar la diversión! <em>(Válido para ida y vuelta).</em></li>
                 </ul>
@@ -915,7 +916,7 @@
             <div class="bus-summary__currency-hint">
               <span>BRL</span> · <span>1 USD ≈ <strong data-currency-rate="USD">R$ 5,45</strong> · 1 EUR ≈ <strong data-currency-rate="EUR">R$ 5,95</strong></span>
             </div>
-            <p class="bus-summary__warning"><span aria-hidden="true">!</span> El fletado solo se contratará si se alcanza el quórum mínimo. De lo contrario, la organización devolverá el valor íntegro.</p>
+            <p class="bus-summary__warning"><span aria-hidden="true">!</span> El autobús 1 está confirmado. El autobús 2 y los vehículos adicionales dependen del mínimo de pasajeros. Si no se alcanza, la organización devuelve el 100% del valor pagado.</p>
           </aside>
         </div>
       </div>
@@ -925,7 +926,7 @@
       <div class="container bus-reassurance__inner">
         <div class="bus-reassurance__head">
           <h2 id="conditions-title">Antes de pagar, conoce las condiciones.</h2>
-          <p class="bus-reassurance__lead">El fletado depende de un quórum mínimo. Si no se alcanza la meta, el valor pagado será devuelto íntegramente.</p>
+          <p class="bus-reassurance__lead">El autobús 1 está confirmado. El autobús 2 y los vehículos adicionales dependen del mínimo de pasajeros. Si no se alcanza, la organización devuelve el 100% del valor pagado.</p>
         </div>
         <div class="bus-reassurance__cards">
           <article class="bus-reassurance__card">

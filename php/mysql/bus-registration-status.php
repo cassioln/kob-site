@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 // validation.php é agnóstica de banco: reaproveitamos a lib existente.
 require_once dirname(__DIR__) . '/lib/validation.php';
+require_once dirname(__DIR__) . '/lib/bus-travel.php';
 require_once __DIR__ . '/lib/db.php';
 require_once __DIR__ . '/lib/pending-reconciliation.php';
 
@@ -59,12 +60,14 @@ try {
     // dado pessoal: não identifica ninguém sozinho, então pode sair aqui. CPF,
     // nome, e-mail e WhatsApp continuam fora.
     $grupo = null;
+    $busNumber = null;
     if ($status === 'confirmed') {
-        $qg = $pdo->prepare('SELECT group_name FROM bus_registrations WHERE id = :id LIMIT 1');
+        $qg = $pdo->prepare('SELECT group_name, bus_number, fleet_assignment_status FROM bus_registrations WHERE id = :id LIMIT 1');
         $qg->execute([':id' => $id]);
         $linha = $qg->fetch(PDO::FETCH_ASSOC);
         $valor = $linha['group_name'] ?? null;
         $grupo = ($valor !== null && $valor !== '') ? (string) $valor : null;
+        $busNumber = bus_assigned_number($linha ?: []);
     }
 
     // Só o estado operacional. Nunca CPF, nome, e-mail ou WhatsApp.
@@ -72,6 +75,7 @@ try {
         'status' => $status,
         'statusDetail' => $detail ?: null,
         'groupName' => $grupo,
+        'busNumber' => $busNumber,
     ]);
 } catch (Throwable $error) {
     log_failure('bus-registration-status', $error);

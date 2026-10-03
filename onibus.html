@@ -107,10 +107,10 @@
     rel="stylesheet">
   <link rel="preload" href="/assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
   <link rel="stylesheet" href="/assets/css/main.css?v=20260821-header-lead-flow">
-  <link rel="stylesheet" href="/assets/css/onibus.css?v=20260821-contact-validation-v2">
+  <link rel="stylesheet" href="/assets/css/onibus.css?v=20261003-live-content">
   <link rel="stylesheet" href="/assets/css/cookie-consent.css?v=20260820-fix-contrast">
   <script defer src="/assets/js/cookie-consent.js?v=20260713-5"></script>
-  <script defer src="/assets/js/onibus.js?v=20260821-contact-validation-v3"></script>
+  <script defer src="/assets/js/onibus.js?v=20261003-live-content"></script>
 </head>
 
 <body class="bus-page">
@@ -168,7 +168,7 @@
                   <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                   <path d="m9 12 2 2 4-4"></path>
                 </svg>
-                Reserva sujeita ao quórum mínimo
+                Ônibus 1 confirmado · Ônibus 2 sujeito ao quórum mínimo
               </p>
             </div>
           </div>
@@ -742,9 +742,8 @@
 
               <p class="eyebrow">Reserva confirmada</p>
               <h2 id="confirmed-title">Pagamento confirmado. Sua reserva está registrada.</h2>
-              <p class="bus-confirmed__lead">Recebemos seu pagamento e registramos sua reserva no ônibus fretado.
-                Se o quórum mínimo não for atingido, a organização devolverá integralmente o valor pago.
-              </p>
+              <p class="bus-confirmed__lead">Recebemos seu pagamento e registramos sua reserva no ônibus fretado.</p>
+              <p class="bus-confirmed__lead" id="confirmed-operation">O ônibus 1 está confirmado. O ônibus 2 e eventuais veículos adicionais dependem do mínimo de passageiros. Se não for atingido, a organização devolve 100% do valor pago.</p>
 
               <dl class="bus-confirmed__facts">
                 <div>
@@ -752,8 +751,12 @@
                   <dd>Barra Funda <span aria-hidden="true">↔</span> Porto de Santos</dd>
                 </div>
                 <div>
+                  <dt>Ônibus da reserva</dt>
+                  <dd id="confirmed-bus">Ônibus a confirmar</dd>
+                </div>
+                <div>
                   <dt>Encontro</dt>
-                  <dd>2º Ônibus: Encontro 06:40 (Saída 07:20) · Barra Funda · 1º Ônibus: saída 06:30 (lotado)</dd>
+                  <dd id="confirmed-meeting">Confirme seu ônibus e horário no grupo do fretado antes de sair de casa.</dd>
                 </div>
                 <div>
                   <dt>Valor pago</dt>
@@ -812,7 +815,7 @@
                    confirmação atual usa os elementos acima e IDs únicos. -->
               <div class="bus-confirmed__legacy" hidden aria-hidden="true">
                 <h2 class="bus-confirmed__title" id="confirmed-legacy-title">Reserva Confirmada!</h2>
-                <p class="bus-confirmed__lead">Seu pagamento foi identificado e suas vagas estão garantidas.</p>
+                <p class="bus-confirmed__lead">Seu pagamento foi identificado e sua reserva está registrada.</p>
 
                 <div class="bus-confirmed__card">
                   <div class="bus-confirmed__code-label">Código da Reserva</div>
@@ -860,9 +863,7 @@
                   <li><strong>1. Comprovante da reserva:</strong> Guarde o PDF enviado para o seu e-mail. Ele vale como
                     comprovante oficial e pode ser apresentado pelo celular no embarque.</li>
                   <li><strong>2. Ponto de encontro e horários:</strong> Barra Funda – SP (Rua Tagipuru, altura do nº 552 – atrás do Memorial da América Latina).<br>
-                    • <strong>1º Ônibus (Lotado):</strong> Encontro às <strong>06h00</strong>, saída pontual às <strong>06h30</strong> (tolerância máxima até 06h40).<br>
-                    • <strong>2º Ônibus (Vagas atuais):</strong> Encontro às <strong>06h40</strong>, saída pontual às <strong>07h20</strong> (tolerância máxima até 07h30).<br>
-                    Após esses horários limite, precisaremos seguir viagem e o ônibus não poderá aguardar passageiros atrasados.</li>
+                    <span id="confirmed-instructions">Confirme seu ônibus e horário no grupo do fretado antes de sair de casa.</span></li>
                   <li><strong>3. Programe-se com antecedência:</strong> Chegue para estar no local no horário de encontro do seu ônibus para conferência da lista e acomodação de bagagens. Retorno na segunda-feira (23/11) às <strong>10h30</strong> saindo do Porto de Santos.</li>
                   <li><strong>4. Assentos livres e integração:</strong> Os assentos não são exclusivos nem
                     numerados. A ocupação é livre por ordem de chegada. Aproveite o trajeto para ir conhecendo os outros
@@ -959,8 +960,7 @@
               </div>
             </dl>
             <div class="bus-summary__total"><span>Total do Pix</span><strong id="bus-total">R$ 120,00</strong></div>
-            <p class="bus-summary__warning"><span aria-hidden="true">!</span> O fretado só será contratado se o quórum
-              mínimo for atingido. Caso contrário, a organização devolverá integralmente o valor pago.</p>
+            <p class="bus-summary__warning"><span aria-hidden="true">!</span> O ônibus 1 está confirmado. O ônibus 2 e eventuais veículos adicionais dependem do mínimo de passageiros. Se não for atingido, a organização devolve 100% do valor pago.</p>
           </aside>
         </div>
       </div>
@@ -970,8 +970,7 @@
       <div class="container bus-reassurance__inner">
         <div class="bus-reassurance__head">
           <h2 id="conditions-title">Antes de pagar, entenda a contratação.</h2>
-          <p class="bus-reassurance__lead">O fretado depende de um quórum mínimo. Se a meta não for atingida, o valor
-            pago será devolvido integralmente.</p>
+          <p class="bus-reassurance__lead">O ônibus 1 está confirmado. O ônibus 2 e eventuais veículos adicionais dependem do mínimo de passageiros. Se não for atingido, a organização devolve 100% do valor pago.</p>
         </div>
         <div class="bus-reassurance__cards">
           <article class="bus-reassurance__card">

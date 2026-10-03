@@ -25,9 +25,11 @@ declare(strict_types=1);
  * } $dados
  */
 require_once __DIR__ . '/email-parts.php';
+require_once __DIR__ . '/bus-travel.php';
 
 function bus_confirmation_email_html(array $dados): string
 {
+    $travel = bus_travel_details($dados);
     $e = static fn (string $v): string => htmlspecialchars($v, ENT_QUOTES, 'UTF-8');
     $primeiroNome = explode(' ', trim($dados['contactName']))[0] ?? '';
 
@@ -65,7 +67,8 @@ function bus_confirmation_email_html(array $dados): string
         ['Valor pago', 'R$ ' . str_replace('.', ',', $dados['amount'])],
         ['Passageiros pagantes', (string) $dados['passengerCount']],
         ['Rota', 'Barra Funda (SP) &rarr; Porto de Santos'],
-        ['Encontro do grupo', '1º Ônibus: 06h00 (Saída: 06h30) | 2º Ônibus: 06h40 (Saída: 07h20) &middot; Rua Tagipuru, 552 (Barra Funda)'],
+        ['Ônibus da reserva', $travel['label']],
+        ['Encontro do grupo', $e($travel['schedule']) . ' &middot; Rua Tagipuru, 552 (Barra Funda)'],
     ];
     if (!empty($dados['orderId'])) {
         $fatos[] = ['Transação (Mercado Pago)', $dados['orderId']];
@@ -94,7 +97,7 @@ function bus_confirmation_email_html(array $dados): string
     }
 
     $html = bus_email_abertura(
-        'Sua vaga no ônibus fretado está garantida. Código ' . $dados['code'] . '.'
+        'Pagamento confirmado e reserva registrada. Código ' . $dados['code'] . '.'
     );
 
     $html .= bus_email_cabecalho(
@@ -110,10 +113,10 @@ function bus_confirmation_email_html(array $dados): string
                 Pagamento confirmado
               </p>
               <h1 style="margin:0 0 12px;font:700 26px/1.2 Arial,Helvetica,sans-serif;color:#ffffff;">
-                ' . ($primeiroNome !== '' ? $e($primeiroNome) . ', sua vaga' : 'Sua vaga') . ' está garantida.
+                ' . ($primeiroNome !== '' ? $e($primeiroNome) . ', sua reserva' : 'Sua reserva') . ' está registrada.
               </h1>
               <p style="margin:0;font:400 15px/1.6 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.82);">
-                Recebemos seu Pix e os assentos já estão reservados. Guarde o comprovante em anexo:
+                Recebemos seu Pix e registramos sua reserva. Confira abaixo o ônibus e sua condição de operação. Guarde o comprovante em anexo:
                 é ele que identifica seu grupo no embarque.
               </p>
             </td>
@@ -164,13 +167,13 @@ function bus_confirmation_email_html(array $dados): string
 
                     <p style="margin:0 0 12px;font:400 13px/1.6 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.9);">
                       <strong style="color:#ffffff;">2. Ponto de Encontro &amp; Horários:</strong> Local: <strong>Rua Tagipuru, altura do nº 552 – Barra Funda – SP</strong> (atrás do Memorial da América Latina).<br>
-                      &bull; <strong>1º Ônibus (Lotado):</strong> Encontro às <strong style="color:#29c3f5;">06h00</strong>, com saída pontual às <strong style="color:#feb32c;">06h30</strong> (tolerância máxima de 10 min, saída final às 06h40).<br>
-                      &bull; <strong>2º Ônibus:</strong> Encontro às <strong style="color:#29c3f5;">06h40</strong>, com saída pontual às <strong style="color:#feb32c;">07h20</strong> (tolerância máxima de 10 min, saída final às 07h30).<br>
+                      <strong>' . $e($travel['label']) . ':</strong> ' . $e($travel['schedule']) . '.<br>
+                      ' . $e($travel['punctuality']) . '<br>
                       Após o horário limite de cada ônibus, o veículo precisará seguir viagem e não poderá aguardar passageiros atrasados, não nos responsabilizando por perdas decorrentes de atraso. O retorno na segunda-feira será às <strong>10h30</strong> saindo do Porto de Santos.
                     </p>
 
                     <p style="margin:0 0 12px;font:400 13px/1.6 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.9);">
-                      <strong style="color:#ffffff;">3. Programe-se com Antecedência:</strong> Chegue com calma no horário de encontro do seu ônibus (06h00 para o 1º ônibus ou 06h40 para o 2º ônibus), garantindo tempo hábil para conferência da lista e acomodação de bagagens.
+                      <strong style="color:#ffffff;">3. Programe-se com Antecedência:</strong> Confira o ônibus e o horário indicados nesta reserva e acompanhe os avisos no grupo do fretado.
                     </p>
 
                     <p style="margin:0;font:400 13px/1.6 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.9);">
@@ -190,7 +193,7 @@ function bus_confirmation_email_html(array $dados): string
                      style="background:rgba(255,255,255,0.04);border-radius:10px;border:1px solid rgba(255,255,255,0.08);">
                 <tr>
                   <td style="padding:14px 18px;font:400 12px/1.6 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.72);">
-                    O ônibus só será contratado se o número mínimo de passageiros for atingido. Caso isso não aconteça, 100% do valor é devolvido integralmente via Pix.
+                    ' . $e($travel['operation']) . '
                   </td>
                 </tr>
               </table>
@@ -214,14 +217,15 @@ function bus_confirmation_email_html(array $dados): string
  */
 function bus_confirmation_email_text(array $dados): string
 {
+    $travel = bus_travel_details($dados);
     $linhas = [];
     $primeiroNome = explode(' ', trim($dados['contactName']))[0] ?? '';
 
     $linhas[] = 'KRIATIVOS ON BOARD 2026 - TRANSPORTE FRETADO';
     $linhas[] = '';
-    $linhas[] = ($primeiroNome !== '' ? $primeiroNome . ', sua vaga' : 'Sua vaga') . ' esta garantida.';
+    $linhas[] = ($primeiroNome !== '' ? $primeiroNome . ', sua reserva' : 'Sua reserva') . ' esta registrada.';
     $linhas[] = '';
-    $linhas[] = 'Recebemos seu Pix e os assentos ja estao reservados.';
+    $linhas[] = 'Recebemos seu Pix e registramos sua reserva. Confira o onibus e sua condicao de operacao abaixo.';
     $linhas[] = 'O comprovante em PDF esta em anexo.';
     $linhas[] = '';
     $linhas[] = 'DADOS DA RESERVA';
@@ -232,7 +236,8 @@ function bus_confirmation_email_text(array $dados): string
         $linhas[] = 'Criancas de ate 5 anos: ' . $dados['childrenCount'] . ' (nao pagantes, no colo)';
     }
     $linhas[] = 'Rota: Barra Funda (SP) -> Porto de Santos';
-    $linhas[] = 'Encontro: 1º Onibus: 06h00 (Saida: 06h30) | 2º Onibus: 06h40 (Saida: 07h20) - Rua Tagipuru, 552 (Barra Funda)';
+    $linhas[] = 'Ônibus da reserva: ' . $travel['label'];
+    $linhas[] = 'Encontro: ' . $travel['schedule'] . ' - Rua Tagipuru, 552 (Barra Funda)';
     if (!empty($dados['orderId'])) {
         $linhas[] = 'Transacao: ' . $dados['orderId'];
     }
@@ -246,14 +251,13 @@ function bus_confirmation_email_text(array $dados): string
     $linhas[] = 'PROXIMOS PASSOS E INSTRUCOES DE VIAGEM';
     $linhas[] = '1. Guarde o PDF em anexo. Ele vale como comprovante e podera ser apresentado pelo celular.';
     $linhas[] = '2. Ponto de Encontro e Horarios: Rua Tagipuru, altura do numero 552 - Barra Funda - SP, atras do Memorial da America Latina.';
-    $linhas[] = '   - 1º Onibus (Lotado): Encontro as 06h00, saida pontual as 06h30 (tolerancia maxima ate 06h40).';
-    $linhas[] = '   - 2º Onibus: Encontro as 06h40, saida pontual as 07h20 (tolerancia maxima ate 07h30).';
+    $linhas[] = '   - ' . $travel['label'] . ': ' . $travel['schedule'];
+    $linhas[] = '   ' . $travel['punctuality'];
     $linhas[] = '   Apos o horario limite de cada onibus, o veiculo precisara seguir viagem e nao podera aguardar passageiros atrasados. Retorno na segunda-feira as 10h30 saindo do Porto de Santos.';
-    $linhas[] = '3. Chegue com antecedencia e programe-se para estar no local no horario de encontro do seu onibus (06h00 para o 1º onibus ou 06h40 para o 2º onibus).';
+    $linhas[] = '3. Confira o onibus e o horario desta reserva e acompanhe os avisos no grupo do fretado.';
     $linhas[] = '4. Os assentos nao sao exclusivos. Os lugares serao ocupados por ordem de chegada, de forma livre, entao voce pode sentar onde houver disponibilidade. Aproveite para ir conhecendo os outros participantes durante o trajeto! Essa regra vale para ida e volta.';
     $linhas[] = '';
-    $linhas[] = 'O onibus so sera contratado se o minimo de passageiros for atingido.';
-    $linhas[] = 'Caso contrario, o valor e devolvido integralmente.';
+    $linhas[] = $travel['operation'];
     $linhas[] = '';
     // Mesma informacao do HTML: quem le em texto puro nao pode receber menos.
     $linhas = array_merge($linhas, bus_email_grupo_texto($dados['groupName'] ?? null));

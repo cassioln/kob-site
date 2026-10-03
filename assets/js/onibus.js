@@ -89,6 +89,10 @@
   var pixExpiryCountdown = document.getElementById('pix-expiry-countdown');
   var confirmationPanel = document.getElementById('confirmation-panel');
   var confirmedAmount = document.getElementById('confirmed-amount');
+  var confirmedBus = document.getElementById('confirmed-bus');
+  var confirmedMeeting = document.getElementById('confirmed-meeting');
+  var confirmedOperation = document.getElementById('confirmed-operation');
+  var confirmedInstructions = document.getElementById('confirmed-instructions');
   var confirmedCode = document.getElementById('confirmed-code');
   var confirmedPassengers = document.getElementById('confirmed-passengers');
   var confirmedChildren = document.getElementById('confirmed-children');
@@ -326,6 +330,15 @@
       },
       confirmation: {
         dateLocale: 'pt-BR',
+        busLabel: 'Ônibus {number}',
+        busPending: 'Ônibus a confirmar',
+        meeting: 'Encontro às {meeting} · saída às {departure} · Barra Funda',
+        meetingPending: 'Confirme seu ônibus e horário no grupo do fretado antes de sair de casa.',
+        tripInstructions: 'Encontro às {meeting}, saída às {departure}, com tolerância máxima até {cutoff}. Após esse limite, o ônibus não poderá aguardar passageiros atrasados.',
+        firstBusOperation: 'O ônibus 1 está confirmado. O quórum pendente do ônibus 2 não se aplica à sua reserva.',
+        secondBusOperation: 'O ônibus 2 depende do mínimo de passageiros para operar. Se não for atingido, a organização devolve 100% do valor via Pix.',
+        extraBusOperation: 'O ônibus {number} depende da confirmação operacional e do mínimo de passageiros. Se não for atingido, a organização devolve 100% do valor via Pix. Consulte o grupo do fretado.',
+        pendingOperation: 'O ônibus 1 está confirmado. O ônibus 2 e eventuais veículos adicionais dependem do mínimo de passageiros, com devolução integral se não for atingido. Confirme o veículo da sua reserva no grupo do fretado.',
         childTag: 'Criança de colo {num} (até 5 anos) · Cortesia',
         childNote1: '+ 1 criança de até 5 anos, no colo de um responsável (sem cobrança).',
         childNotePlural: '+ {count} crianças de até 5 anos, no colo de um responsável (sem cobrança).'
@@ -414,6 +427,15 @@
       },
       confirmation: {
         dateLocale: 'en-US',
+        busLabel: 'Bus {number}',
+        busPending: 'Bus to be confirmed',
+        meeting: 'Meet at {meeting} · departure {departure} · Barra Funda',
+        meetingPending: 'Confirm your bus and time in the shuttle group before leaving home.',
+        tripInstructions: 'Meet at {meeting}, departure at {departure}, with a grace period until {cutoff}. After that limit, the bus cannot wait for late passengers.',
+        firstBusOperation: 'Bus 1 is confirmed. Bus 2’s pending minimum passenger requirement does not apply to your booking.',
+        secondBusOperation: 'Bus 2 requires a minimum number of passengers to operate. If it is not reached, the organizers will refund 100% via Pix.',
+        extraBusOperation: 'Bus {number} requires operational confirmation and a minimum number of passengers. If it is not reached, the organizers will refund 100% via Pix. Check the shuttle group.',
+        pendingOperation: 'Bus 1 is confirmed. Bus 2 and any additional vehicles require a minimum number of passengers, with a full refund if it is not reached. Confirm your booking’s vehicle in the shuttle group.',
         childTag: 'Lap infant {num} (up to 5 yrs) · Free',
         childNote1: '+ 1 child up to 5 yrs on an adult’s lap (no extra fee).',
         childNotePlural: '+ {count} children up to 5 yrs on an adult’s lap (no extra fee).'
@@ -502,6 +524,15 @@
       },
       confirmation: {
         dateLocale: 'es-ES',
+        busLabel: 'Autobús {number}',
+        busPending: 'Autobús por confirmar',
+        meeting: 'Encuentro a las {meeting} · salida a las {departure} · Barra Funda',
+        meetingPending: 'Confirma tu autobús y horario en el grupo del transporte antes de salir de casa.',
+        tripInstructions: 'Encuentro a las {meeting}, salida a las {departure}, con tolerancia máxima hasta las {cutoff}. Después de ese límite, el autobús no podrá esperar a pasajeros atrasados.',
+        firstBusOperation: 'El autobús 1 está confirmado. El quórum pendiente del autobús 2 no se aplica a tu reserva.',
+        secondBusOperation: 'El autobús 2 depende del mínimo de pasajeros para operar. Si no se alcanza, la organización devuelve el 100% por Pix.',
+        extraBusOperation: 'El autobús {number} depende de la confirmación operativa y del mínimo de pasajeros. Si no se alcanza, la organización devuelve el 100% por Pix. Consulta el grupo del transporte.',
+        pendingOperation: 'El autobús 1 está confirmado. El autobús 2 y los vehículos adicionales dependen del mínimo de pasajeros, con devolución íntegra si no se alcanza. Confirma el vehículo de tu reserva en el grupo del transporte.',
         childTag: 'Niño en falda {num} (hasta 5 años) · Cortesía',
         childNote1: '+ 1 niño de hasta 5 años en la falda de un responsable (sin costo).',
         childNotePlural: '+ {count} niños de hasta 5 años en la falda de un responsable (sin costo).'
@@ -1290,6 +1321,45 @@
     setConfirmedData(confirmedSnapshot, data);
   }
 
+  function setConfirmedBus(data) {
+    var number = data && data.busNumber;
+    var assigned = typeof number === 'number' && Number.isInteger(number) && number > 0;
+    var copy = t.confirmation;
+    if (confirmedInstructions) confirmedInstructions.textContent = copy.meetingPending;
+    if (confirmedBus) {
+      confirmedBus.textContent = assigned
+        ? copy.busLabel.replace('{number}', String(number))
+        : copy.busPending;
+    }
+    if (confirmedMeeting) {
+      if (assigned && (number === 1 || number === 2)) {
+        var timeFormat = new Intl.DateTimeFormat(copy.dateLocale, {
+          hour: '2-digit', minute: '2-digit', hour12: langKey === 'en', timeZone: 'UTC'
+        });
+        var meeting = new Date(Date.UTC(2000, 0, 1, 6, number === 1 ? 0 : 40));
+        var departure = new Date(Date.UTC(2000, 0, 1, number === 1 ? 6 : 7, number === 1 ? 30 : 20));
+        confirmedMeeting.textContent = copy.meeting
+          .replace('{meeting}', timeFormat.format(meeting))
+          .replace('{departure}', timeFormat.format(departure));
+        if (confirmedInstructions) {
+          var cutoff = new Date(Date.UTC(2000, 0, 1, number === 1 ? 6 : 7, number === 1 ? 40 : 30));
+          confirmedInstructions.textContent = copy.busLabel.replace('{number}', String(number)) + ': '
+            + copy.tripInstructions.replace('{meeting}', timeFormat.format(meeting))
+              .replace('{departure}', timeFormat.format(departure))
+              .replace('{cutoff}', timeFormat.format(cutoff));
+        }
+      } else {
+        confirmedMeeting.textContent = copy.meetingPending;
+      }
+    }
+    if (confirmedOperation) {
+      confirmedOperation.textContent = !assigned ? copy.pendingOperation
+        : number === 1 ? copy.firstBusOperation
+        : number === 2 ? copy.secondBusOperation
+        : copy.extraBusOperation.replace('{number}', String(number));
+    }
+  }
+
   function setConfirmedData(confirmedSnapshot, data) {
     stopExpiryCountdown();
     closeStillHereDialog();
@@ -1299,6 +1369,7 @@
     confirmationPanel.hidden = false;
 
     var snap = confirmedSnapshot || {};
+    setConfirmedBus(data);
     confirmedAmount.textContent = snap.totalAmount ? 'R$ ' + String(snap.totalAmount).replace('.', ',') : '—';
     confirmedCode.textContent = snap.registrationId
       ? String(snap.registrationId).split('-')[0].toUpperCase()
@@ -1365,7 +1436,8 @@
       }
     }
     if (confirmedGroup) {
-      confirmedGroup.hidden = gName.length === 0;
+      // O link de suporte também é necessário para reservas individuais ou sem ônibus atribuído.
+      confirmedGroup.hidden = false;
     }
 
     confirmationPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });

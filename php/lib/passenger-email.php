@@ -8,22 +8,24 @@ declare(strict_types=1);
  * Diferença deliberada em relação ao e-mail do contato principal: aqui NÃO vão
  * código de pagamento, QR Code, valor pago, transação nem comprovante em PDF.
  * Esses dados pertencem a quem pagou. O passageiro adicional precisa saber que
- * a vaga dele está garantida, com quem falar e onde entrar no grupo.
+ * a reserva dele está registrada e sua condição operacional, com quem falar e onde entrar no grupo.
  *
  * Personalizado com o nome de quem recebe, para não parecer aviso em massa.
  */
 
 require_once __DIR__ . '/email-parts.php';
+require_once __DIR__ . '/bus-travel.php';
 
 function bus_passenger_email_html(array $dados, string $nomePassageiro): string
 {
+    $travel = bus_travel_details($dados);
     $e = static fn (?string $v): string => bus_email_e($v);
 
     // Primeiro nome no cumprimento: o nome completo no "Olá" soa como cobrança.
     $primeiroNome = trim(explode(' ', trim($nomePassageiro))[0] ?? $nomePassageiro);
 
     $html = bus_email_abertura(
-        'Sua vaga no ônibus do Kriativos On Board 2026 está confirmada.'
+        'Sua reserva no ônibus do Kriativos On Board 2026 está registrada.'
     );
 
     $html .= bus_email_cabecalho(
@@ -34,7 +36,7 @@ function bus_passenger_email_html(array $dados, string $nomePassageiro): string
     $html .= '
           <tr>
             <td style="padding:0 0 8px;font:700 22px/1.3 Arial,Helvetica,sans-serif;color:#ffffff;">
-              Olá, ' . $e($primeiroNome) . '! Sua vaga está confirmada.
+              Olá, ' . $e($primeiroNome) . '! Sua reserva está registrada.
             </td>
           </tr>
           <tr>
@@ -53,6 +55,9 @@ function bus_passenger_email_html(array $dados, string $nomePassageiro): string
             <td style="padding:0 0 20px;">
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">'
         . bus_email_linha('Reserva', $dados['code'])
+        . bus_email_linha('Ônibus da reserva', $travel['label'])
+        . bus_email_linha('Encontro', $travel['schedule'])
+        . bus_email_linha('Operação', $travel['operation'])
         . bus_email_linha('Grupo', $dados['groupName'] ?? null)
         . bus_email_linha('Responsável pela reserva', $dados['contactName'])
         . bus_email_linha('Contato do responsável', $dados['contactWhatsapp'])
@@ -103,12 +108,12 @@ function bus_passenger_email_html(array $dados, string $nomePassageiro): string
                     </p>
                     <p style="margin:0 0 12px;font:400 13px/1.65 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.9);">
                       <strong style="color:#ffffff;">2. Ponto de Encontro &amp; Horários:</strong> Local: <strong>Rua Tagipuru, altura do nº 552 – Barra Funda – SP</strong> (atrás do Memorial da América Latina).<br>
-                      &bull; <strong>1º Ônibus (Lotado):</strong> Encontro às <strong style="color:#29c3f5;">06h00</strong>, com saída pontual às <strong style="color:#feb32c;">06h30</strong> (tolerância máxima de 10 min, saída final às 06h40).<br>
-                      &bull; <strong>2º Ônibus:</strong> Encontro às <strong style="color:#29c3f5;">06h40</strong>, com saída pontual às <strong style="color:#feb32c;">07h20</strong> (tolerância máxima de 10 min, saída final às 07h30).<br>
+                      <strong>' . $e($travel['label']) . ':</strong> ' . $e($travel['schedule']) . '.<br>
+                      ' . $e($travel['punctuality']) . '<br>
                       Após o horário limite de cada ônibus, o veículo precisará seguir viagem e não poderá aguardar passageiros atrasados. O retorno na segunda-feira será às <strong>10h30</strong> saindo do Porto de Santos.
                     </p>
                     <p style="margin:0 0 12px;font:400 13px/1.65 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.9);">
-                      <strong style="color:#ffffff;">3. Programe-se com Antecedência:</strong> Chegue com calma no horário de encontro do seu ônibus (06h00 para o 1º ônibus ou 06h40 para o 2º ônibus), garantindo tempo hábil para conferência da lista e acomodação de bagagens.
+                      <strong style="color:#ffffff;">3. Programe-se com Antecedência:</strong> Confira o ônibus e o horário indicados nesta reserva e acompanhe os avisos no grupo do fretado.
                     </p>
                     <p style="margin:0;font:400 13px/1.65 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.9);">
                       <strong style="color:#ffffff;">4. Assentos Livres &amp; Integração:</strong> Os assentos não são exclusivos nem numerados. A ocupação é livre por ordem de chegada. Aproveite para ir conhecendo a turma e fazendo novas amizades no trajeto! <em>(Válido para ida e volta; você não necessariamente retornará no mesmo assento em que foi).</em>
@@ -133,12 +138,13 @@ function bus_passenger_email_html(array $dados, string $nomePassageiro): string
 
 function bus_passenger_email_text(array $dados, string $nomePassageiro): string
 {
+    $travel = bus_travel_details($dados);
     $primeiroNome = trim(explode(' ', trim($nomePassageiro))[0] ?? $nomePassageiro);
 
     $linhas = [];
     $linhas[] = 'KRIATIVOS ON BOARD 2026 - TRANSPORTE FRETADO';
     $linhas[] = '';
-    $linhas[] = 'Ola, ' . $primeiroNome . '! Sua vaga esta confirmada.';
+    $linhas[] = 'Ola, ' . $primeiroNome . '! Sua reserva esta registrada.';
     $linhas[] = '';
     $linhas[] = $dados['contactName'] . ' concluiu o pagamento da reserva '
         . $dados['code'] . ' e o seu nome esta na lista de embarque.';
@@ -148,6 +154,9 @@ function bus_passenger_email_text(array $dados, string $nomePassageiro): string
     $linhas[] = '';
     $linhas[] = 'DADOS DA RESERVA';
     $linhas[] = 'Reserva: ' . $dados['code'];
+    $linhas[] = 'Ônibus da reserva: ' . $travel['label'];
+    $linhas[] = 'Encontro: ' . $travel['schedule'];
+    $linhas[] = $travel['operation'];
     if (($dados['groupName'] ?? null) !== null) {
         $linhas[] = 'Grupo: ' . $dados['groupName'];
     }
@@ -169,10 +178,10 @@ function bus_passenger_email_text(array $dados, string $nomePassageiro): string
     $linhas[] = 'PROXIMOS PASSOS E INSTRUCOES DE VIAGEM';
     $linhas[] = '1. Ponto de Encontro: Rua Tagipuru, altura do numero 552 - Barra Funda - SP (atras do Memorial da America Latina)';
     $linhas[] = '2. Ponto de Encontro e Horarios:';
-    $linhas[] = '   - 1º Onibus (Lotado): Encontro as 06h00, saida pontual as 06h30 (tolerancia maxima ate 06h40).';
-    $linhas[] = '   - 2º Onibus: Encontro as 06h40, saida pontual as 07h20 (tolerancia maxima ate 07h30).';
+    $linhas[] = '   - ' . $travel['label'] . ': ' . $travel['schedule'];
+    $linhas[] = '   ' . $travel['punctuality'];
     $linhas[] = '   Apos o horario limite de cada onibus, seguiremos viagem e o veiculo nao podera aguardar. Retorno na segunda-feira as 10h30 saindo do Porto de Santos.';
-    $linhas[] = '3. Programe-se com antecedencia e chegue no horario de encontro do seu onibus (06h00 para o 1º ou 06h40 para o 2º).';
+    $linhas[] = '3. Confira o onibus e o horario desta reserva e acompanhe os avisos no grupo do fretado.';
     $linhas[] = '4. Os assentos nao sao exclusivos. Os lugares serao ocupados por ordem de chegada, de forma livre. Aproveite para ir conhecendo os outros participantes durante o trajeto! Essa regra vale para ida e volta.';
     $linhas[] = '';
     $linhas[] = 'Ficou com alguma duvida? Responda este e-mail que a gente te ajuda.';

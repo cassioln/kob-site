@@ -1648,7 +1648,7 @@ document.documentElement.classList.add('js');
               'Opções sem álcool, como mocktails, vinhos e cervejas'
             ]
           }],
-          note: '* AQUA by MSC: água enriquecida com minerais servida em copos nos bares e buffets, em garrafas de vidro reutilizáveis de 1L nos principais restaurantes e em estações de recarga, mediante solicitação. Taxas de serviço incluídas. Valores e itens do cardápio podem sofrer alterações; imagens e descrições são ilustrativas.',
+          note: 'Limite de 15 bebidas alcoólicas por pessoa por dia (das 6h às 6h do dia seguinte). * AQUA by MSC: água enriquecida com minerais servida em copos nos bares e buffets, em garrafas de vidro reutilizáveis de 1L nos principais restaurantes e em estações de recarga, mediante solicitação. Taxas de serviço incluídas. Valores e itens do cardápio podem sofrer alterações; imagens e descrições são ilustrativas.',
           wa: WA + encodeURIComponent('Olá, Royal Trip! Vi o Pacote de Bebidas Easy na seção de bebidas do Kriativos On Board 2026 e quero contratar essa opção.')
         },
         premium: {
@@ -1670,7 +1670,7 @@ document.documentElement.classList.add('js');
               'Coquetéis e drinks elaborados com marcas premium'
             ]
           }],
-          note: '* AQUA by MSC: água enriquecida com minerais servida em copos, em garrafas de vidro reutilizáveis de 1L e em estações de recarga, mediante solicitação. Taxas de serviço incluídas. Valores e itens do cardápio podem sofrer alterações; imagens e descrições são ilustrativas.',
+          note: 'Limite de 15 bebidas alcoólicas por pessoa por dia (das 6h às 6h do dia seguinte). * AQUA by MSC: água enriquecida com minerais servida em copos, em garrafas de vidro reutilizáveis de 1L e em estações de recarga, mediante solicitação. Taxas de serviço incluídas. Valores e itens do cardápio podem sofrer alterações; imagens e descrições são ilustrativas.',
           wa: WA + encodeURIComponent('Olá, Royal Trip! Vi o Pacote de Bebidas Premium Extra na seção de bebidas do Kriativos On Board 2026 e quero contratar essa opção.')
         },
         naoalcoolico: {
@@ -1771,7 +1771,7 @@ document.documentElement.classList.add('js');
               'Non-alcoholic options: mocktails, non-alcoholic wines and beers'
             ]
           }],
-          note: '* Service charges included. Menu prices and items subject to change; images and descriptions are illustrative.',
+          note: 'Maximum 15 alcoholic drinks per person per day (6 AM to 6 AM the following day). * Service charges included. Menu prices and items subject to change; images and descriptions are illustrative.',
           wa: WA + encodeURIComponent('Hello, Royal Trip! I saw the Easy Drink Package on the Kriativos On Board 2026 website and would like to add this option.')
         },
         premium: {
@@ -1792,7 +1792,7 @@ document.documentElement.classList.add('js');
               'Premium spirits, liqueurs and craft cocktails'
             ]
           }],
-          note: '* Service charges included. Menu prices and items subject to change; images and descriptions are illustrative.',
+          note: 'Maximum 15 alcoholic drinks per person per day (6 AM to 6 AM the following day). * Service charges included. Menu prices and items subject to change; images and descriptions are illustrative.',
           wa: WA + encodeURIComponent('Hello, Royal Trip! I saw the Premium Extra Drink Package on the Kriativos On Board 2026 website and would like to add this option.')
         },
         naoalcoolico: {
@@ -1893,7 +1893,7 @@ document.documentElement.classList.add('js');
               'Opciones sin alcohol: mocktails, vinos y cervezas sin alcohol'
             ]
           }],
-          note: '* Cargos de servicio incluidos. Precios y elementos sujetos a modificación; imágenes ilustrativas.',
+          note: 'Límite de 15 bebidas alcohólicas por persona y día (de las 6h a las 6h del día siguiente). * Cargos de servicio incluidos. Precios y elementos sujetos a modificación; imágenes ilustrativas.',
           wa: WA + encodeURIComponent('Hola, Royal Trip! Vi el Paquete de Bebidas Easy en la sección de bebidas de Kriativos On Board 2026 y quiero contratar esta opción.')
         },
         premium: {
@@ -1914,7 +1914,7 @@ document.documentElement.classList.add('js');
               'Destilados, licores y cócteles de marcas premium'
             ]
           }],
-          note: '* Cargos de servicio incluidos. Precios y elementos sujetos a modificación; imágenes ilustrativas.',
+          note: 'Límite de 15 bebidas alcohólicas por persona y día (de las 6h a las 6h del día siguiente). * Cargos de servicio incluidos. Precios y elementos sujetos a modificación; imágenes ilustrativas.',
           wa: WA + encodeURIComponent('Hola, Royal Trip! Vi el Paquete de Bebidas Premium Extra en la sección de bebidas de Kriativos On Board 2026 y quiero contratar esta opción.')
         },
         naoalcoolico: {

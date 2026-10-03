@@ -70,10 +70,10 @@
     rel="stylesheet">
   <link rel="preload" href="/assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
   <link rel="stylesheet" href="/assets/css/main.css?v=20260821-header-lead-flow">
-  <link rel="stylesheet" href="/assets/css/onibus.css?v=20260821-contact-validation-v2">
+  <link rel="stylesheet" href="/assets/css/onibus.css?v=20261003-live-content">
   <link rel="stylesheet" href="/assets/css/cookie-consent.css?v=20260820-fix-contrast">
   <script defer src="/assets/js/cookie-consent.js?v=20260713-5"></script>
-  <script defer src="/assets/js/onibus.js?v=20260821-contact-validation-v3"></script>
+  <script defer src="/assets/js/onibus.js?v=20261003-live-content"></script>
 </head>
 
 <body class="bus-page">
@@ -135,7 +135,7 @@
                   <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                   <path d="m9 12 2 2 4-4"></path>
                 </svg>
-                Booking subject to minimum quorum
+                Bus 1 confirmed · Bus 2 subject to minimum passengers
               </p>
             </div>
           </div>
@@ -701,9 +701,8 @@
 
               <p class="eyebrow">Booking confirmed</p>
               <h2 id="confirmed-title">Payment confirmed. Your booking is registered.</h2>
-              <p class="bus-confirmed__lead">We received your payment and registered your seat on the charter shuttle.
-                If minimum quorum is not met, the organization will issue a 100% full refund.
-              </p>
+              <p class="bus-confirmed__lead">We received your payment and registered your shuttle booking.</p>
+              <p class="bus-confirmed__lead" id="confirmed-operation">Bus 1 is confirmed. Bus 2 and any additional vehicles require a minimum number of passengers. If it is not reached, the organizers will issue a full refund.</p>
 
               <dl class="bus-confirmed__facts">
                 <div>
@@ -711,8 +710,12 @@
                   <dd>Barra Funda <span aria-hidden="true">↔</span> Santos Harbor</dd>
                 </div>
                 <div>
+                  <dt>Your bus</dt>
+                  <dd id="confirmed-bus">Bus to be confirmed</dd>
+                </div>
+                <div>
                   <dt>Meeting &amp; Departure</dt>
-                  <dd>Bus 2: Meet at 06:40 AM (Departure 07:20 AM) · Barra Funda · Bus 1: departure 06:30 AM (sold out)</dd>
+                  <dd id="confirmed-meeting">Confirm your bus and time in the shuttle group before leaving home.</dd>
                 </div>
                 <div>
                   <dt>Amount paid</dt>
@@ -741,7 +744,7 @@
                 <div class="bus-confirmed__manifest">
                   <div class="bus-confirmed__manifest-header">
                     <div id="confirmed-group-badge" class="bus-confirmed__group-badge" hidden>
-                      <span class="bus-confirmed__group-badge-label">GRUPO:</span>
+                      <span class="bus-confirmed__group-badge-label">GROUP:</span>
                       <strong id="confirmed-group-name"></strong>
                     </div>
                   </div>
@@ -770,7 +773,7 @@
                    confirmação atual usa os elementos acima e IDs únicos. -->
               <div class="bus-confirmed__legacy" hidden aria-hidden="true">
                 <h2 class="bus-confirmed__title" id="confirmed-legacy-title">Booking Confirmed!</h2>
-                <p class="bus-confirmed__lead">Your payment has been received and your seats are guaranteed.</p>
+                <p class="bus-confirmed__lead">Your payment has been received and your booking is registered.</p>
 
                 <div class="bus-confirmed__card">
                   <div class="bus-confirmed__code-label">Booking Code</div>
@@ -816,9 +819,7 @@
                 <ul>
                   <li><strong>1. Booking receipt:</strong> Keep the receipt sent to your email. It serves as official proof and can be presented on your phone at boarding.</li>
                   <li><strong>2. Meeting point & schedule:</strong> Barra Funda – SP (Rua Tagipuru, nº 552 – behind Memorial da América Latina).<br>
-                    • <strong>Bus 1 (Sold Out):</strong> Meet at <strong>06:00 AM</strong>, departure promptly at <strong>06:30 AM</strong> (grace period until 06:40 AM).<br>
-                    • <strong>Bus 2 (Current seats):</strong> Meet at <strong>06:40 AM</strong>, departure promptly at <strong>07:20 AM</strong> (grace period until 07:30 AM).<br>
-                    After grace window, the shuttle must depart and cannot wait for late passengers.</li>
+                    <span id="confirmed-instructions">Confirm your bus and time in the shuttle group before leaving home.</span></li>
                   <li><strong>3. Plan ahead:</strong> Arrive at the meeting point on time for your scheduled bus for list verification and luggage loading. Return departs Santos Harbor at <strong>10:30 AM</strong> on Monday (Nov 23).</li>
                   <li><strong>4. Open seating & community:</strong> Seats are unassigned on a first-come, first-served basis. Use the trip to meet fellow attendees and kick off the fun! <em>(Valid for both legs).</em></li>
                 </ul>
@@ -913,7 +914,7 @@
             <div class="bus-summary__currency-hint">
               <span>BRL</span> · <span>1 USD ≈ <strong data-currency-rate="USD">R$ 5,45</strong> · 1 EUR ≈ <strong data-currency-rate="EUR">R$ 5,95</strong></span>
             </div>
-            <p class="bus-summary__warning"><span aria-hidden="true">!</span> The shuttle will only run if minimum quorum is reached. Otherwise, the organization will issue a 100% full refund.</p>
+            <p class="bus-summary__warning"><span aria-hidden="true">!</span> Bus 1 is confirmed. Bus 2 and any additional vehicles require a minimum number of passengers. If it is not reached, the organizers will issue a full refund.</p>
           </aside>
         </div>
       </div>
@@ -923,7 +924,7 @@
       <div class="container bus-reassurance__inner">
         <div class="bus-reassurance__head">
           <h2 id="conditions-title">Before paying, understand the booking terms.</h2>
-          <p class="bus-reassurance__lead">The shuttle depends on a minimum quorum. If the target is not reached, 100% of the amount will be fully refunded.</p>
+          <p class="bus-reassurance__lead">Bus 1 is confirmed. Bus 2 and any additional vehicles require a minimum number of passengers. If it is not reached, the organizers will issue a full refund.</p>
         </div>
         <div class="bus-reassurance__cards">
           <article class="bus-reassurance__card">
