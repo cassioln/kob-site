@@ -65,7 +65,7 @@ function bus_confirmation_email_html(array $dados): string
         ['Valor pago', 'R$ ' . str_replace('.', ',', $dados['amount'])],
         ['Passageiros pagantes', (string) $dados['passengerCount']],
         ['Rota', 'Barra Funda (SP) &rarr; Porto de Santos'],
-        ['Encontro do grupo', '06:00 hrs (Saída: 06:30) &middot; Rua Tagipuru, 552 (Barra Funda)'],
+        ['Encontro do grupo', '1º Ônibus: 06h00 (Saída: 06h30) | 2º Ônibus: 06h40 (Saída: 07h20) &middot; Rua Tagipuru, 552 (Barra Funda)'],
     ];
     if (!empty($dados['orderId'])) {
         $fatos[] = ['Transação (Mercado Pago)', $dados['orderId']];
@@ -163,12 +163,14 @@ function bus_confirmation_email_html(array $dados): string
                     </p>
 
                     <p style="margin:0 0 12px;font:400 13px/1.6 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.9);">
-                      <strong style="color:#ffffff;">2. Ponto de Encontro &amp; Horários:</strong> Encontro às <strong style="color:#29c3f5;">06h00</strong>, na <strong>Rua Tagipuru, altura do nº 552 – Barra Funda – SP</strong> (atrás do Memorial da América Latina).<br>
-                      A saída do ônibus será às <strong style="color:#feb32c;">06h30</strong>, com tolerância máxima de 10 minutos (saída final às 06h40). Após esse horário limite, o ônibus precisará seguir viagem e não poderá aguardar passageiros que ainda não estejam no local, não nos responsabilizando por perdas decorrentes de atraso.
+                      <strong style="color:#ffffff;">2. Ponto de Encontro &amp; Horários:</strong> Local: <strong>Rua Tagipuru, altura do nº 552 – Barra Funda – SP</strong> (atrás do Memorial da América Latina).<br>
+                      &bull; <strong>1º Ônibus (Lotado):</strong> Encontro às <strong style="color:#29c3f5;">06h00</strong>, com saída pontual às <strong style="color:#feb32c;">06h30</strong> (tolerância máxima de 10 min, saída final às 06h40).<br>
+                      &bull; <strong>2º Ônibus:</strong> Encontro às <strong style="color:#29c3f5;">06h40</strong>, com saída pontual às <strong style="color:#feb32c;">07h20</strong> (tolerância máxima de 10 min, saída final às 07h30).<br>
+                      Após o horário limite de cada ônibus, o veículo precisará seguir viagem e não poderá aguardar passageiros atrasados, não nos responsabilizando por perdas decorrentes de atraso. O retorno na segunda-feira será às <strong>10h30</strong> saindo do Porto de Santos.
                     </p>
 
                     <p style="margin:0 0 12px;font:400 13px/1.6 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.9);">
-                      <strong style="color:#ffffff;">3. Programe-se com Antecedência:</strong> Chegue com calma para estar no local às <strong>06h00</strong>, garantindo tempo hábil para conferência da lista e acomodação de bagagens.
+                      <strong style="color:#ffffff;">3. Programe-se com Antecedência:</strong> Chegue com calma no horário de encontro do seu ônibus (06h00 para o 1º ônibus ou 06h40 para o 2º ônibus), garantindo tempo hábil para conferência da lista e acomodação de bagagens.
                     </p>
 
                     <p style="margin:0;font:400 13px/1.6 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.9);">
@@ -230,7 +232,7 @@ function bus_confirmation_email_text(array $dados): string
         $linhas[] = 'Criancas de ate 5 anos: ' . $dados['childrenCount'] . ' (nao pagantes, no colo)';
     }
     $linhas[] = 'Rota: Barra Funda (SP) -> Porto de Santos';
-    $linhas[] = 'Encontro: 06:00 hrs (Saida: 06:30 hrs) - Rua Tagipuru, 552 (Barra Funda)';
+    $linhas[] = 'Encontro: 1º Onibus: 06h00 (Saida: 06h30) | 2º Onibus: 06h40 (Saida: 07h20) - Rua Tagipuru, 552 (Barra Funda)';
     if (!empty($dados['orderId'])) {
         $linhas[] = 'Transacao: ' . $dados['orderId'];
     }
@@ -243,9 +245,11 @@ function bus_confirmation_email_text(array $dados): string
     $linhas[] = '';
     $linhas[] = 'PROXIMOS PASSOS E INSTRUCOES DE VIAGEM';
     $linhas[] = '1. Guarde o PDF em anexo. Ele vale como comprovante e podera ser apresentado pelo celular.';
-    $linhas[] = '2. Horario de encontro: 06h00, na Rua Tagipuru, altura do numero 552 - Barra Funda - SP, atras do Memorial da America Latina.';
-    $linhas[] = '   A saida do onibus sera as 06h30, com tolerancia maxima de 10 minutos. Apos esse horario, precisaremos seguir viagem e o onibus nao podera aguardar passageiros atrasados.';
-    $linhas[] = '3. Chegue com antecedencia e programe-se para estar no local as 06h00.';
+    $linhas[] = '2. Ponto de Encontro e Horarios: Rua Tagipuru, altura do numero 552 - Barra Funda - SP, atras do Memorial da America Latina.';
+    $linhas[] = '   - 1º Onibus (Lotado): Encontro as 06h00, saida pontual as 06h30 (tolerancia maxima ate 06h40).';
+    $linhas[] = '   - 2º Onibus: Encontro as 06h40, saida pontual as 07h20 (tolerancia maxima ate 07h30).';
+    $linhas[] = '   Apos o horario limite de cada onibus, o veiculo precisara seguir viagem e nao podera aguardar passageiros atrasados. Retorno na segunda-feira as 10h30 saindo do Porto de Santos.';
+    $linhas[] = '3. Chegue com antecedencia e programe-se para estar no local no horario de encontro do seu onibus (06h00 para o 1º onibus ou 06h40 para o 2º onibus).';
     $linhas[] = '4. Os assentos nao sao exclusivos. Os lugares serao ocupados por ordem de chegada, de forma livre, entao voce pode sentar onde houver disponibilidade. Aproveite para ir conhecendo os outros participantes durante o trajeto! Essa regra vale para ida e volta.';
     $linhas[] = '';
     $linhas[] = 'O onibus so sera contratado se o minimo de passageiros for atingido.';

@@ -99,7 +99,7 @@ function bus_boarding_pdf(array $reservas, ?array $logo = null): string
         $blocos[] = ['tipo' => 'texto', 'x' => $esq + 122, 'y' => $y - 14,
                      'texto' => 'Lista de Embarque', 'tamanho' => 19, 'negrito' => true];
         $blocos[] = ['tipo' => 'texto', 'x' => $esq + 122, 'y' => $y - 30,
-                     'texto' => 'Fretado Barra Funda -> Santos | Encontro: 06:00 (Rua Tagipuru, 552 - atras Memorial)',
+                     'texto' => 'Fretado Barra Funda -> Santos | Rua Tagipuru, 552 (atras Memorial)',
                      'tamanho' => 8.5];
 
         $emitido = 'Gerado em ' . gmdate('d/m/Y \à\s H:i', time() - 3 * 3600);
@@ -149,7 +149,13 @@ function bus_boarding_pdf(array $reservas, ?array $logo = null): string
             return [(string) ($a['pago_em'] ?? ''), (string) $a['code']]
                 <=> [(string) ($b['pago_em'] ?? ''), (string) $b['code']];
         });
-        $tituloOnibus = is_int($bn) ? 'ÔNIBUS ' . $bn : 'SEM ÔNIBUS DEFINIDO';
+        $horarioOnibus = '';
+        if ($bn === 1) {
+            $horarioOnibus = ' (Encontro: 06h00 | Saida: 06h30)';
+        } elseif ($bn === 2) {
+            $horarioOnibus = ' (Encontro: 06h40 | Saida: 07h20)';
+        }
+        $tituloOnibus = is_int($bn) ? 'ÔNIBUS ' . $bn . $horarioOnibus : 'SEM ÔNIBUS DEFINIDO';
         
         [$blocos, $y] = $abrirPagina($numeroPagina, $tituloOnibus);
 

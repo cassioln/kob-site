@@ -58,7 +58,7 @@ function bus_pix_email_html(array $dados): string
         ['Valor a pagar', 'R$ ' . str_replace('.', ',', $dados['amount'])],
         ['Passageiros', (string) $dados['passengerCount']],
         ['Rota', 'Barra Funda (SP) &rarr; Porto de Santos'],
-        ['Encontro do grupo', '06:00 hrs (Saída: 06h30) &middot; Rua Tagipuru, 552 (Barra Funda)'],
+        ['Encontro do grupo', '1º Ônibus: 06h00 (Saída: 06h30) | 2º Ônibus: 06h40 (Saída: 07h20) &middot; Rua Tagipuru, 552 (Barra Funda)'],
     ];
 
     $linhasFatos = '';
@@ -203,7 +203,7 @@ function bus_pix_email_text(array $dados): string
     $linhas[] = '- Valor a pagar: R$ ' . str_replace('.', ',', $dados['amount']);
     $linhas[] = '- Passageiros: ' . $dados['passengerCount'];
     $linhas[] = '- Rota: Barra Funda (SP) -> Porto de Santos';
-    $linhas[] = '- Encontro do grupo Barra Funda: 06:00 hrs | Saída: 06h30 (Rua Tagipuru, altura do numero 552 - Barra Funda - SP, atras do Memorial da America Latina)';
+    $linhas[] = '- Encontro do grupo Barra Funda: 1º Onibus: 06h00 (Saida: 06h30) | 2º Onibus: 06h40 (Saida: 07h20) - Rua Tagipuru, 552 (atras Memorial)';
 
     
     $linhas[] = '';
