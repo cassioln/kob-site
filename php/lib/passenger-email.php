@@ -102,10 +102,13 @@ function bus_passenger_email_html(array $dados, string $nomePassageiro): string
                       <strong style="color:#ffffff;">1. Ponto de Encontro:</strong> Rua Tagipuru, altura do nº 552 — Barra Funda — SP (atrás do Memorial da América Latina).
                     </p>
                     <p style="margin:0 0 12px;font:400 13px/1.65 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.9);">
-                      <strong style="color:#ffffff;">2. Horário de Encontro &amp; Saída:</strong> Chegada às <strong style="color:#29c3f5;">06h00</strong>. A saída do ônibus será às <strong style="color:#feb32c;">06h30</strong>, com tolerância máxima de 10 minutos (saída final às 06h40). Após esse horário, seguiremos viagem e o ônibus não poderá aguardar passageiros ausentes.
+                      <strong style="color:#ffffff;">2. Ponto de Encontro &amp; Horários:</strong> Local: <strong>Rua Tagipuru, altura do nº 552 – Barra Funda – SP</strong> (atrás do Memorial da América Latina).<br>
+                      &bull; <strong>1º Ônibus (Lotado):</strong> Encontro às <strong style="color:#29c3f5;">06h00</strong>, com saída pontual às <strong style="color:#feb32c;">06h30</strong> (tolerância máxima de 10 min, saída final às 06h40).<br>
+                      &bull; <strong>2º Ônibus:</strong> Encontro às <strong style="color:#29c3f5;">06h40</strong>, com saída pontual às <strong style="color:#feb32c;">07h20</strong> (tolerância máxima de 10 min, saída final às 07h30).<br>
+                      Após o horário limite de cada ônibus, o veículo precisará seguir viagem e não poderá aguardar passageiros atrasados. O retorno na segunda-feira será às <strong>10h30</strong> saindo do Porto de Santos.
                     </p>
                     <p style="margin:0 0 12px;font:400 13px/1.65 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.9);">
-                      <strong style="color:#ffffff;">3. Chegue com Antecedência:</strong> Programe-se para estar no local às 06h00 para conferência da lista e acomodação de bagagens.
+                      <strong style="color:#ffffff;">3. Programe-se com Antecedência:</strong> Chegue com calma no horário de encontro do seu ônibus (06h00 para o 1º ônibus ou 06h40 para o 2º ônibus), garantindo tempo hábil para conferência da lista e acomodação de bagagens.
                     </p>
                     <p style="margin:0;font:400 13px/1.65 Arial,Helvetica,sans-serif;color:rgba(255,255,255,0.9);">
                       <strong style="color:#ffffff;">4. Assentos Livres &amp; Integração:</strong> Os assentos não são exclusivos nem numerados. A ocupação é livre por ordem de chegada. Aproveite para ir conhecendo a turma e fazendo novas amizades no trajeto! <em>(Válido para ida e volta; você não necessariamente retornará no mesmo assento em que foi).</em>
@@ -165,8 +168,11 @@ function bus_passenger_email_text(array $dados, string $nomePassageiro): string
     $linhas[] = '';
     $linhas[] = 'PROXIMOS PASSOS E INSTRUCOES DE VIAGEM';
     $linhas[] = '1. Ponto de Encontro: Rua Tagipuru, altura do numero 552 - Barra Funda - SP (atras do Memorial da America Latina)';
-    $linhas[] = '2. Horario de Encontro: 06h00. Saida do onibus: 06h30 (tolerancia maxima de 10 minutos). Apos esse horario, seguiremos viagem e o onibus nao podera aguardar.';
-    $linhas[] = '3. Chegue com antecedencia e programe-se para estar no local as 06h00.';
+    $linhas[] = '2. Ponto de Encontro e Horarios:';
+    $linhas[] = '   - 1º Onibus (Lotado): Encontro as 06h00, saida pontual as 06h30 (tolerancia maxima ate 06h40).';
+    $linhas[] = '   - 2º Onibus: Encontro as 06h40, saida pontual as 07h20 (tolerancia maxima ate 07h30).';
+    $linhas[] = '   Apos o horario limite de cada onibus, seguiremos viagem e o veiculo nao podera aguardar. Retorno na segunda-feira as 10h30 saindo do Porto de Santos.';
+    $linhas[] = '3. Programe-se com antecedencia e chegue no horario de encontro do seu onibus (06h00 para o 1º ou 06h40 para o 2º).';
     $linhas[] = '4. Os assentos nao sao exclusivos. Os lugares serao ocupados por ordem de chegada, de forma livre. Aproveite para ir conhecendo os outros participantes durante o trajeto! Essa regra vale para ida e volta.';
     $linhas[] = '';
     $linhas[] = 'Ficou com alguma duvida? Responda este e-mail que a gente te ajuda.';
