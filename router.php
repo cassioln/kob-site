@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Router para o servidor embutido do PHP (`php -S localhost:8080 router.php`).
+ * Router para o servidor embutido do PHP (`php -S localhost:8085 router.php`).
  *
  * Mapeia as rotas `/api/*` para `php/mysql/*.php`, espelhando o comportamento
  * do `.htaccess` da Locaweb em desenvolvimento local.

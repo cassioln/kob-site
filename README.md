@@ -166,12 +166,12 @@ Ao realizar alterações no código, **sempre respeite as seguintes regras inego
 O projeto inclui um servidor local embutido que serve os arquivos estáticos e emula os rewrites de `/api/*` para `php/mysql/*.php`:
 
 ```bash
-# Iniciar o servidor local (porta 8080):
+# Iniciar o servidor local (porta 8085):
 ./preview.sh
 # Ou diretamente via PHP:
-php -S localhost:8080 router.php
+php -S localhost:8085 router.php
 ```
-> Acesse: `http://localhost:8080` (não abra via `file://` para evitar bloqueios de CORS e módulos JS).
+> Acesse: `http://localhost:8085` (não abra via `file://` para evitar bloqueios de CORS e módulos JS).
 
 ### Execução de Testes Automatizados:
 
