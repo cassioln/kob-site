@@ -7564,10 +7564,11 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
 }
 
 .partners-grid--sponsors {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: clamp(12px, 1.6vw, 18px);
-  max-width: 1240px;
+  max-width: 1300px;
   margin: 0 auto;
   width: 100%;
 }
@@ -7648,9 +7649,10 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
 
 /* Patrocinadores (Destaque Principal) */
 .partner-card--sponsor {
+  width: clamp(150px, 12.5vw, 176px);
   min-height: 108px;
   height: 108px;
-  padding: 16px 22px;
+  padding: 16px 20px;
 }
 
 .partner-card--sponsor img {
@@ -7730,13 +7732,6 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
 }
 
 /* Responsividade */
-@media (max-width: 1100px) and (min-width: 993px) {
-  .partners-grid--sponsors {
-    grid-template-columns: repeat(3, 1fr);
-    max-width: 760px;
-  }
-}
-
 @media (max-width: 992px) {
   .partners-grid--sponsors {
     display: grid;
@@ -7753,6 +7748,7 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
   }
 
   .partners-grid--sponsors .partner-card--sponsor {
+    width: 100%;
     max-width: none;
   }
 
