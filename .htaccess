@@ -95,6 +95,7 @@ RewriteRule ^api/bus-vip-create/?$            php/mysql/bus-vip-create.php [QSA,
 RewriteRule ^api/bus-vip-delete/?$            php/mysql/bus-vip-delete.php [QSA,L]
 RewriteRule ^api/bus-payment-proof/?$         php/mysql/bus-payment-proof.php [QSA,L]
 RewriteRule ^api/mercadopago-webhook/?$       php/mysql/mercadopago-webhook.php [QSA,L]
+RewriteRule ^api/embarcados-contact/?$        php/mysql/embarcados-contact.php [QSA,L]
 
 # ---- Subdiretórios de idiomas ----
 RewriteRule ^en$ /en/ [R=301,L]
