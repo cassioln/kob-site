@@ -763,12 +763,98 @@
   }
 
   // --------------------------------------------------------------------------
+  // ABAS DO CHECKLIST (#18 UX OPTIMIZATION)
+  // --------------------------------------------------------------------------
+  function initChecklistTabs() {
+    var tabs = document.querySelectorAll('.checklist-tab');
+    var groups = document.querySelectorAll('.checklist-group');
+    if (!tabs.length || !groups.length) return;
+
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        tabs.forEach(function (t) {
+          t.classList.remove('is-active');
+          t.setAttribute('aria-selected', 'false');
+        });
+        tab.classList.add('is-active');
+        tab.setAttribute('aria-selected', 'true');
+
+        var targetGroup = tab.getAttribute('data-group');
+        groups.forEach(function (group) {
+          if (targetGroup === 'all' || group.getAttribute('data-group-id') === targetGroup) {
+            group.classList.remove('is-hidden');
+          } else {
+            group.classList.add('is-hidden');
+          }
+        });
+      });
+    });
+  }
+
+  // --------------------------------------------------------------------------
+  // ABAS DO CRONOGRAMA (#19 UX OPTIMIZATION)
+  // --------------------------------------------------------------------------
+  function initTimelineTabs() {
+    var tabs = document.querySelectorAll('.timeline-tab');
+    var steps = document.querySelectorAll('.timeline-step');
+    if (!tabs.length || !steps.length) return;
+
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        tabs.forEach(function (t) {
+          t.classList.remove('is-active');
+          t.setAttribute('aria-selected', 'false');
+        });
+        tab.classList.add('is-active');
+        tab.setAttribute('aria-selected', 'true');
+
+        var targetPhase = tab.getAttribute('data-phase');
+        steps.forEach(function (step) {
+          if (targetPhase === 'all' || step.getAttribute('data-timeline-phase') === targetPhase) {
+            step.classList.remove('is-hidden');
+          } else {
+            step.classList.add('is-hidden');
+          }
+        });
+      });
+    });
+  }
+
+  // --------------------------------------------------------------------------
+  // FERRAMENTAS DO FAQ (EXPANDIR/RECOLHER TUDO)
+  // --------------------------------------------------------------------------
+  function initFAQTools() {
+    var expandBtn = document.querySelector('[data-faq-action="expand-all"]');
+    var collapseBtn = document.querySelector('[data-faq-action="collapse-all"]');
+    var faqItems = document.querySelectorAll('#duvidas details.faq-item');
+
+    if (expandBtn) {
+      expandBtn.addEventListener('click', function () {
+        faqItems.forEach(function (item) {
+          if (item.style.display !== 'none') {
+            item.open = true;
+          }
+        });
+      });
+    }
+
+    if (collapseBtn) {
+      collapseBtn.addEventListener('click', function () {
+        faqItems.forEach(function (item) {
+          item.open = false;
+        });
+      });
+    }
+  }
+
+  // --------------------------------------------------------------------------
   // ATIVAÇÃO DE LINKS DE NAVEGAÇÃO AO ROLAR (INTERSECTION OBSERVER)
   // --------------------------------------------------------------------------
   function initNavSpy() {
     var navLinks = document.querySelectorAll('.guide-nav-bar__link');
+    var dockLinks = document.querySelectorAll('.guide-quick-dock__item');
     var sections = document.querySelectorAll('section[id]');
-    if (!sections.length || !navLinks.length) return;
+    if (!sections.length) return;
 
     if ('IntersectionObserver' in window) {
       var observer = new IntersectionObserver(
@@ -782,6 +868,14 @@
                   link.classList.add('is-active');
                 } else {
                   link.classList.remove('is-active');
+                }
+              });
+              dockLinks.forEach(function (dLink) {
+                var dHref = dLink.getAttribute('href');
+                if (dHref === '#' + id) {
+                  dLink.classList.add('is-active');
+                } else {
+                  dLink.classList.remove('is-active');
                 }
               });
             }
@@ -802,7 +896,10 @@
   document.addEventListener('DOMContentLoaded', function () {
     initCountdown();
     initChecklist();
+    initChecklistTabs();
+    initTimelineTabs();
     initFAQ();
+    initFAQTools();
     initLiveModule();
     initSupportModal();
     initNavSpy();
