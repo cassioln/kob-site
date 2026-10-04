@@ -481,21 +481,14 @@
           bodyDiv.appendChild(noticeP);
         }
 
-        var extLink = document.createElement('a');
-        extLink.className = 'live-chapter-item__ext';
-        extLink.href = 'https://www.youtube.com/watch?v=AtIvlc62KgI&t=' + cap.seconds + 's';
-        extLink.target = '_blank';
-        extLink.rel = 'noopener noreferrer';
-        extLink.textContent = 'Abrir no YouTube';
-        extLink.setAttribute('aria-label', 'Abrir capítulo ' + cap.title + ' no YouTube');
-        // Impedir que o link externo ative o seek interno
-        extLink.addEventListener('click', function (e) {
-          e.stopPropagation();
-        });
+        var playIcon = document.createElement('span');
+        playIcon.className = 'live-chapter-item__play';
+        playIcon.setAttribute('aria-hidden', 'true');
+        playIcon.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 3 20 12 6 21 6 3"></polygon></svg>';
 
         li.appendChild(timeSpan);
         li.appendChild(bodyDiv);
-        li.appendChild(extLink);
+        li.appendChild(playIcon);
 
         function triggerChapter() {
           selectChapter(cap.seconds, li);
