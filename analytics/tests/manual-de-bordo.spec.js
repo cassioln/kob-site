@@ -56,6 +56,7 @@ test.describe('Página Manual de Bordo (embarcados) — Portal do Passageiro Con
 
     // Canais de suporte
     await expect(page.locator('a[href*="5513981580498"]').first()).toBeVisible();
+    await expect(page.locator('button[data-open-support-modal]')).toHaveCount(0);
   });
 
   test('Manual em português usa voz direta do KOB no conteúdo editorial', async ({ page }) => {
