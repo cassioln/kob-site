@@ -63,6 +63,22 @@ RewriteRule ^$ painel-onibus.html [L]
 RewriteCond %{HTTP_HOST} ^painel\.kriativosonboard\.com\.br$ [NC]
 RewriteRule ^index\.html$ painel-onibus.html [L]
 
+# ---- Subdominio manualdebordo.kriativos.com.br (e manualdebordo.kriativosonboard.com.br) ----
+# Redireciona /embarcados.html para /manual-de-bordo.html
+RewriteRule ^embarcados\.html$ /manual-de-bordo.html [R=301,L]
+RewriteRule ^en/embarcados\.html$ /en/manual-de-bordo.html [R=301,L]
+RewriteRule ^es/embarcados\.html$ /es/manual-de-bordo.html [R=301,L]
+
+# Serve manual-de-bordo.html na raiz e subdiretórios de idioma do subdomínio
+RewriteCond %{HTTP_HOST} ^manualdebordo\.(kriativos|kriativosonboard)\.com\.br$ [NC]
+RewriteRule ^$ manual-de-bordo.html [L]
+RewriteCond %{HTTP_HOST} ^manualdebordo\.(kriativos|kriativosonboard)\.com\.br$ [NC]
+RewriteRule ^index\.html$ manual-de-bordo.html [L]
+RewriteCond %{HTTP_HOST} ^manualdebordo\.(kriativos|kriativosonboard)\.com\.br$ [NC]
+RewriteRule ^en/?$ en/manual-de-bordo.html [L]
+RewriteCond %{HTTP_HOST} ^manualdebordo\.(kriativos|kriativosonboard)\.com\.br$ [NC]
+RewriteRule ^es/?$ es/manual-de-bordo.html [L]
+
 # ---- API do onibus fretado ----
 # O frontend (assets/js/onibus.js) chama /api/<endpoint>. Os arquivos reais
 # ficam em php/mysql/. Sem estas regras as rotas retornam 404, porque o host

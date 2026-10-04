@@ -1,16 +1,20 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Página Embarcados — Portal do Passageiro Confirmado', () => {
+test.describe('Página Manual de Bordo (embarcados) — Portal do Passageiro Confirmado', () => {
 
-  test('Página /embarcados.html carrega com estrutura completa, 25 itens de checklist, 42 perguntas e 28 capítulos', async ({ page }) => {
+  test('Página /manual-de-bordo.html carrega com estrutura completa, 25 itens de checklist, 42 perguntas e 28 capítulos', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 800 });
-    await page.goto('/embarcados.html');
+    await page.goto('/manual-de-bordo.html');
 
     // Título e Lang
-    await expect(page).toHaveTitle(/Embarcados KOB 2026/i);
+    await expect(page).toHaveTitle(/Manual de Bordo KOB 2026/i);
     expect(await page.locator('html').getAttribute('lang')).toBe('pt-BR');
 
-    // Brand e links de idioma
+    // Brand, tag do subdomínio e links de idioma
+    await expect(page.locator('.manual-brand-tag')).toBeVisible();
+    await expect(page.locator('.manual-telemetry')).toBeVisible();
+    await expect(page.locator('.manual-seal')).toBeVisible();
+
     const langSwitch = page.locator('.guide-header .lang-switch');
     await expect(langSwitch).toBeVisible();
     await expect(langSwitch.locator('.lang-switch__item.is-active')).toHaveText('PT');
@@ -49,8 +53,14 @@ test.describe('Página Embarcados — Portal do Passageiro Confirmado', () => {
     await expect(page.locator('a[href*="5513981580498"]').first()).toBeVisible();
   });
 
-  test('Checklist interativo: persistência no localStorage, estados de ação e reset', async ({ page }) => {
+  test('Redirecionamento automático de /embarcados.html para /manual-de-bordo.html', async ({ page }) => {
     await page.goto('/embarcados.html');
+    await page.waitForURL(/manual-de-bordo\.html/);
+    expect(page.url()).toContain('/manual-de-bordo.html');
+  });
+
+  test('Checklist interativo: persistência no localStorage, estados de ação e reset', async ({ page }) => {
+    await page.goto('/manual-de-bordo.html');
 
     // Limpa storage prévio
     await page.evaluate(() => localStorage.removeItem('kob_embarcados_checklist_2026_v1'));
@@ -93,7 +103,7 @@ test.describe('Página Embarcados — Portal do Passageiro Confirmado', () => {
   });
 
   test('Busca de FAQ sem acentos e filtros por categoria', async ({ page }) => {
-    await page.goto('/embarcados.html');
+    await page.goto('/manual-de-bordo.html');
 
     const searchInput = page.locator('#faqSearchInput');
     const resultsCount = page.locator('#faqResultsCount');
@@ -123,7 +133,7 @@ test.describe('Página Embarcados — Portal do Passageiro Confirmado', () => {
   });
 
   test('Live: busca de capítulos e controle da fachada do player', async ({ page }) => {
-    await page.goto('/embarcados.html');
+    await page.goto('/manual-de-bordo.html');
 
     const chapterSearch = page.locator('#liveSearchInput');
     await chapterSearch.fill('voucher');
@@ -145,7 +155,7 @@ test.describe('Página Embarcados — Portal do Passageiro Confirmado', () => {
   });
 
   test('Modal de contato acessível abre, fecha por botão e por teclado (Escape)', async ({ page }) => {
-    await page.goto('/embarcados.html');
+    await page.goto('/manual-de-bordo.html');
 
     const openBtn = page.locator('button[data-open-support-modal]').first();
     await openBtn.click();
@@ -162,7 +172,7 @@ test.describe('Página Embarcados — Portal do Passageiro Confirmado', () => {
 
   test('Layout responsivo a 320px sem overflow horizontal', async ({ page }) => {
     await page.setViewportSize({ width: 320, height: 600 });
-    await page.goto('/embarcados.html');
+    await page.goto('/manual-de-bordo.html');
 
     const hasOverflow = await page.evaluate(() => {
       return document.documentElement.scrollWidth > window.innerWidth;
@@ -170,11 +180,11 @@ test.describe('Página Embarcados — Portal do Passageiro Confirmado', () => {
     expect(hasOverflow).toBe(false);
   });
 
-  test('Página /en/embarcados.html tem paridade rigorosa de conteúdo e elementos', async ({ page }) => {
+  test('Página /en/manual-de-bordo.html tem paridade rigorosa de conteúdo e elementos', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 800 });
-    await page.goto('/en/embarcados.html');
+    await page.goto('/en/manual-de-bordo.html');
 
-    await expect(page).toHaveTitle(/Embarcados KOB 2026/i);
+    await expect(page).toHaveTitle(/Onboard Manual KOB 2026/i);
     expect(await page.locator('html').getAttribute('lang')).toBe('en');
 
     // 25 itens no checklist
@@ -193,11 +203,11 @@ test.describe('Página Embarcados — Portal do Passageiro Confirmado', () => {
     await expect(resultsCount).not.toHaveText('0');
   });
 
-  test('Página /es/embarcados.html tem paridade rigorosa de conteúdo e elementos', async ({ page }) => {
+  test('Página /es/manual-de-bordo.html tem paridade rigorosa de conteúdo e elementos', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 800 });
-    await page.goto('/es/embarcados.html');
+    await page.goto('/es/manual-de-bordo.html');
 
-    await expect(page).toHaveTitle(/Embarcados KOB 2026/i);
+    await expect(page).toHaveTitle(/Manual de a Bordo KOB 2026/i);
     expect(await page.locator('html').getAttribute('lang')).toBe('es');
 
     // 25 itens no checklist
@@ -217,7 +227,7 @@ test.describe('Página Embarcados — Portal do Passageiro Confirmado', () => {
   });
 
   test('Formulário do modal de suporte submete dados e exibe confirmação', async ({ page }) => {
-    await page.goto('/embarcados.html');
+    await page.goto('/manual-de-bordo.html');
 
     // Mock do endpoint /api/embarcados-contact para teste de frontend
     await page.route('**/api/embarcados-contact', async (route) => {
