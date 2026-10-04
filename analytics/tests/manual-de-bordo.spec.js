@@ -58,6 +58,17 @@ test.describe('Página Manual de Bordo (embarcados) — Portal do Passageiro Con
     await expect(page.locator('a[href*="5513981580498"]').first()).toBeVisible();
   });
 
+  test('Manual em português usa voz direta do KOB no conteúdo editorial', async ({ page }) => {
+    await page.goto('/manual-de-bordo.html');
+    const editorialText = await page.locator('main').innerText();
+
+    expect(editorialText).not.toMatch(/Na live foram informados/i);
+    expect(editorialText).not.toMatch(/Na live foi (?:indicado|sugerido)/i);
+    expect(editorialText).not.toMatch(/A live (?:anunciou|orientou|destacou|sugeriu|citou|tratou|informou|mencionou)/i);
+    expect(editorialText).not.toMatch(/a organização (?:confirmará|anunciará|pediu)/i);
+    expect(editorialText).not.toMatch(/não há uma data de liberação garantida neste guia/i);
+  });
+
   test('Redirecionamento automático de /embarcados.html para /manual-de-bordo.html', async ({ page }) => {
     await page.goto('/embarcados.html');
     await page.waitForURL(/manual-de-bordo\.html/);
