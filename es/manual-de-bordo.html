@@ -2297,6 +2297,61 @@
       <span>Contacto</span>
     </a>
   </nav>
+
+  <!-- Sidebar Retráctil del Checklist (Lateral Izquierda) -->
+  <button type="button" class="checklist-sidebar-toggle" id="checklistSidebarToggle"
+    aria-expanded="false" aria-controls="checklistSidebar" aria-label="Expandir Checklist de a Bordo">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <polyline points="9 11 12 14 22 4"></polyline>
+      <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1 2-2h11"></path>
+    </svg>
+    <span class="checklist-sidebar-toggle__label">Checklist</span>
+    <span class="checklist-sidebar-toggle__badge" id="checklistSidebarToggleBadge">0/16</span>
+  </button>
+
+  <div class="checklist-sidebar-backdrop" id="checklistSidebarBackdrop" aria-hidden="true"></div>
+
+  <aside class="checklist-sidebar" id="checklistSidebar" role="complementary" aria-label="Checklist de a Bordo" aria-hidden="true">
+    <div class="checklist-sidebar__header">
+      <div class="checklist-sidebar__title-wrap">
+        <span class="checklist-sidebar__tag">Expedición KOB 2026</span>
+        <h3 class="checklist-sidebar__title">Checklist de a Bordo</h3>
+      </div>
+      <button type="button" class="checklist-sidebar__close" id="checklistSidebarClose" aria-label="Contraer Checklist">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <div class="checklist-sidebar__progress">
+      <div class="checklist-sidebar__progress-bar">
+        <div class="checklist-sidebar__progress-fill" id="checklistSidebarProgressFill"></div>
+      </div>
+      <span class="checklist-sidebar__progress-text" id="checklistSidebarProgressText">0 de 16 verificados</span>
+    </div>
+
+    <div class="checklist-sidebar__nav" role="tablist" aria-label="Filtrar grupos en la barra lateral">
+      <button type="button" class="checklist-sidebar__nav-item is-active" data-sidebar-group="all">Todos</button>
+      <button type="button" class="checklist-sidebar__nav-item" data-sidebar-group="1">Docs</button>
+      <button type="button" class="checklist-sidebar__nav-item" data-sidebar-group="2">Maletas</button>
+      <button type="button" class="checklist-sidebar__nav-item" data-sidebar-group="3">Trayecto</button>
+      <button type="button" class="checklist-sidebar__nav-item" data-sidebar-group="4">Juegos</button>
+    </div>
+
+    <div class="checklist-sidebar__body" id="checklistSidebarList" aria-label="Elementos del checklist">
+      <!-- Generado/espejado dinámicamente mediante JS con casillas sincronizadas -->
+    </div>
+
+    <div class="checklist-sidebar__footer">
+      <a href="#preparacao" class="checklist-sidebar__goto-btn" id="checklistSidebarGotoBtn">
+        Ver Checklist Completo en la Página
+      </a>
+    </div>
+  </aside>
 </body>
 
 </html>

@@ -279,7 +279,17 @@
           completedMsg.classList.remove('is-visible');
         }
       }
+
+      // Atualizar a Sidebar retrátil
+      if (sidebarController && typeof sidebarController.update === 'function') {
+        sidebarController.update(checkedCount, totalApplicable, percentage, items);
+      }
     }
+
+    // Inicializar Sidebar Retrátil na Lateral Esquerda
+    var sidebarController = initChecklistSidebar(items, function () {
+      saveAndRefresh();
+    });
 
     // Reset button
     if (resetBtn) {
@@ -316,6 +326,260 @@
 
     // Primeira atualização
     saveAndRefresh();
+  }
+
+  // --------------------------------------------------------------------------
+  // SIDEBAR RETRÁTIL DO CHECKLIST (SLIDERBAR LATERAL ESQUERDA)
+  // --------------------------------------------------------------------------
+  function initChecklistSidebar(mainItems, onStateChange) {
+    var sidebarToggle = document.getElementById('checklistSidebarToggle');
+    var sidebarToggleBadge = document.getElementById('checklistSidebarToggleBadge');
+    var sidebarBackdrop = document.getElementById('checklistSidebarBackdrop');
+    var sidebarAside = document.getElementById('checklistSidebar');
+    var sidebarClose = document.getElementById('checklistSidebarClose');
+    var sidebarProgressFill = document.getElementById('checklistSidebarProgressFill');
+    var sidebarProgressText = document.getElementById('checklistSidebarProgressText');
+    var sidebarList = document.getElementById('checklistSidebarList');
+    var sidebarNavItems = document.querySelectorAll('.checklist-sidebar__nav-item');
+    var sidebarGotoBtn = document.getElementById('checklistSidebarGotoBtn');
+
+    if (!sidebarAside || !sidebarToggle || !sidebarList) {
+      return null;
+    }
+
+    var lang = (document.documentElement.lang || 'pt-BR').toLowerCase();
+    var isEn = lang.startsWith('en');
+    var isEs = lang.startsWith('es');
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function getTagLabel(type) {
+      if (type === 'essential') return isEn ? 'Essential' : isEs ? 'Esencial' : 'Essencial';
+      if (type === 'recommended') return isEn ? 'Recommended' : isEs ? 'Recomendado' : 'Recomendado';
+      if (type === 'conditional') return isEn ? 'Conditional' : isEs ? 'Condicional' : 'Condicional';
+      return isEn ? 'Optional' : isEs ? 'Opcional' : 'Opcional';
+    }
+
+    // Montar os itens compactos da sidebar espelhando a lista principal
+    sidebarList.innerHTML = '';
+    mainItems.forEach(function (mainItem) {
+      var id = mainItem.getAttribute('data-checklist-id');
+      if (!id) return;
+
+      var type = mainItem.getAttribute('data-checklist-type') || 'essential';
+      var groupEl = mainItem.closest('.checklist-group');
+      var groupId = groupEl && groupEl.id ? groupEl.id.replace('checklistGroup', '') : '1';
+
+      var titleEl = mainItem.querySelector('.checklist-item__title');
+      var titleText = titleEl ? titleEl.textContent.trim() : id;
+      var tagLabel = getTagLabel(type);
+
+      var div = document.createElement('div');
+      div.className = 'checklist-sidebar-item';
+      div.setAttribute('data-sidebar-item-id', id);
+      div.setAttribute('data-sidebar-group', groupId);
+
+      div.innerHTML =
+        '<input type="checkbox" class="checklist-sidebar-item__checkbox" id="sidebar_chk_' + escapeHtml(id) + '" aria-label="' + escapeHtml(titleText) + '">' +
+        '<div class="checklist-sidebar-item__content">' +
+          '<div class="checklist-sidebar-item__header">' +
+            '<span class="checklist-sidebar-item__tag checklist-sidebar-item__tag--' + escapeHtml(type) + '">' + escapeHtml(tagLabel) + '</span>' +
+            '<a href="#' + escapeHtml(id) + '" class="checklist-sidebar-item__jump" aria-label="Ir para ' + escapeHtml(titleText) + '">#' + escapeHtml(id) + '</a>' +
+          '</div>' +
+          '<label for="sidebar_chk_' + escapeHtml(id) + '" class="checklist-sidebar-item__text">' + escapeHtml(titleText) + '</label>' +
+        '</div>';
+
+      sidebarList.appendChild(div);
+
+      // Evento de clique / alteração na sidebar sincronizando com a página principal
+      var sCheckbox = div.querySelector('.checklist-sidebar-item__checkbox');
+      if (sCheckbox) {
+        sCheckbox.addEventListener('change', function () {
+          var mainCheckbox = mainItem.querySelector('.checklist-item__checkbox');
+          if (mainCheckbox && !mainCheckbox.disabled) {
+            mainCheckbox.checked = sCheckbox.checked;
+            if (sCheckbox.checked) {
+              mainItem.classList.add('is-checked');
+              div.classList.add('is-checked');
+            } else {
+              mainItem.classList.remove('is-checked');
+              div.classList.remove('is-checked');
+            }
+            if (typeof onStateChange === 'function') {
+              onStateChange();
+            }
+          } else {
+            // Se estava desabilitado (ex: N/A marcado na página principal), reverte o checkbox
+            sCheckbox.checked = mainCheckbox ? mainCheckbox.checked : false;
+          }
+        });
+      }
+
+      // Link de salto para o item na página principal
+      var jumpLink = div.querySelector('.checklist-sidebar-item__jump');
+      if (jumpLink) {
+        jumpLink.addEventListener('click', function (e) {
+          e.preventDefault();
+          closeSidebar();
+
+          // Se a aba do grupo estiver oculta na página, ativa a aba correspondente
+          var parentGroup = mainItem.closest('.checklist-group');
+          if (parentGroup && parentGroup.classList.contains('is-hidden')) {
+            var tabBtn = document.querySelector('.checklist-tab[data-tab="' + parentGroup.id.replace('checklistGroup', '') + '"]');
+            if (tabBtn) tabBtn.click();
+          }
+
+          // Rola suavemente até o item e dá destaque
+          setTimeout(function () {
+            mainItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            mainItem.classList.add('is-focused-highlight');
+            setTimeout(function () {
+              mainItem.classList.remove('is-focused-highlight');
+            }, 1800);
+          }, 150);
+        });
+      }
+    });
+
+    // Abrir e Fechar Sidebar
+    function openSidebar() {
+      sidebarAside.classList.add('is-open');
+      sidebarAside.setAttribute('aria-hidden', 'false');
+      if (sidebarBackdrop) {
+        sidebarBackdrop.classList.add('is-open');
+        sidebarBackdrop.setAttribute('aria-hidden', 'false');
+      }
+      sidebarToggle.setAttribute('aria-expanded', 'true');
+      if (sidebarClose) sidebarClose.focus();
+    }
+
+    function closeSidebar() {
+      sidebarAside.classList.remove('is-open');
+      sidebarAside.setAttribute('aria-hidden', 'true');
+      if (sidebarBackdrop) {
+        sidebarBackdrop.classList.remove('is-open');
+        sidebarBackdrop.setAttribute('aria-hidden', 'true');
+      }
+      sidebarToggle.setAttribute('aria-expanded', 'false');
+      sidebarToggle.focus();
+    }
+
+    sidebarToggle.addEventListener('click', function () {
+      if (sidebarAside.classList.contains('is-open')) {
+        closeSidebar();
+      } else {
+        openSidebar();
+      }
+    });
+
+    if (sidebarClose) {
+      sidebarClose.addEventListener('click', closeSidebar);
+    }
+
+    if (sidebarBackdrop) {
+      sidebarBackdrop.addEventListener('click', closeSidebar);
+    }
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && sidebarAside.classList.contains('is-open')) {
+        closeSidebar();
+      }
+    });
+
+    // Botão de rodapé "Ver Checklist Completo na Página"
+    if (sidebarGotoBtn) {
+      sidebarGotoBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        closeSidebar();
+        var prepSection = document.getElementById('preparacao');
+        if (prepSection) {
+          prepSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    }
+
+    // Filtragem de grupos dentro da Sidebar
+    sidebarNavItems.forEach(function (navBtn) {
+      navBtn.addEventListener('click', function () {
+        sidebarNavItems.forEach(function (btn) { btn.classList.remove('is-active'); });
+        navBtn.classList.add('is-active');
+
+        var filterGroup = navBtn.getAttribute('data-sidebar-group') || 'all';
+        var sidebarItems = sidebarList.querySelectorAll('.checklist-sidebar-item');
+
+        sidebarItems.forEach(function (sItem) {
+          var itemGroup = sItem.getAttribute('data-sidebar-group');
+          if (filterGroup === 'all' || itemGroup === filterGroup) {
+            sItem.style.display = 'flex';
+          } else {
+            sItem.style.display = 'none';
+          }
+        });
+      });
+    });
+
+    // Função de atualização chamada por saveAndRefresh()
+    return {
+      update: function (checkedCount, totalApplicable, percentage, currentMainItems) {
+        // Atualizar badge do botão flutuante
+        if (sidebarToggleBadge) {
+          sidebarToggleBadge.textContent = checkedCount + '/' + totalApplicable;
+        }
+
+        // Atualizar barra de progresso da sidebar
+        if (sidebarProgressFill) {
+          sidebarProgressFill.style.width = percentage + '%';
+        }
+
+        // Atualizar texto de progresso da sidebar
+        if (sidebarProgressText) {
+          if (isEn) {
+            sidebarProgressText.textContent = checkedCount + ' of ' + totalApplicable + ' completed';
+          } else if (isEs) {
+            sidebarProgressText.textContent = checkedCount + ' de ' + totalApplicable + ' verificados';
+          } else {
+            sidebarProgressText.textContent = checkedCount + ' de ' + totalApplicable + ' conferidos';
+          }
+        }
+
+        // Atualizar o estado de cada checkbox e visual do item da sidebar
+        currentMainItems.forEach(function (mainItem) {
+          var id = mainItem.getAttribute('data-checklist-id');
+          if (!id) return;
+
+          var mainCheckbox = mainItem.querySelector('.checklist-item__checkbox');
+          var mainNa = mainItem.querySelector('.checklist-item__na-checkbox');
+          var isChecked = mainCheckbox ? mainCheckbox.checked : false;
+          var isNa = mainNa ? mainNa.checked : false;
+
+          var sItem = sidebarList.querySelector('[data-sidebar-item-id="' + id + '"]');
+          if (sItem) {
+            var sCheckbox = sItem.querySelector('.checklist-sidebar-item__checkbox');
+            if (sCheckbox) {
+              sCheckbox.checked = isChecked;
+              sCheckbox.disabled = isNa;
+            }
+            if (isChecked) {
+              sItem.classList.add('is-checked');
+            } else {
+              sItem.classList.remove('is-checked');
+            }
+            if (isNa) {
+              sItem.style.opacity = '0.45';
+            } else {
+              sItem.style.opacity = '1';
+            }
+          }
+        });
+      }
+    };
   }
 
   // --------------------------------------------------------------------------

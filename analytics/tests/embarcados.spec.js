@@ -102,6 +102,53 @@ test.describe('Página Manual de Bordo (embarcados) — Portal do Passageiro Con
     await expect(page.locator('#checklistProgressText')).toContainText('0 de');
   });
 
+  test('Sidebar Retrátil do Checklist: expansão/redução, sincronização bidirecional e filtros', async ({ page }) => {
+    await page.goto('/manual-de-bordo.html');
+
+    const toggleBtn = page.locator('#checklistSidebarToggle');
+    const sidebar = page.locator('#checklistSidebar');
+    const backdrop = page.locator('#checklistSidebarBackdrop');
+    const closeBtn = page.locator('#checklistSidebarClose');
+
+    // Botão na lateral esquerda deve estar visível com badge inicial
+    await expect(toggleBtn).toBeVisible();
+    await expect(page.locator('#checklistSidebarToggleBadge')).toBeVisible();
+
+    // Sidebar inicialmente oculta / recolhida
+    await expect(sidebar).not.toHaveClass(/is-open/);
+
+    // Clicar no botão expande a sidebar
+    await toggleBtn.click();
+    await expect(sidebar).toHaveClass(/is-open/);
+    await expect(backdrop).toHaveClass(/is-open/);
+    await expect(sidebar).toHaveAttribute('aria-hidden', 'false');
+
+    // Contém 25 itens compactos espelhados com data-sidebar-item-id
+    const sidebarItems = page.locator('#checklistSidebarList .checklist-sidebar-item');
+    await expect(sidebarItems).toHaveCount(25);
+
+    // Marcar um item dentro da sidebar
+    const firstSidebarCheck = page.locator('[data-sidebar-item-id="reserva-dados"] .checklist-sidebar-item__checkbox');
+    await firstSidebarCheck.check();
+
+    // Sincronização: tanto o item na sidebar quanto o item na página principal devem estar marcados
+    await expect(page.locator('[data-sidebar-item-id="reserva-dados"]')).toHaveClass(/is-checked/);
+    await expect(page.locator('[data-checklist-id="reserva-dados"]')).toHaveClass(/is-checked/);
+
+    // Badge do toggle atualiza
+    await expect(page.locator('#checklistSidebarToggleBadge')).not.toHaveText('0/16');
+
+    // Fechar pelo botão de fechar
+    await closeBtn.click();
+    await expect(sidebar).not.toHaveClass(/is-open/);
+
+    // Reabrir e fechar com a tecla Escape
+    await toggleBtn.click();
+    await expect(sidebar).toHaveClass(/is-open/);
+    await page.keyboard.press('Escape');
+    await expect(sidebar).not.toHaveClass(/is-open/);
+  });
+
   test('Busca de FAQ sem acentos e filtros por categoria', async ({ page }) => {
     await page.goto('/manual-de-bordo.html');
 
