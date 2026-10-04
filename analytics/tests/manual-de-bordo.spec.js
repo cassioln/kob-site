@@ -269,6 +269,10 @@ test.describe('Página Manual de Bordo (embarcados) — Portal do Passageiro Con
     await searchInput.fill('luggage');
     const resultsCount = page.locator('#faqResultsCount');
     await expect(resultsCount).not.toHaveText('0');
+    await expect(page.locator('.faq-category-btn[data-category="vida-a-bordo"]')).toHaveText('During the cruise');
+    await expect(page.locator('#duvidas .checklist-item__tag').filter({ hasText: 'Life on board' })).toHaveCount(0);
+    await expect(page.locator('.checklist-item__tag').filter({ hasText: 'Conditional' })).toHaveCount(0);
+    await expect(page.locator('button[data-open-support-modal]')).toHaveCount(0);
   });
 
   test('Página /es/manual-de-bordo.html tem paridade rigorosa de conteúdo e elementos', async ({ page }) => {
@@ -292,36 +296,16 @@ test.describe('Página Manual de Bordo (embarcados) — Portal do Passageiro Con
     await searchInput.fill('equipaje');
     const resultsCount = page.locator('#faqResultsCount');
     await expect(resultsCount).not.toHaveText('0');
+    await expect(page.locator('.faq-category-btn[data-category="vida-a-bordo"]')).toHaveText('Durante el crucero');
+    await expect(page.locator('#duvidas .checklist-item__tag').filter({ hasText: 'Vida a bordo' })).toHaveCount(0);
+    await expect(page.locator('.checklist-item__tag').filter({ hasText: 'Condicional' })).toHaveCount(0);
+    await expect(page.locator('button[data-open-support-modal]')).toHaveCount(0);
   });
 
-  test('Formulário do modal de suporte submete dados e exibe confirmação', async ({ page }) => {
+  test('Formulário de contato permanece desativado', async ({ page }) => {
     await page.goto('/manual-de-bordo.html');
-
-    // Mock do endpoint /api/embarcados-contact para teste de frontend
-    await page.route('**/api/embarcados-contact', async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          ok: true,
-          message: 'Sua mensagem foi enviada com sucesso! A equipe Kriativos On Board retornará em breve.'
-        })
-      });
-    });
-
-    const openBtn = page.locator('button[data-open-support-modal]').first();
-    await openBtn.click();
-
-    await page.locator('#supportNameInput').fill('Kriativo Teste');
-    await page.locator('#supportEmailInput').fill('teste@kriativosonboard.com.br');
-    await page.locator('#supportWhatsappInput').fill('11999998888');
-    await page.locator('#supportMsgInput').fill('Dúvida sobre a mesa de jogos e horários.');
-
-    await page.locator('#supportSubmitBtn').click();
-
-    const statusBox = page.locator('#supportStatusBox');
-    await expect(statusBox).toHaveClass(/form-status-box--success/);
-    await expect(statusBox).toContainText('recebida');
+    await expect(page.locator('button[data-open-support-modal]')).toHaveCount(0);
+    await expect(page.locator('#supportModal')).toHaveAttribute('aria-hidden', 'true');
   });
 
   test('A gaveta de assuntos sobrepõe o vídeo sem mudar suas dimensões', async ({ page }) => {
