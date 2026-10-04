@@ -269,6 +269,7 @@ test.describe('Página Manual de Bordo (embarcados) — Portal do Passageiro Con
     await searchInput.fill('luggage');
     const resultsCount = page.locator('#faqResultsCount');
     await expect(resultsCount).not.toHaveText('0');
+    await expect(page.locator('.faq-category-btn[data-category="jogos"]')).toHaveText('Games & activities');
     await expect(page.locator('.faq-category-btn[data-category="vida-a-bordo"]')).toHaveText('During the cruise');
     await expect(page.locator('#duvidas .checklist-item__tag').filter({ hasText: 'Life on board' })).toHaveCount(0);
     await expect(page.locator('.checklist-item__tag').filter({ hasText: 'Conditional' })).toHaveCount(0);
@@ -296,6 +297,7 @@ test.describe('Página Manual de Bordo (embarcados) — Portal do Passageiro Con
     await searchInput.fill('equipaje');
     const resultsCount = page.locator('#faqResultsCount');
     await expect(resultsCount).not.toHaveText('0');
+    await expect(page.locator('.faq-category-btn[data-category="jogos"]')).toHaveText('Juegos y actividades');
     await expect(page.locator('.faq-category-btn[data-category="vida-a-bordo"]')).toHaveText('Durante el crucero');
     await expect(page.locator('#duvidas .checklist-item__tag').filter({ hasText: 'Vida a bordo' })).toHaveCount(0);
     await expect(page.locator('.checklist-item__tag').filter({ hasText: 'Condicional' })).toHaveCount(0);
