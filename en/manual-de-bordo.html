@@ -154,6 +154,17 @@
                 <button class="live-play-button" type="button" id="loadLivePlayerBtn" disabled><svg class="" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 5 11 7-11 7Z"/></svg>Watch the recording</button>
               </div>
               <div class="live-player-container" id="livePlayerContainer" hidden></div>
+              <div class="live-custom-controls" id="liveCustomControls" hidden aria-label="Video controls">
+                <div class="live-custom-controls__topic" id="liveCustomTopic" aria-live="polite"></div>
+                <div class="live-custom-controls__row">
+                  <button class="live-custom-controls__nav" type="button" id="livePreviousChapterBtn" aria-label="Previous topic" title="Previous topic">‹</button>
+                  <button class="live-custom-controls__play" type="button" id="livePlayPauseBtn" aria-label="Play" title="Play">▶</button>
+                  <button class="live-custom-controls__nav" type="button" id="liveNextChapterBtn" aria-label="Next topic" title="Next topic">›</button>
+                  <span class="live-custom-controls__time" id="liveCurrentTime">00:00</span>
+                  <input class="live-custom-controls__progress" id="liveProgress" type="range" min="0" max="1" value="0" step="1" aria-label="Video progress">
+                  <span class="live-custom-controls__time" id="liveDuration">00:00</span>
+                </div>
+              </div>
             </div>
             <aside class="live-drawer" id="heroLiveChaptersCol" aria-label="Topics">
               <div class="live-drawer__slide">

@@ -3,11 +3,14 @@ import { test, expect } from '@playwright/test';
 async function mockPlayer(page) {
   await page.route(/https:\/\/.*youtube(?:-nocookie)?\.com\/.*/, route => route.fulfill({ contentType: 'text/html', body: '<html><body>Mock video</body></html>' }));
   await page.addInitScript(() => {
-    window.__liveMock = { instances: [], calls: [], seconds: 0 };
+    window.__liveMock = { instances: [], calls: [], seconds: 0, duration: 4806 };
     window.YT = { Player: class {
-      constructor(iframe, options) { this.events = options.events; window.__liveMock.instances.push(this); }
+      constructor(iframe, options) { this.events = options.events; this.options = options; this.state = -1; window.__liveMock.instances.push(this); }
       seekTo(seconds) { window.__liveMock.seconds = seconds; window.__liveMock.calls.push(['seek', seconds]); }
-      playVideo() { window.__liveMock.calls.push(['play']); this.events.onStateChange({ data: 1 }); }
+      playVideo() { window.__liveMock.calls.push(['play']); this.state = 1; this.events.onStateChange({ data: 1 }); }
+      pauseVideo() { window.__liveMock.calls.push(['pause']); this.state = 2; this.events.onStateChange({ data: 2 }); }
+      getDuration() { return window.__liveMock.duration; }
+      getPlayerState() { return this.state; }
       getCurrentTime() { return window.__liveMock.seconds; }
       destroy() { window.__liveMock.calls.push(['destroy']); }
     }};
@@ -102,6 +105,24 @@ test('Progresso real do player atualiza o capítulo e a falha mantém alternativ
   await expect(page.locator('#livePlayerContainer iframe')).toHaveAttribute('src', /start=2718/);
   await readyPlayer(page);
   await expect(page.locator('#liveVideoError')).toBeHidden();
+});
+
+
+test('Controles personalizados substituem os controles do YouTube e navegam entre assuntos', async ({ page }) => {
+  await page.goto('/manual-de-bordo.html');
+  await expect(page.locator('#liveCustomControls')).toBeHidden();
+  await page.locator('#loadLivePlayerBtn').click();
+  await readyPlayer(page);
+  await expect(page.locator('#liveCustomControls')).toBeVisible();
+  await expect(page.locator('#liveCustomTopic')).toContainText('Boas-vindas');
+  await expect(page.locator('#liveCurrentTime')).toHaveText('13:53');
+  await expect(page.locator('#liveDuration')).toHaveText('1:20:06');
+  expect(await page.evaluate(() => window.__liveMock.instances[0].options.playerVars.controls)).toBe(0);
+  await page.locator('#liveNextChapterBtn').click();
+  expect(await page.evaluate(() => window.__liveMock.seconds)).toBe(913);
+  await expect(page.locator('#liveCustomTopic')).toContainText('Royal Trip');
+  await page.locator('#livePreviousChapterBtn').click();
+  expect(await page.evaluate(() => window.__liveMock.seconds)).toBe(833);
 });
 
 for (const [lang, term, title, label] of [['en', 'luggage', 'Luggage', 'Portuguese transcript'], ['es', 'equipaje', 'Equipaje', 'portugués']]) {
