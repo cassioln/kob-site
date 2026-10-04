@@ -15,8 +15,10 @@
         }
         var savedPref = localStorage.getItem('kob_lang_pref');
         if (savedPref === 'pt') return;
-        var targetEn = '/en/manual-de-bordo.html';
-        var targetEs = '/es/manual-de-bordo.html';
+        var isManualHost = /^manualdebordo\./i.test(window.location.hostname);
+        var isManualPath = /(?:^|\/)manualdebordo\/?$/.test(window.location.pathname);
+        var targetEn = isManualHost ? '/en/' : isManualPath ? '/en/manualdebordo' : '/en/manual-de-bordo.html';
+        var targetEs = isManualHost ? '/es/' : isManualPath ? '/es/manualdebordo' : '/es/manual-de-bordo.html';
         if (savedPref === 'en') {
           window.location.replace(targetEn + window.location.search + window.location.hash);
           return;
@@ -46,11 +48,11 @@
   <meta name="robots" content="index, follow">
   <meta name="theme-color" content="#041d3a">
   <meta http-equiv="content-language" content="pt-BR">
-  <link rel="canonical" href="https://manualdebordo.kriativos.com.br/">
-  <link rel="alternate" hreflang="pt-BR" href="https://manualdebordo.kriativos.com.br/">
-  <link rel="alternate" hreflang="en" href="https://manualdebordo.kriativos.com.br/en/">
-  <link rel="alternate" hreflang="es" href="https://manualdebordo.kriativos.com.br/es/">
-  <link rel="alternate" hreflang="x-default" href="https://manualdebordo.kriativos.com.br/">
+  <link rel="canonical" href="https://kriativosonboard.com.br/manualdebordo">
+  <link rel="alternate" hreflang="pt-BR" href="https://kriativosonboard.com.br/manualdebordo">
+  <link rel="alternate" hreflang="en" href="https://kriativosonboard.com.br/en/manualdebordo">
+  <link rel="alternate" hreflang="es" href="https://kriativosonboard.com.br/es/manualdebordo">
+  <link rel="alternate" hreflang="x-default" href="https://kriativosonboard.com.br/manualdebordo">
 
   <!-- Open Graph / Redes Sociais -->
   <meta property="og:type" content="website">
@@ -62,7 +64,7 @@
     content="Manual de Bordo KOB 2026: Guia Oficial de Preparação e Navegação | Kriativos On Board">
   <meta property="og:description"
     content="Manual de Bordo oficial do Kriativos On Board 2026 no MSC Musica. Confira checklist de documentos, bagagem, transporte, cronograma, ludoteca e orientações de viagem.">
-  <meta property="og:url" content="https://manualdebordo.kriativos.com.br/">
+  <meta property="og:url" content="https://kriativosonboard.com.br/manualdebordo">
   <meta property="og:image" content="https://kriativosonboard.com.br/assets/images/brand/og-home.jpg">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title"
@@ -82,11 +84,16 @@
 
   <!-- Estilos Globais e Específicos -->
   <link rel="stylesheet" href="/assets/css/main.css?v=20261003-embarcados">
-  <link rel="stylesheet" href="/assets/css/manual-de-bordo.css?v=20261003-mb">
+  <link rel="stylesheet" href="/assets/css/manual-de-bordo.css?v=20261004-manual">
   <link rel="stylesheet" href="/assets/css/cookie-consent.css?v=20260820-fix-contrast">
 
   <script defer src="/assets/js/cookie-consent.js?v=20260713-5"></script>
-  <script defer src="/assets/js/manual-de-bordo.js?v=20261003-mb"></script>
+  <script defer src="/assets/js/manual-de-bordo.js?v=20261004-manual"></script>
+
+  <script type="module" src="/assets/js/manual-de-bordo-live.js?v=20261004-manual"></script>
+
+  <script type="module" src="/assets/js/manual-de-bordo-checklist.js?v=20261004-manual"></script>
+  <script type="module" src="/assets/js/manual-de-bordo-routing.js?v=20261004-manual"></script>
 
   <!-- Schema JSON-LD -->
   <script type="application/ld+json">
@@ -95,15 +102,15 @@
       "@graph": [
         {
           "@type": "WebPage",
-          "@id": "https://manualdebordo.kriativos.com.br/",
-          "url": "https://manualdebordo.kriativos.com.br/",
+          "@id": "https://kriativosonboard.com.br/manualdebordo",
+          "url": "https://kriativosonboard.com.br/manualdebordo",
           "name": "Manual de Bordo KOB 2026: Guia Oficial de Preparação e Navegação | Kriativos On Board",
           "description": "Manual de Bordo oficial do cruzeiro de board games Kriativos On Board 2026 a bordo do MSC Musica. Guia completo de preparação e navegação para passageiros confirmados.",
           "inLanguage": "pt-BR"
         },
         {
           "@type": "FAQPage",
-          "@id": "https://manualdebordo.kriativos.com.br/#duvidas",
+          "@id": "https://kriativosonboard.com.br/manualdebordo#duvidas",
           "mainEntity": [
             {
               "@type": "Question",
@@ -158,15 +165,14 @@
   <!-- Header Superior -->
   <header class="guide-header">
     <div class="guide-container guide-header__inner">
-      <div style="display: flex; align-items: center;">
-        <a href="/" class="guide-header__brand" aria-label="Kriativos On Board — Início do site">
+      <div class="guide-header__identity">
+        <a href="https://kriativosonboard.com.br/" class="guide-header__brand" aria-label="Kriativos On Board — Início do site">
           <img src="/assets/images/brand/kriativos-on-board-logo.webp" alt="Kriativos On Board 2026" width="2930"
             height="1796">
         </a>
         <div class="manual-brand-tag" aria-label="Manual de Bordo KOB 2026">
-          <span class="manual-brand-tag__sub">KOB 2026 · MSC Musica</span>
           <span class="manual-brand-tag__main">Manual de Bordo</span>
-          <span class="manual-brand-tag__domain">manualdebordo.kriativos.com.br</span>
+          <span class="manual-brand-tag__domain">kriativosonboard.com.br/manualdebordo</span>
         </div>
       </div>
       <div class="guide-header__actions">
@@ -175,7 +181,7 @@
           <a href="/en/manual-de-bordo.html" class="lang-switch__item" hreflang="en" lang="en">EN</a>
           <a href="/es/manual-de-bordo.html" class="lang-switch__item" hreflang="es" lang="es">ES</a>
         </nav>
-        <a class="guide-header__home-link" href="/" aria-label="Voltar para a página principal do KOB">
+        <a class="guide-header__home-link" href="https://kriativosonboard.com.br/" aria-label="Voltar para a página principal do KOB">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <line x1="19" y1="12" x2="5" y2="12"></line>
@@ -193,7 +199,7 @@
     <div class="guide-container">
       <ul class="guide-nav-bar__list">
         <li><a class="guide-nav-bar__link is-active" href="#inicio">Início</a></li>
-        <li><a class="guide-nav-bar__link" href="#live">🔴 Live (Novidade)</a></li>
+        <li><a class="guide-nav-bar__link" href="#live">Live de embarque</a></li>
         <li><a class="guide-nav-bar__link" href="#preparacao">Preparação</a></li>
         <li><a class="guide-nav-bar__link" href="#cronograma">Cronograma</a></li>
         <li><a class="guide-nav-bar__link" href="#transporte">Transporte</a></li>
@@ -206,230 +212,62 @@
 
   <main id="main">
     <!-- HERO SLIDER / BOAS-VINDAS (#16) -->
-    <section class="guide-hero-slider" id="inicio" aria-label="Apresentação do Manual de Bordo e Destaques da Live">
-      <div class="hero-slider__track" id="heroSliderTrack">
-
-        <!-- HERO COM A LIVE INTEGRADA (VÍDEO CINEMATOGRÁFICO + CAPÍTULOS EM SLIDE) -->
-        <div class="hero-slide hero-slide--live is-active" id="heroSlide0" role="region"
-          aria-label="Live de Preparação KOB 2026 com gravação e capítulos por assunto">
-          <div class="guide-container" id="live">
-            <div class="hero-live-stage">
-              <!-- Cabeçalho Integrado e Descontraído -->
-              <div class="hero-live-stage__header">
-                <div class="manual-header-title-wrap">
-                  <div class="guide-hero__badge guide-hero__badge--live">
-                    <span class="guide-hero__badge-pulse" aria-hidden="true"></span>
-                    <span>Live de Embarque (03/10/2026) · Assuntos Separados por Tempo</span>
-                  </div>
-                  <div class="manual-seal" aria-label="Kriativos On Board 2026">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                      <circle cx="12" cy="12" r="10"></circle>
-                      <polygon
-                        points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
-                      </polygon>
-                    </svg>
-                    <span>KOB 2026 · MSC Musica</span>
-                  </div>
-                </div>
-
-                <h1 class="guide-hero__title" id="guide-hero-title">BATE-PAPO DE EMBARQUE: TUDO SOBRE O KOB 2026</h1>
-                <p class="guide-hero__subtitle">
-                  Dicas sobre vouchers, bagagem, fretado, restaurantes e jogos com a galera do KOB
-                </p>
-              </div>
-
-              <!-- Layout Cinema: Vídeo Ampliado + Menu Deslizante de 28 Capítulos com Busca (Recolhível/Expandível) -->
-              <div class="hero-live-cinema" id="heroLiveCinema">
-                <!-- Coluna do Player de Vídeo Ampliado -->
-                <div class="hero-live-cinema__player-col">
-                  <div class="hero-live-player" id="livePlayerWrapper">
-                    <div class="hero-live-player__facade" id="livePlayerFacade">
-                      <picture>
-                        <source srcset="/assets/images/hero/youtube-live-cover.webp" type="image/webp">
-                        <img src="/assets/images/hero/youtube-live-cover.jpg" alt="Capa Oficial da Live de Embarque KOB 2026 no YouTube"
-                          width="1280" height="720" loading="eager" class="hero-live-player__bg">
-                      </picture>
-                      <div class="hero-live-player__overlay">
-                        <button type="button" class="hero-live-player__play-btn" id="loadLivePlayerBtn"
-                          aria-label="Dar play na gravação da live de preparação">
-                          <svg width="34" height="34" viewBox="0 0 24 24" fill="currentColor" stroke="none">
-                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                          </svg>
-                        </button>
-                        <div class="hero-live-player__info">
-                          <span class="hero-live-player__badge">🔴 GRAVAÇÃO COMPLETA</span>
-                          <strong class="hero-live-player__headline">Live de Preparação KOB 2026</strong>
-                          <span class="hero-live-player__sub">1h 34min · 28 assuntos detalhados com busca integrada</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="hero-live-player__iframe-wrap" id="livePlayerContainer"></div>
-                  </div>
-
-                  <!-- Barra de Ações, Tópico Atual e Controle do Slide -->
-                  <div class="hero-live-cinema__bar">
-                    <div class="hero-live-cinema__current-topic">
-                      <span class="hero-live-cinema__dot" aria-hidden="true"></span>
-                      <span id="heroLiveTopicStatus">Tópico: Início da Transmissão (13:53)</span>
-                    </div>
-                    <div class="hero-live-cinema__actions">
-                      <!-- Botão para Recolher / Expandir o Slide de Capítulos -->
-                      <button type="button" class="btn-guide-sm btn-guide-sm--toggle" id="heroLiveToggleChaptersBtn"
-                        aria-expanded="true" aria-controls="heroLiveChaptersCol" title="Alternar entre modo cinema total e lista de capítulos">
-                        <svg class="toggle-icon-drawer" width="14" height="14" viewBox="0 0 24 24" fill="none"
-                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                          aria-hidden="true">
-                          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                          <line x1="15" y1="3" x2="15" y2="21"></line>
-                          <polyline points="10 9 7 12 10 15"></polyline>
-                        </svg>
-                        <span class="hero-live-toggle-text">Recolher Capítulos</span>
-                      </button>
-
-                      <button type="button" class="btn-guide-sm btn-guide-sm--modal" data-open-live-modal
-                        id="heroSlideLiveModalBtn" title="Assistir em modal separado em tela cheia">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                          <polyline points="15 3 21 3 21 9"></polyline>
-                          <polyline points="9 21 3 21 3 15"></polyline>
-                          <line x1="21" y1="3" x2="14" y2="10"></line>
-                          <line x1="3" y1="21" x2="10" y2="14"></line>
-                        </svg>
-                        <span>Assistir em Modal</span>
-                      </button>
-
-                      <a class="btn-guide-sm btn-guide-sm--ghost" href="#preparacao">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                          <polyline points="9 11 12 14 22 4"></polyline>
-                          <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
-                        </svg>
-                        <span>Checklist</span>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Slide Lateral Direito: Card de 28 Capítulos com Busca Inteligente -->
-                <aside class="hero-live-cinema__menu-col" id="heroLiveChaptersCol" aria-label="Capítulos e busca da live">
-                  <div class="live-chapters-card hero-live-chapters-card">
-                    <div class="hero-live-chapters-header">
-                      <div class="hero-live-chapters-header__title-group">
-                        <span class="hero-live-chapters-header__pill">Pule Direto no Ponto</span>
-                        <h3 class="hero-live-chapters-header__title">Capítulos &amp; Busca</h3>
-                      </div>
-                      <button type="button" class="hero-live-chapters-close-btn" id="heroLiveChaptersCloseBtn"
-                        aria-label="Recolher capítulos e expandir o vídeo" title="Recolher capítulos para expandir o vídeo">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                          <line x1="18" y1="6" x2="6" y2="18"></line>
-                          <line x1="6" y1="6" x2="18" y2="18"></line>
-                        </svg>
-                      </button>
-                    </div>
-
-                    <div class="live-chapters-search">
-                      <div class="live-search-input-wrap">
-                        <svg class="live-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                          aria-hidden="true">
-                          <circle cx="11" cy="11" r="8"></circle>
-                          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                        </svg>
-                        <input type="search" class="faq-search-input live-search-input-hero" id="liveSearchInput"
-                          placeholder="Buscar na live (ex.: voucher, mala, jantar, jogos)..."
-                          aria-label="Buscar assunto nos capítulos da live">
-                      </div>
-                    </div>
-
-                    <p class="hero-live-chapters-hint">
-                      Clique em um capítulo para avançar o vídeo até o ponto exato da fala:
-                    </p>
-
-                    <ul class="live-chapters-list" id="liveChaptersList" aria-label="Capítulos da live">
-                      <!-- Renderizado via JS com transcrição indexada (28 capítulos) -->
-                    </ul>
-                    <p id="liveEmptyChaptersMsg" style="display:none;color:var(--ocean-cyan, #00e5ff);padding:16px 0;font-size:0.86rem;">
-                      Nenhum capítulo ou trecho de transcrição encontrado para este termo. Tente outra palavra-chave ou consulte
-                      as <a href="#duvidas" style="color:#fff;text-decoration:underline;">Dúvidas Frequentes</a>.
-                    </p>
-                  </div>
-                </aside>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Informações Práticas da Viagem -->
+    <section class="guide-hero-slider" id="inicio" aria-labelledby="manual-welcome-title">
       <div class="guide-container">
-        <div class="manual-telemetry" aria-label="Informações essenciais da viagem">
-          <div class="manual-telemetry__item">
-            <span class="manual-telemetry__label">Navio</span>
-            <strong class="manual-telemetry__val">MSC Musica</strong>
+        <div class="manual-welcome" id="heroSlide0">
+          <div class="manual-welcome__copy">
+            <h1 id="manual-welcome-title">Bora embarcar,<br><span>Kriativo?</span></h1>
+            <p class="manual-welcome__intro">Seu guia para chegar tranquilo e aproveitar cada partida. Relembre a live por assunto, prepare a mala e tire suas dúvidas.</p>
+            <div class="manual-welcome__links"><a href="#preparacao">Meu checklist <svg class="" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10"/></svg></a><a href="#duvidas">Dúvidas de quem embarca <svg class="" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10"/></svg></a></div>
           </div>
-          <div class="manual-telemetry__item">
-            <span class="manual-telemetry__label">Porto de Saída</span>
-            <strong class="manual-telemetry__val">Santos / SP (Concais)</strong>
-          </div>
-          <div class="manual-telemetry__item">
-            <span class="manual-telemetry__label">Roteiro</span>
-            <strong class="manual-telemetry__val">Santos ⇄ Búzios</strong>
-          </div>
-          <div class="manual-telemetry__item">
-            <span class="manual-telemetry__label">Período da Viagem</span>
-            <strong class="manual-telemetry__val">20 a 23 Nov 2026</strong>
-          </div>
-          <div class="manual-telemetry__item">
-            <span class="manual-telemetry__label">Status</span>
-            <strong class="manual-telemetry__val">
-              <span class="manual-telemetry__pulse" aria-hidden="true"></span>
-              Tudo pronto pro embarque!
-            </strong>
-          </div>
+          <img class="manual-welcome__mascot" src="/assets/images/manual/kriativa-welcome.png" alt="" width="480" height="720" fetchpriority="high">
         </div>
-
-        <!-- Contador Regressivo Global -->
-        <div class="countdown-banner" role="status" aria-live="polite">
-          <svg class="countdown-banner__icon" width="24" height="24" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-            <line x1="16" y1="2" x2="16" y2="6"></line>
-            <line x1="8" y1="2" x2="8" y2="6"></line>
-            <line x1="3" y1="10" x2="21" y2="10"></line>
-          </svg>
-          <p class="countdown-banner__text" id="guideCountdownText">Embarque em 20 de novembro de 2026.</p>
-        </div>
-      </div>
-
-      <!-- Lembrete Amigo -->
-      <div class="guide-container" style="margin-top:14px;">
-        <div class="editorial-notice">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink:0;margin-top:2px;">
-            <circle cx="12" cy="12" r="10"></circle>
-            <line x1="12" y1="8" x2="12" y2="12"></line>
-            <line x1="12" y1="16" x2="12.01" y2="16"></line>
-          </svg>
-          <div>
-            <strong>Lembrete amigo:</strong> confira sempre as instruções da sua reserva e as regras da MSC antes de viajar.
+        <div class="manual-live" id="live" aria-labelledby="live-title">
+          <div class="manual-live__heading"><h2 id="live-title">Live de embarque</h2><p>Gravação · 1h20min06s · áudio em português</p></div>
+          <div class="hero-live-cinema is-collapsed" id="heroLiveCinema">
+            <div class="hero-live-player" id="livePlayerWrapper">
+              <div class="live-facade" id="livePlayerFacade">
+                <picture><source srcset="/assets/images/hero/youtube-live-cover.webp" type="image/webp"><img src="/assets/images/hero/youtube-live-cover.jpg" alt="" width="1280" height="720"></picture>
+                <button class="live-play-button" type="button" id="loadLivePlayerBtn" disabled><svg class="" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 5 11 7-11 7Z"/></svg>Assistir à live</button>
+              </div>
+              <div class="live-player-container" id="livePlayerContainer" hidden></div>
+            </div>
+            <aside class="live-drawer" id="heroLiveChaptersCol" aria-label="Assuntos">
+              <div class="live-drawer__slide">
+                <button class="live-drawer__tab" type="button" id="heroLiveToggleChaptersBtn" disabled aria-expanded="false" aria-controls="heroLiveChaptersPanel"><svg class="" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12M3 6h.01M3 12h.01M3 18h.01"/></svg><span>Assuntos</span><svg class="live-drawer__arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14 6-6 6 6 6"/></svg></button>
+                <div class="live-drawer__panel" id="heroLiveChaptersPanel" aria-hidden="true" inert>
+                  <div class="live-drawer__header"><h3>Encontre seu assunto</h3><button type="button" id="heroLiveChaptersCloseBtn" aria-label="Fechar assuntos"><svg class="" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
+                  <label class="live-drawer__intro" for="liveSearchInput">Busque na live:</label>
+                  <div class="live-search"><input id="liveSearchInput" type="search" placeholder="Ex.: embarque, jogos, festas…" autocomplete="off" aria-controls="liveChaptersList"><button type="button" id="liveSearchClearBtn" aria-label="Limpar busca" hidden><svg class="" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
+                  <ul class="live-chapters-list" id="liveChaptersList" aria-label="Assuntos da live"></ul>
+                  <p class="live-empty" id="liveEmptyChaptersMsg" role="status" hidden>Nenhum assunto encontrado. Tente outra palavra.</p>
+                  <p class="live-source-note">Transcrição fornecida em português. Regras atualizadas estão sinalizadas nos trechos correspondentes.</p>
+                </div>
+              </div>
+            </aside>
           </div>
+          <div class="live-toolbar"><p id="heroLiveTopicStatus" role="status">Escolha um assunto ou assista desde o início.</p><div><button type="button" id="liveFullscreenBtn" hidden>Ampliar vídeo</button><a id="liveExternalLink" href="https://www.youtube.com/watch?v=AtIvlc62KgI" target="_blank" rel="noopener noreferrer">Abrir no YouTube <svg class="" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10"/></svg></a></div></div>
+          <div class="live-video-error" id="liveVideoError" role="status" hidden><p></p><button type="button" id="liveRetryBtn">Tentar novamente</button></div>
+          <div class="live-chapter-note" id="liveChapterNote" hidden></div>
+          <p class="live-privacy-note">Ao assistir ou escolher um assunto, você se conecta ao YouTube. As políticas de privacidade do serviço se aplicam.</p>
+          <noscript><details class="live-noscript"><summary>Assuntos da live no YouTube</summary><ol><li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=833s" target="_blank" rel="noopener noreferrer">00:13:53 · Boas-vindas e apresentação da viagem</a></li><li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=913s" target="_blank" rel="noopener noreferrer">00:15:13 · Royal Trip e quarta edição do KOB</a></li><li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=1009s" target="_blank" rel="noopener noreferrer">00:16:49 · Datas, desembarque e retorno do fretado</a></li><li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=1036s" target="_blank" rel="noopener noreferrer">00:17:16 · Parceiros do evento</a></li><li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=1250s" target="_blank" rel="noopener noreferrer">00:20:50 · Documentos e autorização para menores</a></li><li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=1345s" target="_blank" rel="noopener noreferrer">00:22:25 · Vouchers, check-in e etiquetas</a></li><li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=1702s" target="_blank" rel="noopener noreferrer">00:28:22 · Aeroportos e chegada a Santos</a></li><li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=1765s" target="_blank" rel="noopener noreferrer">00:29:25 · Estacionamento no Concais</a></li><li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=1852s" target="_blank" rel="noopener noreferrer">00:30:52 · Cruise Card, cartões e gastos a bordo</a></li><li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=1963s" target="_blank" rel="noopener noreferrer">00:32:43 · Buffet e liberação das cabines</a></li><li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=2041s" target="_blank" rel="noopener noreferrer">00:34:01 · Encontro, kits e mural de programação</a></li><li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=2161s" target="_blank" rel="noopener noreferrer">00:36:01 · Roupas e Festa do Branco</a></li><li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=2276s" target="_blank" rel="noopener noreferrer">00:37:56 · Gestantes</a></li><li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=2339s" target="_blank" rel="noopener noreferrer">00:38:59 · Bebês na reserva</a></li><li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=2368s" target="_blank" rel="noopener noreferrer">00:39:28 · Água, chá, café e sistema Aqua</a></li><li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=2423s" target="_blank" rel="noopener noreferrer">00:40:23 · Pacotes de bebidas</a></li><li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=2715s" target="_blank" rel="noopener noreferrer">00:45:15 · Internet por aparelho e sinal em Búzios</a></li><li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=2894s" target="_blank" rel="noopener noreferrer">00:48:14 · Jantar, turnos e mesas com amigos</a></li><li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=3154s" target="_blank" rel="noopener noreferrer">00:52:34 · Frigobar e cobranças</a></li><li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=3213s" target="_blank" rel="noopener noreferrer">00:53:33 · Tema Anos 80 e encerramento</a></li><li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=3506s" target="_blank" rel="noopener noreferrer">00:58:26 · Restaurantes de especialidades</a></li><li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=3766s" target="_blank" rel="noopener noreferrer">01:02:46 · MSC for Me e chat interno</a></li><li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=3942s" target="_blank" rel="noopener noreferrer">01:05:42 · Board Game Guru e sorteios</a></li><li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=4265s" target="_blank" rel="noopener noreferrer">01:11:05 · Seguro e despesas médicas</a></li><li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=4389s" target="_blank" rel="noopener noreferrer">01:13:09 · Crianças e clubinho</a></li><li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=4456s" target="_blank" rel="noopener noreferrer">01:14:16 · Bagagem</a></li><li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=4481s" target="_blank" rel="noopener noreferrer">01:14:41 · Cabine e itens para a mala</a></li><li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=4712s" target="_blank" rel="noopener noreferrer">01:18:32 · Grupo oficial e recados finais</a></li></ol></details></noscript>
         </div>
+        <dl class="manual-telemetry"><div><dt>A bordo</dt><dd>MSC Musica</dd></div><div><dt>Embarque e retorno</dt><dd>Concais · Santos</dd></div><div><dt>Roteiro</dt><dd>Santos ⇄ Búzios</dd></div><div><dt>Quando</dt><dd>20–23 nov. 2026</dd></div></dl>
+        <p class="countdown-banner__text" id="guideCountdownText">Embarque em 20 de novembro de 2026.</p>
+        <p class="manual-editorial-note">Confira as instruções da sua reserva e as regras da MSC antes de viajar.</p>
       </div>
     </section>
 
     <!-- CHECKLIST DE PREPARAÇÃO (#18) -->
     <section class="guide-section" id="preparacao" aria-labelledby="checklist-title">
       <div class="guide-container">
-        <header class="guide-section__header">
-          <span class="guide-section__badge">Checklist &amp; Documentos</span>
+        <header class="guide-section__header guide-section__header--illustrated">
           <h2 class="guide-section__title" id="checklist-title">Meu checklist de preparação</h2>
           <p class="guide-section__intro">
             Marque o que você já conferiu. Esta lista é uma ajuda pessoal e não valida sua reserva nem substitui a
             análise dos documentos pela agência e pela MSC.
           </p>
+          <img class="guide-section__mascot" src="/assets/images/manual/kriativa-checklist.png" alt="" width="480" height="720" loading="lazy" decoding="async">
         </header>
 
         <div class="checklist-card" id="checklistContainer">
@@ -877,6 +715,8 @@
             </ul>
           </div>
 
+          <div class="checklist-share" data-checklist-share></div>
+
           <div class="checklist-actions">
             <p class="checklist-persistence-note">
               🔒 Seu progresso fica salvo somente neste navegador. Você pode apagá-lo quando quiser.
@@ -1113,7 +953,7 @@
               <li><strong>Limite de tolerância:</strong> 06h40</li>
               <li><strong>Retorno (23/11):</strong> 10h30 (Porto de Santos)</li>
             </ul>
-            <p style="font-size:0.85rem;color:var(--ink-invert-soft);margin-bottom:16px;">
+            <p style="font-size:0.85rem;color:#526779;margin-bottom:16px;">
               * A tolerância não é um novo horário de saída. Chegue com antecedência.
             </p>
           </article>
@@ -1128,41 +968,26 @@
               <li><strong>Limite de tolerância:</strong> 07h30</li>
               <li><strong>Retorno (23/11):</strong> 10h30 (Porto de Santos)</li>
             </ul>
-            <p style="font-size:0.85rem;color:var(--ink-invert-soft);margin-bottom:16px;">
+            <p style="font-size:0.85rem;color:#526779;margin-bottom:16px;">
               * O ônibus 2 e adicionais dependem do quórum mínimo de passageiros com devolução integral via Pix caso não
               atinja.
             </p>
           </article>
         </div>
 
-        <div class="transport-card" style="margin-bottom:0;">
-          <h3 class="transport-card__title">Links Úteis de Deslocamento</h3>
-          <div class="guide-hero__actions" style="margin-bottom:0;">
-            <a class="btn-guide btn-guide--primary" href="https://busao.kriativosonboard.com.br/" target="_blank"
-              rel="noopener noreferrer">
-              Ver condições e disponibilidade do fretado
-            </a>
-            <a class="btn-guide btn-guide--secondary" href="#faq-o13">
-              Ver orientação para quem chega de avião
-            </a>
-            <a class="btn-guide btn-guide--ghost" href="#faq-o14">
-              Vou de carro: estacionamento no Concais
-            </a>
-          </div>
-        </div>
       </div>
     </section>
 
     <!-- GUIA DOS JOGOS (#19) -->
     <section class="guide-section" id="jogos" aria-labelledby="jogos-title">
       <div class="guide-container">
-        <header class="guide-section__header">
-          <span class="guide-section__badge">Salão de Jogos &amp; Regras</span>
+        <header class="guide-section__header guide-section__header--illustrated">
           <h2 class="guide-section__title" id="jogos-title">Guia dos jogos a bordo</h2>
           <p class="guide-section__intro">
             A Crystal Lounge é o espaço previsto para o KOB. Conheça as dinâmicas de mesas, monitores, sorteios e o uso
             do aplicativo Board Game Guru.
           </p>
+          <img class="guide-section__mascot" src="/assets/images/manual/kriativa-games.png" alt="" width="480" height="720" loading="lazy" decoding="async">
         </header>
 
         <div class="games-layout">
@@ -2412,7 +2237,7 @@
     <section class="guide-section" id="contato" aria-labelledby="contato-title">
       <div class="guide-container">
         <header class="guide-section__header">
-          <span class="guide-section__badge">Canal com o Comando KOB</span>
+          <span class="guide-section__badge">Fale com a Organização</span>
           <h2 class="guide-section__title" id="contato-title">Fale com a equipe</h2>
           <p class="guide-section__intro">
             Para jogos, kit e programação, procure a organização. Para vouchers, dados da cabine, documentação e
@@ -2431,7 +2256,7 @@
             </p>
             <a class="btn-guide btn-guide--primary" href="https://api.whatsapp.com/send?phone=5513981580498"
               target="_blank" rel="noopener noreferrer">
-              WhatsApp +55 13 98158-0498
+              WhatsApp
             </a>
           </article>
 
@@ -2513,8 +2338,8 @@
         </div>
 
         <div class="form-field">
-          <label class="form-label" for="supportWhatsappInput">WhatsApp, com código do país (opcional)</label>
-          <input type="tel" id="supportWhatsappInput" class="form-input" placeholder="+55 11 99999-9999">
+          <label class="form-label" for="supportWhatsappInput">WhatsApp (opcional)</label>
+          <input type="tel" id="supportWhatsappInput" class="form-input" placeholder="11 99999-9999">
         </div>
 
         <div class="form-field">
@@ -2606,78 +2431,7 @@
   </aside>
 
   <!-- Barra Flutuante de Navegação Rápida (Floating Dock) -->
-  <nav class="guide-quick-dock" aria-label="Navegação rápida pelo guia">
-    <a href="#inicio" class="guide-quick-dock__item is-active" aria-label="Início">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-        stroke-linejoin="round" aria-hidden="true">
-        <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-        <polyline points="9 22 9 12 15 12 15 22"></polyline>
-      </svg>
-      <span>Início</span>
-    </a>
-    <a href="#live" class="guide-quick-dock__item" aria-label="Gravação da Live de Embarque (03/10/2026)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-        stroke-linejoin="round" aria-hidden="true">
-        <polygon points="23 7 16 12 23 17 23 7"></polygon>
-        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
-      </svg>
-      <span>🔴 Live</span>
-    </a>
-    <a href="#preparacao" class="guide-quick-dock__item" aria-label="Checklist de preparação">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-        stroke-linejoin="round" aria-hidden="true">
-        <polyline points="9 11 12 14 22 4"></polyline>
-        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
-      </svg>
-      <span>Checklist</span>
-    </a>
-    <a href="#cronograma" class="guide-quick-dock__item" aria-label="Cronograma de etapas">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-        stroke-linejoin="round" aria-hidden="true">
-        <circle cx="12" cy="12" r="10"></circle>
-        <polyline points="12 6 12 12 16 14"></polyline>
-      </svg>
-      <span>Cronograma</span>
-    </a>
-    <a href="#transporte" class="guide-quick-dock__item" aria-label="Opções de transporte">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-        stroke-linejoin="round" aria-hidden="true">
-        <rect x="3" y="3" width="18" height="18" rx="2"></rect>
-        <circle cx="8" cy="17" r="1"></circle>
-        <circle cx="16" cy="17" r="1"></circle>
-        <path d="M7 13h10"></path>
-      </svg>
-      <span>Transporte</span>
-    </a>
-    <a href="#jogos" class="guide-quick-dock__item" aria-label="Espaço de jogos e regras">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-        stroke-linejoin="round" aria-hidden="true">
-        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-        <path d="M16 8h.01"></path>
-        <path d="M8 8h.01"></path>
-        <path d="M8 16h.01"></path>
-        <path d="M16 16h.01"></path>
-        <path d="M12 12h.01"></path>
-      </svg>
-      <span>Jogos</span>
-    </a>
-    <a href="#duvidas" class="guide-quick-dock__item" aria-label="Dúvidas e FAQ">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-        stroke-linejoin="round" aria-hidden="true">
-        <circle cx="12" cy="12" r="10"></circle>
-        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-        <line x1="12" y1="17" x2="12.01" y2="17"></line>
-      </svg>
-      <span>Dúvidas</span>
-    </a>
-    <a href="#contato" class="guide-quick-dock__item" aria-label="Fale com a equipe">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-        stroke-linejoin="round" aria-hidden="true">
-        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-      </svg>
-      <span>Contato</span>
-    </a>
-  </nav>
+
 
   <!-- Sidebar Retrátil do Checklist (Lateral Esquerda) -->
   <button type="button" class="checklist-sidebar-toggle" id="checklistSidebarToggle" aria-expanded="false"
@@ -2694,12 +2448,13 @@
   <div class="checklist-sidebar-backdrop" id="checklistSidebarBackdrop" aria-hidden="true"></div>
 
   <aside class="checklist-sidebar" id="checklistSidebar" role="complementary" aria-label="Checklist de Bordo"
-    aria-hidden="true">
+    aria-hidden="true" inert>
     <div class="checklist-sidebar__header">
       <div class="checklist-sidebar__title-wrap">
-        <span class="checklist-sidebar__tag">KOB 2026</span>
         <h3 class="checklist-sidebar__title">Checklist de Bordo</h3>
+        <p class="checklist-sidebar__intro">Sua viagem, item por item.</p>
       </div>
+      <img class="checklist-sidebar__mascot" src="/assets/images/manual/kriativa-checklist.png" alt="" width="480" height="720" loading="lazy" decoding="async">
       <button type="button" class="checklist-sidebar__close" id="checklistSidebarClose" aria-label="Recolher Checklist">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -2716,12 +2471,12 @@
       <span class="checklist-sidebar__progress-text" id="checklistSidebarProgressText">0 de 16 conferidos</span>
     </div>
 
-    <div class="checklist-sidebar__nav" role="tablist" aria-label="Filtrar grupos na sidebar">
-      <button type="button" class="checklist-sidebar__nav-item is-active" data-sidebar-group="all">Todos</button>
-      <button type="button" class="checklist-sidebar__nav-item" data-sidebar-group="1">Docs</button>
-      <button type="button" class="checklist-sidebar__nav-item" data-sidebar-group="2">Malas</button>
-      <button type="button" class="checklist-sidebar__nav-item" data-sidebar-group="3">Trajeto</button>
-      <button type="button" class="checklist-sidebar__nav-item" data-sidebar-group="4">Jogos</button>
+    <div class="checklist-sidebar__nav" role="group" aria-label="Filtrar grupos na sidebar">
+      <button type="button" class="checklist-sidebar__nav-item is-active" aria-pressed="true" data-sidebar-group="all">Todos</button>
+      <button type="button" class="checklist-sidebar__nav-item" aria-pressed="false" data-sidebar-group="1">Docs</button>
+      <button type="button" class="checklist-sidebar__nav-item" aria-pressed="false" data-sidebar-group="2">Malas</button>
+      <button type="button" class="checklist-sidebar__nav-item" aria-pressed="false" data-sidebar-group="3">Trajeto</button>
+      <button type="button" class="checklist-sidebar__nav-item" aria-pressed="false" data-sidebar-group="4">Jogos</button>
     </div>
 
     <div class="checklist-sidebar__body" id="checklistSidebarList" aria-label="Itens do checklist">
@@ -2729,6 +2484,7 @@
     </div>
 
     <div class="checklist-sidebar__footer">
+      <div class="checklist-share" data-checklist-share></div>
       <a href="#preparacao" class="checklist-sidebar__goto-btn" id="checklistSidebarGotoBtn">
         Ver Checklist Completo na Página
       </a>
@@ -2736,63 +2492,7 @@
   </aside>
 
   <!-- Modal da Live de Embarque (#17) -->
-  <aside class="guide-modal live-modal" id="liveModal" role="dialog" aria-modal="true" aria-labelledby="liveModalTitle"
-    aria-hidden="true">
-    <div class="live-modal__dialog">
-      <header class="live-modal__header">
-        <div class="live-modal__title-wrap">
-          <div class="live-modal__badge">
-            <span class="live-modal__badge-pulse" aria-hidden="true"></span>
-            <span>Live de Embarque (03/10/2026) · Gravação Completa</span>
-          </div>
-          <h3 class="live-modal__title" id="liveModalTitle">Live de Embarque · KOB 2026 &amp; MSC Musica</h3>
-        </div>
-        <button type="button" class="live-modal__close" id="liveModalCloseBtn" aria-label="Fechar vídeo da live">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
-      </header>
 
-      <div class="live-modal__player-area">
-        <div class="live-modal__iframe-wrapper" id="liveModalIframeContainer">
-          <!-- Iframe injetado dinamicamente para preservar performance e pausar áudio ao fechar -->
-        </div>
-
-        <div class="live-modal__quick-topics">
-          <div class="live-modal__topics-label">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <circle cx="12" cy="12" r="10"></circle>
-              <polyline points="12 6 12 12 16 14"></polyline>
-            </svg>
-            <span>Pular direto para um assunto no vídeo:</span>
-          </div>
-          <div class="live-modal__topics-pills">
-            <button type="button" class="live-modal__pill" data-modal-seek="833">Início da Live (13:53)</button>
-            <button type="button" class="live-modal__pill" data-modal-seek="1120">Vouchers &amp; Etiquetas
-              (18:40)</button>
-            <button type="button" class="live-modal__pill" data-modal-seek="1460">Documentos &amp; RG (24:20)</button>
-            <button type="button" class="live-modal__pill" data-modal-seek="1830">Malas &amp; Bagagem (30:30)</button>
-            <button type="button" class="live-modal__pill" data-modal-seek="2395">Ônibus Fretado (39:55)</button>
-            <button type="button" class="live-modal__pill" data-modal-seek="2900">Crystal Lounge (48:20)</button>
-            <button type="button" class="live-modal__pill" data-modal-seek="3400">Jantar &amp; Trajes (56:40)</button>
-            <button type="button" class="live-modal__pill" data-modal-seek="3980">Jogos &amp; Espaço KOB
-              (01:06:20)</button>
-            <button type="button" class="live-modal__pill" data-modal-seek="4700">Dúvidas Finais (01:18:20)</button>
-          </div>
-        </div>
-      </div>
-
-      <footer class="live-modal__footer">
-        <a href="#live" class="live-modal__goto-btn" id="liveModalGotoSectionBtn">
-          Ver todos os 28 capítulos detalhados no Manual
-        </a>
-      </footer>
-    </div>
-  </aside>
 </body>
 
 </html>

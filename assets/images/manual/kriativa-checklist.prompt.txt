@@ -1,0 +1,10 @@
+Tool: image_gen.imagegen (built-in)
+Reference: user's official Kriativa model sheet
+Asset: kriativa-checklist.png
+Output: transparent RGBA PNG; resized to 480 × 720 with sips
+
+Initial generation prompt:
+Use case: identity-preserve. Asset: transparent Kriativa mascot illustration for the preparation checklist in the Kriativos On Board website. Use the provided official character model sheet as the binding identity: exact warm orange braids, white cap with exposed golden brain and purple meeple, orange sleeves, navy purple vest, cyan meeple shirt, navy pants, purple token pouch, white cyan sneakers, proportions and polished crisp cartoon rendering. Produce ONE full-body Kriativa standing in the explainer pose from the sheet, smiling, holding a small white checklist clipboard in one hand and pointing to it with the other. The clipboard shows three simple purple checkmarks and small cyan squares only, with NO text, lettering, digits or invented logos. Character remains unmistakably identical to the sheet. Whole hat, hair, fingers and shoes included with padding. Native completely transparent background: alpha zero around and between the character and clipboard, with clean antialiased edges. No halo, glow, mist, ground shadow, backdrop, scenery, borders, sheet, labels, words or extra characters.
+
+Final edit prompt:
+Edit this existing Kriativa mascot cutout. Preserve the character's exact face, expression, hair, clothing, pose, hands, prop, colours and full body. Remove ONLY every coloured glow, mist, gradient, halo and shadow surrounding the character, including between the arms/legs and beneath the feet. Outside the actual character and held prop must be completely transparent (alpha zero), not dark, white or partially opaque haze. Retain clean antialiased character edges and all white foreground parts such as the cap and sneakers. No new background, text, props or changes to the character. Native transparent PNG cutout for placement on both light and navy website backgrounds.

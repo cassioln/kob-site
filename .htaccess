@@ -64,6 +64,11 @@ RewriteCond %{HTTP_HOST} ^painel\.kriativosonboard\.com\.br$ [NC]
 RewriteRule ^index\.html$ painel-onibus.html [L]
 
 # ---- Subdominio manualdebordo.kriativos.com.br (e manualdebordo.kriativosonboard.com.br) ----
+# Acesso adicional no dominio principal; manter os mesmos assets e idiomas.
+RewriteRule ^manualdebordo/?$ manual-de-bordo.html [L]
+RewriteRule ^en/manualdebordo/?$ en/manual-de-bordo.html [L]
+RewriteRule ^es/manualdebordo/?$ es/manual-de-bordo.html [L]
+
 # Redireciona /embarcados.html para /manual-de-bordo.html
 RewriteRule ^embarcados\.html$ /manual-de-bordo.html [R=301,L]
 RewriteRule ^en/embarcados\.html$ /en/manual-de-bordo.html [R=301,L]

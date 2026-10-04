@@ -1,0 +1,10 @@
+Tool: image_gen.imagegen (built-in)
+Reference: user's official Kriativa model sheet
+Asset: kriativa-games.png
+Output: transparent RGBA PNG; resized to 480 × 720 with sips
+
+Initial generation prompt:
+Use case: identity-preserve. Asset: transparent Kriativa mascot illustration for the board-game guide in the Kriativos On Board website. Use the official character model sheet as the binding identity: exact warm orange braids, white cap with exposed golden brain and purple meeple, orange sleeves, navy purple vest, cyan meeple shirt, navy pants, purple token pouch, white cyan sneakers, proportions and polished crisp cartoon rendering. Produce ONE full-body Kriativa in the victory-of-the-party pose shown on the sheet: enthusiastic smile, standing confidently, one arm raised holding a cyan twenty-sided board-game die, other hand at waist. The die has crisp recognizable triangular faces, simple tiny pips and no lettering or brand names. Whole hat, hair, fingers and shoes included with padding. Native completely transparent background, alpha zero surrounding and between all parts. Clean antialiased edges. No halo, glow, mist, ground shadow, backdrop, scene, borders, model sheet, labels, words or extra characters.
+
+Final edit prompt:
+Edit this existing Kriativa mascot cutout. Preserve the character's exact face, expression, hair, clothing, pose, hands, prop, colours and full body. Remove ONLY every coloured glow, mist, gradient, halo and shadow surrounding the character, including between the arms/legs and beneath the feet. Outside the actual character and held prop must be completely transparent (alpha zero), not dark, white or partially opaque haze. Retain clean antialiased character edges and all white foreground parts such as the cap and sneakers. No new background, text, props or changes to the character. Native transparent PNG cutout for placement on both light and navy website backgrounds.

@@ -292,6 +292,29 @@ h4 {
   color: var(--foam-white);
 }
 
+.header-manual-link {
+  padding: 12px 16px;
+  border: 1px solid rgba(255, 255, 255, .35);
+  border-radius: 8px;
+  background: #71206c;
+  color: #fff;
+  font-size: .875rem;
+  white-space: nowrap;
+}
+
+.header-manual-link:hover {
+  background: #8e2b88;
+  color: #fff;
+}
+
+.header-manual-link:focus-visible {
+  outline: 3px solid var(--ocean-cyan);
+  outline-offset: 3px;
+}
+
+.header-manual-link svg { flex-shrink: 0; }
+.nav__right .header-manual-link { order: 0; }
+
 .btn--primary:hover {
   background: var(--action-hover);
   color: var(--foam-white);
@@ -441,7 +464,7 @@ h4 {
 .nav[data-scrolled="false"] .nav__links {
   flex: 1 1 auto;
   justify-content: center;
-  gap: clamp(8px, 1.6vw, 28px);
+  gap: clamp(4px, .6vw, 10px);
 }
 
 /* "O evento", "O que inclui" e o seletor de idioma só aparecem no menu da 1ª dobra (Hero);
@@ -455,7 +478,9 @@ h4 {
   color: rgba(255, 255, 255, 0.82);
   text-decoration: none;
   font-weight: 500;
-  padding: 9px 14px;
+  padding: 9px 10px;
+  font-size: .875rem;
+  white-space: nowrap;
   border-radius: var(--r-pill);
   transition: color var(--dur-state) var(--ease-quart), background var(--dur-state) var(--ease-quart);
 }
@@ -8517,7 +8542,7 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
   }
 }
 
-@media (max-width: 1180px) {
+@media (max-width: 1320px) {
   .nav__links {
     display: none;
   }
@@ -8541,6 +8566,14 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
     margin-left: auto;
     justify-content: flex-end;
   }
+}
+
+@media (max-width: 600px) {
+  .nav { gap: 8px; }
+  .nav__brand img { height: 44px; }
+  .nav__right { gap: 8px; }
+  .nav .header-manual-link { padding: 11px 12px; font-size: .75rem; }
+  .nav .header-manual-link svg { display: none; }
 }
 
 @media (max-width: 560px) {

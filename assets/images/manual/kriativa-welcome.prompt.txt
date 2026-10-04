@@ -1,0 +1,10 @@
+Tool: image_gen.imagegen (built-in)
+Reference: user's official Kriativa model sheet
+Asset: kriativa-welcome.png
+Output: transparent RGBA PNG; resized to 480 × 720 with sips
+
+Initial generation prompt:
+Use case: background-extraction / identity-preserve. Asset type: transparent mascot cutout for the Kriativos On Board Manual de Bordo website. Input image is the user's official Kriativa character model sheet; preserve the exact character identity, orange braided hair, white cap with exposed golden brain and purple meeple, orange sleeves, dark navy and purple vest, cyan meeple shirt, token satchel and white cyan sneakers, proportions, warm expressive eyes and crisp polished cartoon rendering. Produce ONE full-body Kriativa only, in the reference's welcoming pose: standing with a friendly wink, holding the purple game cards in one hand and lightly gesturing toward the viewer with the other. Face mostly forward, small three-quarter turn. Keep the whole cap, hands and shoes inside frame with clear padding. Native truly transparent background. No model sheet, no labels, no logos, no lettering, no text, no ground, no backdrop, no added props, no glow or cast shadow. This is a clean extraction/adaptation of the supplied brand character, not a redesign.
+
+Final edit prompt:
+Edit this existing Kriativa mascot cutout. Preserve the character's exact face, wink, hair, clothing, pose, hands, cards, colours and full body. Remove ONLY every coloured glow, mist, gradient, halo and shadow surrounding the character, including between the arms/legs and beneath the feet. Outside the actual character must be completely transparent (alpha zero), not dark, white or partially opaque haze. Retain clean antialiased character edges and all white foreground parts such as the cap and sneakers. No new background, text, props or changes to the character. Native transparent PNG cutout for placement on both light and navy website backgrounds.
