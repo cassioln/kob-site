@@ -49,7 +49,7 @@ function initChecklistTools() {
   function updateLinks() {
     const data = snapshot();
     document.querySelectorAll('[data-checklist-export="email"]').forEach(a => { a.href=`mailto:?subject=${encodeURIComponent(w.title)}&body=${encodeURIComponent(formatChecklist(data,'email',lang))}`; });
-    document.querySelectorAll('[data-checklist-export="whatsapp"]').forEach(a => { a.href=`https://wa.me/?text=${encodeURIComponent(formatChecklist(data,'whatsapp',lang))}`; });
+    document.querySelectorAll('[data-checklist-export="whatsapp"]').forEach(a => { a.href=`https://api.whatsapp.com/send?text=${encodeURIComponent(formatChecklist(data,'whatsapp',lang))}`; });
   }
   roots.forEach(root => {
     const controls=document.createElement('div'); controls.className='checklist-share__controls';

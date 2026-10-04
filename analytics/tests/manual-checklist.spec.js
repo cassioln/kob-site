@@ -53,7 +53,7 @@ test('Copiar, email e WhatsApp usam marcas atuais, todos os itens e formatos pr�
  const mail=new URL(await footer.locator('[data-checklist-export="email"]').getAttribute('href'));
  expect(mail.protocol).toBe('mailto:'); expect(mail.searchParams.get('body')).toContain('Olá,'); expect(mail.searchParams.get('body')).toContain('• Não se aplica —');
  const wa=new URL(await footer.locator('[data-checklist-export="whatsapp"]').getAttribute('href'));
- expect(wa.hostname).toBe('wa.me'); expect(wa.searchParams.get('text')).toContain('☑️ Conferi os dados'); expect(wa.searchParams.get('text')).toContain('☑️ Conferido · 🔲 Pendente · ▪️ Não se aplica');
+ expect(wa.hostname).toBe('api.whatsapp.com'); expect(wa.pathname).toBe('/send'); expect(wa.searchParams.get('text')).toContain('☑️ Conferi os dados'); expect(wa.searchParams.get('text')).toContain('☑️ Conferido · 🔲 Pendente · ▪️ Não se aplica');
  for(const channel of [copied,mail.searchParams.get('body'),wa.searchParams.get('text')]) expect(channel).toMatch(/4\. jogos/i);
 });
 test('Clipboard indisponível oferece texto selecionável',async({page})=>{

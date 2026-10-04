@@ -88,3 +88,5 @@ Publicação autorizada: enviar a versão à main pelo workflow existente e veri
 Evidência adicional: `.impeccable/review/refinements-2026-10-04`, `checklist-2026-10-04` e `headers-2026-10-04`. Refinamentos posteriores ao veredito independente inicial foram conferidos pelo agente principal; não se atribui um novo veredito ao reviewer anterior.
 
 Último ajuste do usuário: WhatsApp usa exatamente “☑️ Conferido · 🔲 Pendente · ▪️ Não se aplica” na legenda e os mesmos símbolos nos itens. Verificação adicional dos ícones/categorias em 9 combinações idioma/largura, incluindo toque, sem repetição do título no painel.
+
+Compartilhamento WhatsApp usa `https://api.whatsapp.com/send?text=...` diretamente: o redirecionamento do link curto wa.me substituiu os emojis por U+FFFD na verificação real. A página oficial direta preservou a legenda completa no link de continuação para WhatsApp Web. Cache do módulo atualizado após a correção.

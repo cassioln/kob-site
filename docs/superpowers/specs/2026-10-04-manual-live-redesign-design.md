@@ -25,3 +25,5 @@ Copiar usa [x]/[ ]/[—]; email usa saudação, seções e status por extenso; W
 Adicionar /manualdebordo, /en/manualdebordo e /es/manualdebordo sem retirar o subdomínio. Canonical/alternates/metadados e troca de idioma acompanham a rota. Remover o cartão complementar de transporte. Rótulos das seções usam a tipografia eyebrow da home, sem pílula. Contato mostra apenas “WhatsApp”; no PT, campo “WhatsApp (opcional)” com exemplo nacional sem +55.
 
 Botão roxo “Manual de bordo” no header da home e do ônibus, localizado em EN/ES e apontando ao domínio principal no idioma correspondente. Disponível no celular; home compacta marca/menu e ônibus dispõe duas linhas. FAQ da home e fluxo de reserva permanecem preservados. Publicar pelo workflow FTP existente, disparado por push na main, e conferir as rotas públicas após sucesso.
+
+Compartilhamento WhatsApp usa `https://api.whatsapp.com/send?text=...` diretamente: o redirecionamento do link curto wa.me substituiu os emojis por U+FFFD na verificação real. A página oficial direta preservou a legenda completa no link de continuação para WhatsApp Web. Cache do módulo atualizado após a correção.
