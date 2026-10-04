@@ -44,11 +44,11 @@
   <link rel="preload" href="/assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
 
   <link rel="stylesheet" href="/assets/css/main.css?v=20261003-embarcados">
-  <link rel="stylesheet" href="/assets/css/embarcados.css?v=20261003-embarcados">
+  <link rel="stylesheet" href="/assets/css/manual-de-bordo.css?v=20261003-mb">
   <link rel="stylesheet" href="/assets/css/cookie-consent.css?v=20260820-fix-contrast">
 
   <script defer src="/assets/js/cookie-consent.js?v=20260713-5"></script>
-  <script defer src="/assets/js/embarcados.js?v=20261003-embarcados"></script>
+  <script defer src="/assets/js/manual-de-bordo.js?v=20261003-mb"></script>
 
   <script type="application/ld+json">
     {
@@ -92,7 +92,7 @@
             height="1796">
         </a>
         <div class="manual-brand-tag" aria-label="Manual de a Bordo Oficial">
-          <span class="manual-brand-tag__sub">Expedición KOB 2026 · MSC Musica</span>
+          <span class="manual-brand-tag__sub">KOB 2026 · MSC Musica</span>
           <span class="manual-brand-tag__main">Manual de a Bordo</span>
           <span class="manual-brand-tag__domain">manualdebordo.kriativos.com.br</span>
         </div>
@@ -120,63 +120,275 @@
     <div class="guide-container">
       <ul class="guide-nav-bar__list">
         <li><a class="guide-nav-bar__link is-active" href="#inicio">Inicio</a></li>
+        <li><a class="guide-nav-bar__link" href="#live">🔴 Transmisión (Novedad)</a></li>
         <li><a class="guide-nav-bar__link" href="#preparacao">Preparación</a></li>
         <li><a class="guide-nav-bar__link" href="#cronograma">Cronograma</a></li>
         <li><a class="guide-nav-bar__link" href="#transporte">Transporte</a></li>
         <li><a class="guide-nav-bar__link" href="#jogos">Juegos</a></li>
         <li><a class="guide-nav-bar__link" href="#duvidas">Preguntas</a></li>
-        <li><a class="guide-nav-bar__link" href="#live">Transmisión en vivo</a></li>
         <li><a class="guide-nav-bar__link" href="#contato">Contacto</a></li>
       </ul>
     </div>
   </nav>
 
   <main id="main">
-    <!-- HERO (#16) -->
-    <section class="guide-hero" id="inicio" aria-labelledby="guide-hero-title">
+    <!-- HERO SLIDER / BIENVENIDA (#16) -->
+    <section class="guide-hero-slider" id="inicio" aria-label="Presentación del Manual de a Bordo y Destacados de la Transmisión">
+      <div class="hero-slider__track" id="heroSliderTrack">
+
+        <!-- SLIDE 0: DESTACADO MÁXIMO DE LA TRANSMISIÓN DE AYER (NOVEDAD) -->
+        <div class="hero-slide hero-slide--live is-active" id="heroSlide0" role="group" aria-roledescription="slide"
+          aria-label="Slide 1 de 2: Transmisión Oficial de Alineación KOB 2026 grabada ayer">
+          <div class="guide-container">
+            <div class="hero-slide__inner hero-slide__inner--live">
+              <div class="hero-slide__content">
+                <div class="manual-header-title-wrap">
+                  <div class="guide-hero__badge guide-hero__badge--live">
+                    <span class="guide-hero__badge-dot" style="background:#ef4444;box-shadow:0 0 10px rgba(239,68,68,0.7);" aria-hidden="true"></span>
+                    <span>Transmisión Realizada Ayer · Grabación Disponible</span>
+                  </div>
+                  <div class="manual-seal" aria-label="Sello de Autenticidad del Manual de a Bordo">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                    <span>KOB 2026 · Documento Autenticado</span>
+                  </div>
+                </div>
+
+                <h1 class="guide-hero__title" id="guide-hero-title">ALINEACIÓN OFICIAL: MIRA LA TRANSMISIÓN DE AYER</h1>
+                <p class="guide-hero__subtitle">
+                  Todo sobre vouchers, equipaje, autobuses chárter, cenas y programación de juegos con los organizadores
+                </p>
+                <p class="guide-hero__lead">
+                  ¡La transmisión de alineación con directrices esenciales para el viaje se celebró ayer! Mira el video completo en un cuadro modal interactivo o explora los 28 capítulos buscando en la transcripción de voz.
+                </p>
+
+                <div class="guide-hero__actions">
+                  <button type="button" class="btn-guide btn-guide--primary btn-guide--pulse" data-open-live-modal id="heroSlideLiveModalBtn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true">
+                      <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                    Ver Video y Opciones (Modal)
+                  </button>
+                  <a class="btn-guide btn-guide--secondary" href="#live">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <line x1="12" y1="5" x2="12" y2="19"></line>
+                      <polyline points="19 12 12 19 5 12"></polyline>
+                    </svg>
+                    Ver los 28 Capítulos de la Transmisión
+                  </a>
+                  <a class="btn-guide btn-guide--ghost" href="#preparacao">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="9 11 12 14 22 4"></polyline>
+                      <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                    </svg>
+                    Lista de Preparación
+                  </a>
+                </div>
+              </div>
+
+              <!-- Card Teaser de la Transmisión -->
+              <div class="hero-live-card" data-open-live-modal role="button" tabindex="0"
+                aria-label="Abrir modal con grabación de la transmisión oficial">
+                <div class="hero-live-card__thumb">
+                  <img src="/assets/images/hero/hero-fallback.webp" alt="Grabación de la Transmisión de Alineación KOB 2026"
+                    width="640" height="360" loading="eager">
+                  <div class="hero-live-card__overlay">
+                    <div class="hero-live-card__play-btn" aria-hidden="true">
+                      <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                      </svg>
+                    </div>
+                  </div>
+                  <span class="hero-live-card__badge-live">🔴 Grabado Ayer</span>
+                  <span class="hero-live-card__duration">1h 34min · 28 Capítulos</span>
+                </div>
+                <div class="hero-live-card__info">
+                  <strong class="hero-live-card__headline">Transmisión de Preparación y Alineación Oficial</strong>
+                  <span class="hero-live-card__sub">Haz clic para reproducir en modal con atajos por temas</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SLIDE 1: MANUAL DE A BORDO & CHECKLIST GENERAL -->
+        <div class="hero-slide hero-slide--guide" id="heroSlide1" role="group" aria-roledescription="slide"
+          aria-label="Slide 2 de 2: Manual de a Bordo y Checklist Oficial" aria-hidden="true">
+          <div class="guide-container">
+            <div class="hero-slide__inner hero-slide__inner--guide">
+              <div class="hero-slide__content">
+                <div class="manual-header-title-wrap">
+                  <div class="guide-hero__badge">
+                    <span class="guide-hero__badge-dot" aria-hidden="true"></span>
+                    <span>Documento Oficial de Quienes Ya Reservaron</span>
+                  </div>
+                  <div class="manual-live-seal" aria-label="Manual de a Bordo Autenticado">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                    <span>KOB 2026 · Documento Autenticado</span>
+                  </div>
+                </div>
+
+                <h2 class="guide-hero__title">MANUAL DE A BORDO &amp; CHECKLIST</h2>
+                <p class="guide-hero__subtitle">
+                  Kriativos On Board 2026 · MSC Musica · Ruta Santos–Búzios–Santos
+                </p>
+                <p class="guide-hero__lead">
+                  Tu guía esencial de navegación: lista interactiva con guardado automático, límite de equipaje, rutas de acceso, horarios de embarque y normas de convivencia para 4 días inolvidables en altamar.
+                </p>
+
+                <div class="guide-hero__actions">
+                  <a class="btn-guide btn-guide--primary" href="#preparacao">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="9 11 12 14 22 4"></polyline>
+                      <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                    </svg>
+                    Abrir Lista de Preparación
+                  </a>
+                  <a class="btn-guide btn-guide--secondary" href="#cronograma">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    Ver Cronograma y Etapas
+                  </a>
+                  <a class="btn-guide btn-guide--ghost" href="#duvidas">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                      <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                    Protocolos y Preguntas
+                  </a>
+                </div>
+              </div>
+
+              <!-- Card Lateral Editorial: Boarding Pass & Quick Checklist (Dimensões idênticas ao Card da Live) -->
+              <div class="hero-boarding-card" aria-label="Tarjeta de Embarque Náutica y Resumen de Preparación">
+                <div class="hero-boarding-card__header">
+                  <div class="hero-boarding-card__carrier">
+                    <span class="hero-boarding-card__ship">MSC MUSICA</span>
+                    <span class="hero-boarding-card__voyage">KOB 2026</span>
+                  </div>
+                  <div class="hero-boarding-card__badge">
+                    <span class="hero-boarding-card__status-dot" aria-hidden="true"></span>
+                    <span>PASAPORTE CONFIRMADO</span>
+                  </div>
+                </div>
+
+                <div class="hero-boarding-card__route">
+                  <div class="hero-boarding-card__port">
+                    <span class="hero-boarding-card__port-code">SSZ</span>
+                    <span class="hero-boarding-card__port-name">Santos</span>
+                  </div>
+                  <div class="hero-boarding-card__route-line">
+                    <div class="hero-boarding-card__route-icon" aria-hidden="true">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+                      </svg>
+                    </div>
+                    <span class="hero-boarding-card__duration">20 al 23 Nov 2026 · 4 Días</span>
+                  </div>
+                  <div class="hero-boarding-card__port hero-boarding-card__port--dest">
+                    <span class="hero-boarding-card__port-code">BZS</span>
+                    <span class="hero-boarding-card__port-name">Búzios</span>
+                  </div>
+                </div>
+
+                <div class="hero-boarding-card__body">
+                  <div class="hero-boarding-card__checklist-header">
+                    <span class="hero-boarding-card__label">PREPARACIÓN DEL VIAJERO</span>
+                    <span class="hero-boarding-card__progress-val" id="heroBoardingProgressText">0 de 12 listos</span>
+                  </div>
+                  <div class="hero-boarding-card__progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                    <div class="hero-boarding-card__progress-fill" id="heroBoardingProgressBar" style="width: 0%;"></div>
+                  </div>
+                  <ul class="hero-boarding-card__items">
+                    <li>
+                      <span class="hero-boarding-card__item-icon" aria-hidden="true">✓</span>
+                      <span>Documento original con foto a mano</span>
+                    </li>
+                    <li>
+                      <span class="hero-boarding-card__item-icon" aria-hidden="true">✓</span>
+                      <span>Voucher MSC y etiquetas de maleta impresos</span>
+                    </li>
+                    <li>
+                      <span class="hero-boarding-card__item-icon" aria-hidden="true">✓</span>
+                      <span>Ventana de llegada y autobús chárter verificados</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div class="hero-boarding-card__footer">
+                  <a href="#preparacao" class="hero-boarding-card__link">
+                    <span>Abrir Lista Completa</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <line x1="5" y1="12" x2="19" y2="12"></line>
+                      <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                  </a>
+                  <span class="hero-boarding-card__seal">CONCAIS · TERMINAL 2</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Controles del Hero Slider -->
+      <div class="hero-slider__controls guide-container" aria-label="Controles del carrusel de bienvenida">
+        <button type="button" class="hero-slider__btn hero-slider__btn--prev" id="heroSliderPrev" aria-label="Slide anterior">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+        <div class="hero-slider__dots" role="tablist" aria-label="Indicadores de slides">
+          <button type="button" class="hero-slider__dot is-active" data-slide-to="0" role="tab" aria-selected="true"
+            aria-label="Slide 1: Transmisión oficial de alineación"></button>
+          <button type="button" class="hero-slider__dot" data-slide-to="1" role="tab" aria-selected="false"
+            aria-label="Slide 2: Manual y Checklist"></button>
+        </div>
+        <button type="button" class="hero-slider__btn hero-slider__btn--next" id="heroSliderNext" aria-label="Siguiente slide">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Telemetría Técnica Náutica Global -->
       <div class="guide-container">
-        <div class="manual-seal" aria-hidden="true">
-          <span class="manual-seal__star">✦</span>
-          <span class="manual-seal__txt">Expedición Marítima · Documento de Navegación Oficial</span>
-          <span class="manual-seal__star">✦</span>
-        </div>
-
-        <div class="guide-hero__badge">
-          <span class="guide-hero__badge-dot" aria-hidden="true"></span>
-          <span>Guía de Quienes Ya Reservaron · Documento de Navegación</span>
-        </div>
-        <h1 class="guide-hero__title" id="guide-hero-title">
-          MANUAL DE A BORDO
-          <span class="guide-hero__title-sub">MSC Musica · Santos ⇄ Búzios · 20 al 23 Nov 2026</span>
-        </h1>
-        <p class="guide-hero__subtitle">
-          Tu preparación oficial para la 4ª edición de Kriativos On Board: del 20 al 23 de noviembre de 2026, a bordo del MSC
-          Musica, en la ruta Santos–Búzios–Santos.
-        </p>
-        <p class="guide-hero__lead">
-          Revisa los documentos requeridos, organiza tu llegada y descubre cómo disfrutar de los juegos y la vida a
-          bordo. Los horarios previstos pueden cambiar; sigue los avisos oficiales de la organización y Royal Trip.
-        </p>
-
-        <!-- Telemetria Técnica Náutica -->
         <div class="manual-telemetry" aria-label="Telemetría de la Expedición KOB 2026">
-          <div class="manual-telemetry__card">
+          <div class="manual-telemetry__item">
             <span class="manual-telemetry__label">Embarcación</span>
             <strong class="manual-telemetry__val">MSC Musica</strong>
           </div>
-          <div class="manual-telemetry__card">
+          <div class="manual-telemetry__item">
             <span class="manual-telemetry__label">Puerto de Salida</span>
-            <strong class="manual-telemetry__val">Santos / SP</strong>
+            <strong class="manual-telemetry__val">Santos / SP (Concais)</strong>
           </div>
-          <div class="manual-telemetry__card">
+          <div class="manual-telemetry__item">
             <span class="manual-telemetry__label">Ruta Náutica</span>
             <strong class="manual-telemetry__val">Santos ⇄ Búzios</strong>
           </div>
-          <div class="manual-telemetry__card">
+          <div class="manual-telemetry__item">
             <span class="manual-telemetry__label">Período en Altamar</span>
             <strong class="manual-telemetry__val">20 a 23 Nov 2026</strong>
           </div>
-          <div class="manual-telemetry__card">
+          <div class="manual-telemetry__item">
             <span class="manual-telemetry__label">Estado de Misión</span>
             <strong class="manual-telemetry__val">
               <span class="manual-telemetry__pulse" aria-hidden="true"></span>
@@ -185,57 +397,7 @@
           </div>
         </div>
 
-        <div class="guide-hero__actions">
-          <a class="btn-guide btn-guide--primary" href="#preparacao">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
-              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <polyline points="9 11 12 14 22 4"></polyline>
-              <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
-            </svg>
-            Revisar mi lista de preparación
-          </a>
-          <a class="btn-guide btn-guide--secondary" href="#cronograma">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
-              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <circle cx="12" cy="12" r="10"></circle>
-              <polyline points="12 6 12 12 16 14"></polyline>
-            </svg>
-            Ver el cronograma
-          </a>
-          <a class="btn-guide btn-guide--ghost" href="#duvidas">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
-              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <circle cx="12" cy="12" r="10"></circle>
-              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-              <line x1="12" y1="17" x2="12.01" y2="17"></line>
-            </svg>
-            Hacer una pregunta
-          </a>
-        </div>
-
-        <div class="trip-summary" aria-label="Resumen del viaje">
-          <div class="trip-summary__item">
-            <span class="trip-summary__label">Fechas</span>
-            <span class="trip-summary__value">20 al 23 de noviembre de 2026</span>
-            <span class="trip-summary__detail">4 días / 3 noches en altamar</span>
-          </div>
-          <div class="trip-summary__item">
-            <span class="trip-summary__label">Barco</span>
-            <span class="trip-summary__value">MSC Musica</span>
-            <span class="trip-summary__detail">Crystal Lounge (espacio KOB)</span>
-          </div>
-          <div class="trip-summary__item">
-            <span class="trip-summary__label">Salida y Regreso</span>
-            <span class="trip-summary__value">Puerto de Santos, Brasil</span>
-            <span class="trip-summary__detail">Terminal Marítima Concais</span>
-          </div>
-          <div class="trip-summary__item">
-            <span class="trip-summary__label">Escala</span>
-            <span class="trip-summary__value">Búzios</span>
-            <span class="trip-summary__detail">Consulta fecha y hora en el itinerario de tu reserva</span>
-          </div>
-        </div>
-
+        <!-- Banner de Cuenta Regresiva Global -->
         <div class="countdown-banner" role="status" aria-live="polite">
           <svg class="countdown-banner__icon" width="24" height="24" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -246,7 +408,10 @@
           </svg>
           <p class="countdown-banner__text" id="guideCountdownText">Embarque el 20 de noviembre de 2026.</p>
         </div>
+      </div>
 
+      <!-- Aviso Editorial Discreto -->
+      <div class="guide-container" style="margin-top:14px;">
         <div class="editorial-notice">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink:0;margin-top:2px;">
@@ -262,11 +427,74 @@
       </div>
     </section>
 
+    <!-- LIVE STREAM REPLAY (#17) - MÁXIMO DESTACADO EN LA CIMA -->
+    <section class="guide-section" id="live" aria-labelledby="live-title">
+      <div class="guide-container">
+        <header class="guide-section__header">
+          <span class="guide-section__badge">Grabación Oficial de la Transmisión (Realizada Ayer)</span>
+          <h2 class="guide-section__title" id="live-title">Mira la grabación oficial de la transmisión</h2>
+          <p class="guide-section__intro">
+            La transmisión oficial de alineación con los organizadores de KOB y MSC Musica se realizó ayer. Selecciona un tema para saltar al minuto exacto en el video o busca los temas abordados. El audio está en portugués.
+          </p>
+        </header>
+
+        <div class="live-wrapper">
+          <div class="live-player-card">
+            <div class="live-player-facade" id="livePlayerFacade">
+              <img class="facade-bg" src="/assets/images/hero/hero-fallback.webp" alt="" width="640" height="360"
+                loading="lazy">
+              <div class="live-player-facade__content">
+                <div class="live-modal__badge" style="margin-bottom:10px;">
+                  <span class="live-modal__badge-pulse" aria-hidden="true"></span>
+                  <span>Transmisión Realizada Ayer</span>
+                </div>
+                <p class="live-player-facade__title">Ver la transmisión oficial de alineación</p>
+                <p class="live-player-facade__notice">
+                  El reproductor se conecta a la infraestructura de YouTube. La reproducción comienza en los anuncios oficiales.
+                </p>
+                <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+                  <button type="button" class="btn-guide btn-guide--primary" id="loadLivePlayerBtn">
+                    Cargar video en esta sección
+                  </button>
+                  <button type="button" class="btn-guide btn-guide--secondary" data-open-live-modal>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true">
+                      <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                    Abrir en Modal
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="live-player-iframe-container" id="livePlayerContainer"></div>
+          </div>
+
+          <div class="live-chapters-card">
+            <div class="live-chapters-search">
+              <input type="search" class="faq-search-input" id="liveSearchInput"
+                placeholder="Buscar assunto na live (ex.: voucher, mala, jantar, jogos)..."
+                aria-label="Buscar tema en los capítulos de la transmisión">
+            </div>
+
+            <p style="font-size:0.82rem;color:var(--ink-invert-soft);margin-bottom:12px;">
+              Haz clic en un capítulo para avanzar el video al punto exacto de la explicación:
+            </p>
+
+            <ul class="live-chapters-list" id="liveChaptersList" aria-label="Capítulos de la transmisión">
+              <!-- Renderizado dinámicamente vía JS con transcripción indexada -->
+            </ul>
+            <p id="liveEmptyChaptersMsg" style="display:none;color:var(--ink-invert-soft);padding:16px 0;">
+              No se encontraron temas ni fragmentos de transcripción. Intenta con otra palabra clave o consulta las <a href="#duvidas">Preguntas Frecuentes</a>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- CHECKLIST (#18) -->
     <section class="guide-section" id="preparacao" aria-labelledby="checklist-title">
       <div class="guide-container">
         <header class="guide-section__header">
-          <span class="guide-section__badge">Capítulo I // Checklist y Documentos</span>
+          <span class="guide-section__badge">Checklist y Documentos</span>
           <h2 class="guide-section__title" id="checklist-title">Mi lista de preparación</h2>
           <p class="guide-section__intro">
             Marca lo que ya has verificado. Esta lista es una ayuda personal y no valida tu reserva ni sustituye el
@@ -733,7 +961,7 @@
     <section class="guide-section" id="cronograma" aria-labelledby="cronograma-title">
       <div class="guide-container">
         <header class="guide-section__header">
-          <span class="guide-section__badge">Capítulo II // Cronograma de Navegación</span>
+          <span class="guide-section__badge">Cronograma de Navegación</span>
           <h2 class="guide-section__title" id="cronograma-title">De la preparación al desembarque</h2>
           <p class="guide-section__intro">
             Utiliza estas etapas para organizarte. Tu voucher, los avisos de Royal Trip y el programa del MSC Musica
@@ -933,7 +1161,7 @@
     <section class="guide-section" id="transporte" aria-labelledby="transporte-title">
       <div class="guide-container">
         <header class="guide-section__header">
-          <span class="guide-section__badge">Capítulo III // Transporte y Rutas</span>
+          <span class="guide-section__badge">Transporte y Rutas</span>
           <h2 class="guide-section__title" id="transporte-title">Tu trayecto al puerto</h2>
           <p class="guide-section__intro">
             Chárter oficial KOB con salida de Barra Funda, São Paulo. Revisa el vehículo asignado a tu reserva antes de
@@ -987,7 +1215,7 @@
     <section class="guide-section" id="jogos" aria-labelledby="jogos-title">
       <div class="guide-container">
         <header class="guide-section__header">
-          <span class="guide-section__badge">Capítulo IV // Salón de Juegos y Normas</span>
+          <span class="guide-section__badge">Salón de Juegos y Normas</span>
           <h2 class="guide-section__title" id="jogos-title">Guía de juegos a bordo</h2>
           <p class="guide-section__intro">
             Crystal Lounge es el espacio previsto para KOB. Conoce la dinámica de mesas, monitores, sorteos y el uso de
@@ -1059,7 +1287,7 @@
     <section class="guide-section" id="duvidas" aria-labelledby="faq-title">
       <div class="guide-container">
         <header class="guide-section__header">
-          <span class="guide-section__badge">Capítulo V // Protocolos y Preguntas Frecuentes</span>
+          <span class="guide-section__badge">Protocolos y Preguntas Frecuentes</span>
           <h2 class="guide-section__title" id="faq-title">Preguntas de quienes ya reservaron</h2>
           <p class="guide-section__intro">
             Encuentra las orientaciones para preparar tu viaje y aprovechar el crucero. Para datos privados de tu cabina,
@@ -2017,69 +2245,13 @@
       </div>
     </section>
 
-    <!-- TRANSMISIÓN (#17) -->
-    <section class="guide-section" id="live" aria-labelledby="live-title">
-      <div class="guide-container">
-        <header class="guide-section__header">
-          <span class="guide-section__badge">Capítulo VI // Transmisión Oficial de la Capitanía</span>
-          <h2 class="guide-section__title" id="live-title">Revive la transmisión en vivo por tema</h2>
-          <p class="guide-section__intro">
-            Elige un tema para saltar directamente al minuto exacto. Las pautas escritas de esta guía incluyen las
-            reglas oficiales verificadas tras la transmisión. (Audio en portugués).
-          </p>
-        </header>
 
-        <div class="live-wrapper">
-          <div class="live-player-card">
-            <div class="live-player-facade" id="livePlayerFacade">
-              <img class="facade-bg" src="/assets/images/hero/hero-fallback.webp" alt="" width="640" height="360"
-                loading="lazy">
-              <div class="live-player-facade__content">
-                <p class="live-player-facade__title">Ver transmisión en YouTube</p>
-                <p class="live-player-facade__notice">
-                  Cargar el video conecta con los servidores de YouTube. Consulta tus preferencias de cookies.
-                </p>
-                <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
-                  <button type="button" class="btn-guide btn-guide--primary" id="loadLivePlayerBtn">
-                    Cargar video
-                  </button>
-                  <a class="btn-guide btn-guide--ghost" href="https://www.youtube.com/live/AtIvlc62KgI" target="_blank"
-                    rel="noopener noreferrer">
-                    Abrir en YouTube
-                  </a>
-                </div>
-              </div>
-            </div>
-            <div class="live-player-iframe-container" id="livePlayerContainer"></div>
-          </div>
-
-          <div class="live-chapters-card">
-            <div class="live-chapters-search">
-              <input type="search" class="faq-search-input" id="liveSearchInput"
-                placeholder="Buscar tema de la transmisión (ej.: maleta, cena, juegos, voucher)..."
-                aria-label="Buscar tema en los capítulos de la transmisión">
-            </div>
-
-            <p style="font-size:0.82rem;color:var(--ink-invert-soft);margin-bottom:12px;">
-              Haz clic en un capítulo para situar el video en ese minuto:
-            </p>
-
-            <ul class="live-chapters-list" id="liveChaptersList" aria-label="Capítulos de la transmisión en vivo">
-              <!-- Renderizado dinámico vía JS -->
-            </ul>
-            <p id="liveEmptyChaptersMsg" style="display:none;color:var(--ink-invert-soft);padding:16px 0;">
-              No se encontraron temas. Intenta con otra palabra o consulta las <a href="#duvidas">preguntas de la guía</a>.
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
 
     <!-- CONTACTO (#21) -->
     <section class="guide-section" id="contato" aria-labelledby="contato-title">
       <div class="guide-container">
         <header class="guide-section__header">
-          <span class="guide-section__badge">Capítulo VII // Canal con el Comando KOB</span>
+          <span class="guide-section__badge">Canal con el Comando KOB</span>
           <h2 class="guide-section__title" id="contato-title">Habla con el equipo</h2>
           <p class="guide-section__intro">
             Para juegos, kit y programación, acude a la organización. Para vouchers, datos de cabina, documentación y
@@ -2268,6 +2440,10 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
       <span>Inicio</span>
     </a>
+    <a href="#live" class="guide-quick-dock__item" aria-label="Grabación del vivo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+      <span>🔴 Live</span>
+    </a>
     <a href="#preparacao" class="guide-quick-dock__item" aria-label="Checklist de preparación">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
       <span>Checklist</span>
@@ -2287,10 +2463,6 @@
     <a href="#duvidas" class="guide-quick-dock__item" aria-label="Preguntas frecuentes y dudas">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
       <span>Preguntas</span>
-    </a>
-    <a href="#live" class="guide-quick-dock__item" aria-label="Grabación del vivo">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
-      <span>Live</span>
     </a>
     <a href="#contato" class="guide-quick-dock__item" aria-label="Contacto con el equipo">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
@@ -2315,7 +2487,7 @@
   <aside class="checklist-sidebar" id="checklistSidebar" role="complementary" aria-label="Checklist de a Bordo" aria-hidden="true">
     <div class="checklist-sidebar__header">
       <div class="checklist-sidebar__title-wrap">
-        <span class="checklist-sidebar__tag">Expedición KOB 2026</span>
+        <span class="checklist-sidebar__tag">KOB 2026</span>
         <h3 class="checklist-sidebar__title">Checklist de a Bordo</h3>
       </div>
       <button type="button" class="checklist-sidebar__close" id="checklistSidebarClose" aria-label="Contraer Checklist">
@@ -2350,6 +2522,60 @@
       <a href="#preparacao" class="checklist-sidebar__goto-btn" id="checklistSidebarGotoBtn">
         Ver Checklist Completo en la Página
       </a>
+    </div>
+  </aside>
+
+  <!-- Modal de la Transmisión Oficial (#17) -->
+  <aside class="guide-modal live-modal" id="liveModal" role="dialog" aria-modal="true" aria-labelledby="liveModalTitle" aria-hidden="true">
+    <div class="live-modal__dialog">
+      <header class="live-modal__header">
+        <div class="live-modal__title-wrap">
+          <div class="live-modal__badge">
+            <span class="live-modal__badge-pulse" aria-hidden="true"></span>
+            <span>Transmisión Realizada Ayer · Grabación Oficial</span>
+          </div>
+          <h3 class="live-modal__title" id="liveModalTitle">Alineación KOB 2026 &amp; MSC Musica</h3>
+        </div>
+        <button type="button" class="live-modal__close" id="liveModalCloseBtn" aria-label="Cerrar video de la transmisión">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </header>
+
+      <div class="live-modal__player-area">
+        <div class="live-modal__iframe-wrapper" id="liveModalIframeContainer">
+          <!-- Iframe inyectado dinámicamente para preservar rendimiento y pausar al cerrar -->
+        </div>
+
+        <div class="live-modal__quick-topics">
+          <div class="live-modal__topics-label">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <span>Saltar directamente a un tema en el video:</span>
+          </div>
+          <div class="live-modal__topics-pills">
+            <button type="button" class="live-modal__pill" data-modal-seek="833">Inicio Oficial (13:53)</button>
+            <button type="button" class="live-modal__pill" data-modal-seek="1120">Vouchers y Etiquetas (18:40)</button>
+            <button type="button" class="live-modal__pill" data-modal-seek="1460">Documentos e Identificación (24:20)</button>
+            <button type="button" class="live-modal__pill" data-modal-seek="1830">Maletas y Equipaje (30:30)</button>
+            <button type="button" class="live-modal__pill" data-modal-seek="2395">Autobús Chárter (39:55)</button>
+            <button type="button" class="live-modal__pill" data-modal-seek="2900">Crystal Lounge (48:20)</button>
+            <button type="button" class="live-modal__pill" data-modal-seek="3400">Cenas y Vestimenta (56:40)</button>
+            <button type="button" class="live-modal__pill" data-modal-seek="3980">Juegos y Espacio KOB (01:06:20)</button>
+            <button type="button" class="live-modal__pill" data-modal-seek="4700">Dudas Finales (01:18:20)</button>
+          </div>
+        </div>
+      </div>
+
+      <footer class="live-modal__footer">
+        <a href="#live" class="live-modal__goto-btn" id="liveModalGotoSectionBtn">
+          Ver todos los 28 capítulos detallados en el Manual
+        </a>
+      </footer>
     </div>
   </aside>
 </body>

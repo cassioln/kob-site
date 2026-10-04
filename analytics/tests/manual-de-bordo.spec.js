@@ -13,7 +13,7 @@ test.describe('Página Manual de Bordo (embarcados) — Portal do Passageiro Con
     // Brand, tag do subdomínio e links de idioma
     await expect(page.locator('.manual-brand-tag')).toBeVisible();
     await expect(page.locator('.manual-telemetry')).toBeVisible();
-    await expect(page.locator('.manual-seal')).toBeVisible();
+    await expect(page.locator('.manual-seal').first()).toBeVisible();
 
     const langSwitch = page.locator('.guide-header .lang-switch');
     await expect(langSwitch).toBeVisible();
@@ -303,4 +303,72 @@ test.describe('Página Manual de Bordo (embarcados) — Portal do Passageiro Con
     await expect(statusBox).toContainText('recebida');
   });
 
+  test('Hero da Live interativo: player com gaveta de capítulos recolhível e expandida', async ({ page }) => {
+    await page.goto('/manual-de-bordo.html');
+
+    const heroLive = page.locator('#heroSlide0');
+    await expect(heroLive).toBeVisible();
+
+    const cinema = page.locator('#heroLiveCinema');
+    await expect(cinema).not.toHaveClass(/is-collapsed/);
+
+    // Botão de alternar drawer de capítulos
+    const toggleBtn = page.locator('#heroLiveToggleChaptersBtn');
+    await toggleBtn.click();
+    await expect(cinema).toHaveClass(/is-collapsed/);
+
+    // Clicar novamente reabre
+    await toggleBtn.click();
+    await expect(cinema).not.toHaveClass(/is-collapsed/);
+  });
+
+  test('Live: busca inteligente por transcrição e controle do modal de vídeo (#liveModal)', async ({ page }) => {
+    // Define consentimento prévio para que o banner de cookies não cubra os elementos interativos
+    await page.addInitScript(() => {
+      localStorage.setItem('cookie_consent_status', 'accepted');
+      document.cookie = 'cookie_consent_status=accepted; path=/; max-age=31536000';
+    });
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto('/manual-de-bordo.html');
+
+    // 1. Busca por palavra que existe na TRANSCRIÇÃO (ex: "Wise")
+    const searchInput = page.locator('#liveSearchInput');
+    await searchInput.fill('Wise');
+
+    const filteredChapters = page.locator('.live-chapter-item');
+    await expect(filteredChapters).toHaveCount(1);
+    await expect(filteredChapters.first()).toContainText('Cruise Card, cartões e gastos a bordo');
+    // Deve exibir o snippet de transcrição encontrado
+    await expect(filteredChapters.first().locator('.live-chapter-item__snippet')).toBeVisible();
+
+    // Limpar busca
+    await searchInput.fill('');
+    await expect(page.locator('.live-chapter-item')).toHaveCount(28);
+
+    // 2. Abertura do Modal da Live através do botão da hero
+    const modal = page.locator('#liveModal');
+    await expect(modal).not.toHaveClass(/is-open/);
+
+    await page.locator('#heroSlideLiveModalBtn').click();
+    await expect(modal).toHaveClass(/is-open/);
+    await expect(modal).toHaveAttribute('aria-hidden', 'false');
+
+    // Iframe carregado dentro do modal
+    const modalIframe = page.locator('#liveModalIframeContainer iframe');
+    await expect(modalIframe).toBeVisible();
+    expect(await modalIframe.getAttribute('src')).toContain('youtube-nocookie.com/embed/AtIvlc62KgI');
+
+    // Clicar em uma pill de seek altera a classe ativa
+    const voucherPill = page.locator('.live-modal__pill[data-modal-seek="1120"]');
+    await voucherPill.click({ force: true });
+    await expect(voucherPill).toHaveClass(/is-active/);
+
+    // Fechar pelo botão de fechar do modal
+    await page.locator('#liveModalCloseBtn').click({ force: true });
+    await expect(modal).not.toHaveClass(/is-open/);
+    // Container do iframe deve ter sido limpo para parar áudio imediatamente
+    await expect(page.locator('#liveModalIframeContainer iframe')).toHaveCount(0);
+  });
+
 });
+

@@ -10,45 +10,270 @@
   // DADOS DOS CAPÍTULOS DA LIVE (#17) — 28 CAPÍTULOS CONFERIDOS
   // --------------------------------------------------------------------------
   var LIVE_CHAPTERS = [
-    { time: "00:13:53", seconds: 833, title: "Boas-vindas e apresentação da viagem", keywords: "abertura feriado live" },
-    { time: "00:15:13", seconds: 913, title: "Royal Trip e quarta edição do KOB", keywords: "agencia royal trip msc musica edicao" },
-    { time: "00:16:49", seconds: 1009, title: "Datas, desembarque e retorno do fretado", keywords: "datas cabine segunda-feira retorno onibus desembarque" },
-    { time: "00:17:16", seconds: 1036, title: "Parceiros do evento", keywords: "acervo monitores apoiadores editoras encounter facil shopping" },
-    { time: "00:20:50", seconds: 1250, title: "Documentos e autorização para menores", keywords: "documentos rg cnh passaporte foto aplicativo menores autorizacao" },
-    { time: "00:22:25", seconds: 1345, title: "Vouchers, check-in e etiquetas", keywords: "junior privado impressao voucher checkin etiquetas royal trip" },
-    { time: "00:28:22", seconds: 1702, title: "Aeroportos e chegada a Santos", keywords: "aeroporto gru cgonhas viracopos cometa rodoviaria santos van aviao" },
-    { time: "00:29:25", seconds: 1765, title: "Estacionamento no Concais", keywords: "carro concais estacionamento reserva veiculo porto" },
-    { time: "00:30:52", seconds: 1852, title: "Cruise Card, cartões e gastos a bordo", keywords: "cruise card cartao moeda wise nomad parcelamento compras credito", notice: "Valores e condições dependem da oferta, da apólice e da confirmação da agência." },
-    { time: "00:32:43", seconds: 1963, title: "Buffet e liberação das cabines", keywords: "buffet almoco comida restaurante 13h 14h cabine malas anuncio" },
-    { time: "00:34:01", seconds: 2041, title: "Encontro, kits e mural de programação", keywords: "crystal lounge cracha cordao pulseira moeda facil shopping kit mural" },
-    { time: "00:36:01", seconds: 2161, title: "Roupas e Festa do Branco", keywords: "roupas festa do branco traje jantar agasalho esporte fino chinelo regata" },
-    { time: "00:37:56", seconds: 2276, title: "Gestantes", keywords: "gestante gravidez semanas atestado medico crbm", notice: "A regra da MSC considera a idade gestacional durante todo o cruzeiro (limite 24 semanas)." },
-    { time: "00:38:59", seconds: 2339, title: "Bebês na reserva", keywords: "bebe crianca reserva berco tarifa menor cabine" },
-    { time: "00:39:28", seconds: 2368, title: "Água, chá, café e sistema Aqua", keywords: "agua cha cafe buffet garrafa retornavel sistema aqua dispensador" },
-    { time: "00:40:23", seconds: 2423, title: "Pacotes de bebidas", keywords: "pacote bebidas easy premium extra nao alcoolico drinks cerveja bar" },
-    { time: "00:45:15", seconds: 2715, title: "Internet por aparelho e sinal em Búzios", keywords: "wifi internet pacote aparelho celular buzios sinal dados operadora", notice: "Confira o dia da escala na sua reserva. O sinal de celular depende da cobertura da sua operadora." },
-    { time: "00:48:14", seconds: 2894, title: "Jantar, turnos e mesas com amigos", keywords: "jantar turno maitre restaurante mesa amigos reserva tolerancia horario" },
-    { time: "00:52:34", seconds: 3154, title: "Frigobar e cobranças", keywords: "frigobar minibar quarto pacote bebidas cobranca separado" },
-    { time: "00:53:33", seconds: 3213, title: "Tema Anos 80 e encerramento", keywords: "anos 80 festa encerramento fantasia retro neon domingo comemoracao" },
-    { time: "00:58:26", seconds: 3506, title: "Restaurantes de especialidades", keywords: "especialidades kaito sushi butchers cut carne restaurante pago a parte" },
-    { time: "01:02:46", seconds: 3766, title: "MSC for Me e chat interno", keywords: "msc for me app aplicativo chat mensagens kriativo interno navio" },
-    { time: "01:05:42", seconds: 3942, title: "Board Game Guru e sorteios", keywords: "guru board game guru eu vou encounter inscricao manual favoritos ludopedia bgg compartilhar jogos sorteio", notice: "Registre-se no Board Game Guru ou solicite inclusão manual à Encounter para concorrer aos sorteios." },
-    { time: "01:11:05", seconds: 4265, title: "Seguro e despesas médicas", keywords: "seguro viagem apolice cobertura moeda medico hospital despesas", notice: "Valores e coberturas dependem da oferta e apólice da agência. Não há valores garantidos pela live." },
-    { time: "01:13:09", seconds: 4389, title: "Crianças e clubinho", keywords: "criancas clubinho doremi fraldas refeicoes recreacao kids", notice: "Confirme horários e condições do serviço com a equipe infantil a bordo." },
-    { time: "01:14:16", seconds: 4456, title: "Bagagem", keywords: "bagagem franquia peso malas malas despachadas mao msc", notice: "Consulte a regra oficial da MSC no guia: há diferenças em relação às informações faladas na live." },
-    { time: "01:14:41", seconds: 4481, title: "Cabine e itens para a mala", keywords: "cabine higiene itens proibidos secador chapinha tomada shampoo amenidades", notice: "Consulte a lista oficial MSC de itens permitidos e proibidos antes de fechar a mala." },
-    { time: "01:18:32", seconds: 4712, title: "Grupo oficial e recados finais", keywords: "grupo avisos acompanhantes familiares whatsapp contatos duvidas" }
+    {
+      time: "00:13:53",
+      seconds: 833,
+      title: "Boas-vindas e apresentação da viagem",
+      keywords: "abertura feriado live introducao evento",
+      transcript: "Boas-vindas aos passageiros do Kriativos On Board 2026. Abertura da reunião online de alinhamento e apresentação geral do cruzeiro temático no feriado prolongado de novembro."
+    },
+    {
+      time: "00:15:13",
+      seconds: 913,
+      title: "Royal Trip e quarta edição do KOB",
+      keywords: "agencia royal trip msc musica edicao junior organizacao",
+      transcript: "Apresentação da agência oficial Royal Trip com Júnior, histórico de 14 anos no mercado de turismo náutico e cruzeiros temáticos, detalhes da quarta edição a bordo do MSC Musica."
+    },
+    {
+      time: "00:16:49",
+      seconds: 1009,
+      title: "Datas, desembarque e retorno do fretado",
+      keywords: "datas cabine segunda-feira retorno onibus desembarque horario fretado",
+      transcript: "Período da expedição de 20 a 23 de novembro de 2026. Horário de desembarque na segunda-feira pela manhã no Porto de Santos e saída dos ônibus fretados programada para as 10h30 com destino à Barra Funda em São Paulo."
+    },
+    {
+      time: "00:17:16",
+      seconds: 1036,
+      title: "Parceiros do evento",
+      keywords: "acervo monitores apoiadores editoras encounter facil shopping moedas jogue vista board games sp",
+      transcript: "Apresentação dos patrocinadores e parceiros oficiais: Moedas & Co com moedas de metal, Jogue & Vista com vestuário temático, Board Games São Paulo no apoio e monitores especializados da Encounter para ensinar regras."
+    },
+    {
+      time: "00:20:50",
+      seconds: 1250,
+      title: "Documentos e autorização para menores",
+      keywords: "documentos rg cnh passaporte foto aplicativo menores autorizacao cartorio autenticada validade certidao",
+      transcript: "Regras de documentação para embarque nacional: RG em bom estado ou CNH física original. CNH digital somente no aplicativo oficial do governo, vedado print ou foto. Menores de 18 anos desacompanhados ou com apenas um dos pais exigem autorização com firma reconhecida em cartório."
+    },
+    {
+      time: "00:22:25",
+      seconds: 1345,
+      title: "Vouchers, check-in e etiquetas",
+      keywords: "junior privado impressao voucher checkin etiquetas royal trip pdf whatsapp mala bagagem",
+      transcript: "Check-in do grupo centralizado pela Royal Trip. Júnior avisa no grupo de WhatsApp e o responsável da cabine entra em contato no privado para receber vouchers em PDF e etiquetas de mala para imprimir antes da viagem."
+    },
+    {
+      time: "00:28:22",
+      seconds: 1702,
+      title: "Aeroportos e chegada a Santos",
+      keywords: "aeroporto gru congonhas cgh viracopos vcp cometa rodoviaria santos van aviao uber taxi transfer",
+      transcript: "Como chegar a Santos para quem vem de avião: desembarque em Congonhas (CGH), Guarulhos (GRU) ou Viracopos (VCP), linhas de ônibus executivo da Viação Cometa direto para Santos, opções de van, táxi e transporte por aplicativo."
+    },
+    {
+      time: "00:29:25",
+      seconds: 1765,
+      title: "Estacionamento no Concais",
+      keywords: "carro concais estacionamento reserva veiculo porto terminal santos vaga coberta diaria",
+      transcript: "Orientações para quem viaja de carro próprio: estacionamento oficial do Terminal Marítimo de Passageiros Concais em Santos, reserva antecipada obrigatória pela internet para assegurar vaga coberta durante os 4 dias."
+    },
+    {
+      time: "00:30:52",
+      seconds: 1852,
+      title: "Cruise Card, cartões e gastos a bordo",
+      keywords: "cruise card cartao moeda wise nomad parcelamento compras credito dolares deposito dinheiro caucao totem",
+      transcript: "Cartão de bordo Cruise Card como chave da cabine e documento financeiro no navio. Moeda oficial a bordo em dólares americanos (USD). Vinculação de cartão de crédito internacional, cartões digitais globais (Wise, Nomad) ou depósito caução em espécie nos totens.",
+      notice: "Valores e condições dependem da oferta, da apólice e da confirmação da agência."
+    },
+    {
+      time: "00:32:43",
+      seconds: 1963,
+      title: "Buffet e liberação das cabines",
+      keywords: "buffet almoco comida restaurante 13h 14h cabine malas anuncio comandante 13 andar refeicao",
+      transcript: "Após cruzar a passarela de embarque, o buffet no 13º andar já está funcionando com almoço completo à vontade. As cabines são liberadas entre 13h e 14h com anúncio pelo sistema de som, e as malas despachadas são entregues na porta da cabine."
+    },
+    {
+      time: "00:34:01",
+      seconds: 2041,
+      title: "Encontro, kits e mural de programação",
+      keywords: "crystal lounge cracha cordao pulseira moeda facil shopping kit mural programacao boas-vindas encontro",
+      transcript: "Ponto de encontro inicial da comunidade previsto no Crystal Lounge. Retirada dos kits exclusivos KOB com crachá personalizado, cordão oficial, pulseira de identificação e moeda de metal. Consulta do mural com horários das mesas e torneios."
+    },
+    {
+      time: "00:36:01",
+      seconds: 2161,
+      title: "Roupas e Festa do Branco",
+      keywords: "roupas festa do branco traje jantar agasalho esporte fino chinelo regata bermuda frio ar condicionado casaco",
+      transcript: "Trajes recomendados a bordo: roupas casuais e confortáveis para o dia e jogatinas. Para o jantar à la carte no restaurante principal, traje esporte fino (proibido entrar com regata, bermuda de praia ou chinelo de dedo). Noite da tradicional Festa do Branco (levar peça branca) e casaco leve para os ambientes climatizados."
+    },
+    {
+      time: "00:37:56",
+      seconds: 2276,
+      title: "Gestantes",
+      keywords: "gestante gravidez semanas atestado medico crm crbm parto obstetra 24 semanas saude restricao",
+      transcript: "Diretrizes rígidas de gestação da MSC: proibido o embarque se a gravidez atingir 24 semanas ou mais em qualquer dia do cruzeiro. Gestantes abaixo desse limite devem apresentar atestado médico original comprovando aptidão para viagem marítima e idade gestacional.",
+      notice: "A regra da MSC considera a idade gestacional durante todo o cruzeiro (limite 24 semanas)."
+    },
+    {
+      time: "00:38:59",
+      seconds: 2339,
+      title: "Bebês na reserva",
+      keywords: "bebe crianca reserva berco tarifa menor cabine recem nascido fralda",
+      transcript: "Inclusão de bebês e crianças de colo na reserva: mesmo recém-nascidos devem constar obrigatoriamente no bilhete da cabine e na lista de passageiros com solicitação de berço junto à Royal Trip."
+    },
+    {
+      time: "00:39:28",
+      seconds: 2368,
+      title: "Água, chá, café e sistema Aqua",
+      keywords: "agua cha cafe buffet garrafa retornavel sistema aqua dispensador termica bebedouro gratuito",
+      transcript: "Bebidas gratuitas disponíveis no restaurante buffet: dispensadores com água filtrada, café americano e água quente com sachês de chá durante o funcionamento das refeições. Permitido encher garrafinhas térmicas particulares."
+    },
+    {
+      time: "00:40:23",
+      seconds: 2423,
+      title: "Pacotes de bebidas",
+      keywords: "pacote bebidas easy premium extra nao alcoolico drinks cerveja bar 15 bebidas limite diario 6h as 6h refrigerante chopp",
+      transcript: "Funcionamento dos pacotes de bebidas Easy e Premium Extra: limite de 15 bebidas alcoólicas diárias por pessoa da MSC (ciclo renovado das 6h às 6h do dia seguinte). Regra de cabine onde todos os hóspedes adultos devem contratar a mesma modalidade."
+    },
+    {
+      time: "00:45:15",
+      seconds: 2715,
+      title: "Internet por aparelho e sinal em Búzios",
+      keywords: "wifi internet pacote aparelho celular buzios sinal dados operadora satelite 4g 5g antena msc",
+      transcript: "Internet no navio: Wi-Fi gratuito para uso da rede interna e aplicativo MSC for Me. Planos de internet via satélite para navegação externa são contratados por dispositivo. Durante a escala em Búzios, sinal celular 4G e 5G de operadoras nacionais pode funcionar dependendo da localização.",
+      notice: "Confira o dia da escala na sua reserva. O sinal de celular depende da cobertura da sua operadora."
+    },
+    {
+      time: "00:48:14",
+      seconds: 2894,
+      title: "Jantar, turnos e mesas com amigos",
+      keywords: "jantar turno maitre restaurante mesa amigos reserva tolerancia horario 15 minutos pizzaria buffet cozinha sentar juntos",
+      transcript: "Jantar servido em turnos no restaurante principal à la carte: tolerância rigorosa de até 15 minutos para fechamento da cozinha. Em caso de atraso, o buffet e a pizzaria funcionam como opção. Para juntar amigos de outras cabines na mesma mesa, procurar o Maitre logo no primeiro dia com os números das cabines."
+    },
+    {
+      time: "00:52:34",
+      seconds: 3154,
+      title: "Frigobar e cobranças",
+      keywords: "frigobar minibar quarto pacote bebidas cobranca separado taxa geladeira lata garrafa dica",
+      transcript: "Esclarecimento fundamental sobre frigobar: os produtos do frigobar da cabine NÃO estão inclusos em nenhum pacote de bebidas (nem no Premium Extra) e são tarifados avulsos. Dica prática: retirar latas ou garrafas nos bares do navio cobertos pelo pacote e guardá-las no frigobar para consumir geladas."
+    },
+    {
+      time: "00:53:33",
+      seconds: 3213,
+      title: "Tema Anos 80 e encerramento",
+      keywords: "anos 80 festa encerramento fantasia retro neon domingo comemoracao baile musica discoteca",
+      transcript: "Anúncio especial do tema da festa de encerramento no domingo à noite: Noite dos Anos 80! Trazer roupas retrô, adereços divertidos, peças neon e cores vibrantes para celebrar a última noite da expedição."
+    },
+    {
+      time: "00:58:26",
+      seconds: 3506,
+      title: "Restaurantes de especialidades",
+      keywords: "especialidades kaito sushi butchers cut carne restaurante pago a parte gastronomia japonês a la carte",
+      transcript: "Opções gastronômicas pagas à parte no MSC Musica: restaurantes temáticos de especialidades como o Kaito Sushi Bar e a casa de carnes no estilo steakhouse, como alternativa aos restaurantes inclusos."
+    },
+    {
+      time: "01:02:46",
+      seconds: 3766,
+      title: "MSC for Me e chat interno",
+      keywords: "msc for me app aplicativo chat mensagens kriativo interno navio perfil rede sem custo wifi",
+      transcript: "Aplicativo MSC for Me conectado à rede Wi-Fi interna sem necessidade de contratar pacote de internet. Uso do chat integrado gratuito para localizar amigos a bordo. Dica: incluir o prefixo Kriativo no nome do perfil para facilitar encontrar conhecidos."
+    },
+    {
+      time: "01:05:42",
+      seconds: 3942,
+      title: "Board Game Guru e sorteios",
+      keywords: "guru board game guru eu vou encounter inscricao manual favoritos ludopedia bgg compartilhar jogos sorteio acervo",
+      transcript: "Aplicativo oficial Board Game Guru para Android e iOS: confirmar presença clicando em 'Eu vou' para participar dos sorteios diários de jogos a bordo. Exploração do acervo de jogos, verificação de monitores por título e cadastro de jogos próprios com importação da Ludopedia ou BoardGameGeek.",
+      notice: "Registre-se no Board Game Guru ou solicite inclusão manual à Encounter para concorrer aos sorteios."
+    },
+    {
+      time: "01:11:05",
+      seconds: 4265,
+      title: "Seguro e despesas médicas",
+      keywords: "seguro viagem apolice cobertura moeda medico hospital despesas enfermaria atendimento particular dolares 112 reais cancelamento",
+      transcript: "Orientações sobre seguro viagem marítimo: atendimento médico e enfermaria a bordo são cobrados em moeda estrangeira (dólar). Na live foi citado plano do grupo pela Royal Trip com preço em torno de R$ 112 por pessoa cobrindo 29 motivos de cancelamento; conferir apólice oficial antes de contratar.",
+      notice: "Valores e coberturas dependem da oferta e apólice da agência. Não há valores garantidos pela live."
+    },
+    {
+      time: "01:13:09",
+      seconds: 4389,
+      title: "Crianças e clubinho",
+      keywords: "criancas clubinho doremi fraldas refeicoes recreacao kids monitores faixa etaria entretenimento",
+      transcript: "Espaço infantil MSC Doremi Club: monitoria e recreação por faixas etárias gratuitas. Crianças desfraldadas podem permanecer com os monitores; bebês de fralda podem utilizar o espaço na companhia dos pais ou responsáveis.",
+      notice: "Confirme horários e condições do serviço com a equipe infantil a bordo."
+    },
+    {
+      time: "01:14:16",
+      seconds: 4456,
+      title: "Bagagem",
+      keywords: "bagagem franquia peso malas malas despachadas mao msc 23kg 10kg etiquetas identificacao 100kg limite",
+      transcript: "Franquia e limites oficiais de bagagem da MSC: até duas malas despachadas de 23 kg por pessoa e até duas malas de mão de 10 kg. Limite máximo total da cabine de até 100 kg ou 8 volumes. Recomenda-se etiquetar todas as bagagens com as etiquetas oficiais impressas.",
+      notice: "Consulte a regra oficial da MSC no guia: há diferenças em relação às informações faladas na live."
+    },
+    {
+      time: "01:14:41",
+      seconds: 4481,
+      title: "Cabine e itens para a mala",
+      keywords: "cabine higiene itens proibidos secador chapinha tomada shampoo amenidades protetor solar ferro toalha sabonete",
+      transcript: "Estrutura da cabine e itens de viagem: fornecidos toalhas, roupa de cama, sabonete líquido, shampoo e secador de parede. O que levar na mala: escova de dente, pasta, condicionador, protetor solar, medicamentos pessoais e adaptador universal. Itens expressamente proibidos pela MSC: ferro de passar, cafeteira, chapinha sem certificação, armas e bebidas alcoólicas externas.",
+      notice: "Consulte a lista oficial MSC de itens permitidos e proibidos antes de fechar a mala."
+    },
+    {
+      time: "01:18:32",
+      seconds: 4712,
+      title: "Grupo oficial e recados finais",
+      keywords: "grupo avisos acompanhantes familiares whatsapp contatos duvidas capitania encerramento suporte",
+      transcript: "Recados finais da organização: inclusão de familiares e acompanhantes no grupo oficial de avisos de WhatsApp, acompanhamento dos comunicados de véspera e contatos de suporte com a capitania e com a agência."
+    }
   ];
 
-  // Helper de normalização para busca sem acentos
+  // Helper de normalização para busca sem acentos, sem pontuações e sem símbolos
   function normalizeText(str) {
     if (!str) return '';
     return str
       .toString()
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?"'«»]/g, ' ')
+      .replace(/\s+/g, ' ')
       .toLowerCase()
       .trim();
+  }
+
+  // Helper de escape para segurança de injeção HTML
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function escapeRegex(str) {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  function createAccentInsensitiveRegex(query) {
+    if (!query) return null;
+    var norm = query.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+    if (!norm) return null;
+
+    var pattern = '';
+    for (var i = 0; i < norm.length; i++) {
+      var ch = norm[i];
+      if (ch === 'a') pattern += '[aáàãâä]';
+      else if (ch === 'e') pattern += '[eéèêë]';
+      else if (ch === 'i') pattern += '[iíìîï]';
+      else if (ch === 'o') pattern += '[oóòõôö]';
+      else if (ch === 'u') pattern += '[uúùûü]';
+      else if (ch === 'c') pattern += '[cç]';
+      else if (/[0-9a-z]/i.test(ch)) pattern += escapeRegex(ch);
+      else pattern += '\\s*';
+    }
+    try {
+      return new RegExp('(' + pattern + ')', 'gi');
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function highlightMatch(text, query) {
+    if (!text) return '';
+    var escaped = escapeHtml(text);
+    if (!query || !query.trim()) return escaped;
+    var regex = createAccentInsensitiveRegex(query);
+    if (!regex) return escaped;
+    return escaped.replace(regex, '<mark class="search-highlight">$1</mark>');
   }
 
   // --------------------------------------------------------------------------
@@ -277,6 +502,26 @@
           completedMsg.classList.add('is-visible');
         } else {
           completedMsg.classList.remove('is-visible');
+        }
+      }
+
+      // Atualizar progresso no Boarding Pass da Hero (Slide 1)
+      var heroBoardingText = document.getElementById('heroBoardingProgressText');
+      var heroBoardingBar = document.getElementById('heroBoardingProgressBar');
+      if (heroBoardingText) {
+        if (isEn) {
+          heroBoardingText.textContent = checkedCount + ' of ' + totalApplicable + ' ready';
+        } else if (isEs) {
+          heroBoardingText.textContent = checkedCount + ' de ' + totalApplicable + ' listos';
+        } else {
+          heroBoardingText.textContent = checkedCount + ' de ' + totalApplicable + ' concluídos';
+        }
+      }
+      if (heroBoardingBar) {
+        heroBoardingBar.style.width = percentage + '%';
+        var heroBoardingBarWrap = heroBoardingBar.parentElement;
+        if (heroBoardingBarWrap && heroBoardingBarWrap.getAttribute('role') === 'progressbar') {
+          heroBoardingBarWrap.setAttribute('aria-valuenow', percentage.toString());
         }
       }
 
@@ -691,7 +936,7 @@
   }
 
   // --------------------------------------------------------------------------
-  // LIVE POR ASSUNTO (#17) — PLAYER FACHADA & BUSCA DE CAPÍTULOS
+  // LIVE HERO CINEMA & CAPÍTULOS EM SLIDE (#17)
   // --------------------------------------------------------------------------
   function initLiveModule() {
     var chaptersList = document.getElementById('liveChaptersList');
@@ -700,12 +945,53 @@
     var playerFacade = document.getElementById('livePlayerFacade');
     var playerContainer = document.getElementById('livePlayerContainer');
     var emptyMsg = document.getElementById('liveEmptyChaptersMsg');
+    var topicStatus = document.getElementById('heroLiveTopicStatus');
+    var toggleDrawerBtn = document.getElementById('heroLiveToggleChaptersBtn');
+    var closeDrawerBtn = document.getElementById('heroLiveChaptersCloseBtn');
+    var cinemaContainer = document.getElementById('heroLiveCinema');
 
     if (!chaptersList) return;
 
     var playerIframe = null;
     var isPlayerLoaded = false;
     var pendingSeconds = null;
+
+    // Alternar entre drawer recolhido (vídeo em tamanho máximo) e expandido
+    function toggleDrawer(forceCollapse) {
+      if (!cinemaContainer) return;
+      var isCollapsed = cinemaContainer.classList.contains('is-collapsed');
+      var willCollapse = (typeof forceCollapse === 'boolean') ? forceCollapse : !isCollapsed;
+
+      if (willCollapse) {
+        cinemaContainer.classList.add('is-collapsed');
+        if (toggleDrawerBtn) {
+          toggleDrawerBtn.setAttribute('aria-expanded', 'false');
+          toggleDrawerBtn.classList.add('is-active');
+          var textEl = toggleDrawerBtn.querySelector('.hero-live-toggle-text');
+          if (textEl) textEl.textContent = 'Abrir Capítulos (28)';
+        }
+      } else {
+        cinemaContainer.classList.remove('is-collapsed');
+        if (toggleDrawerBtn) {
+          toggleDrawerBtn.setAttribute('aria-expanded', 'true');
+          toggleDrawerBtn.classList.remove('is-active');
+          var textEl = toggleDrawerBtn.querySelector('.hero-live-toggle-text');
+          if (textEl) textEl.textContent = 'Recolher Capítulos';
+        }
+      }
+    }
+
+    if (toggleDrawerBtn) {
+      toggleDrawerBtn.addEventListener('click', function () {
+        toggleDrawer();
+      });
+    }
+
+    if (closeDrawerBtn) {
+      closeDrawerBtn.addEventListener('click', function () {
+        toggleDrawer(true);
+      });
+    }
 
     // Renderizar capítulos
     function renderChapters(filterQuery) {
@@ -714,7 +1000,7 @@
       var count = 0;
 
       LIVE_CHAPTERS.forEach(function (cap) {
-        var searchIndex = normalizeText(cap.time + ' ' + cap.title + ' ' + cap.keywords);
+        var searchIndex = normalizeText(cap.time + ' ' + cap.title + ' ' + cap.keywords + ' ' + (cap.transcript || ''));
         if (query && searchIndex.indexOf(query) === -1) {
           return;
         }
@@ -725,6 +1011,7 @@
         li.setAttribute('role', 'button');
         li.setAttribute('tabindex', '0');
         li.setAttribute('data-seconds', cap.seconds.toString());
+        li.setAttribute('data-transcript', cap.transcript || '');
 
         var timeSpan = document.createElement('span');
         timeSpan.className = 'live-chapter-item__time';
@@ -735,8 +1022,28 @@
 
         var titleP = document.createElement('p');
         titleP.className = 'live-chapter-item__title';
-        titleP.textContent = cap.title;
+        if (query) {
+          titleP.innerHTML = highlightMatch(cap.title, query);
+        } else {
+          titleP.textContent = cap.title;
+        }
         bodyDiv.appendChild(titleP);
+
+        // Se a busca encontrou termo no transcript e não no título, exibe snippet contextual sem prefixo e destacando a palavra da busca
+        if (query && cap.transcript) {
+          var normTrans = normalizeText(cap.transcript);
+          var matchIdx = normTrans.indexOf(query);
+          var normTitle = normalizeText(cap.title);
+          if (matchIdx !== -1 && normTitle.indexOf(query) === -1) {
+            var snippetP = document.createElement('p');
+            snippetP.className = 'live-chapter-item__snippet';
+            var start = Math.max(0, matchIdx - 20);
+            var end = Math.min(cap.transcript.length, matchIdx + query.length + 60);
+            var rawSnippet = (start > 0 ? '… ' : '') + cap.transcript.substring(start, end).trim() + (end < cap.transcript.length ? ' …' : '');
+            snippetP.innerHTML = highlightMatch(rawSnippet, query);
+            bodyDiv.appendChild(snippetP);
+          }
+        }
 
         if (cap.notice) {
           var noticeP = document.createElement('p');
@@ -781,7 +1088,14 @@
     function selectChapter(seconds, element) {
       var allItems = chaptersList.querySelectorAll('.live-chapter-item');
       allItems.forEach(function (el) { el.classList.remove('is-active'); });
-      if (element) element.classList.add('is-active');
+      if (element) {
+        element.classList.add('is-active');
+        var titleEl = element.querySelector('.live-chapter-item__title');
+        var timeEl = element.querySelector('.live-chapter-item__time');
+        if (topicStatus && titleEl) {
+          topicStatus.textContent = 'Tópico: ' + titleEl.textContent + (timeEl ? ' (' + timeEl.textContent + ')' : '');
+        }
+      }
 
       if (!isPlayerLoaded) {
         pendingSeconds = seconds;
@@ -819,8 +1133,12 @@
       playerIframe.setAttribute('title', 'Live de Embarque Kriativos On Board 2026');
       playerIframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
       playerIframe.setAttribute('allowfullscreen', 'true');
+      playerIframe.className = 'hero-live-player__iframe';
 
-      if (playerFacade) playerFacade.style.display = 'none';
+      if (playerFacade) {
+        playerFacade.classList.add('is-hidden');
+        playerFacade.style.display = 'none';
+      }
       if (playerContainer) {
         playerContainer.innerHTML = '';
         playerContainer.appendChild(playerIframe);
@@ -841,6 +1159,258 @@
     }
 
     renderChapters('');
+  }
+
+  // --------------------------------------------------------------------------
+  // HERO SLIDER INTERATIVO COM DESTAQUE DA LIVE (#16)
+  // --------------------------------------------------------------------------
+  function initHeroSlider() {
+    var track = document.getElementById('heroSliderTrack');
+    var slides = document.querySelectorAll('.hero-slide');
+    var dots = document.querySelectorAll('.hero-slider__dot');
+    var prevBtn = document.getElementById('heroSliderPrev');
+    var nextBtn = document.getElementById('heroSliderNext');
+
+    if (!track || slides.length <= 1) return;
+
+    var currentIndex = 0;
+    var totalSlides = slides.length;
+    var autoPlayTimer = null;
+    var autoPlayDelay = 9000;
+    var isPaused = false;
+
+    function goToSlide(index) {
+      if (index < 0) {
+        currentIndex = totalSlides - 1;
+      } else if (index >= totalSlides) {
+        currentIndex = 0;
+      } else {
+        currentIndex = index;
+      }
+
+      slides.forEach(function (slide, idx) {
+        if (idx === currentIndex) {
+          slide.classList.add('is-active');
+          slide.setAttribute('aria-hidden', 'false');
+        } else {
+          slide.classList.remove('is-active');
+          slide.setAttribute('aria-hidden', 'true');
+        }
+      });
+
+      dots.forEach(function (dot, idx) {
+        if (idx === currentIndex) {
+          dot.classList.add('is-active');
+          dot.setAttribute('aria-selected', 'true');
+        } else {
+          dot.classList.remove('is-active');
+          dot.setAttribute('aria-selected', 'false');
+        }
+      });
+    }
+
+    if (prevBtn) {
+      prevBtn.addEventListener('click', function () {
+        goToSlide(currentIndex - 1);
+        resetAutoPlay();
+      });
+    }
+
+    if (nextBtn) {
+      nextBtn.addEventListener('click', function () {
+        goToSlide(currentIndex + 1);
+        resetAutoPlay();
+      });
+    }
+
+    dots.forEach(function (dot) {
+      dot.addEventListener('click', function () {
+        var targetIndex = parseInt(dot.getAttribute('data-slide-to'), 10);
+        if (!isNaN(targetIndex)) {
+          goToSlide(targetIndex);
+          resetAutoPlay();
+        }
+      });
+    });
+
+    track.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowLeft') {
+        goToSlide(currentIndex - 1);
+        resetAutoPlay();
+      } else if (e.key === 'ArrowRight') {
+        goToSlide(currentIndex + 1);
+        resetAutoPlay();
+      }
+    });
+
+    // Touch swipe simples
+    var startX = 0;
+    track.addEventListener('touchstart', function (e) {
+      if (e.touches && e.touches[0]) {
+        startX = e.touches[0].clientX;
+      }
+    }, { passive: true });
+
+    track.addEventListener('touchend', function (e) {
+      if (e.changedTouches && e.changedTouches[0]) {
+        var diffX = e.changedTouches[0].clientX - startX;
+        if (Math.abs(diffX) > 50) {
+          if (diffX > 0) {
+            goToSlide(currentIndex - 1);
+          } else {
+            goToSlide(currentIndex + 1);
+          }
+          resetAutoPlay();
+        }
+      }
+    }, { passive: true });
+
+    track.addEventListener('mouseenter', function () { isPaused = true; });
+    track.addEventListener('mouseleave', function () { isPaused = false; });
+    track.addEventListener('focusin', function () { isPaused = true; });
+    track.addEventListener('focusout', function () { isPaused = false; });
+
+    function startAutoPlay() {
+      stopAutoPlay();
+      autoPlayTimer = setInterval(function () {
+        if (!isPaused) {
+          goToSlide(currentIndex + 1);
+        }
+      }, autoPlayDelay);
+    }
+
+    function stopAutoPlay() {
+      if (autoPlayTimer) {
+        clearInterval(autoPlayTimer);
+        autoPlayTimer = null;
+      }
+    }
+
+    function resetAutoPlay() {
+      stopAutoPlay();
+      startAutoPlay();
+    }
+
+    goToSlide(0);
+    startAutoPlay();
+  }
+
+  // --------------------------------------------------------------------------
+  // HERO LIVE CINEMA: CONTROLE INTEGRADO NO INITLIVEMODULE
+  // --------------------------------------------------------------------------
+  function initHeroLiveCinema() {
+    // Unificado com o initLiveModule com suporte completo ao drawer de capítulos e busca
+  }
+
+  // --------------------------------------------------------------------------
+  // MODAL DE VÍDEO DA LIVE (#17)
+  // --------------------------------------------------------------------------
+  function initLiveModal() {
+    var modal = document.getElementById('liveModal');
+    var closeBtn = document.getElementById('liveModalCloseBtn');
+    var iframeContainer = document.getElementById('liveModalIframeContainer');
+    var triggerButtons = document.querySelectorAll('[data-open-live-modal]');
+    var seekPills = document.querySelectorAll('[data-modal-seek]');
+    var gotoSectionBtn = document.getElementById('liveModalGotoSectionBtn');
+
+    if (!modal) return;
+
+    var lastFocusedEl = null;
+    var modalIframe = null;
+
+    function openLiveModal(startSeconds) {
+      lastFocusedEl = document.activeElement;
+      modal.classList.add('is-open');
+      modal.setAttribute('aria-hidden', 'false');
+
+      var origin = window.location.origin || (window.location.protocol + '//' + window.location.host);
+      var sec = startSeconds || 833;
+      var src = 'https://www.youtube-nocookie.com/embed/AtIvlc62KgI?enablejsapi=1&autoplay=1&start=' + sec + '&origin=' + encodeURIComponent(origin);
+
+      if (iframeContainer) {
+        iframeContainer.innerHTML = '';
+        modalIframe = document.createElement('iframe');
+        modalIframe.setAttribute('src', src);
+        modalIframe.setAttribute('title', 'Vídeo oficial da live de alinhamento KOB 2026');
+        modalIframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+        modalIframe.setAttribute('allowfullscreen', 'true');
+        iframeContainer.appendChild(modalIframe);
+      }
+
+      if (closeBtn) closeBtn.focus();
+    }
+
+    function closeLiveModal() {
+      modal.classList.remove('is-open');
+      modal.setAttribute('aria-hidden', 'true');
+
+      if (iframeContainer) {
+        iframeContainer.innerHTML = '';
+        modalIframe = null;
+      }
+
+      if (lastFocusedEl && typeof lastFocusedEl.focus === 'function') {
+        lastFocusedEl.focus();
+      }
+    }
+
+    triggerButtons.forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        openLiveModal(833);
+      });
+      btn.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openLiveModal(833);
+        }
+      });
+    });
+
+    if (closeBtn) {
+      closeBtn.addEventListener('click', closeLiveModal);
+    }
+
+    modal.addEventListener('click', function (e) {
+      if (e.target === modal) {
+        closeLiveModal();
+      }
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && modal.classList.contains('is-open')) {
+        closeLiveModal();
+      }
+    });
+
+    seekPills.forEach(function (pill) {
+      pill.addEventListener('click', function () {
+        var sec = parseInt(pill.getAttribute('data-modal-seek'), 10);
+        if (!isNaN(sec)) {
+          seekPills.forEach(function (p) { p.classList.remove('is-active'); });
+          pill.classList.add('is-active');
+
+          if (modalIframe && modalIframe.contentWindow) {
+            modalIframe.contentWindow.postMessage(
+              JSON.stringify({ event: 'command', func: 'seekTo', args: [sec, true] }),
+              '*'
+            );
+            modalIframe.contentWindow.postMessage(
+              JSON.stringify({ event: 'command', func: 'playVideo', args: [] }),
+              '*'
+            );
+          } else {
+            openLiveModal(sec);
+          }
+        }
+      });
+    });
+
+    if (gotoSectionBtn) {
+      gotoSectionBtn.addEventListener('click', function () {
+        closeLiveModal();
+      });
+    }
   }
 
   // --------------------------------------------------------------------------
@@ -1151,6 +1721,8 @@
   // INICIALIZAÇÃO GERAL
   // --------------------------------------------------------------------------
   document.addEventListener('DOMContentLoaded', function () {
+    initHeroSlider();
+    initHeroLiveCinema();
     initCountdown();
     initChecklist();
     initChecklistTabs();
@@ -1158,6 +1730,7 @@
     initFAQ();
     initFAQTools();
     initLiveModule();
+    initLiveModal();
     initSupportModal();
     initNavSpy();
   });

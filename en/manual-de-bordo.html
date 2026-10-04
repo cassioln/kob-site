@@ -44,11 +44,11 @@
   <link rel="preload" href="/assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
 
   <link rel="stylesheet" href="/assets/css/main.css?v=20261003-embarcados">
-  <link rel="stylesheet" href="/assets/css/embarcados.css?v=20261003-embarcados">
+  <link rel="stylesheet" href="/assets/css/manual-de-bordo.css?v=20261003-mb">
   <link rel="stylesheet" href="/assets/css/cookie-consent.css?v=20260820-fix-contrast">
 
   <script defer src="/assets/js/cookie-consent.js?v=20260713-5"></script>
-  <script defer src="/assets/js/embarcados.js?v=20261003-embarcados"></script>
+  <script defer src="/assets/js/manual-de-bordo.js?v=20261003-mb"></script>
 
   <script type="application/ld+json">
     {
@@ -92,7 +92,7 @@
             height="1796">
         </a>
         <div class="manual-brand-tag" aria-label="Official Onboard Manual">
-          <span class="manual-brand-tag__sub">KOB 2026 Expedition · MSC Musica</span>
+          <span class="manual-brand-tag__sub">KOB 2026 · MSC Musica</span>
           <span class="manual-brand-tag__main">Onboard Manual</span>
           <span class="manual-brand-tag__domain">manualdebordo.kriativos.com.br</span>
         </div>
@@ -120,45 +120,254 @@
     <div class="guide-container">
       <ul class="guide-nav-bar__list">
         <li><a class="guide-nav-bar__link is-active" href="#inicio">Home</a></li>
+        <li><a class="guide-nav-bar__link" href="#live">🔴 Live (New)</a></li>
         <li><a class="guide-nav-bar__link" href="#preparacao">Preparation</a></li>
         <li><a class="guide-nav-bar__link" href="#cronograma">Schedule</a></li>
         <li><a class="guide-nav-bar__link" href="#transporte">Transportation</a></li>
         <li><a class="guide-nav-bar__link" href="#jogos">Games</a></li>
         <li><a class="guide-nav-bar__link" href="#duvidas">FAQ</a></li>
-        <li><a class="guide-nav-bar__link" href="#live">Live Stream</a></li>
         <li><a class="guide-nav-bar__link" href="#contato">Contact Team</a></li>
       </ul>
     </div>
   </nav>
 
   <main id="main">
-    <!-- HERO (#16) -->
-    <section class="guide-hero" id="inicio" aria-labelledby="guide-hero-title">
-      <div class="guide-container">
-        <div class="manual-header-title-wrap">
-          <div class="guide-hero__badge">
-            <span class="guide-hero__badge-dot" aria-hidden="true"></span>
-            <span>Official Guide for Confirmed Guests</span>
-          </div>
+    <!-- HERO SLIDER / WELCOME (#16) -->
+    <section class="guide-hero-slider" id="inicio" aria-label="Onboard Manual Overview and Live Stream Highlights">
+      <div class="hero-slider__track" id="heroSliderTrack">
 
-          <div class="manual-seal" aria-label="Official Manual Seal">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <circle cx="12" cy="12" r="10"></circle>
-              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-            </svg>
-            <span>KOB 2026 Expedition · Authenticated Document</span>
+        <!-- SLIDE 0: TOP HIGHLIGHT OF YESTERDAY'S LIVE (NEW) -->
+        <div class="hero-slide hero-slide--live is-active" id="heroSlide0" role="group" aria-roledescription="slide"
+          aria-label="Slide 1 of 2: Official KOB 2026 Briefing Live Stream recorded yesterday">
+          <div class="guide-container">
+            <div class="hero-slide__inner hero-slide__inner--live">
+              <div class="hero-slide__content">
+                <div class="manual-header-title-wrap">
+                  <div class="guide-hero__badge guide-hero__badge--live">
+                    <span class="guide-hero__badge-dot" style="background:#ef4444;box-shadow:0 0 10px rgba(239,68,68,0.7);" aria-hidden="true"></span>
+                    <span>Broadcast Recorded Yesterday · Replay Available</span>
+                  </div>
+                  <div class="manual-seal" aria-label="Official Manual Seal">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                    <span>KOB 2026 · Authenticated Document</span>
+                  </div>
+                </div>
+
+                <h1 class="guide-hero__title" id="guide-hero-title">OFFICIAL BRIEFING: WATCH YESTERDAY'S LIVE STREAM</h1>
+                <p class="guide-hero__subtitle">
+                  Everything about vouchers, luggage, chartered buses, dining, and board gaming with KOB organizers
+                </p>
+                <p class="guide-hero__lead">
+                  The alignment live stream with vital voyage guidance was held yesterday! Watch the full video in an interactive modal dialog or explore the 28 chapters by searching words spoken in the transcript.
+                </p>
+
+                <div class="guide-hero__actions">
+                  <button type="button" class="btn-guide btn-guide--primary btn-guide--pulse" data-open-live-modal id="heroSlideLiveModalBtn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true">
+                      <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                    Watch Video &amp; Options (Modal)
+                  </button>
+                  <a class="btn-guide btn-guide--secondary" href="#live">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <line x1="12" y1="5" x2="12" y2="19"></line>
+                      <polyline points="19 12 12 19 5 12"></polyline>
+                    </svg>
+                    View all 28 Live Chapters
+                  </a>
+                  <a class="btn-guide btn-guide--ghost" href="#preparacao">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="9 11 12 14 22 4"></polyline>
+                      <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                    </svg>
+                    Preparation Checklist
+                  </a>
+                </div>
+              </div>
+
+              <!-- Live Card Teaser -->
+              <div class="hero-live-card" data-open-live-modal role="button" tabindex="0"
+                aria-label="Open modal with recording of the official live stream">
+                <div class="hero-live-card__thumb">
+                  <img src="/assets/images/hero/hero-fallback.webp" alt="Recording of KOB 2026 Alignment Live Stream"
+                    width="640" height="360" loading="eager">
+                  <div class="hero-live-card__overlay">
+                    <div class="hero-live-card__play-btn" aria-hidden="true">
+                      <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                      </svg>
+                    </div>
+                  </div>
+                  <span class="hero-live-card__badge-live">🔴 Recorded Yesterday</span>
+                  <span class="hero-live-card__duration">1h 34min · 28 Chapters</span>
+                </div>
+                <div class="hero-live-card__info">
+                  <strong class="hero-live-card__headline">Official Alignment &amp; Preparation Briefing</strong>
+                  <span class="hero-live-card__sub">Click to play in modal with interactive topic shortcuts</span>
+                </div>
+              </div>
+            </div>
+          </div>        <!-- SLIDE 1: ONBOARD MANUAL & GENERAL CHECKLIST -->
+        <div class="hero-slide hero-slide--guide" id="heroSlide1" role="group" aria-roledescription="slide"
+          aria-label="Slide 2 of 2: Onboard Manual and Official Checklist" aria-hidden="true">
+          <div class="guide-container">
+            <div class="hero-slide__inner hero-slide__inner--guide">
+              <div class="hero-slide__content">
+                <div class="manual-header-title-wrap">
+                  <div class="guide-hero__badge">
+                    <span class="guide-hero__badge-dot" aria-hidden="true"></span>
+                    <span>Official Guide for Confirmed Guests</span>
+                  </div>
+                  <div class="manual-live-seal" aria-label="Authenticated Onboard Manual">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                    </svg>
+                    <span>KOB 2026 · Authenticated Document</span>
+                  </div>
+                </div>
+
+                <h2 class="guide-hero__title">ONBOARD MANUAL &amp; CHECKLIST</h2>
+                <p class="guide-hero__subtitle">
+                  Kriativos On Board 2026 · MSC Musica · Itinerary Santos–Búzios–Santos
+                </p>
+                <p class="guide-hero__lead">
+                  Your essential voyage manual: interactive checklist with auto-save, baggage allowance, travel routes, boarding procedures, and community guidelines for 4 unforgettable days at sea.
+                </p>
+
+                <div class="guide-hero__actions">
+                  <a class="btn-guide btn-guide--primary" href="#preparacao">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="9 11 12 14 22 4"></polyline>
+                      <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                    </svg>
+                    Open Preparation Checklist
+                  </a>
+                  <a class="btn-guide btn-guide--secondary" href="#cronograma">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    View Schedule &amp; Milestones
+                  </a>
+                  <a class="btn-guide btn-guide--ghost" href="#duvidas">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                      <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                    Protocols &amp; FAQ
+                  </a>
+                </div>
+              </div>
+
+              <!-- Card Lateral Editorial: Boarding Pass & Quick Checklist (Dimensões idênticas ao Card da Live) -->
+              <div class="hero-boarding-card" aria-label="Nautical Boarding Pass and Guest Readiness Summary">
+                <div class="hero-boarding-card__header">
+                  <div class="hero-boarding-card__carrier">
+                    <span class="hero-boarding-card__ship">MSC MUSICA</span>
+                    <span class="hero-boarding-card__voyage">KOB 2026</span>
+                  </div>
+                  <div class="hero-boarding-card__badge">
+                    <span class="hero-boarding-card__status-dot" aria-hidden="true"></span>
+                    <span>BOARDING CONFIRMED</span>
+                  </div>
+                </div>
+
+                <div class="hero-boarding-card__route">
+                  <div class="hero-boarding-card__port">
+                    <span class="hero-boarding-card__port-code">SSZ</span>
+                    <span class="hero-boarding-card__port-name">Santos</span>
+                  </div>
+                  <div class="hero-boarding-card__route-line">
+                    <div class="hero-boarding-card__route-icon" aria-hidden="true">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+                      </svg>
+                    </div>
+                    <span class="hero-boarding-card__duration">Nov 20 to 23, 2026 · 4 Days</span>
+                  </div>
+                  <div class="hero-boarding-card__port hero-boarding-card__port--dest">
+                    <span class="hero-boarding-card__port-code">BZS</span>
+                    <span class="hero-boarding-card__port-name">Búzios</span>
+                  </div>
+                </div>
+
+                <div class="hero-boarding-card__body">
+                  <div class="hero-boarding-card__checklist-header">
+                    <span class="hero-boarding-card__label">GUEST READINESS</span>
+                    <span class="hero-boarding-card__progress-val" id="heroBoardingProgressText">0 of 12 ready</span>
+                  </div>
+                  <div class="hero-boarding-card__progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                    <div class="hero-boarding-card__progress-fill" id="heroBoardingProgressBar" style="width: 0%;"></div>
+                  </div>
+                  <ul class="hero-boarding-card__items">
+                    <li>
+                      <span class="hero-boarding-card__item-icon" aria-hidden="true">✓</span>
+                      <span>Original photo ID in hand</span>
+                    </li>
+                    <li>
+                      <span class="hero-boarding-card__item-icon" aria-hidden="true">✓</span>
+                      <span>Printed MSC voucher &amp; luggage tags</span>
+                    </li>
+                    <li>
+                      <span class="hero-boarding-card__item-icon" aria-hidden="true">✓</span>
+                      <span>Terminal arrival window &amp; transfer checked</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div class="hero-boarding-card__footer">
+                  <a href="#preparacao" class="hero-boarding-card__link">
+                    <span>Open Full Checklist</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <line x1="5" y1="12" x2="19" y2="12"></line>
+                      <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                  </a>
+                  <span class="hero-boarding-card__seal">CONCAIS · TERMINAL 2</span>
+                </div>
+              </div>
+
+            </div>
           </div>
         </div>
 
-        <h1 class="guide-hero__title" id="guide-hero-title">ONBOARD MANUAL</h1>
-        <p class="guide-hero__subtitle">
-          Kriativos On Board 2026 · MSC Musica · Itinerary Santos–Búzios–Santos
-        </p>
-        <p class="guide-hero__lead">
-          Your essential voyage manual: document checklist, baggage allowance, travel routes, gaming schedule, boarding procedures, and community guidelines for 4 unforgettable days at sea.
-        </p>
+      </div>
 
-        <!-- Technical Telemetry Panel -->
+      <!-- Hero Slider Controls -->
+      <div class="hero-slider__controls guide-container" aria-label="Welcome slider controls">
+        <button type="button" class="hero-slider__btn hero-slider__btn--prev" id="heroSliderPrev" aria-label="Previous slide">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+        <div class="hero-slider__dots" role="tablist" aria-label="Slide indicators">
+          <button type="button" class="hero-slider__dot is-active" data-slide-to="0" role="tab" aria-selected="true"
+            aria-label="Slide 1: Official live briefing"></button>
+          <button type="button" class="hero-slider__dot" data-slide-to="1" role="tab" aria-selected="false"
+            aria-label="Slide 2: Onboard Manual and Checklist"></button>
+        </div>
+        <button type="button" class="hero-slider__btn hero-slider__btn--next" id="heroSliderNext" aria-label="Next slide">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Nautical Telemetry Panel Global -->
+      <div class="guide-container">
         <div class="manual-telemetry" aria-label="Expedition technical data">
           <div class="manual-telemetry__item">
             <span class="manual-telemetry__label">Vessel</span>
@@ -185,57 +394,7 @@
           </div>
         </div>
 
-        <div class="guide-hero__actions">
-          <a class="btn-guide btn-guide--primary" href="#preparacao">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
-              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <polyline points="9 11 12 14 22 4"></polyline>
-              <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
-            </svg>
-            Open Preparation Checklist
-          </a>
-          <a class="btn-guide btn-guide--secondary" href="#cronograma">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
-              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <circle cx="12" cy="12" r="10"></circle>
-              <polyline points="12 6 12 12 16 14"></polyline>
-            </svg>
-            View Schedule &amp; Milestones
-          </a>
-          <a class="btn-guide btn-guide--ghost" href="#duvidas">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
-              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <circle cx="12" cy="12" r="10"></circle>
-              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-              <line x1="12" y1="17" x2="12.01" y2="17"></line>
-            </svg>
-            Protocols &amp; FAQ
-          </a>
-        </div>
-
-        <div class="trip-summary" aria-label="Trip summary">
-          <div class="trip-summary__item">
-            <span class="trip-summary__label">Dates</span>
-            <span class="trip-summary__value">November 20–23, 2026</span>
-            <span class="trip-summary__detail">4 days / 3 nights at sea</span>
-          </div>
-          <div class="trip-summary__item">
-            <span class="trip-summary__label">Cruise Ship</span>
-            <span class="trip-summary__value">MSC Musica</span>
-            <span class="trip-summary__detail">Crystal Lounge (KOB venue)</span>
-          </div>
-          <div class="trip-summary__item">
-            <span class="trip-summary__label">Departure &amp; Return</span>
-            <span class="trip-summary__value">Port of Santos, Brazil</span>
-            <span class="trip-summary__detail">Concais Maritime Terminal</span>
-          </div>
-          <div class="trip-summary__item">
-            <span class="trip-summary__label">Port of Call</span>
-            <span class="trip-summary__value">Búzios</span>
-            <span class="trip-summary__detail">Check date and time on your booking voucher</span>
-          </div>
-        </div>
-
+        <!-- Global Countdown Banner -->
         <div class="countdown-banner" role="status" aria-live="polite">
           <svg class="countdown-banner__icon" width="24" height="24" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -246,7 +405,10 @@
           </svg>
           <p class="countdown-banner__text" id="guideCountdownText">Boarding on November 20, 2026.</p>
         </div>
+      </div>
 
+      <!-- Editorial Notice -->
+      <div class="guide-container" style="margin-top:14px;">
         <div class="editorial-notice">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink:0;margin-top:2px;">
@@ -262,11 +424,74 @@
       </div>
     </section>
 
+    <!-- LIVE STREAM REPLAY (#17) - MAXIMUM PROMINENCE AT THE TOP -->
+    <section class="guide-section" id="live" aria-labelledby="live-title">
+      <div class="guide-container">
+        <header class="guide-section__header">
+          <span class="guide-section__badge">Official Briefing Live Stream (Held Yesterday)</span>
+          <h2 class="guide-section__title" id="live-title">Watch the official live stream briefing</h2>
+          <p class="guide-section__intro">
+            The official alignment live briefing with KOB organizers and MSC Musica took place yesterday. Select any topic to jump directly to that timestamp in the video, or search the subjects covered. Live stream audio is in Portuguese.
+          </p>
+        </header>
+
+        <div class="live-wrapper">
+          <div class="live-player-card">
+            <div class="live-player-facade" id="livePlayerFacade">
+              <img class="facade-bg" src="/assets/images/hero/hero-fallback.webp" alt="" width="640" height="360"
+                loading="lazy">
+              <div class="live-player-facade__content">
+                <div class="live-modal__badge" style="margin-bottom:10px;">
+                  <span class="live-modal__badge-pulse" aria-hidden="true"></span>
+                  <span>Broadcast Held Yesterday</span>
+                </div>
+                <p class="live-player-facade__title">Watch the official alignment live stream</p>
+                <p class="live-player-facade__notice">
+                  The video player connects directly to YouTube. Playback begins with official announcements.
+                </p>
+                <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+                  <button type="button" class="btn-guide btn-guide--primary" id="loadLivePlayerBtn">
+                    Load video in this section
+                  </button>
+                  <button type="button" class="btn-guide btn-guide--secondary" data-open-live-modal>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true">
+                      <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                    Open in Modal
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="live-player-iframe-container" id="livePlayerContainer"></div>
+          </div>
+
+          <div class="live-chapters-card">
+            <div class="live-chapters-search">
+              <input type="search" class="faq-search-input" id="liveSearchInput"
+                placeholder="Buscar assunto na live (ex.: voucher, mala, jantar, jogos)..."
+                aria-label="Search live stream chapters">
+            </div>
+
+            <p style="font-size:0.82rem;color:var(--ink-invert-soft);margin-bottom:12px;">
+              Click any chapter to jump directly to that timestamp in the video:
+            </p>
+
+            <ul class="live-chapters-list" id="liveChaptersList" aria-label="Live stream chapters">
+              <!-- Rendered via JS with indexed transcripts -->
+            </ul>
+            <p id="liveEmptyChaptersMsg" style="display:none;color:var(--ink-invert-soft);padding:16px 0;">
+              No chapters or spoken transcript matches found. Try another search or review the <a href="#duvidas">FAQ guide</a>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- CHECKLIST (#18) -->
     <section class="guide-section" id="preparacao" aria-labelledby="checklist-title">
       <div class="guide-container">
         <header class="guide-section__header">
-          <span class="guide-section__badge">Chapter I // Checklist &amp; Documents</span>
+          <span class="guide-section__badge">Checklist &amp; Documents</span>
           <h2 class="guide-section__title" id="checklist-title">My preparation checklist</h2>
           <p class="guide-section__intro">
             Check off what you have already verified. This checklist is a personal aid and does not validate your
@@ -733,7 +958,7 @@
     <section class="guide-section" id="cronograma" aria-labelledby="cronograma-title">
       <div class="guide-container">
         <header class="guide-section__header">
-          <span class="guide-section__badge">Chapter II // Navigation Schedule</span>
+          <span class="guide-section__badge">Navigation Schedule</span>
           <h2 class="guide-section__title" id="cronograma-title">From preparation to disembarkation</h2>
           <p class="guide-section__intro">
             Use these milestones to stay organized. Your voucher, Royal Trip updates, and MSC daily programs provide
@@ -933,7 +1158,7 @@
     <section class="guide-section" id="transporte" aria-labelledby="transporte-title">
       <div class="guide-container">
         <header class="guide-section__header">
-          <span class="guide-section__badge">Chapter III // Transportation &amp; Routes</span>
+          <span class="guide-section__badge">Transportation &amp; Routes</span>
           <h2 class="guide-section__title" id="transporte-title">Your journey to the port</h2>
           <p class="guide-section__intro">
             Official KOB bus charter departing from Barra Funda, São Paulo. Verify the specific vehicle assigned to
@@ -987,7 +1212,7 @@
     <section class="guide-section" id="jogos" aria-labelledby="jogos-title">
       <div class="guide-container">
         <header class="guide-section__header">
-          <span class="guide-section__badge">Chapter IV // Board Game Lounge &amp; Rules</span>
+          <span class="guide-section__badge">Board Game Lounge &amp; Rules</span>
           <h2 class="guide-section__title" id="jogos-title">Onboard gaming guide</h2>
           <p class="guide-section__intro">
             Crystal Lounge is the planned home for KOB games. Discover table dynamics, rules instructors, giveaways,
@@ -1060,7 +1285,7 @@
     <section class="guide-section" id="duvidas" aria-labelledby="faq-title">
       <div class="guide-container">
         <header class="guide-section__header">
-          <span class="guide-section__badge">Chapter V // Protocols &amp; FAQ</span>
+          <span class="guide-section__badge">Protocols &amp; FAQ</span>
           <h2 class="guide-section__title" id="faq-title">FAQ for confirmed guests</h2>
           <p class="guide-section__intro">
             Find answers to prepare for your journey and make the most of KOB. For private cabin questions or personal
@@ -2017,69 +2242,13 @@
       </div>
     </section>
 
-    <!-- LIVE STREAM REPLAY (#17) -->
-    <section class="guide-section" id="live" aria-labelledby="live-title">
-      <div class="guide-container">
-        <header class="guide-section__header">
-          <span class="guide-section__badge">Chapter VI // Official Video Briefing</span>
-          <h2 class="guide-section__title" id="live-title">Review the live stream by topic</h2>
-          <p class="guide-section__intro">
-            Select a topic to jump directly to the relevant timestamp. Written guidelines in this guide include
-            verified official corrections following the live stream. (Live stream audio is in Portuguese).
-          </p>
-        </header>
 
-        <div class="live-wrapper">
-          <div class="live-player-card">
-            <div class="live-player-facade" id="livePlayerFacade">
-              <img class="facade-bg" src="/assets/images/hero/hero-fallback.webp" alt="" width="640" height="360"
-                loading="lazy">
-              <div class="live-player-facade__content">
-                <p class="live-player-facade__title">Watch live stream on YouTube</p>
-                <p class="live-player-facade__notice">
-                  Loading the player connects to YouTube servers. Please review your cookie preferences.
-                </p>
-                <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
-                  <button type="button" class="btn-guide btn-guide--primary" id="loadLivePlayerBtn">
-                    Load video
-                  </button>
-                  <a class="btn-guide btn-guide--ghost" href="https://www.youtube.com/live/AtIvlc62KgI" target="_blank"
-                    rel="noopener noreferrer">
-                    Open in YouTube
-                  </a>
-                </div>
-              </div>
-            </div>
-            <div class="live-player-iframe-container" id="livePlayerContainer"></div>
-          </div>
-
-          <div class="live-chapters-card">
-            <div class="live-chapters-search">
-              <input type="search" class="faq-search-input" id="liveSearchInput"
-                placeholder="Search live topic (e.g. luggage, dinner, games, voucher)..."
-                aria-label="Search live stream chapters">
-            </div>
-
-            <p style="font-size:0.82rem;color:var(--ink-invert-soft);margin-bottom:12px;">
-              Click a chapter to jump to that timestamp in the player:
-            </p>
-
-            <ul class="live-chapters-list" id="liveChaptersList" aria-label="Live stream chapters">
-              <!-- Rendered via JS -->
-            </ul>
-            <p id="liveEmptyChaptersMsg" style="display:none;color:var(--ink-invert-soft);padding:16px 0;">
-              No topics found. Try another search or review the <a href="#duvidas">FAQ guide</a>.
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
 
     <!-- CONTACT TEAM (#21) -->
     <section class="guide-section" id="contato" aria-labelledby="contato-title">
       <div class="guide-container">
         <header class="guide-section__header">
-          <span class="guide-section__badge">Chapter VII // KOB Command Support</span>
+          <span class="guide-section__badge">KOB Command Support</span>
           <h2 class="guide-section__title" id="contato-title">Contact the team</h2>
           <p class="guide-section__intro">
             For games, kits, and programming, reach out to the KOB organization. For vouchers, passenger details,
@@ -2267,6 +2436,10 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
       <span>Home</span>
     </a>
+    <a href="#live" class="guide-quick-dock__item" aria-label="Live stream recording">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+      <span>🔴 Live</span>
+    </a>
     <a href="#preparacao" class="guide-quick-dock__item" aria-label="Preparation checklist">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
       <span>Checklist</span>
@@ -2286,10 +2459,6 @@
     <a href="#duvidas" class="guide-quick-dock__item" aria-label="Questions and FAQ">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
       <span>FAQ</span>
-    </a>
-    <a href="#live" class="guide-quick-dock__item" aria-label="Live stream recording">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
-      <span>Live</span>
     </a>
     <a href="#contato" class="guide-quick-dock__item" aria-label="Contact the team">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
@@ -2314,7 +2483,7 @@
   <aside class="checklist-sidebar" id="checklistSidebar" role="complementary" aria-label="Onboard Checklist" aria-hidden="true">
     <div class="checklist-sidebar__header">
       <div class="checklist-sidebar__title-wrap">
-        <span class="checklist-sidebar__tag">KOB 2026 Expedition</span>
+        <span class="checklist-sidebar__tag">KOB 2026</span>
         <h3 class="checklist-sidebar__title">Onboard Checklist</h3>
       </div>
       <button type="button" class="checklist-sidebar__close" id="checklistSidebarClose" aria-label="Collapse Checklist">
@@ -2349,6 +2518,60 @@
       <a href="#preparacao" class="checklist-sidebar__goto-btn" id="checklistSidebarGotoBtn">
         View Full Checklist on Page
       </a>
+    </div>
+  </aside>
+
+  <!-- Alignment Live Stream Modal (#17) -->
+  <aside class="guide-modal live-modal" id="liveModal" role="dialog" aria-modal="true" aria-labelledby="liveModalTitle" aria-hidden="true">
+    <div class="live-modal__dialog">
+      <header class="live-modal__header">
+        <div class="live-modal__title-wrap">
+          <div class="live-modal__badge">
+            <span class="live-modal__badge-pulse" aria-hidden="true"></span>
+            <span>Broadcast Recorded Yesterday · Official Recording</span>
+          </div>
+          <h3 class="live-modal__title" id="liveModalTitle">KOB 2026 &amp; MSC Musica Alignment</h3>
+        </div>
+        <button type="button" class="live-modal__close" id="liveModalCloseBtn" aria-label="Close live video modal">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </header>
+
+      <div class="live-modal__player-area">
+        <div class="live-modal__iframe-wrapper" id="liveModalIframeContainer">
+          <!-- Dynamic iframe injected to preserve performance and pause on close -->
+        </div>
+
+        <div class="live-modal__quick-topics">
+          <div class="live-modal__topics-label">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <span>Jump directly to a topic in the video:</span>
+          </div>
+          <div class="live-modal__topics-pills">
+            <button type="button" class="live-modal__pill" data-modal-seek="833">Official Start (13:53)</button>
+            <button type="button" class="live-modal__pill" data-modal-seek="1120">Vouchers &amp; Luggage Tags (18:40)</button>
+            <button type="button" class="live-modal__pill" data-modal-seek="1460">IDs &amp; Documents (24:20)</button>
+            <button type="button" class="live-modal__pill" data-modal-seek="1830">Baggage Rules (30:30)</button>
+            <button type="button" class="live-modal__pill" data-modal-seek="2395">Chartered Bus (39:55)</button>
+            <button type="button" class="live-modal__pill" data-modal-seek="2900">Crystal Lounge (48:20)</button>
+            <button type="button" class="live-modal__pill" data-modal-seek="3400">Dinner &amp; Dress Code (56:40)</button>
+            <button type="button" class="live-modal__pill" data-modal-seek="3980">Games &amp; KOB Space (01:06:20)</button>
+            <button type="button" class="live-modal__pill" data-modal-seek="4700">Final Q&amp;A (01:18:20)</button>
+          </div>
+        </div>
+      </div>
+
+      <footer class="live-modal__footer">
+        <a href="#live" class="live-modal__goto-btn" id="liveModalGotoSectionBtn">
+          View all 28 detailed chapters in the Manual
+        </a>
+      </footer>
     </div>
   </aside>
 </body>

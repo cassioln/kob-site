@@ -36,7 +36,7 @@
           sessionStorage.setItem('kob_lang_pref', 'es');
           window.location.replace(targetEs + window.location.search + window.location.hash);
         }
-      } catch (e) {}
+      } catch (e) { }
     })();
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -58,13 +58,15 @@
   <meta property="og:locale:alternate" content="en_US">
   <meta property="og:locale:alternate" content="es_ES">
   <meta property="og:site_name" content="Manual de Bordo — Kriativos On Board 2026">
-  <meta property="og:title" content="Manual de Bordo KOB 2026: Guia Oficial de Preparação e Navegação | Kriativos On Board">
+  <meta property="og:title"
+    content="Manual de Bordo KOB 2026: Guia Oficial de Preparação e Navegação | Kriativos On Board">
   <meta property="og:description"
     content="Manual de Bordo oficial do Kriativos On Board 2026 no MSC Musica. Confira checklist de documentos, bagagem, transporte, cronograma, ludoteca e orientações de viagem.">
   <meta property="og:url" content="https://manualdebordo.kriativos.com.br/">
   <meta property="og:image" content="https://kriativosonboard.com.br/assets/images/brand/og-home.jpg">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Manual de Bordo KOB 2026: Guia Oficial de Preparação e Navegação | Kriativos On Board">
+  <meta name="twitter:title"
+    content="Manual de Bordo KOB 2026: Guia Oficial de Preparação e Navegação | Kriativos On Board">
   <meta name="twitter:description"
     content="Manual de Bordo oficial do Kriativos On Board 2026 no MSC Musica. Confira checklist de documentos, bagagem, transporte, cronograma, ludoteca e orientações de viagem.">
   <meta name="twitter:image" content="https://kriativosonboard.com.br/assets/images/brand/og-home.jpg">
@@ -80,11 +82,11 @@
 
   <!-- Estilos Globais e Específicos -->
   <link rel="stylesheet" href="/assets/css/main.css?v=20261003-embarcados">
-  <link rel="stylesheet" href="/assets/css/embarcados.css?v=20261003-embarcados">
+  <link rel="stylesheet" href="/assets/css/manual-de-bordo.css?v=20261003-mb">
   <link rel="stylesheet" href="/assets/css/cookie-consent.css?v=20260820-fix-contrast">
 
   <script defer src="/assets/js/cookie-consent.js?v=20260713-5"></script>
-  <script defer src="/assets/js/embarcados.js?v=20261003-embarcados"></script>
+  <script defer src="/assets/js/manual-de-bordo.js?v=20261003-mb"></script>
 
   <!-- Schema JSON-LD -->
   <script type="application/ld+json">
@@ -161,8 +163,8 @@
           <img src="/assets/images/brand/kriativos-on-board-logo.webp" alt="Kriativos On Board 2026" width="2930"
             height="1796">
         </a>
-        <div class="manual-brand-tag" aria-label="Manual de Bordo Oficial">
-          <span class="manual-brand-tag__sub">Expedição KOB 2026 · MSC Musica</span>
+        <div class="manual-brand-tag" aria-label="Manual de Bordo KOB 2026">
+          <span class="manual-brand-tag__sub">KOB 2026 · MSC Musica</span>
           <span class="manual-brand-tag__main">Manual de Bordo</span>
           <span class="manual-brand-tag__domain">manualdebordo.kriativos.com.br</span>
         </div>
@@ -191,48 +193,181 @@
     <div class="guide-container">
       <ul class="guide-nav-bar__list">
         <li><a class="guide-nav-bar__link is-active" href="#inicio">Início</a></li>
+        <li><a class="guide-nav-bar__link" href="#live">🔴 Live (Novidade)</a></li>
         <li><a class="guide-nav-bar__link" href="#preparacao">Preparação</a></li>
         <li><a class="guide-nav-bar__link" href="#cronograma">Cronograma</a></li>
         <li><a class="guide-nav-bar__link" href="#transporte">Transporte</a></li>
         <li><a class="guide-nav-bar__link" href="#jogos">Jogos</a></li>
         <li><a class="guide-nav-bar__link" href="#duvidas">Dúvidas</a></li>
-        <li><a class="guide-nav-bar__link" href="#live">Live</a></li>
         <li><a class="guide-nav-bar__link" href="#contato">Fale com a equipe</a></li>
       </ul>
     </div>
   </nav>
 
   <main id="main">
-    <!-- HERO / BOAS-VINDAS (#16) -->
-    <section class="guide-hero" id="inicio" aria-labelledby="guide-hero-title">
-      <div class="guide-container">
-        <div class="manual-header-title-wrap">
-          <div class="guide-hero__badge">
-            <span class="guide-hero__badge-dot" aria-hidden="true"></span>
-            <span>Documento Oficial do Viajante Confirmado</span>
-          </div>
+    <!-- HERO SLIDER / BOAS-VINDAS (#16) -->
+    <section class="guide-hero-slider" id="inicio" aria-label="Apresentação do Manual de Bordo e Destaques da Live">
+      <div class="hero-slider__track" id="heroSliderTrack">
 
-          <div class="manual-seal" aria-label="Selo de Autenticidade do Manual de Bordo">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <circle cx="12" cy="12" r="10"></circle>
-              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-            </svg>
-            <span>Expedição KOB 2026 · Documento Autenticado</span>
+        <!-- HERO COM A LIVE INTEGRADA (VÍDEO CINEMATOGRÁFICO + CAPÍTULOS EM SLIDE) -->
+        <div class="hero-slide hero-slide--live is-active" id="heroSlide0" role="region"
+          aria-label="Live de Preparação KOB 2026 com gravação e capítulos por assunto">
+          <div class="guide-container" id="live">
+            <div class="hero-live-stage">
+              <!-- Cabeçalho Integrado e Descontraído -->
+              <div class="hero-live-stage__header">
+                <div class="manual-header-title-wrap">
+                  <div class="guide-hero__badge guide-hero__badge--live">
+                    <span class="guide-hero__badge-pulse" aria-hidden="true"></span>
+                    <span>Live de Embarque (03/10/2026) · Assuntos Separados por Tempo</span>
+                  </div>
+                  <div class="manual-seal" aria-label="Kriativos On Board 2026">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <polygon
+                        points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+                      </polygon>
+                    </svg>
+                    <span>KOB 2026 · MSC Musica</span>
+                  </div>
+                </div>
+
+                <h1 class="guide-hero__title" id="guide-hero-title">BATE-PAPO DE EMBARQUE: TUDO SOBRE O KOB 2026</h1>
+                <p class="guide-hero__subtitle">
+                  Dicas sobre vouchers, bagagem, fretado, restaurantes e jogos com a galera do KOB
+                </p>
+              </div>
+
+              <!-- Layout Cinema: Vídeo Ampliado + Menu Deslizante de 28 Capítulos com Busca (Recolhível/Expandível) -->
+              <div class="hero-live-cinema" id="heroLiveCinema">
+                <!-- Coluna do Player de Vídeo Ampliado -->
+                <div class="hero-live-cinema__player-col">
+                  <div class="hero-live-player" id="livePlayerWrapper">
+                    <div class="hero-live-player__facade" id="livePlayerFacade">
+                      <picture>
+                        <source srcset="/assets/images/hero/youtube-live-cover.webp" type="image/webp">
+                        <img src="/assets/images/hero/youtube-live-cover.jpg" alt="Capa Oficial da Live de Embarque KOB 2026 no YouTube"
+                          width="1280" height="720" loading="eager" class="hero-live-player__bg">
+                      </picture>
+                      <div class="hero-live-player__overlay">
+                        <button type="button" class="hero-live-player__play-btn" id="loadLivePlayerBtn"
+                          aria-label="Dar play na gravação da live de preparação">
+                          <svg width="34" height="34" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                          </svg>
+                        </button>
+                        <div class="hero-live-player__info">
+                          <span class="hero-live-player__badge">🔴 GRAVAÇÃO COMPLETA</span>
+                          <strong class="hero-live-player__headline">Live de Preparação KOB 2026</strong>
+                          <span class="hero-live-player__sub">1h 34min · 28 assuntos detalhados com busca integrada</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="hero-live-player__iframe-wrap" id="livePlayerContainer"></div>
+                  </div>
+
+                  <!-- Barra de Ações, Tópico Atual e Controle do Slide -->
+                  <div class="hero-live-cinema__bar">
+                    <div class="hero-live-cinema__current-topic">
+                      <span class="hero-live-cinema__dot" aria-hidden="true"></span>
+                      <span id="heroLiveTopicStatus">Tópico: Início da Transmissão (13:53)</span>
+                    </div>
+                    <div class="hero-live-cinema__actions">
+                      <!-- Botão para Recolher / Expandir o Slide de Capítulos -->
+                      <button type="button" class="btn-guide-sm btn-guide-sm--toggle" id="heroLiveToggleChaptersBtn"
+                        aria-expanded="true" aria-controls="heroLiveChaptersCol" title="Alternar entre modo cinema total e lista de capítulos">
+                        <svg class="toggle-icon-drawer" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                          aria-hidden="true">
+                          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                          <line x1="15" y1="3" x2="15" y2="21"></line>
+                          <polyline points="10 9 7 12 10 15"></polyline>
+                        </svg>
+                        <span class="hero-live-toggle-text">Recolher Capítulos</span>
+                      </button>
+
+                      <button type="button" class="btn-guide-sm btn-guide-sm--modal" data-open-live-modal
+                        id="heroSlideLiveModalBtn" title="Assistir em modal separado em tela cheia">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                          <polyline points="15 3 21 3 21 9"></polyline>
+                          <polyline points="9 21 3 21 3 15"></polyline>
+                          <line x1="21" y1="3" x2="14" y2="10"></line>
+                          <line x1="3" y1="21" x2="10" y2="14"></line>
+                        </svg>
+                        <span>Assistir em Modal</span>
+                      </button>
+
+                      <a class="btn-guide-sm btn-guide-sm--ghost" href="#preparacao">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                          <polyline points="9 11 12 14 22 4"></polyline>
+                          <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                        </svg>
+                        <span>Checklist</span>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Slide Lateral Direito: Card de 28 Capítulos com Busca Inteligente -->
+                <aside class="hero-live-cinema__menu-col" id="heroLiveChaptersCol" aria-label="Capítulos e busca da live">
+                  <div class="live-chapters-card hero-live-chapters-card">
+                    <div class="hero-live-chapters-header">
+                      <div class="hero-live-chapters-header__title-group">
+                        <span class="hero-live-chapters-header__pill">Pule Direto no Ponto</span>
+                        <h3 class="hero-live-chapters-header__title">Capítulos &amp; Busca</h3>
+                      </div>
+                      <button type="button" class="hero-live-chapters-close-btn" id="heroLiveChaptersCloseBtn"
+                        aria-label="Recolher capítulos e expandir o vídeo" title="Recolher capítulos para expandir o vídeo">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                          <line x1="18" y1="6" x2="6" y2="18"></line>
+                          <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                      </button>
+                    </div>
+
+                    <div class="live-chapters-search">
+                      <div class="live-search-input-wrap">
+                        <svg class="live-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                          aria-hidden="true">
+                          <circle cx="11" cy="11" r="8"></circle>
+                          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <input type="search" class="faq-search-input live-search-input-hero" id="liveSearchInput"
+                          placeholder="Buscar na live (ex.: voucher, mala, jantar, jogos)..."
+                          aria-label="Buscar assunto nos capítulos da live">
+                      </div>
+                    </div>
+
+                    <p class="hero-live-chapters-hint">
+                      Clique em um capítulo para avançar o vídeo até o ponto exato da fala:
+                    </p>
+
+                    <ul class="live-chapters-list" id="liveChaptersList" aria-label="Capítulos da live">
+                      <!-- Renderizado via JS com transcrição indexada (28 capítulos) -->
+                    </ul>
+                    <p id="liveEmptyChaptersMsg" style="display:none;color:var(--ocean-cyan, #00e5ff);padding:16px 0;font-size:0.86rem;">
+                      Nenhum capítulo ou trecho de transcrição encontrado para este termo. Tente outra palavra-chave ou consulte
+                      as <a href="#duvidas" style="color:#fff;text-decoration:underline;">Dúvidas Frequentes</a>.
+                    </p>
+                  </div>
+                </aside>
+              </div>
+            </div>
           </div>
         </div>
 
-        <h1 class="guide-hero__title" id="guide-hero-title">MANUAL DE BORDO</h1>
-        <p class="guide-hero__subtitle">
-          Kriativos On Board 2026 · MSC Musica · Roteiro Santos–Búzios–Santos
-        </p>
-        <p class="guide-hero__lead">
-          Seu guia indispensável de viagem: checklist de documentos, limite de bagagem, rotas de aproximação, programação de jogos, horários de embarque e regras de convivência para os 4 dias da maior convenção de board games em alto-mar.
-        </p>
+      </div>
 
-        <!-- Painel Técnico de Bordo / Telemetria Náutica -->
-        <div class="manual-telemetry" aria-label="Ficha técnica de navegação da expedição">
+      <!-- Informações Práticas da Viagem -->
+      <div class="guide-container">
+        <div class="manual-telemetry" aria-label="Informações essenciais da viagem">
           <div class="manual-telemetry__item">
-            <span class="manual-telemetry__label">Embarcação</span>
+            <span class="manual-telemetry__label">Navio</span>
             <strong class="manual-telemetry__val">MSC Musica</strong>
           </div>
           <div class="manual-telemetry__item">
@@ -240,7 +375,7 @@
             <strong class="manual-telemetry__val">Santos / SP (Concais)</strong>
           </div>
           <div class="manual-telemetry__item">
-            <span class="manual-telemetry__label">Rota Atlântica</span>
+            <span class="manual-telemetry__label">Roteiro</span>
             <strong class="manual-telemetry__val">Santos ⇄ Búzios</strong>
           </div>
           <div class="manual-telemetry__item">
@@ -248,68 +383,15 @@
             <strong class="manual-telemetry__val">20 a 23 Nov 2026</strong>
           </div>
           <div class="manual-telemetry__item">
-            <span class="manual-telemetry__label">Status do Portal</span>
+            <span class="manual-telemetry__label">Status</span>
             <strong class="manual-telemetry__val">
               <span class="manual-telemetry__pulse" aria-hidden="true"></span>
-              Embarque Autorizado
+              Tudo pronto pro embarque!
             </strong>
           </div>
         </div>
 
-        <!-- Ações Principais -->
-        <div class="guide-hero__actions">
-          <a class="btn-guide btn-guide--primary" href="#preparacao">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
-              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <polyline points="9 11 12 14 22 4"></polyline>
-              <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
-            </svg>
-            Abrir Checklist de Preparação
-          </a>
-          <a class="btn-guide btn-guide--secondary" href="#cronograma">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
-              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <circle cx="12" cy="12" r="10"></circle>
-              <polyline points="12 6 12 12 16 14"></polyline>
-            </svg>
-            Plano de Navegação &amp; Etapas
-          </a>
-          <a class="btn-guide btn-guide--ghost" href="#duvidas">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
-              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <circle cx="12" cy="12" r="10"></circle>
-              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-              <line x1="12" y1="17" x2="12.01" y2="17"></line>
-            </svg>
-            Protocolos &amp; Dúvidas
-          </a>
-        </div>
-
-        <!-- Resumo da Viagem -->
-        <div class="trip-summary" aria-label="Resumo da viagem">
-          <div class="trip-summary__item">
-            <span class="trip-summary__label">Data</span>
-            <span class="trip-summary__value">20 a 23 de novembro de 2026</span>
-            <span class="trip-summary__detail">4 dias / 3 noites em alto-mar</span>
-          </div>
-          <div class="trip-summary__item">
-            <span class="trip-summary__label">Navio</span>
-            <span class="trip-summary__value">MSC Musica</span>
-            <span class="trip-summary__detail">Crystal Lounge (espaço KOB)</span>
-          </div>
-          <div class="trip-summary__item">
-            <span class="trip-summary__label">Saída e Retorno</span>
-            <span class="trip-summary__value">Porto de Santos</span>
-            <span class="trip-summary__detail">Terminal Marítimo Concais</span>
-          </div>
-          <div class="trip-summary__item">
-            <span class="trip-summary__label">Escala</span>
-            <span class="trip-summary__value">Búzios</span>
-            <span class="trip-summary__detail">Confira dia e horário no seu voucher</span>
-          </div>
-        </div>
-
-        <!-- Contador Regressivo -->
+        <!-- Contador Regressivo Global -->
         <div class="countdown-banner" role="status" aria-live="polite">
           <svg class="countdown-banner__icon" width="24" height="24" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -320,8 +402,10 @@
           </svg>
           <p class="countdown-banner__text" id="guideCountdownText">Embarque em 20 de novembro de 2026.</p>
         </div>
+      </div>
 
-        <!-- Aviso Editorial -->
+      <!-- Lembrete Amigo -->
+      <div class="guide-container" style="margin-top:14px;">
         <div class="editorial-notice">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink:0;margin-top:2px;">
@@ -330,8 +414,7 @@
             <line x1="12" y1="16" x2="12.01" y2="16"></line>
           </svg>
           <div>
-            <strong>Informações revisadas em 3 de outubro de 2026.</strong> Regras da MSC e instruções da sua reserva
-            prevalecem sobre previsões da live.
+            <strong>Lembrete amigo:</strong> confira sempre as instruções da sua reserva e as regras da MSC antes de viajar.
           </div>
         </div>
       </div>
@@ -341,7 +424,7 @@
     <section class="guide-section" id="preparacao" aria-labelledby="checklist-title">
       <div class="guide-container">
         <header class="guide-section__header">
-          <span class="guide-section__badge">Capítulo I // Checklist &amp; Documentos</span>
+          <span class="guide-section__badge">Checklist &amp; Documentos</span>
           <h2 class="guide-section__title" id="checklist-title">Meu checklist de preparação</h2>
           <p class="guide-section__intro">
             Marque o que você já conferiu. Esta lista é uma ajuda pessoal e não valida sua reserva nem substitui a
@@ -363,7 +446,8 @@
           </div>
 
           <div class="checklist-completed-msg" id="checklistCompletedMsg">
-            🎉 Você conferiu os itens essenciais e aplicáveis desta lista! Continue acompanhando os avisos da equipe e as
+            🎉 Você conferiu os itens essenciais e aplicáveis desta lista! Continue acompanhando os avisos da equipe e
+            as
             instruções da sua reserva.
           </div>
 
@@ -487,8 +571,7 @@
                     <span class="checklist-item__tag checklist-item__tag--conditional">Condicional</span>
                     <a class="checklist-item__ref" href="#faq-o04">Ver orientação (O04)</a>
                   </div>
-                  <label for="chk-estrangeiro-documentos" class="checklist-item__text"
-                    id="desc-estrangeiro-documentos">
+                  <label for="chk-estrangeiro-documentos" class="checklist-item__text" id="desc-estrangeiro-documentos">
                     Confirmei a documentação aplicável à minha nacionalidade e situação de residência.
                   </label>
                   <label class="checklist-item__na-toggle">
@@ -520,8 +603,7 @@
                     <span class="checklist-item__tag checklist-item__tag--conditional">Condicional</span>
                     <a class="checklist-item__ref" href="#faq-o05">Ver orientação (O05/O37)</a>
                   </div>
-                  <label for="chk-necessidades-especiais" class="checklist-item__text"
-                    id="desc-necessidades-especiais">
+                  <label for="chk-necessidades-especiais" class="checklist-item__text" id="desc-necessidades-especiais">
                     Combinei com a agência, por canal privado, as providências especiais de acessibilidade, gestação ou
                     saúde necessárias para minha viagem.
                   </label>
@@ -699,8 +781,7 @@
               </li>
 
               <li class="checklist-item" data-checklist-id="seguro" data-checklist-type="conditional">
-                <input type="checkbox" id="chk-seguro" class="checklist-item__checkbox"
-                  aria-describedby="desc-seguro">
+                <input type="checkbox" id="chk-seguro" class="checklist-item__checkbox" aria-describedby="desc-seguro">
                 <div class="checklist-item__body">
                   <div class="checklist-item__header-row">
                     <span class="checklist-item__tag checklist-item__tag--conditional">Condicional</span>
@@ -812,7 +893,7 @@
     <section class="guide-section" id="cronograma" aria-labelledby="cronograma-title">
       <div class="guide-container">
         <header class="guide-section__header">
-          <span class="guide-section__badge">Capítulo II // Cronograma de Navegação</span>
+          <span class="guide-section__badge">Cronograma de Navegação</span>
           <h2 class="guide-section__title" id="cronograma-title">Da preparação ao desembarque</h2>
           <p class="guide-section__intro">
             Use estas etapas para se organizar. Seu voucher, os avisos da Royal Trip e a programação da MSC informam os
@@ -1014,7 +1095,7 @@
     <section class="guide-section" id="transporte" aria-labelledby="transporte-title">
       <div class="guide-container">
         <header class="guide-section__header">
-          <span class="guide-section__badge">Capítulo III // Transporte &amp; Aproximação</span>
+          <span class="guide-section__badge">Transporte &amp; Aproximação</span>
           <h2 class="guide-section__title" id="transporte-title">Seu trajeto até o porto</h2>
           <p class="guide-section__intro">
             Fretado KOB saindo da Barra Funda, São Paulo. Confira o veículo da sua reserva antes de sair.
@@ -1076,7 +1157,7 @@
     <section class="guide-section" id="jogos" aria-labelledby="jogos-title">
       <div class="guide-container">
         <header class="guide-section__header">
-          <span class="guide-section__badge">Capítulo IV // Salão de Jogos &amp; Regras</span>
+          <span class="guide-section__badge">Salão de Jogos &amp; Regras</span>
           <h2 class="guide-section__title" id="jogos-title">Guia dos jogos a bordo</h2>
           <p class="guide-section__intro">
             A Crystal Lounge é o espaço previsto para o KOB. Conheça as dinâmicas de mesas, monitores, sorteios e o uso
@@ -1118,7 +1199,8 @@
           <article class="game-block">
             <h3 class="game-block__title">Board Game Guru: antes de embarcar</h3>
             <p class="game-block__text">
-              Acesse o <a href="https://boardgameguru.app/" target="_blank" rel="noopener noreferrer">Board Game Guru</a>,
+              Acesse o <a href="https://boardgameguru.app/" target="_blank" rel="noopener noreferrer">Board Game
+                Guru</a>,
               disponível para Android e iOS, e abra a página do Kriativos On Board. Marque ‘Eu vou’ para registrar sua
               participação nos sorteios anunciados.
             </p>
@@ -1153,7 +1235,8 @@
               programação.
             </p>
             <p class="game-block__text">
-              O tema anunciado para o encerramento no domingo à noite é Anos 80 (peças retrô e neon). Acompanhe os avisos
+              O tema anunciado para o encerramento no domingo à noite é Anos 80 (peças retrô e neon). Acompanhe os
+              avisos
               sobre o local e formato da comemoração.
             </p>
           </article>
@@ -1165,7 +1248,7 @@
     <section class="guide-section" id="duvidas" aria-labelledby="faq-title">
       <div class="guide-container">
         <header class="guide-section__header">
-          <span class="guide-section__badge">Capítulo V // Protocolos &amp; Dúvidas Frequentes</span>
+          <span class="guide-section__badge">Protocolos &amp; Dúvidas Frequentes</span>
           <h2 class="guide-section__title" id="faq-title">Dúvidas de quem já reservou</h2>
           <p class="guide-section__intro">
             Encontre as orientações para preparar sua viagem e aproveitar o KOB. Para dados da sua cabine ou uma
@@ -1207,18 +1290,23 @@
           <!-- O01 -->
           <details class="faq-item" id="faq-o01" data-category="preparacao">
             <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">Como confiro minha janela de chegada ao terminal e o dia da escala?</span>
+              <span class="faq-item__summary-title">Como confiro minha janela de chegada ao terminal e o dia da
+                escala?</span>
               <span class="faq-item__summary-meta">
                 <span class="checklist-item__tag checklist-item__tag--essential">Preparação</span>
                 <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </span>
             </summary>
             <div class="faq-item__content">
               <p class="faq-item__text">
-                O Kriativos On Board acontece de 20 a 23 de novembro de 2026, no MSC Musica, com saída e retorno em Santos
+                O Kriativos On Board acontece de 20 a 23 de novembro de 2026, no MSC Musica, com saída e retorno em
+                Santos
                 e escala em Búzios. Confira o dia e o horário da escala, a janela de chegada ao terminal e as instruções
-                de embarque no itinerário e no voucher da sua reserva. Não use o horário do fretado como horário do navio.
+                de embarque no itinerário e no voucher da sua reserva. Não use o horário do fretado como horário do
+                navio.
               </p>
               <div class="faq-item__meta">
                 <span>Fonte: Live 00:15:13/00:16:49 + Itinerário da reserva</span>
@@ -1233,14 +1321,17 @@
               <span class="faq-item__summary-meta">
                 <span class="checklist-item__tag checklist-item__tag--essential">Preparação</span>
                 <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </span>
             </summary>
             <div class="faq-item__content">
               <p class="faq-item__text">
                 A Royal Trip cuida da emissão do check-in do grupo. Quando Júnior avisar no grupo oficial, o responsável
                 pela cabine deve chamá-lo no privado para receber os vouchers e as etiquetas em PDF. Confira os dados de
-                todos os passageiros e imprima os documentos. Acompanhe os avisos da agência; não há uma data de liberação
+                todos os passageiros e imprima os documentos. Acompanhe os avisos da agência; não há uma data de
+                liberação
                 garantida neste guia.
               </p>
               <div class="faq-item__meta">
@@ -1252,18 +1343,22 @@
           <!-- O03 -->
           <details class="faq-item" id="faq-o03" data-category="preparacao">
             <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">Qual documento devo levar? RG antigo ou CNH digital são aceitos?</span>
+              <span class="faq-item__summary-title">Qual documento devo levar? RG antigo ou CNH digital são
+                aceitos?</span>
               <span class="faq-item__summary-meta">
                 <span class="checklist-item__tag checklist-item__tag--essential">Preparação</span>
                 <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </span>
             </summary>
             <div class="faq-item__content">
               <p class="faq-item__text">
                 Para brasileiros neste roteiro nacional, a MSC aceita RG, CNH, passaporte e outros documentos civis
                 admitidos em sua regra oficial, com identificação válida e foto reconhecível. Não existe neste guia uma
-                exigência de RG emitido há menos de dez anos. A CNH digital deve ser aberta no aplicativo oficial; print,
+                exigência de RG emitido há menos de dez anos. A CNH digital deve ser aberta no aplicativo oficial;
+                print,
                 foto e cópia não substituem o documento. Prefira levar também o documento físico e deixe voucher e
                 identificação à mão.
               </p>
@@ -1276,16 +1371,20 @@
           <!-- O04 -->
           <details class="faq-item" id="faq-o04" data-category="preparacao">
             <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">Quais documentos preciso para menores ou passageiros estrangeiros?</span>
+              <span class="faq-item__summary-title">Quais documentos preciso para menores ou passageiros
+                estrangeiros?</span>
               <span class="faq-item__summary-meta">
                 <span class="checklist-item__tag checklist-item__tag--conditional">Preparação</span>
                 <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </span>
             </summary>
             <div class="faq-item__content">
               <p class="faq-item__text">
-                Confirme com a Royal Trip a documentação e as autorizações aplicáveis conforme a idade, os responsáveis que
+                Confirme com a Royal Trip a documentação e as autorizações aplicáveis conforme a idade, os responsáveis
+                que
                 acompanham o menor, a nacionalidade e a residência do passageiro. Peça o modelo correto quando houver
                 autorização necessária e providencie tudo antes da viagem. Não envie documentos pessoais pelo formulário
                 público de dúvidas.
@@ -1299,16 +1398,20 @@
           <!-- O05 -->
           <details class="faq-item" id="faq-o05" data-category="preparacao">
             <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">Estou gestante: que providências e atestado devo encaminhar à agência?</span>
+              <span class="faq-item__summary-title">Estou gestante: que providências e atestado devo encaminhar à
+                agência?</span>
               <span class="faq-item__summary-meta">
                 <span class="checklist-item__tag checklist-item__tag--conditional">Preparação</span>
                 <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </span>
             </summary>
             <div class="faq-item__content">
               <p class="faq-item__text">
-                A MSC não permite a viagem se a gestação atingir 24 semanas em qualquer momento do cruzeiro. Abaixo desse
+                A MSC não permite a viagem se a gestação atingir 24 semanas em qualquer momento do cruzeiro. Abaixo
+                desse
                 limite, exige atestado de aptidão para viajar e gestação de baixo risco, com idade gestacional, data
                 prevista do parto, CRM, assinatura e carimbo. Avise a Royal Trip com antecedência para encaminhar a
                 documentação e avaliar sua reserva.
@@ -1326,13 +1429,17 @@
               <span class="faq-item__summary-meta">
                 <span class="checklist-item__tag checklist-item__tag--conditional">Preparação</span>
                 <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </span>
             </summary>
             <div class="faq-item__content">
               <p class="faq-item__text">
-                Sim. Todos os passageiros, inclusive bebês, precisam constar na reserva da cabine. O minicruzeiro permite
-                a participação de bebês conforme as regras MSC para essa duração. Confirme tarifas, taxas, disponibilidade
+                Sim. Todos os passageiros, inclusive bebês, precisam constar na reserva da cabine. O minicruzeiro
+                permite
+                a participação de bebês conforme as regras MSC para essa duração. Confirme tarifas, taxas,
+                disponibilidade
                 de berço e demais condições com a Royal Trip; não presuma gratuidade ou uma tarifa automática por idade.
               </p>
               <div class="faq-item__meta">
@@ -1348,14 +1455,17 @@
               <span class="faq-item__summary-meta">
                 <span class="checklist-item__tag checklist-item__tag--essential">Preparação</span>
                 <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </span>
             </summary>
             <div class="faq-item__content">
               <p class="faq-item__text">
                 Confira com a Royal Trip e a MSC as exigências sanitárias vigentes para a sua saída. Não use as antigas
                 regras de duas doses ou teste de antígeno como instrução atual deste guia. Requisitos podem mudar por
-                situação sanitária, destino e determinação das autoridades; siga a orientação oficial recebida para o seu
+                situação sanitária, destino e determinação das autoridades; siga a orientação oficial recebida para o
+                seu
                 embarque.
               </p>
               <div class="faq-item__meta">
@@ -1371,12 +1481,15 @@
               <span class="faq-item__summary-meta">
                 <span class="checklist-item__tag checklist-item__tag--essential">Preparação</span>
                 <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </span>
             </summary>
             <div class="faq-item__content">
               <p class="faq-item__text">
-                Por pessoa: duas malas de até 23 kg cada, com até 90 × 75 × 43 cm, e duas peças de mão de até 10 kg cada,
+                Por pessoa: duas malas de até 23 kg cada, com até 90 × 75 × 43 cm, e duas peças de mão de até 10 kg
+                cada,
                 com até 56 × 45 × 25 cm. Por cabine, o total não pode exceder 100 kg e/ou oito volumes. Confira também o
                 bilhete e os limites próprios do avião e do transporte terrestre.
               </p>
@@ -1393,12 +1506,15 @@
               <span class="faq-item__summary-meta">
                 <span class="checklist-item__tag checklist-item__tag--essential">Preparação</span>
                 <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </span>
             </summary>
             <div class="faq-item__content">
               <p class="faq-item__text">
-                Coloque as etiquetas recebidas da agência nas malas despachadas e siga a orientação da equipe no terminal.
+                Coloque as etiquetas recebidas da agência nas malas despachadas e siga a orientação da equipe no
+                terminal.
                 Mantenha documentos, itens de valor, medicamentos e itens essenciais na bagagem de mão: as malas podem
                 chegar à cabine mais tarde.
               </p>
@@ -1415,15 +1531,19 @@
               <span class="faq-item__summary-meta">
                 <span class="checklist-item__tag checklist-item__tag--essential">Preparação</span>
                 <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </span>
             </summary>
             <div class="faq-item__content">
               <p class="faq-item__text">
-                A MSC proíbe armas, drogas ilegais, materiais inflamáveis e aparelhos de aquecimento como ferro de passar.
+                A MSC proíbe armas, drogas ilegais, materiais inflamáveis e aparelhos de aquecimento como ferro de
+                passar.
                 Secadores e chapinhas são permitidos. Drones podem ser transportados guardados na cabine, mas seu uso a
                 bordo é proibido; em terra há regras locais. Para alimentos, a MSC admite a exceção de secos
-                industrializados e embalados; consulte a lista oficial completa e as condições para necessidades especiais.
+                industrializados e embalados; consulte a lista oficial completa e as condições para necessidades
+                especiais.
               </p>
               <div class="faq-item__meta">
                 <span>Fonte: MSC Bagagem [S01]</span>
@@ -1438,12 +1558,15 @@
               <span class="faq-item__summary-meta">
                 <span class="checklist-item__tag checklist-item__tag--recommended">Preparação</span>
                 <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </span>
             </summary>
             <div class="faq-item__content">
               <p class="faq-item__text">
-                Na live foram informados roupa de cama, toalhas, sabonete líquido, shampoo, secador, TV, ar-condicionado e
+                Na live foram informados roupa de cama, toalhas, sabonete líquido, shampoo, secador, TV, ar-condicionado
+                e
                 cofre. Leve seus itens pessoais de higiene, inclusive escova, pasta de dente e condicionador, além de
                 protetor solar e eventual adaptador de tomada compatível. Confira equipamentos e amenidades da categoria
                 reservada com a agência. O frigobar não garante refrigeração adequada para medicamentos.
@@ -1461,7 +1584,9 @@
               <span class="faq-item__summary-meta">
                 <span class="checklist-item__tag checklist-item__tag--essential">Chegada</span>
                 <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </span>
             </summary>
             <div class="faq-item__content">
@@ -1473,7 +1598,8 @@
               </p>
               <p class="faq-item__text">
                 O ônibus 1 está confirmado. O ônibus 2 e eventuais adicionais dependem do mínimo de passageiros; se ele
-                não for atingido, a operação prevê devolução integral via Pix. O retorno do Porto de Santos, em 23/11, está
+                não for atingido, a operação prevê devolução integral via Pix. O retorno do Porto de Santos, em 23/11,
+                está
                 previsto para 10h30. Consulte as condições e a disponibilidade atual na página oficial do fretado.
               </p>
               <div class="faq-item__meta">
@@ -1489,14 +1615,18 @@
               <span class="faq-item__summary-meta">
                 <span class="checklist-item__tag checklist-item__tag--essential">Chegada</span>
                 <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </span>
             </summary>
             <div class="faq-item__content">
               <p class="faq-item__text">
-                O fretado KOB parte da Barra Funda, não dos aeroportos. Na live, Guarulhos foi sugerido para quem depende
+                O fretado KOB parte da Barra Funda, não dos aeroportos. Na live, Guarulhos foi sugerido para quem
+                depende
                 de transporte rodoviário até Santos; Congonhas e Viracopos também foram comentados. Antes de comprar ou
-                organizar seu trajeto, consulte a companhia aérea e a Viação Cometa sobre rotas, destino final, horários e
+                organizar seu trajeto, consulte a companhia aérea e a Viação Cometa sobre rotas, destino final, horários
+                e
                 disponibilidade para a data. Se chegar à Rodoviária de Santos, programe um deslocamento adicional até o
                 Concais. Reserve margem para trânsito, filas e o feriado; os tempos da live são estimativas.
               </p>
@@ -1513,12 +1643,15 @@
               <span class="faq-item__summary-meta">
                 <span class="checklist-item__tag checklist-item__tag--conditional">Chegada</span>
                 <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </span>
             </summary>
             <div class="faq-item__content">
               <p class="faq-item__text">
-                Na live foi indicado o estacionamento oficial do Concais, com reserva antecipada. Confira disponibilidade,
+                Na live foi indicado o estacionamento oficial do Concais, com reserva antecipada. Confira
+                disponibilidade,
                 tarifa, endereço de acesso e instruções diretamente com o terminal antes de sair (concais.com.br). Ao
                 chegar, siga a indicação da equipe para o despacho de malas.
               </p>
@@ -1535,13 +1668,16 @@
               <span class="faq-item__summary-meta">
                 <span class="checklist-item__tag checklist-item__tag--recommended">Chegada</span>
                 <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </span>
             </summary>
             <div class="faq-item__content">
               <p class="faq-item__text">
                 As cabines podem ainda estar em preparação. Na live, a liberação foi estimada por volta de 13h/14h,
-                mediante anúncio da MSC. Enquanto espera, consulte as opções do buffet e mantenha com você o que precisar
+                mediante anúncio da MSC. Enquanto espera, consulte as opções do buffet e mantenha com você o que
+                precisar
                 até a chegada das malas. Siga o anúncio efetivo do navio.
               </p>
               <div class="faq-item__meta">
@@ -1557,7 +1693,9 @@
               <span class="faq-item__summary-meta">
                 <span class="checklist-item__tag checklist-item__tag--essential">Chegada</span>
                 <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </span>
             </summary>
             <div class="faq-item__content">
@@ -1579,13 +1717,16 @@
               <span class="faq-item__summary-meta">
                 <span class="checklist-item__tag checklist-item__tag--essential">Jogos</span>
                 <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </span>
             </summary>
             <div class="faq-item__content">
               <p class="faq-item__text">
                 O encontro e a retirada dos kits foram previstos para 16h/16h30 do primeiro dia na Crystal Lounge; a
-                organização confirmará sala e horário. O kit anunciado inclui crachá/cordão, pulseira, moeda comemorativa
+                organização confirmará sala e horário. O kit anunciado inclui crachá/cordão, pulseira, moeda
+                comemorativa
                 colecionável e sacola reforçada da Fácil Shopping. Confira os avisos antes de se dirigir ao encontro.
               </p>
               <div class="faq-item__meta">
@@ -1601,13 +1742,17 @@
               <span class="faq-item__summary-meta">
                 <span class="checklist-item__tag checklist-item__tag--essential">Jogos</span>
                 <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </span>
             </summary>
             <div class="faq-item__content">
               <p class="faq-item__text">
-                Procure o mural na entrada da sala de jogos e acompanhe o grupo oficial do evento. A programação diária da
-                MSC informa os serviços e atividades do navio. Consulte esses canais para mudanças e confirmações; o guia
+                Procure o mural na entrada da sala de jogos e acompanhe o grupo oficial do evento. A programação diária
+                da
+                MSC informa os serviços e atividades do navio. Consulte esses canais para mudanças e confirmações; o
+                guia
                 reúne a preparação e não substitui os avisos a bordo.
               </p>
               <div class="faq-item__meta">
@@ -1619,17 +1764,22 @@
           <!-- O19 -->
           <details class="faq-item" id="faq-o19" data-category="jogos">
             <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">Como confirmo a sala, os horários das mesas e o limite de devolução no domingo?</span>
+              <span class="faq-item__summary-title">Como confirmo a sala, os horários das mesas e o limite de devolução
+                no domingo?</span>
               <span class="faq-item__summary-meta">
                 <span class="checklist-item__tag checklist-item__tag--essential">Jogos</span>
                 <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </span>
             </summary>
             <div class="faq-item__content">
               <p class="faq-item__text">
-                A Crystal Lounge é o espaço previsto para o KOB, sujeito à confirmação da organização com a MSC. A previsão
-                é de horários amplos para jogar durante o dia e à noite, conforme a programação. As mesas têm uso livre e
+                A Crystal Lounge é o espaço previsto para o KOB, sujeito à confirmação da organização com a MSC. A
+                previsão
+                é de horários amplos para jogar durante o dia e à noite, conforme a programação. As mesas têm uso livre
+                e
                 rotativo. No domingo, a organização anunciará o limite para devolver o acervo e recolher as mesas para o
                 inventário final.
               </p>
@@ -1642,17 +1792,22 @@
           <!-- O20 -->
           <details class="faq-item" id="faq-o20" data-category="jogos">
             <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">Como registro minha participação no Guru e encontro jogos e monitores?</span>
+              <span class="faq-item__summary-title">Como registro minha participação no Guru e encontro jogos e
+                monitores?</span>
               <span class="faq-item__summary-meta">
                 <span class="checklist-item__tag checklist-item__tag--recommended">Jogos</span>
                 <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </span>
             </summary>
             <div class="faq-item__content">
               <p class="faq-item__text">
-                O Board Game Guru é o app dos jogos e sorteios do evento, disponível para Android e iOS. Abra a página do
-                Kriativos On Board e marque ‘Eu vou’. Você também pode consultar títulos, filtros, monitores que explicam
+                O Board Game Guru é o app dos jogos e sorteios do evento, disponível para Android e iOS. Abra a página
+                do
+                Kriativos On Board e marque ‘Eu vou’. Você também pode consultar títulos, filtros, monitores que
+                explicam
                 regras e jogos compartilhados pelos participantes. O site oficial do app é boardgameguru.app.
               </p>
               <div class="faq-item__meta">
@@ -1668,12 +1823,15 @@
               <span class="faq-item__summary-meta">
                 <span class="checklist-item__tag checklist-item__tag--recommended">Jogos</span>
                 <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </span>
             </summary>
             <div class="faq-item__content">
               <p class="faq-item__text">
-                Procure a equipe da Encounter para solicitar a inclusão manual na lista e confirmar seu registro. Na live,
+                Procure a equipe da Encounter para solicitar a inclusão manual na lista e confirmar seu registro. Na
+                live,
                 marcar ‘Eu vou’ ou registrar a participação com os monitores foi indicado como etapa para concorrer aos
                 sorteios. Acompanhe a divulgação das regras e horários pela organização.
               </p>
@@ -1686,18 +1844,23 @@
           <!-- O22 -->
           <details class="faq-item" id="faq-o22" data-category="jogos">
             <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">Posso levar jogos e protótipos, favoritar títulos e compartilhar meu acervo?</span>
+              <span class="faq-item__summary-title">Posso levar jogos e protótipos, favoritar títulos e compartilhar meu
+                acervo?</span>
               <span class="faq-item__summary-meta">
                 <span class="checklist-item__tag checklist-item__tag--conditional">Jogos</span>
                 <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </span>
             </summary>
             <div class="faq-item__content">
               <p class="faq-item__text">
                 Sim. Cadastre no app os jogos que pretende levar, inclusive por importação da Ludopedia ou
-                BoardGameGeek, e favorite os títulos que quer jogar para ajudar no planejamento da monitoria. Identifique
-                seus jogos e respeite a franquia de bagagem. A live anunciou premiações e surpresas para quem compartilhar
+                BoardGameGeek, e favorite os títulos que quer jogar para ajudar no planejamento da monitoria.
+                Identifique
+                seus jogos e respeite a franquia de bagagem. A live anunciou premiações e surpresas para quem
+                compartilhar
                 mais jogos; os critérios serão divulgados pela organização. Protótipos podem ser compartilhados, mas uma
                 atividade formal depende da programação.
               </p>
@@ -1714,13 +1877,17 @@
               <span class="faq-item__summary-meta">
                 <span class="checklist-item__tag checklist-item__tag--essential">Jogos</span>
                 <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </span>
             </summary>
             <div class="faq-item__content">
               <p class="faq-item__text">
-                Siga as instruções dos monitores para retirada, cuidado e devolução. Ao levar um jogo do acervo para fora
-                da sala, registre nome e cabine com a equipe para conferência; o título fica sob sua responsabilidade. Use
+                Siga as instruções dos monitores para retirada, cuidado e devolução. Ao levar um jogo do acervo para
+                fora
+                da sala, registre nome e cabine com a equipe para conferência; o título fica sob sua responsabilidade.
+                Use
                 áreas permitidas e não ocupe mesas dos restaurantes com jogos. Devolva tudo no prazo anunciado para o
                 inventário.
               </p>
@@ -1733,16 +1900,20 @@
           <!-- O24 -->
           <details class="faq-item" id="faq-o24" data-category="jogos">
             <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">Já reservei e quero entrar em uma mesa: como procuro monitoria e atividades?</span>
+              <span class="faq-item__summary-title">Já reservei e quero entrar em uma mesa: como procuro monitoria e
+                atividades?</span>
               <span class="faq-item__summary-meta">
                 <span class="checklist-item__tag checklist-item__tag--recommended">Jogos</span>
                 <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </span>
             </summary>
             <div class="faq-item__content">
               <p class="faq-item__text">
-                Procure os monitores da Encounter para escolher jogos, aprender regras e encontrar pessoas para jogar. No
+                Procure os monitores da Encounter para escolher jogos, aprender regras e encontrar pessoas para jogar.
+                No
                 Guru, você também identifica quem conhece cada título. Consulte o mural para atividades e torneios que
                 forem confirmados. Não é necessário chegar com uma mesa formada.
               </p>
@@ -1759,13 +1930,16 @@
               <span class="faq-item__summary-meta">
                 <span class="checklist-item__tag checklist-item__tag--recommended">Vida a bordo</span>
                 <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </span>
             </summary>
             <div class="faq-item__content">
               <p class="faq-item__text">
                 Leve roupas e calçados confortáveis para o dia e as jogatinas, além de um agasalho leve para o vento e o
-                ar-condicionado. A live orientou traje casual arrumado/esporte fino para o jantar e destacou a restrição a
+                ar-condicionado. A live orientou traje casual arrumado/esporte fino para o jantar e destacou a restrição
+                a
                 regata e chinelo de dedo no restaurante principal. Confira a orientação do navio para cada ambiente e
                 noite. O guia não exige terno ou vestido de gala.
               </p>
@@ -1778,17 +1952,22 @@
           <!-- O26 -->
           <details class="faq-item" id="faq-o26" data-category="vida-a-bordo">
             <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">Como me preparo para os temas e confiro local e horário das festas?</span>
+              <span class="faq-item__summary-title">Como me preparo para os temas e confiro local e horário das
+                festas?</span>
               <span class="faq-item__summary-meta">
                 <span class="checklist-item__tag checklist-item__tag--optional">Vida a bordo</span>
                 <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </span>
             </summary>
             <div class="faq-item__content">
               <p class="faq-item__text">
-                A Festa do Branco foi anunciada na live; leve uma peça branca se quiser participar. Para o encerramento do
-                KOB no domingo à noite, o tema anunciado é Anos 80, com peças retrô, neon e adereços. Os trajes temáticos
+                A Festa do Branco foi anunciada na live; leve uma peça branca se quiser participar. Para o encerramento
+                do
+                KOB no domingo à noite, o tema anunciado é Anos 80, com peças retrô, neon e adereços. Os trajes
+                temáticos
                 são opcionais. Confirme horários e locais na programação; espaço privativo para uma festa à fantasia
                 depende de autorização do navio.
               </p>
@@ -1801,11 +1980,14 @@
           <!-- O27 -->
           <details class="faq-item" id="faq-o27" data-category="vida-a-bordo">
             <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">Onde consulto os horários das refeições e as alternativas ao meu turno de jantar?</span>
+              <span class="faq-item__summary-title">Onde consulto os horários das refeições e as alternativas ao meu
+                turno de jantar?</span>
               <span class="faq-item__summary-meta">
                 <span class="checklist-item__tag checklist-item__tag--essential">Vida a bordo</span>
                 <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </span>
             </summary>
             <div class="faq-item__content">
@@ -1828,14 +2010,19 @@
               <span class="faq-item__summary-meta">
                 <span class="checklist-item__tag checklist-item__tag--essential">Vida a bordo</span>
                 <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </span>
             </summary>
             <div class="faq-item__content">
               <p class="faq-item__text">
-                Consulte no cartão de bordo o turno e a mesa atribuídos para o restaurante principal. Chegue no horário: a
-                tolerância de 15 minutos explicada na live se refere aos pedidos da cozinha. Se perder o turno, confira as
-                alternativas do buffet e da pizzaria na programação diária. Os horários citados na live são exemplos e não
+                Consulte no cartão de bordo o turno e a mesa atribuídos para o restaurante principal. Chegue no horário:
+                a
+                tolerância de 15 minutos explicada na live se refere aos pedidos da cozinha. Se perder o turno, confira
+                as
+                alternativas do buffet e da pizzaria na programação diária. Os horários citados na live são exemplos e
+                não
                 substituem o turno da sua reserva.
               </p>
               <div class="faq-item__meta">
@@ -1851,7 +2038,9 @@
               <span class="faq-item__summary-meta">
                 <span class="checklist-item__tag checklist-item__tag--recommended">Vida a bordo</span>
                 <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </span>
             </summary>
             <div class="faq-item__content">
@@ -1869,19 +2058,24 @@
           <!-- O30 -->
           <details class="faq-item" id="faq-o30" data-category="vida-a-bordo">
             <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">Já escolhi um pacote: como confiro as regras da cabine e o limite diário?</span>
+              <span class="faq-item__summary-title">Já escolhi um pacote: como confiro as regras da cabine e o limite
+                diário?</span>
               <span class="faq-item__summary-meta">
                 <span class="checklist-item__tag checklist-item__tag--conditional">Vida a bordo</span>
                 <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </span>
             </summary>
             <div class="faq-item__content">
               <p class="faq-item__text">
                 É opcional. As opções mencionadas são Não Alcoólico, Easy e Premium Extra; confirme os pacotes vigentes
-                para sua saída. Se um adulto contratar, os demais adultos da cabine devem seguir a regra do mesmo pacote;
+                para sua saída. Se um adulto contratar, os demais adultos da cabine devem seguir a regra do mesmo
+                pacote;
                 crianças e adolescentes seguem a modalidade não alcoólica aplicável à idade, com exceções para bebês
-                conforme a MSC. Easy e Premium Extra incluem até 15 bebidas alcoólicas por pessoa no período das 6h às 6h
+                conforme a MSC. Easy e Premium Extra incluem até 15 bebidas alcoólicas por pessoa no período das 6h às
+                6h
                 seguintes. Confirme preço, prazo, descontos e parcelamento com a Royal Trip.
               </p>
               <div class="faq-item__meta">
@@ -1897,7 +2091,9 @@
               <span class="faq-item__summary-meta">
                 <span class="checklist-item__tag checklist-item__tag--conditional">Vida a bordo</span>
                 <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </span>
             </summary>
             <div class="faq-item__content">
@@ -1915,16 +2111,20 @@
           <!-- O32 -->
           <details class="faq-item" id="faq-o32" data-category="vida-a-bordo">
             <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">Como compro internet? Posso transferir ou compartilhar o acesso? O celular funciona em Búzios?</span>
+              <span class="faq-item__summary-title">Como compro internet? Posso transferir ou compartilhar o acesso? O
+                celular funciona em Búzios?</span>
               <span class="faq-item__summary-meta">
                 <span class="checklist-item__tag checklist-item__tag--conditional">Vida a bordo</span>
                 <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </span>
             </summary>
             <div class="faq-item__content">
               <p class="faq-item__text">
-                A internet externa é contratada à parte. Os pacotes MSC são pessoais e vinculados aos aparelhos ativados;
+                A internet externa é contratada à parte. Os pacotes MSC são pessoais e vinculados aos aparelhos
+                ativados;
                 escolha o número de dispositivos que pretende usar, pois não é permitido substituir o aparelho já
                 registrado. Não conte com transferir ou compartilhar um pacote individual. Em Búzios pode haver sinal de
                 operadora brasileira, conforme cobertura e localização. Confira o dia da escala na sua reserva e as
@@ -1943,14 +2143,18 @@
               <span class="faq-item__summary-meta">
                 <span class="checklist-item__tag checklist-item__tag--recommended">Vida a bordo</span>
                 <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </span>
             </summary>
             <div class="faq-item__content">
               <p class="faq-item__text">
-                Conecte-se ao Wi-Fi interno do navio para usar as funcionalidades disponíveis do MSC for Me. O chat interno
+                Conecte-se ao Wi-Fi interno do navio para usar as funcionalidades disponíveis do MSC for Me. O chat
+                interno
                 não exige pacote de internet externa; a MSC o informa para hóspedes acima de 16 anos. A live sugeriu
-                acrescentar ‘Kriativo’ ao nome ou apelido para facilitar encontrar amigos. Verifique as funções disponíveis
+                acrescentar ‘Kriativo’ ao nome ou apelido para facilitar encontrar amigos. Verifique as funções
+                disponíveis
                 no MSC Musica e siga as instruções de bordo.
               </p>
               <div class="faq-item__meta">
@@ -1962,19 +2166,25 @@
           <!-- O34 -->
           <details class="faq-item" id="faq-o34" data-category="vida-a-bordo">
             <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">Como pago os gastos a bordo? Wise/Nomad e parcelamento são aceitos?</span>
+              <span class="faq-item__summary-title">Como pago os gastos a bordo? Wise/Nomad e parcelamento são
+                aceitos?</span>
               <span class="faq-item__summary-meta">
                 <span class="checklist-item__tag checklist-item__tag--conditional">Vida a bordo</span>
                 <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </span>
             </summary>
             <div class="faq-item__content">
               <p class="faq-item__text">
-                As compras a bordo são registradas na conta associada ao Cruise Card. Confirme com a MSC/recepção os meios
+                As compras a bordo são registradas na conta associada ao Cruise Card. Confirme com a MSC/recepção os
+                meios
                 aceitos para vincular ou liquidar essa conta, a moeda e eventuais depósitos. Se pretende usar cartão
-                internacional, verifique habilitação e aceitação e leve o cartão físico. Wise, Nomad e parcelamento foram
-                citados na live, mas disponibilidade, critérios e condições devem ser confirmados antes de contar com eles.
+                internacional, verifique habilitação e aceitação e leve o cartão físico. Wise, Nomad e parcelamento
+                foram
+                citados na live, mas disponibilidade, critérios e condições devem ser confirmados antes de contar com
+                eles.
                 Preço da cabine em reais e moeda de gastos a bordo são assuntos distintos.
               </p>
               <div class="faq-item__meta">
@@ -1986,16 +2196,20 @@
           <!-- O35 -->
           <details class="faq-item" id="faq-o35" data-category="vida-a-bordo">
             <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">Como confiro a operação e reservo restaurantes de especialidades nesta saída?</span>
+              <span class="faq-item__summary-title">Como confiro a operação e reservo restaurantes de especialidades
+                nesta saída?</span>
               <span class="faq-item__summary-meta">
                 <span class="checklist-item__tag checklist-item__tag--optional">Vida a bordo</span>
                 <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </span>
             </summary>
             <div class="faq-item__content">
               <p class="faq-item__text">
-                Sim, são serviços à parte da pensão completa. A live citou Kaito Sushi Bar e Butcher’s Cut; a MSC lista o
+                Sim, são serviços à parte da pensão completa. A live citou Kaito Sushi Bar e Butcher’s Cut; a MSC lista
+                o
                 Butcher’s Cut no MSC Musica com início previsto em novembro de 2026. Confirme quais restaurantes estarão
                 operando na sua saída, como reservar e os preços a bordo.
               </p>
@@ -2008,17 +2222,21 @@
           <!-- O36 -->
           <details class="faq-item" id="faq-o36" data-category="vida-a-bordo">
             <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">Que informações devo conferir na oferta e na apólice do seguro?</span>
+              <span class="faq-item__summary-title">Que informações devo conferir na oferta e na apólice do
+                seguro?</span>
               <span class="faq-item__summary-meta">
                 <span class="checklist-item__tag checklist-item__tag--conditional">Vida a bordo</span>
                 <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </span>
             </summary>
             <div class="faq-item__content">
               <p class="faq-item__text">
                 A live tratou o seguro como opcional e recomendado para imprevistos e despesas médicas particulares. Foi
-                citado preço aproximado de R$112 por pessoa e uma condição de cancelamento com 29 motivos e contratação até
+                citado preço aproximado de R$112 por pessoa e uma condição de cancelamento com 29 motivos e contratação
+                até
                 vinte dias antes do embarque. Peça à Royal Trip a apólice e a oferta atuais e confirme preço, prazo,
                 coberturas, exclusões, moeda e assistência antes de contratar.
               </p>
@@ -2031,17 +2249,22 @@
           <!-- O37 -->
           <details class="faq-item" id="faq-o37" data-category="vida-a-bordo">
             <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">Meu medicamento precisa de refrigeração ou preciso de uma adaptação. O que faço?</span>
+              <span class="faq-item__summary-title">Meu medicamento precisa de refrigeração ou preciso de uma adaptação.
+                O que faço?</span>
               <span class="faq-item__summary-meta">
                 <span class="checklist-item__tag checklist-item__tag--conditional">Vida a bordo</span>
                 <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </span>
             </summary>
             <div class="faq-item__content">
               <p class="faq-item__text">
-                Avise a Royal Trip com antecedência, por canal privado, para encaminhar sua necessidade à MSC e confirmar
-                as providências. Não presuma que o frigobar da cabine atende à temperatura exigida pelo medicamento. Leve
+                Avise a Royal Trip com antecedência, por canal privado, para encaminhar sua necessidade à MSC e
+                confirmar
+                as providências. Não presuma que o frigobar da cabine atende à temperatura exigida pelo medicamento.
+                Leve
                 seus medicamentos e orientações pessoais na bagagem de mão. Não envie receita, laudo ou diagnóstico no
                 formulário geral de dúvidas.
               </p>
@@ -2054,16 +2277,20 @@
           <!-- O38 -->
           <details class="faq-item" id="faq-o38" data-category="vida-a-bordo">
             <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">Como funciona o clubinho? A equipe troca fraldas ou fornece refeições?</span>
+              <span class="faq-item__summary-title">Como funciona o clubinho? A equipe troca fraldas ou fornece
+                refeições?</span>
               <span class="faq-item__summary-meta">
                 <span class="checklist-item__tag checklist-item__tag--conditional">Vida a bordo</span>
                 <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </span>
             </summary>
             <div class="faq-item__content">
               <p class="faq-item__text">
-                A MSC oferece atividades infantis por faixa etária; horários e inscrição devem ser conferidos a bordo. Na
+                A MSC oferece atividades infantis por faixa etária; horários e inscrição devem ser conferidos a bordo.
+                Na
                 live, o Doremi Club foi descrito com horário aproximado de 9h às 23h e orientação de que crianças com
                 fraldas ficam acompanhadas, pois a recreação citada não inclui troca de fraldas nem refeições. Confirme
                 essas condições com a equipe infantil do MSC Musica: serviços como Baby Care têm regras próprias e não
@@ -2082,13 +2309,16 @@
               <span class="faq-item__summary-meta">
                 <span class="checklist-item__tag checklist-item__tag--essential">Desembarque</span>
                 <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </span>
             </summary>
             <div class="faq-item__content">
               <p class="faq-item__text">
                 A cabine precisa ser liberada cedo para preparar a próxima viagem. Siga o horário informado pela MSC a
-                bordo; a menção a ‘umas 10h’ na live foi aproximada e não garante uso da cabine até esse horário. Organize
+                bordo; a menção a ‘umas 10h’ na live foi aproximada e não garante uso da cabine até esse horário.
+                Organize
                 café, bagagem e documentos para o desembarque.
               </p>
               <div class="faq-item__meta">
@@ -2104,7 +2334,9 @@
               <span class="faq-item__summary-meta">
                 <span class="checklist-item__tag checklist-item__tag--essential">Desembarque</span>
                 <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </span>
             </summary>
             <div class="faq-item__content">
@@ -2122,19 +2354,24 @@
           <!-- O41 -->
           <details class="faq-item" id="faq-o41" data-category="desembarque">
             <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">Todos os acompanhantes precisam estar no grupo? A quem recorro?</span>
+              <span class="faq-item__summary-title">Todos os acompanhantes precisam estar no grupo? A quem
+                recorro?</span>
               <span class="faq-item__summary-meta">
                 <span class="checklist-item__tag checklist-item__tag--recommended">Desembarque</span>
                 <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </span>
             </summary>
             <div class="faq-item__content">
               <p class="faq-item__text">
-                A organização pediu que acompanhantes e familiares da cabine também sejam incluídos no grupo oficial para
+                A organização pediu que acompanhantes e familiares da cabine também sejam incluídos no grupo oficial
+                para
                 receber os avisos. Solicite a inclusão ao responsável/organização pelo canal já informado; o grupo do
                 fretado é outro canal e se destina a quem contratou esse transporte. Para voucher, dados da cabine e
-                contratação, fale com Júnior/Royal Trip no privado. Para jogos, programação e kit, procure a organização e
+                contratação, fale com Júnior/Royal Trip no privado. Para jogos, programação e kit, procure a organização
+                e
                 os monitores.
               </p>
               <div class="faq-item__meta">
@@ -2150,7 +2387,9 @@
               <span class="faq-item__summary-meta">
                 <span class="checklist-item__tag checklist-item__tag--essential">Vida a bordo</span>
                 <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </span>
             </summary>
             <div class="faq-item__content">
@@ -2169,72 +2408,11 @@
       </div>
     </section>
 
-    <!-- LIVE POR ASSUNTO (#17) -->
-    <section class="guide-section" id="live" aria-labelledby="live-title">
-      <div class="guide-container">
-        <header class="guide-section__header">
-          <span class="guide-section__badge">Capítulo VI // Briefing em Vídeo da Capitania</span>
-          <h2 class="guide-section__title" id="live-title">Reveja a live por assunto</h2>
-          <p class="guide-section__intro">
-            Escolha um assunto para assistir ao trecho correspondente. As orientações escritas deste guia incluem as
-            correções e regras oficiais conferidas após a live.
-          </p>
-        </header>
-
-        <div class="live-wrapper">
-          <!-- Player de Vídeo com Fachada -->
-          <div class="live-player-card">
-            <div class="live-player-facade" id="livePlayerFacade">
-              <img class="facade-bg" src="/assets/images/hero/hero-fallback.webp" alt="" width="640" height="360"
-                loading="lazy">
-              <div class="live-player-facade__content">
-                <p class="live-player-facade__title">Assistir à live no YouTube</p>
-                <p class="live-player-facade__notice">
-                  Ao carregar o vídeo, você se conecta aos servidores do YouTube. Consulte as preferências de
-                  privacidade.
-                </p>
-                <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
-                  <button type="button" class="btn-guide btn-guide--primary" id="loadLivePlayerBtn">
-                    Carregar vídeo
-                  </button>
-                  <a class="btn-guide btn-guide--ghost" href="https://www.youtube.com/live/AtIvlc62KgI" target="_blank"
-                    rel="noopener noreferrer">
-                    Abrir no YouTube
-                  </a>
-                </div>
-              </div>
-            </div>
-            <div class="live-player-iframe-container" id="livePlayerContainer"></div>
-          </div>
-
-          <!-- Lista de Capítulos com Busca -->
-          <div class="live-chapters-card">
-            <div class="live-chapters-search">
-              <input type="search" class="faq-search-input" id="liveSearchInput"
-                placeholder="Buscar assunto na live (ex.: voucher, mala, jantar, jogos)..."
-                aria-label="Buscar assunto nos capítulos da live">
-            </div>
-
-            <p style="font-size:0.82rem;color:var(--ink-invert-soft);margin-bottom:12px;">
-              Clique em um capítulo para posicionar o vídeo:
-            </p>
-
-            <ul class="live-chapters-list" id="liveChaptersList" aria-label="Capítulos da live de embarque">
-              <!-- Renderizado dinamicamente via JS com fallback estático acessível -->
-            </ul>
-            <p id="liveEmptyChaptersMsg" style="display:none;color:var(--ink-invert-soft);padding:16px 0;">
-              Nenhum assunto encontrado. Tente outro termo ou consulte as <a href="#duvidas">dúvidas do guia</a>.
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-
     <!-- ATENDIMENTO HUMANO & CONTATO (#21) -->
     <section class="guide-section" id="contato" aria-labelledby="contato-title">
       <div class="guide-container">
         <header class="guide-section__header">
-          <span class="guide-section__badge">Capítulo VII // Canal com o Comando KOB</span>
+          <span class="guide-section__badge">Canal com o Comando KOB</span>
           <h2 class="guide-section__title" id="contato-title">Fale com a equipe</h2>
           <p class="guide-section__intro">
             Para jogos, kit e programação, procure a organização. Para vouchers, dados da cabine, documentação e
@@ -2430,40 +2608,80 @@
   <!-- Barra Flutuante de Navegação Rápida (Floating Dock) -->
   <nav class="guide-quick-dock" aria-label="Navegação rápida pelo guia">
     <a href="#inicio" class="guide-quick-dock__item is-active" aria-label="Início">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round" aria-hidden="true">
+        <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+      </svg>
       <span>Início</span>
     </a>
+    <a href="#live" class="guide-quick-dock__item" aria-label="Gravação da Live de Embarque (03/10/2026)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round" aria-hidden="true">
+        <polygon points="23 7 16 12 23 17 23 7"></polygon>
+        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+      </svg>
+      <span>🔴 Live</span>
+    </a>
     <a href="#preparacao" class="guide-quick-dock__item" aria-label="Checklist de preparação">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round" aria-hidden="true">
+        <polyline points="9 11 12 14 22 4"></polyline>
+        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+      </svg>
       <span>Checklist</span>
     </a>
     <a href="#cronograma" class="guide-quick-dock__item" aria-label="Cronograma de etapas">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="10"></circle>
+        <polyline points="12 6 12 12 16 14"></polyline>
+      </svg>
       <span>Cronograma</span>
     </a>
     <a href="#transporte" class="guide-quick-dock__item" aria-label="Opções de transporte">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8" cy="17" r="1"></circle><circle cx="16" cy="17" r="1"></circle><path d="M7 13h10"></path></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round" aria-hidden="true">
+        <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+        <circle cx="8" cy="17" r="1"></circle>
+        <circle cx="16" cy="17" r="1"></circle>
+        <path d="M7 13h10"></path>
+      </svg>
       <span>Transporte</span>
     </a>
     <a href="#jogos" class="guide-quick-dock__item" aria-label="Espaço de jogos e regras">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 8h.01"></path><path d="M8 8h.01"></path><path d="M8 16h.01"></path><path d="M16 16h.01"></path><path d="M12 12h.01"></path></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round" aria-hidden="true">
+        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+        <path d="M16 8h.01"></path>
+        <path d="M8 8h.01"></path>
+        <path d="M8 16h.01"></path>
+        <path d="M16 16h.01"></path>
+        <path d="M12 12h.01"></path>
+      </svg>
       <span>Jogos</span>
     </a>
     <a href="#duvidas" class="guide-quick-dock__item" aria-label="Dúvidas e FAQ">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="10"></circle>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+      </svg>
       <span>Dúvidas</span>
     </a>
-    <a href="#live" class="guide-quick-dock__item" aria-label="Gravação da live">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
-      <span>Live</span>
-    </a>
+    <a href="#contato" class="guide-quick-dock__item" aria-label="Fale com a equipe">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round" aria-hidden="true">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+      </svg>
       <span>Contato</span>
     </a>
   </nav>
 
   <!-- Sidebar Retrátil do Checklist (Lateral Esquerda) -->
-  <button type="button" class="checklist-sidebar-toggle" id="checklistSidebarToggle"
-    aria-expanded="false" aria-controls="checklistSidebar" aria-label="Expandir Checklist de Bordo">
+  <button type="button" class="checklist-sidebar-toggle" id="checklistSidebarToggle" aria-expanded="false"
+    aria-controls="checklistSidebar" aria-label="Expandir Checklist de Bordo">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
       stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
       <polyline points="9 11 12 14 22 4"></polyline>
@@ -2475,10 +2693,11 @@
 
   <div class="checklist-sidebar-backdrop" id="checklistSidebarBackdrop" aria-hidden="true"></div>
 
-  <aside class="checklist-sidebar" id="checklistSidebar" role="complementary" aria-label="Checklist de Bordo" aria-hidden="true">
+  <aside class="checklist-sidebar" id="checklistSidebar" role="complementary" aria-label="Checklist de Bordo"
+    aria-hidden="true">
     <div class="checklist-sidebar__header">
       <div class="checklist-sidebar__title-wrap">
-        <span class="checklist-sidebar__tag">Expedição KOB 2026</span>
+        <span class="checklist-sidebar__tag">KOB 2026</span>
         <h3 class="checklist-sidebar__title">Checklist de Bordo</h3>
       </div>
       <button type="button" class="checklist-sidebar__close" id="checklistSidebarClose" aria-label="Recolher Checklist">
@@ -2513,6 +2732,65 @@
       <a href="#preparacao" class="checklist-sidebar__goto-btn" id="checklistSidebarGotoBtn">
         Ver Checklist Completo na Página
       </a>
+    </div>
+  </aside>
+
+  <!-- Modal da Live de Embarque (#17) -->
+  <aside class="guide-modal live-modal" id="liveModal" role="dialog" aria-modal="true" aria-labelledby="liveModalTitle"
+    aria-hidden="true">
+    <div class="live-modal__dialog">
+      <header class="live-modal__header">
+        <div class="live-modal__title-wrap">
+          <div class="live-modal__badge">
+            <span class="live-modal__badge-pulse" aria-hidden="true"></span>
+            <span>Live de Embarque (03/10/2026) · Gravação Completa</span>
+          </div>
+          <h3 class="live-modal__title" id="liveModalTitle">Live de Embarque · KOB 2026 &amp; MSC Musica</h3>
+        </div>
+        <button type="button" class="live-modal__close" id="liveModalCloseBtn" aria-label="Fechar vídeo da live">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </header>
+
+      <div class="live-modal__player-area">
+        <div class="live-modal__iframe-wrapper" id="liveModalIframeContainer">
+          <!-- Iframe injetado dinamicamente para preservar performance e pausar áudio ao fechar -->
+        </div>
+
+        <div class="live-modal__quick-topics">
+          <div class="live-modal__topics-label">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <span>Pular direto para um assunto no vídeo:</span>
+          </div>
+          <div class="live-modal__topics-pills">
+            <button type="button" class="live-modal__pill" data-modal-seek="833">Início da Live (13:53)</button>
+            <button type="button" class="live-modal__pill" data-modal-seek="1120">Vouchers &amp; Etiquetas
+              (18:40)</button>
+            <button type="button" class="live-modal__pill" data-modal-seek="1460">Documentos &amp; RG (24:20)</button>
+            <button type="button" class="live-modal__pill" data-modal-seek="1830">Malas &amp; Bagagem (30:30)</button>
+            <button type="button" class="live-modal__pill" data-modal-seek="2395">Ônibus Fretado (39:55)</button>
+            <button type="button" class="live-modal__pill" data-modal-seek="2900">Crystal Lounge (48:20)</button>
+            <button type="button" class="live-modal__pill" data-modal-seek="3400">Jantar &amp; Trajes (56:40)</button>
+            <button type="button" class="live-modal__pill" data-modal-seek="3980">Jogos &amp; Espaço KOB
+              (01:06:20)</button>
+            <button type="button" class="live-modal__pill" data-modal-seek="4700">Dúvidas Finais (01:18:20)</button>
+          </div>
+        </div>
+      </div>
+
+      <footer class="live-modal__footer">
+        <a href="#live" class="live-modal__goto-btn" id="liveModalGotoSectionBtn">
+          Ver todos os 28 capítulos detalhados no Manual
+        </a>
+      </footer>
     </div>
   </aside>
 </body>
