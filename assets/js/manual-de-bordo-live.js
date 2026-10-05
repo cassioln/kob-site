@@ -129,7 +129,7 @@ function initLive() {
     button.dataset.seconds = chapter.seconds;
     const time = document.createElement('span');
     time.className = 'live-chapter-item__time';
-    time.textContent = chapter.time.replace(/^00:/, '');
+    time.textContent = chapter.time;
     const title = document.createElement('span');
     title.className = 'live-chapter-item__title';
     title.textContent = chapter.titles[lang];

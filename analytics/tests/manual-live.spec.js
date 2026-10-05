@@ -117,6 +117,7 @@ test('Controles personalizados substituem os controles do YouTube e navegam entr
   await expect(page.locator('#liveCustomTopic')).toContainText('Boas-vindas');
   await expect(page.locator('#liveCurrentTime')).toHaveText('13:53');
   await expect(page.locator('#liveDuration')).toHaveText('1:20:06');
+  await expect(page.locator('[data-seconds="913"] .live-chapter-item__time')).toHaveText('00:15:13');
   expect(await page.evaluate(() => window.__liveMock.instances[0].options.playerVars.controls)).toBe(0);
   await page.locator('#liveNextChapterBtn').click();
   expect(await page.evaluate(() => window.__liveMock.seconds)).toBe(913);
@@ -131,7 +132,12 @@ test('No mobile os controles ficam fora do vídeo e substituem o status textual'
   await page.locator('#loadLivePlayerBtn').click();
   await readyPlayer(page);
   await expect(page.locator('#liveCustomControls')).toBeVisible();
-  await expect.poll(() => page.locator('#liveCustomControls').evaluate(e => getComputedStyle(e).position)).toBe('static');
+  await expect.poll(() => page.locator('#liveCustomControls').evaluate(e => getComputedStyle(e).position)).toBe('relative');
+  const videoBox = await page.locator('#livePlayerWrapper').boundingBox();
+  const controlsBox = await page.locator('#liveCustomControls').boundingBox();
+  expect(controlsBox.y).toBeGreaterThanOrEqual(videoBox.y + videoBox.height);
+  const tabBox = await page.locator('#heroLiveToggleChaptersBtn').boundingBox();
+  expect(tabBox.y + tabBox.height).toBeLessThanOrEqual(videoBox.y + videoBox.height + 1);
   await expect.poll(() => page.locator('#heroLiveTopicStatus').evaluate(e => getComputedStyle(e).display)).toBe('none');
   await expect(page.locator('#liveCustomTopic')).toContainText('Boas-vindas');
 });
@@ -167,6 +173,16 @@ for (const width of [320, 390, 768, 1440]) {
     expect(videoAfter.width).toBe(videoBefore.width);
     expect(videoAfter.height).toBe(videoBefore.height);
     const panel = await page.locator('#heroLiveChaptersPanel').boundingBox();
+    if (width <= 768) {
+      await expect(page.locator('#heroLiveChaptersPanel')).toBeVisible();
+      expect(await page.evaluate(() => getComputedStyle(document.getElementById('heroLiveChaptersCol')).position)).toBe('fixed');
+      await expect(page.locator('#heroLiveToggleChaptersBtn')).toBeVisible();
+      expect(await page.evaluate(() => getComputedStyle(document.getElementById('liveChaptersList')).overflowY)).toBe('auto');
+      expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
+      await page.keyboard.press('Escape');
+      await expect(page.locator('#heroLiveToggleChaptersBtn')).toBeFocused();
+      return;
+    }
     const tabAfter = await page.locator('#heroLiveToggleChaptersBtn').boundingBox();
     expect(tabAfter.x).toBeLessThan(tabBefore.x);
     expect(tabAfter.x + tabAfter.width).toBeCloseTo(panel.x, 0);
