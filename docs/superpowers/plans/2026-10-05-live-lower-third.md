@@ -34,8 +34,6 @@
 - [ ] Add scoped note styles below the title, retaining the existing status/copy/button. Use a one-pixel horizontal separator, white body and gold rule label/link; reveal with220ms opacity/translateY4px.
 - [ ] Add reduced-motion transition/animation none and API-failure transform−56px for native controls. Change CSS/live module cache versions to `20261005-lower-third` in all three HTMLs.
 
-### Task 3: Verify meaningful states
-
 ### Task 2b: Topic markers on the preserved total line
 
 **Files:** Add `assets/js/manual-de-bordo-live-markers.js`; modify the three Manual HTMLs, main live module, CSS and existing browser tests.
@@ -46,7 +44,7 @@
 - [ ] Preserve the3px track; dots4px, larger only for hover/focus/current; transparent20px targets. Tooltip navy/white, readable type, no duplicate native tooltip. Restore the native progress's readonly behavior; interactive descendants alone receive pointer events.
 - [ ] Test all41 positions, hover text, pointer and keyboard seek, actual-duration change, stable single player, no accidental pause, and absence on mobile.
 
-### Task 3: Verify meaningful states (continued)
+### Task 3: Verify meaningful states
 
 **File:** Modify `analytics/tests/manual-live.spec.js`.
 

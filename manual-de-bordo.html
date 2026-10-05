@@ -84,13 +84,13 @@
 
   <!-- Estilos Globais e Específicos -->
   <link rel="stylesheet" href="/assets/css/main.css?v=20261003-embarcados">
-  <link rel="stylesheet" href="/assets/css/manual-de-bordo.css?v=20261005-desktop-display">
+  <link rel="stylesheet" href="/assets/css/manual-de-bordo.css?v=20261005-lower-third">
   <link rel="stylesheet" href="/assets/css/cookie-consent.css?v=20260820-fix-contrast">
 
   <script defer src="/assets/js/cookie-consent.js?v=20260713-5"></script>
   <script defer src="/assets/js/manual-de-bordo.js?v=20261005-topic-player"></script>
 
-  <script type="module" src="/assets/js/manual-de-bordo-live.js?v=20261005-desktop-display"></script>
+  <script type="module" src="/assets/js/manual-de-bordo-live.js?v=20261005-lower-third"></script>
 
   <script type="module" src="/assets/js/manual-de-bordo-checklist.js?v=20261005-topic-player"></script>
   <script type="module" src="/assets/js/manual-de-bordo-routing.js?v=20261004-manual"></script>
@@ -275,7 +275,9 @@
               </div>
               <div class="live-player-container" id="livePlayerContainer" hidden></div>
 
-              <div class="live-custom-controls__topic" id="liveCustomTopic" hidden aria-live="polite"></div>
+              <div class="live-lower-third" id="liveLowerThird" hidden>
+                <div class="live-custom-controls__topic" id="liveCustomTopic" hidden aria-live="polite"></div>
+              </div>
               <div class="live-custom-controls" id="liveCustomControls" hidden aria-label="Controles do vídeo">
 
               <div class="live-custom-controls__row">
@@ -292,7 +294,7 @@
               </div>
                 <div class="live-total-timeline">
                   <span id="liveTotalElapsed" aria-hidden="true">00:00</span>
-                  <progress class="live-total-progress" id="liveTotalProgress" max="4806" value="0" aria-label="Progresso total da live"></progress>
+                  <div class="live-total-track" id="liveTotalTrack"><progress class="live-total-progress" id="liveTotalProgress" max="4806" value="0" aria-label="Progresso total da live"></progress></div>
                   <span id="liveTotalRemaining" aria-hidden="true">−01:20:06</span>
                 </div>
             </div>

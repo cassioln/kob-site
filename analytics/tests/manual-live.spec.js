@@ -351,19 +351,24 @@ test('Progresso por assunto: scrub relativo, troca automática e duração final
   await expect(page.locator('#liveNextChapterBtn')).toBeDisabled();
 });
 
-test('Desktop: controles dentro do player, nome no topo e botões que expandem com seus assuntos', async ({ page }) => {
+test('Desktop: controles dentro do player, assunto acima deles e botões que expandem', async ({ page }) => {
   await page.setViewportSize({width:1440,height:1000});
   await page.goto('/manual-de-bordo.html');
   await page.locator('#loadLivePlayerBtn').click();
   await readyPlayer(page);
   expect(await page.locator('#liveCustomControls').evaluate(el=>el.parentElement.id)).toBe('livePlayerWrapper');
-  expect(await page.locator('#liveCustomTopic').evaluate(el=>el.parentElement.id)).toBe('livePlayerWrapper');
+  expect(await page.locator('#liveCustomTopic').evaluate(el=>el.parentElement.id)).toBe('liveLowerThird');
+  await expect.poll(async()=>{
+    const title=await page.locator('#liveCustomTopic').boundingBox();
+    const controls=await page.locator('#liveCustomControls').boundingBox();
+    return controls.y-title.y-title.height;
+  }).toBeGreaterThan(10);
   const video=await page.locator('#livePlayerWrapper').boundingBox();
   const controls=await page.locator('#liveCustomControls').boundingBox();
   const topic=await page.locator('#liveCustomTopic').boundingBox();
   expect(controls.y).toBeGreaterThan(video.y);
   expect(controls.y+controls.height).toBeLessThan(video.y+video.height);
-  expect(topic.y).toBeLessThan(video.y+60);
+  expect(topic.y+topic.height).toBeLessThan(controls.y);
   await expect(page.locator('#livePreviousChapterBtn')).toBeDisabled();
   const next=page.locator('#liveNextChapterBtn');
   const closed=(await next.boundingBox()).width;
@@ -385,7 +390,7 @@ test('Desktop: controles dentro do player, nome no topo e botões que expandem c
   expect(await page.evaluate(()=>window.__liveMock.instances.length)).toBe(1);
 });
 
-test('Aviso acima do vídeo e guia em janela paralela, sem navegar ou pausar', async ({ page }) => {
+test('Aviso abaixo do assunto no vídeo e guia em janela paralela, sem navegar ou pausar', async ({ page }) => {
   await page.goto('/manual-de-bordo.html');
   await openTopics(page);
   const row=page.locator('[data-seconds="1250"]');
@@ -394,7 +399,12 @@ test('Aviso acima do vídeo e guia em janela paralela, sem navegar ou pausar', a
   await row.click();
   await readyPlayer(page);
   const warning=page.locator('#liveChapterNote');
-  expect((await warning.boundingBox()).y).toBeLessThan((await page.locator('#livePlayerWrapper').boundingBox()).y);
+  await expect.poll(async()=>{
+    const note=await warning.boundingBox(),controls=await page.locator('#liveCustomControls').boundingBox();
+    return controls.y-note.y-note.height;
+  }).toBeGreaterThan(10);
+  expect(await warning.evaluate(el=>el.parentElement.id)).toBe('liveLowerThird');
+  expect((await warning.boundingBox()).y).toBeGreaterThan((await page.locator('#liveCustomTopic').boundingBox()).y);
   const url=page.url();
   const trigger=warning.locator('[data-live-faq]');
   await trigger.hover();
@@ -448,6 +458,8 @@ test('Linha total é discreta, não interativa e acompanha a duração real sem 
   await page.evaluate(()=>{window.__liveMock.duration=4807;window.__liveMock.seconds=4807;window.__liveMock.instances[0].events.onStateChange({data:2});});
   await expect(total).toHaveJSProperty('max',4807);
   await expect(total).toHaveJSProperty('value',4807);
+  await expect(page.locator('.live-total-marker[aria-current]')).toHaveAttribute('data-topic-seconds','4712');
+  expect(await page.locator('.live-total-marker').first().evaluate(el=>parseFloat(el.style.left))).toBeCloseTo(833/4807*100,5);
   await expect(page.locator('#liveTotalRemaining')).toHaveText('−00:00');
   await expect(total).toHaveAttribute('aria-valuetext',/Restante: 00:00/);
   await page.setViewportSize({width:390,height:844});
@@ -460,7 +472,7 @@ for(const [lang,path,home,charter,prefix] of [
   ['en','/en/manual-de-bordo.html','Official event site','Official Charter','/en'],
   ['es','/es/manual-de-bordo.html','Sitio oficial del evento','Autobús Oficial','/es']
 ]){
- test(`Desktop: título à direita, seta depois do assunto e menu localizado em ${lang}`,async({page})=>{
+ test(`Desktop: identificação na base, seta depois do assunto e menu localizado em ${lang}`,async({page})=>{
   await page.setViewportSize({width:1440,height:1000});await page.goto(path);
   await expect(page.locator('.guide-header__home-link')).toBeHidden();
   await page.locator('#navToggle').click();
@@ -472,8 +484,9 @@ for(const [lang,path,home,charter,prefix] of [
   await page.locator('#loadLivePlayerBtn').click();await readyPlayer(page);
   const box=await page.locator('#livePlayerWrapper').boundingBox();
   const title=page.locator('#liveCustomTopic');const t=await title.boundingBox();
-  expect(t.x+t.width).toBeGreaterThan(box.x+box.width-35);
-  expect(t.y).toBeLessThan(box.y+40);
+  expect(t.x).toBeGreaterThan(box.x+20);
+  expect(t.x).toBeLessThan(box.x+25);
+  expect(t.y).toBeGreaterThan(box.y+box.height/2);
   const style=await title.evaluate(el=>{const s=getComputedStyle(el);return {font:s.fontFamily,size:parseFloat(s.fontSize),color:s.color,background:s.backgroundColor,shadow:s.textShadow};});
   expect(style.font).toContain('Gobold');expect(style.size).toBeGreaterThan(20);
   expect(style.color).toBe('rgb(255, 255, 255)');expect(style.background).toBe('rgba(0, 0, 0, 0)');expect(style.shadow).not.toBe('none');
@@ -490,5 +503,86 @@ for(const [lang,path,home,charter,prefix] of [
   await expect(page.locator('#drawer .guide-menu-mobile')).toHaveAttribute('href','#transporte');
   await page.setViewportSize({width:600,height:844});
   await expect(page.locator('.guide-header__home-link')).toBeVisible();
+ });
+}
+
+test('Identificação acompanha o recolhimento real dos controles e retorna suavemente',async({page})=>{
+  await page.setViewportSize({width:1440,height:1000});
+  await page.emulateMedia({reducedMotion:'no-preference'});
+  await page.goto('/manual-de-bordo.html');
+  await openTopics(page);await page.locator('[data-seconds="1535"]').click();await readyPlayer(page);
+  const group=page.locator('#liveLowerThird'),controls=page.locator('#liveCustomControls');
+  await page.mouse.move(0,0);
+  await expect.poll(async()=>{
+    const lower=await group.boundingBox(),c=await controls.boundingBox();return c.y-lower.y-lower.height;
+  }).toBeGreaterThan(10);
+  const raised=await group.evaluate(el=>el.getBoundingClientRect().bottom-el.parentElement.getBoundingClientRect().bottom);
+  await expect(controls).not.toHaveClass(/is-visible/,{timeout:5000});
+  await expect.poll(async()=>{
+    const lower=await group.boundingBox(),video=await page.locator('#livePlayerWrapper').boundingBox();
+    return video.y+video.height-lower.y-lower.height;
+  }).toBeLessThan(21);
+  const lowered=await group.evaluate(el=>el.getBoundingClientRect().bottom-el.parentElement.getBoundingClientRect().bottom);
+  expect(lowered-raised).toBeGreaterThan(80);
+  await expect(group).toHaveCSS('transition-property','transform');
+  await expect(group).toHaveCSS('transition-duration','0.34s');
+  await page.locator('#livePlayerWrapper').hover({position:{x:40,y:40}});
+  await expect(controls).toHaveClass(/is-visible/);
+  await expect.poll(()=>group.evaluate(el=>el.getBoundingClientRect().bottom-el.parentElement.getBoundingClientRect().bottom)).toBeLessThan(lowered-80);
+  const guide=page.locator('#liveChapterNote [data-live-faq]');await guide.focus();
+  await page.waitForTimeout(3400);await expect(controls).toHaveClass(/is-visible/);
+  await expect(page.locator('#liveGuidePopover')).toBeVisible();
+});
+
+test('Movimento reduzido, resize e fullscreen preservam os mesmos elementos e espaço dos controles',async({page})=>{
+  await page.setViewportSize({width:1440,height:1000});await page.emulateMedia({reducedMotion:'reduce'});
+  await page.goto('/manual-de-bordo.html');await openTopics(page);await page.locator('[data-seconds="4456"]').click();await readyPlayer(page);
+  expect(await page.locator('#liveLowerThird').evaluate(el=>parseFloat(getComputedStyle(el).transitionDuration))).toBeLessThanOrEqual(.001);
+  await expect(page.locator('#liveChapterNote')).toHaveCSS('animation-name','none');
+  await page.setViewportSize({width:390,height:844});
+  await expect(page.locator('#liveLowerThird')).toBeHidden();
+  expect(await page.locator('#liveChapterNote').evaluate(el=>el.parentElement.id)).toBe('live');
+  expect((await page.locator('#liveChapterNote').boundingBox()).y).toBeLessThan((await page.locator('#livePlayerWrapper').boundingBox()).y);
+  await page.setViewportSize({width:850,height:1000});
+  expect(await page.locator('#liveChapterNote').evaluate(el=>el.parentElement.id)).toBe('liveLowerThird');
+  await expect(page.locator('#liveLowerThird')).toBeVisible();
+  await page.locator('#liveFullscreenBtn').click();
+  await expect.poll(()=>page.evaluate(()=>document.fullscreenElement?.id)).toBe('livePlayerWrapper');
+  const lower=await page.locator('#liveLowerThird').boundingBox(),controls=await page.locator('#liveCustomControls').boundingBox();
+  expect(lower.y+lower.height).toBeLessThan(controls.y);
+  expect(await page.evaluate(()=>window.__liveMock.instances.length)).toBe(1);
+  await page.evaluate(()=>document.exitFullscreen());
+});
+
+for(const [lang,path,title] of [
+ ['pt','/manual-de-bordo.html','Cruise Card, cartões e gastos a bordo'],
+ ['en','/en/manual-de-bordo.html',null],
+ ['es','/es/manual-de-bordo.html',null]
+]){
+ test(`Marcadores discretos: horários reais, hover, clique e teclado em ${lang}`,async({page})=>{
+  await page.setViewportSize({width:1440,height:1000});await page.goto(path);
+  await page.locator('#loadLivePlayerBtn').click();await readyPlayer(page);
+  const markers=page.locator('.live-total-marker');await expect(markers).toHaveCount(41);
+  expect(await markers.evaluateAll(els=>els.filter(el=>el.tabIndex===0).length)).toBe(1);
+  const position=await page.locator('.live-total-marker[data-topic-seconds="1852"]').evaluate(el=>({left:el.offsetLeft,width:el.parentElement.parentElement.clientWidth}));
+  expect(position.left/position.width).toBeCloseTo(1852/4806,2);
+  const marker=page.locator('.live-total-marker[data-topic-seconds="1852"]');
+  const expected=await marker.getAttribute('aria-label');await marker.hover();
+  await expect(page.locator('#liveTotalTooltip')).toBeVisible();
+  await expect(page.locator('#liveTotalTooltip')).toContainText(expected.split(' · ')[1]);
+  if(title) await expect(page.locator('#liveTotalTooltip')).toContainText(title);
+  await page.locator('#liveTotalTooltip').hover();await expect(page.locator('#liveTotalTooltip')).toBeVisible();
+  await marker.click();expect(await page.evaluate(()=>window.__liveMock.seconds)).toBe(1852);
+  await page.keyboard.press('Home');await page.keyboard.press('ArrowRight');await page.keyboard.press('Enter');
+  expect(await page.evaluate(()=>window.__liveMock.seconds)).toBe(913);
+  await page.keyboard.press('End');await page.keyboard.press('Space');
+  expect(await page.evaluate(()=>window.__liveMock.seconds)).toBe(4712);
+  await page.keyboard.press('Escape');await expect(page.locator('#liveTotalTooltip')).toBeHidden();
+  const dense=await page.locator('.live-total-marker[data-topic-seconds="4456"]').boundingBox();
+  await page.mouse.click(dense.x+dense.width/2,dense.y+dense.height/2);
+  expect(await page.evaluate(()=>window.__liveMock.seconds)).toBe(4456);
+  expect(await page.evaluate(()=>window.__liveMock.calls.some(call=>call[0]==='pause'))).toBe(false);
+  expect(await page.evaluate(()=>window.__liveMock.instances.length)).toBe(1);
+  await page.setViewportSize({width:390,height:844});await expect(markers.first()).toBeHidden();
  });
 }

@@ -3,6 +3,7 @@ import { normalizeSearch, matchChapter, highlightParts, excerpt } from './manual
 
 import { topicAt, topicProgress, seekInTopic } from './manual-de-bordo-live-timeline.js?v=20261005-topic-player';
 import { initLiveGuideHelp } from './manual-de-bordo-live-help.js?v=20261005-topic-player';
+import { initLiveMarkers } from './manual-de-bordo-live-markers.js?v=20261005-lower-third';
 
 const lang = document.documentElement.lang.slice(0, 2);
 const copy = {
@@ -63,13 +64,21 @@ function initLive() {
   const updateDimensions = () => {
     const controls = byId('liveCustomControls');
     const topic = byId('liveCustomTopic');
+    const lowerThird = byId('liveLowerThird');
+    const note = byId('liveChapterNote');
     const video = byId('livePlayerWrapper');
     if (desktop.matches) {
       if (controls.parentElement !== video) video.append(controls);
-      if (topic.parentElement !== video) video.append(topic);
+      if (topic.parentElement !== lowerThird) lowerThird.prepend(topic);
+      if (note.parentElement !== lowerThird) lowerThird.append(note);
+      if (lowerThird.nextElementSibling !== controls) video.insertBefore(lowerThird, controls);
+      lowerThird.hidden = topic.hidden;
+      if (controls.offsetHeight) video.style.setProperty('--live-controls-offset', `${controls.offsetHeight + 12}px`);
     } else {
       if (controls.parentElement !== cinema) cinema.insertBefore(controls, byId('heroLiveChaptersCol'));
       if (topic.parentElement !== controls) controls.prepend(topic);
+      if (note.parentElement !== cinema.parentElement) cinema.before(note);
+      lowerThird.hidden = true;
     }
     const h = document.querySelector('.guide-header')?.offsetHeight;
     if (h) document.documentElement.style.setProperty('--guide-header-height', `${h}px`);
@@ -84,7 +93,9 @@ function initLive() {
   window.addEventListener('resize', updateDimensions, { passive: true });
   if ('ResizeObserver' in window) {
     const wrap = byId('livePlayerWrapper');
-    if (wrap) new ResizeObserver(updateDimensions).observe(wrap);
+    const dimensionsObserver = new ResizeObserver(updateDimensions);
+    if (wrap) dimensionsObserver.observe(wrap);
+    dimensionsObserver.observe(byId('liveCustomControls'));
   }
   byId('loadLivePlayerBtn').disabled = false;
   byId('heroLiveToggleChaptersBtn').disabled = false;
@@ -103,6 +114,7 @@ function initLive() {
   const fullscreen = byId('liveFullscreenBtn');
   const customControls = byId('liveCustomControls');
   const customTopic = byId('liveCustomTopic');
+  const lowerThird = byId('liveLowerThird');
   const playPause = byId('livePlayPauseBtn');
   const previousChapter = byId('livePreviousChapterBtn');
   const nextChapter = byId('liveNextChapterBtn');
@@ -126,6 +138,10 @@ function initLive() {
   let controlsTimer;
   const rows = [];
   const guideHelp = initLiveGuideHelp(copy);
+  const markers = initLiveMarkers({
+    track: byId('liveTotalTrack'), chapters: CHAPTERS, lang, label: copy.topics,
+    onSelect: chapter => { select(chapter, false); playAt(chapter.seconds); }
+  });
 
   function highlighted(element, text, query) {
     const fragment = document.createDocumentFragment();
@@ -258,6 +274,7 @@ function initLive() {
     status.textContent = `${isPlaying ? copy.playing : copy.selected} · ${chapter.time} · ${chapter.titles[lang]}`;
     customTopic.textContent = chapter.titles[lang];
     customTopic.hidden = false;
+    lowerThird.hidden = !desktop.matches;
     updateTopicButtons();
     updateProgress(chapter.seconds);
     external.href = `https://www.youtube.com/watch?v=${LIVE_VIDEO_ID}&t=${chapter.seconds}s`;
@@ -308,6 +325,7 @@ function initLive() {
     const remaining = Math.max(0, fullDuration - fullElapsed);
     totalProgress.max = fullDuration;
     totalProgress.value = fullElapsed;
+    markers.update(fullDuration, selected.id);
     totalElapsed.textContent = formatTime(fullElapsed);
     totalRemaining.textContent = `−${formatTime(remaining)}`;
     totalProgress.setAttribute('aria-valuetext', `${formatTime(fullElapsed)} / ${formatTime(fullDuration)} · ${copy.remaining}: ${formatTime(remaining)}`);
@@ -344,7 +362,7 @@ function initLive() {
     customControls.classList.add('is-visible');
     clearTimeout(controlsTimer);
     controlsTimer = setTimeout(() => {
-      if (desktop.matches && playing && !customControls.matches(':hover,:focus-within')) customControls.classList.remove('is-visible');
+      if (desktop.matches && playing && !customControls.matches(':hover,:focus-within') && !lowerThird.matches(':hover,:focus-within')) customControls.classList.remove('is-visible');
     }, 3200);
   }
   if ('IntersectionObserver' in window) {
@@ -397,6 +415,7 @@ function initLive() {
             apiFailed = false;
             errorBox.hidden = true;
             customControls.hidden = false;
+            updateDimensions();
             wrapper.classList.remove('has-api-error');
             updateProgress(pendingSeconds);
             player.seekTo(pendingSeconds, true);
@@ -463,6 +482,12 @@ function initLive() {
   customControls.addEventListener('focusin', revealControls);
   customControls.addEventListener('pointerenter', revealControls);
   customControls.addEventListener('pointermove', revealControls);
+  for (const region of [customControls, lowerThird]) {
+    region.addEventListener('pointerleave', revealControls);
+    region.addEventListener('focusout', revealControls);
+  }
+  lowerThird.addEventListener('focusin', revealControls);
+  lowerThird.addEventListener('pointerenter', revealControls);
   wrapper.addEventListener('pointerenter', revealControls);
   wrapper.addEventListener('pointerdown', revealControls);
   wrapper.addEventListener('touchstart', revealControls, { passive: true });
