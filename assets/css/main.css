@@ -713,11 +713,6 @@ h4 {
   transition: background var(--dur-fast) ease, border-color var(--dur-fast) ease;
 }
 
-/* Contraste legível sobre qualquer trecho da imagem do hero. */
-.nav[data-scrolled="false"] .lang-switch {
-  background: #041d3a;
-}
-
 .lang-switch:hover {
   background: rgba(255, 255, 255, 0.06);
   border-color: rgba(255, 255, 255, 0.45);
@@ -807,11 +802,56 @@ h4 {
   display: none;
 }
 
-/* O seletor compacto acompanha o breakpoint do menu sanduíche. */
+/* No desktop, o seletor mobile fica estritamente oculto */
 @media (min-width: 1321px) {
-  .nav__right .lang-switch--mobile { display: none !important; }
+  .nav__right .lang-switch--mobile {
+    display: none !important;
+  }
 }
 
+/* No mobile/tablet, o seletor desktop e o header-manual-link ficam ocultos e o seletor mobile translúcido é exibido ao lado do nav__toggle */
+@media (max-width: 1320px) {
+  .nav .nav__right {
+    margin-left: auto;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  .nav .nav__right > .header-manual-link,
+  .nav .nav__right .lang-switch:not(.lang-switch--mobile) {
+    display: none !important;
+  }
+
+  .nav .nav__right .lang-switch--mobile {
+    display: inline-flex !important;
+    order: 1;
+    flex-shrink: 0;
+  }
+
+  .nav .nav__right .nav__toggle {
+    display: inline-flex !important;
+    order: 2;
+  }
+}
+
+@media (max-width: 600px) {
+  .nav .lang-switch--mobile .lang-switch__btn {
+    width: 30px;
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .nav .lang-switch--mobile {
+    gap: 1px;
+    padding: 2px;
+  }
+
+  .nav .lang-switch--mobile .lang-switch__btn {
+    width: 27px;
+    font-size: 0.7rem;
+  }
+}
 
 .nav__toggle {
   display: none;
@@ -820,8 +860,11 @@ h4 {
   border-radius: var(--r-sm);
   width: 44px;
   height: 44px;
+  color: var(--foam-white, #ffffff);
   align-items: center;
   justify-content: center;
+  box-sizing: border-box;
+  cursor: pointer;
   transition: background var(--dur-fast) ease, border-color var(--dur-fast) ease;
 }
 
@@ -829,50 +872,6 @@ h4 {
 .nav__toggle:focus-visible {
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(255, 255, 255, 0.45);
-}
-
-@media (max-width: 1320px) {
-  .nav .nav__right { margin-left: auto; justify-content: flex-end; gap: 8px; }
-  .nav .nav__right > .header-manual-link,
-  .nav .nav__right .lang-switch:not(.lang-switch--mobile) { display: none !important; }
-  .nav .nav__right .lang-switch--mobile {
-    display: inline-flex;
-    order: 1;
-    gap: 8px;
-    height: 44px;
-    padding: 0;
-    border: 0;
-    background: transparent;
-    flex-shrink: 0;
-  }
-  .nav .nav__right .lang-switch--mobile .lang-switch__btn,
-  .nav .nav__right .nav__toggle {
-    flex: 0 0 44px;
-    width: 44px;
-    height: 44px;
-    padding: 0;
-    border: 1px solid rgba(255, 255, 255, .35);
-    border-radius: var(--r-sm);
-    background: rgba(4, 29, 58, .85);
-    color: #fff;
-    box-sizing: border-box;
-  }
-  .nav .nav__right .lang-switch--mobile .lang-switch__btn { font-size: .78rem; }
-  .nav .nav__right .lang-switch--mobile .lang-switch__btn.is-active {
-    background: #fff;
-    border-color: #fff;
-    color: #041d3a;
-  }
-  .nav .nav__right .lang-switch--mobile .lang-switch__btn:hover:not(.is-active),
-  .nav .nav__right .nav__toggle:is(:hover,:focus-visible) {
-    background: #163754;
-    border-color: rgba(255, 255, 255, .7);
-  }
-  .nav .nav__right .nav__toggle { order: 2; }
-  .nav .nav__right .nav__toggle:focus-visible {
-    outline: 2px solid var(--sunset-gold);
-    outline-offset: 2px;
-  }
 }
 
 .nav__toggle svg {
