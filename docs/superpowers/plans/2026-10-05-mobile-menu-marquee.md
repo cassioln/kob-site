@@ -49,3 +49,7 @@
 - [ ] Confirm the deploy workflow succeeds for the exact commit and production files match local hashes; verify localized navigation and player behavior in production. Keep the YouTube simulation limitation explicit.
 
 Validation: 2026-10-05, 50 unique Playwright cases passed (14 i18n + 36 live). Three marquee cases repeated after adding offscreen-pause assertions: passed. 42 localized home header states and three localized live states verified; YouTube API simulated with the existing cover for visual QA. Publication pending final independent review.
+
+### Deployment cache correction
+
+Observed production responses cache CSS/JS for 2592000 seconds. The original FTP mirror published root HTML before JS; the new HTML cache URL could therefore cache the old module. Stage changed tracked assets under .github (excluded from the ordinary mirror), upload those files without deletion, verify their public SHA-256 hashes, then run the existing mirror. Shallow history misses fall back to all tracked assets; preserve the excluded creators directory. Queue future production runs without cancellation. Final HTML/module references use a fresh ui-final cache version after the first transfer finishes. Validate preparation with a temporary Git fixture (modified/new/renamed/deleted assets, excluded creators, missing-history fallback, no-assets case) and confirm the real GitHub stage verifies the changed module before HTML.

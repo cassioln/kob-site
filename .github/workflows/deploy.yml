@@ -5,6 +5,10 @@ on:
     branches:
       - main
 
+concurrency:
+  group: locaweb-production
+  cancel-in-progress: false
+
 jobs:
   deploy:
     name: Deploy do Site
@@ -13,6 +17,33 @@ jobs:
     steps:
       - name: Checkout do repositório
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Validar seleção dos arquivos de publicação
+        run: python3 .github/scripts/test-deploy-assets.py
+
+      # O HTML só ganha novas versões de cache após os arquivos estarem no ar.
+      - name: Preparar arquivos referenciados pelo HTML
+        id: deploy_assets
+        env:
+          KOB_DEPLOY_BEFORE: ${{ github.event.before }}
+        run: python3 .github/scripts/deploy-assets.py
+
+      - name: Enviar arquivos antes do HTML
+        if: steps.deploy_assets.outputs.has_assets == 'true'
+        uses: locaweb/ftp-deploy@1.0.0
+        with:
+          host: ${{ secrets.FTP_HOST }}
+          user: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          localDir: '.github/.deploy-assets'
+          remoteDir: 'public_html'
+          options: '--verbose'
+
+      - name: Confirmar arquivos públicos antes do HTML
+        if: steps.deploy_assets.outputs.has_assets == 'true'
+        run: python3 .github/scripts/deploy-assets.py --verify
 
       - name: FTP Deploy Locaweb
         uses: locaweb/ftp-deploy@1.0.0

@@ -4,7 +4,7 @@ import { normalizeSearch, matchChapter, highlightParts, excerpt } from './manual
 import { topicAt, topicProgress, seekInTopic } from './manual-de-bordo-live-timeline.js?v=20261005-topic-player';
 import { initLiveGuideHelp } from './manual-de-bordo-live-help.js?v=20261005-topic-player';
 import { initLiveMarkers } from './manual-de-bordo-live-markers.js?v=20261005-lower-third';
-import { initLiveControlMarquee } from './manual-de-bordo-live-marquee.js?v=20261005-label-marquee';
+import { initLiveControlMarquee } from './manual-de-bordo-live-marquee.js?v=20261005-ui-final';
 
 const lang = document.documentElement.lang.slice(0, 2);
 const copy = {
