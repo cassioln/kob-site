@@ -2467,11 +2467,16 @@ document.documentElement.classList.add('js');
         playerVars: {
           rel: 0,
           modestbranding: 1,
-          playsinline: 1
+          playsinline: 1,
+          cc_load_policy: 0
         },
         events: {
           onReady: function () {
             playerReady = true;
+            try {
+              if (typeof player.unloadModule === 'function') player.unloadModule('captions');
+              if (typeof player.setOption === 'function') player.setOption('captions', 'track', {});
+            } catch (_) {}
             if (wantsPlay && typeof player.playVideo === 'function') {
               player.playVideo();
             }
@@ -2597,11 +2602,16 @@ document.documentElement.classList.add('js');
           iv_load_policy: 3,
           modestbranding: 1,
           playsinline: 1,
-          rel: 0
+          rel: 0,
+          cc_load_policy: 0
         },
         events: {
           onReady: function () {
             playerReady = true;
+            try {
+              if (typeof player.unloadModule === 'function') player.unloadModule('captions');
+              if (typeof player.setOption === 'function') player.setOption('captions', 'track', {});
+            } catch (_) {}
             if (!wantsPlay) return;
             player.seekTo(0, true);
             player.playVideo();
@@ -2609,7 +2619,13 @@ document.documentElement.classList.add('js');
           },
           onStateChange: function (event) {
             if (!window.YT || !window.YT.PlayerState) return;
-            if (event.data === window.YT.PlayerState.PLAYING) startMonitor();
+            if (event.data === window.YT.PlayerState.PLAYING) {
+              try {
+                if (typeof player.unloadModule === 'function') player.unloadModule('captions');
+                if (typeof player.setOption === 'function') player.setOption('captions', 'track', {});
+              } catch (_) {}
+              startMonitor();
+            }
             if (event.data === window.YT.PlayerState.ENDED) finish();
           },
           onError: function () {

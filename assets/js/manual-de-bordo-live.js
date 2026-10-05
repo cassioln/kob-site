@@ -427,6 +427,7 @@ function initLive() {
       iv_load_policy: '3',
       modestbranding: '1',
       rel: '0',
+      cc_load_policy: '0',
       origin: location.origin
     });
     return url.href;
@@ -444,7 +445,8 @@ function initLive() {
           iv_load_policy: 3,
           modestbranding: 1,
           rel: 0,
-          playsinline: 1
+          playsinline: 1,
+          cc_load_policy: 0
         },
         events: {
           onReady: event => {
@@ -454,6 +456,10 @@ function initLive() {
             apiFailed = false;
             errorBox.hidden = true;
             customControls.hidden = false;
+            try {
+              if (typeof player.unloadModule === 'function') player.unloadModule('captions');
+              if (typeof player.setOption === 'function') player.setOption('captions', 'track', {});
+            } catch (_) {}
             updateDimensions();
             wrapper.classList.remove('has-api-error');
             updateProgress(pendingSeconds);
@@ -466,6 +472,12 @@ function initLive() {
           onStateChange: event => {
             if (myGeneration !== generation) return;
             playing = event.data === 1;
+            if (playing) {
+              try {
+                if (typeof player.unloadModule === 'function') player.unloadModule('captions');
+                if (typeof player.setOption === 'function') player.setOption('captions', 'track', {});
+              } catch (_) {}
+            }
             updatePlayPauseUI(playing);
             current = null;
             tick();
