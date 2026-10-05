@@ -12,7 +12,7 @@ test.describe('Internacionalização e Validação de Páginas /en/ e /es/', () 
     expect(htmlLang).toBe('en');
 
     // Valida seletor de idioma desktop
-    const langSwitch = page.locator('.nav__right .lang-switch');
+    const langSwitch = page.locator('.nav__right .lang-switch:not(.lang-switch--mobile)');
     await expect(langSwitch).toBeVisible();
     await expect(langSwitch.locator('.lang-switch__btn.is-active')).toHaveText('EN');
 
@@ -62,7 +62,7 @@ test.describe('Internacionalização e Validação de Páginas /en/ e /es/', () 
     expect(htmlLang).toBe('es');
 
     // Valida seletor de idioma desktop
-    const langSwitch = page.locator('.nav__right .lang-switch');
+    const langSwitch = page.locator('.nav__right .lang-switch:not(.lang-switch--mobile)');
     await expect(langSwitch).toBeVisible();
     await expect(langSwitch.locator('.lang-switch__btn.is-active')).toHaveText('ES');
 
@@ -277,19 +277,23 @@ test.describe('Internacionalização e Validação de Páginas /en/ e /es/', () 
 
     // 1. Posição no PT
     await page.goto('/');
-    const switchPT = page.locator('.nav__right .lang-switch');
+    const switchPT = page.locator('.nav__right .lang-switch:not(.lang-switch--mobile)');
+    const manualPT = page.locator('.nav__right .header-manual-link');
     await expect(switchPT).toBeVisible();
     const boxPT = await switchPT.boundingBox();
+    const boxManualPT = await manualPT.boundingBox();
+    // Valida que no desktop o seletor fica ao lado esquerdo do botão manual
+    expect(boxPT.x).toBeLessThan(boxManualPT.x);
 
     // 2. Posição no EN
     await page.goto('/en/');
-    const switchEN = page.locator('.nav__right .lang-switch');
+    const switchEN = page.locator('.nav__right .lang-switch:not(.lang-switch--mobile)');
     await expect(switchEN).toBeVisible();
     const boxEN = await switchEN.boundingBox();
 
     // 3. Posição no ES
     await page.goto('/es/');
-    const switchES = page.locator('.nav__right .lang-switch');
+    const switchES = page.locator('.nav__right .lang-switch:not(.lang-switch--mobile)');
     await expect(switchES).toBeVisible();
     const boxES = await switchES.boundingBox();
 
@@ -299,17 +303,17 @@ test.describe('Internacionalização e Validação de Páginas /en/ e /es/', () 
     expect(boxPT.y).toBeCloseTo(boxEN.y, 1);
     expect(boxPT.y).toBeCloseTo(boxES.y, 1);
 
-    // Valida que ao rolar a página (scrolled=true), o seletor some do header
+    // Valida que ao rolar a página (scrolled=true), o seletor desktop some do header
     await page.locator('#navio').scrollIntoViewIfNeeded();
     await page.waitForTimeout(300);
     await expect(page.locator('header.nav')).toHaveAttribute('data-scrolled', 'true');
-    await expect(page.locator('.nav__right .lang-switch')).toBeHidden();
+    await expect(page.locator('.nav__right .lang-switch:not(.lang-switch--mobile)')).toBeHidden();
 
     // Valida que ao retornar ao topo (hero), o seletor reaparece
     await page.locator('#top, .hero').first().scrollIntoViewIfNeeded();
     await page.waitForTimeout(300);
     await expect(page.locator('header.nav')).toHaveAttribute('data-scrolled', 'false');
-    await expect(page.locator('.nav__right .lang-switch')).toBeVisible();
+    await expect(page.locator('.nav__right .lang-switch:not(.lang-switch--mobile)')).toBeVisible();
   });
 
   test('Aviso de moeda em BRL e cotação USD/EUR presente somente nas páginas EN e ES', async ({ page }) => {
@@ -379,7 +383,7 @@ test.describe('Internacionalização e Validação de Páginas /en/ e /es/', () 
 
     // 4. Se o usuário estiver em /en/ e clicar manualmente em "PT", salva preferência e não redireciona mais
     await pagePT.goto('/en/');
-    await pagePT.locator('.nav__right .lang-switch__btn[hreflang="pt-BR"]').click();
+    await pagePT.locator('.nav__right .lang-switch:not(.lang-switch--mobile) .lang-switch__btn[hreflang="pt-BR"]').click();
     await expect(pagePT).toHaveURL(/\/$/);
 
     // Valida que ao recarregar a raiz '/', permanece em '/'
@@ -426,15 +430,29 @@ test.describe('Internacionalização e Validação de Páginas /en/ e /es/', () 
     expect(savedPref).toBe('es');
   });
 
-  test('Seletor de idioma mobile está posicionado dentro de drawer__head ao lado oposto do botão fechar', async ({ page }) => {
+  test('Seletor de idioma mobile está posicionado fora do menu sanduíche diretamente no header', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
     await page.goto('/');
 
+    const navRight = page.locator('header.nav .nav__right');
+    const mobileSwitch = navRight.locator('.lang-switch--mobile');
+    const navToggle = navRight.locator('#navToggle');
     const drawerHead = page.locator('#drawer .drawer__head');
-    const mobileSwitch = drawerHead.locator('.lang-switch--mobile');
     const closeBtn = drawerHead.locator('#drawerClose');
+    const drawerBrand = drawerHead.locator('.nav__brand');
 
-    await expect(mobileSwitch).toBeAttached();
+    // Valida que o seletor mobile está na barra de navegação superior e visível no mobile
+    await expect(mobileSwitch).toBeVisible();
+    await expect(navToggle).toBeVisible();
+
+    // Valida botões de idioma dentro do seletor
+    await expect(mobileSwitch.locator('.lang-switch__btn.is-active')).toHaveText('PT');
+    await expect(mobileSwitch.locator('a[hreflang="en"]')).toHaveAttribute('href', '/en/');
+    await expect(mobileSwitch.locator('a[hreflang="es"]')).toHaveAttribute('href', '/es/');
+
+    // Valida que o seletor NÃO está dentro do drawer, e que o drawer possui a marca e o botão fechar
+    await expect(drawerHead.locator('.lang-switch')).toHaveCount(0);
+    await expect(drawerBrand).toBeAttached();
     await expect(closeBtn).toBeAttached();
   });
 

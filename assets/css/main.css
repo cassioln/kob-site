@@ -313,7 +313,6 @@ h4 {
 }
 
 .header-manual-link svg { flex-shrink: 0; }
-.nav__right .header-manual-link { order: 0; }
 
 .btn--primary:hover {
   background: var(--action-hover);
@@ -467,11 +466,16 @@ h4 {
   gap: clamp(4px, .6vw, 10px);
 }
 
-/* "O evento", "O que inclui" e o seletor de idioma só aparecem no menu da 1ª dobra (Hero);
-   quando o menu reaparece ao rolar (2ª dobra em diante), somem para dar lugar à marca e ao botão de reserva. */
-.nav[data-scrolled="true"] .nav__link--fold1,
-.nav[data-scrolled="true"] .lang-switch:not(.lang-switch--mobile) {
+/* "O evento" e "O que inclui" só aparecem no menu da 1ª dobra (Hero).
+   No desktop, o seletor de idioma some ao rolar para dar lugar à marca e ao botão de reserva. */
+.nav[data-scrolled="true"] .nav__link--fold1 {
   display: none;
+}
+
+@media (min-width: 901px) {
+  .nav[data-scrolled="true"] .lang-switch:not(.lang-switch--mobile) {
+    display: none;
+  }
 }
 
 .nav__links a {
@@ -523,7 +527,7 @@ h4 {
 }
 
 .nav__right .btn--primary {
-  order: 1;
+  order: 2;
   transition: opacity var(--dur, .3s) ease, transform var(--dur, .3s) ease, background .2s ease, color .2s ease;
 }
 
@@ -542,13 +546,36 @@ h4 {
   margin-left: auto;
 }
 
-.nav__right .lang-switch {
-  order: 2;
+/* Ordem Desktop Padrão:
+   1. Seletor de Idiomas Desktop (ao lado esquerdo do manual)
+   2. Botão Manual de Bordo
+   3. Botão Primário de Reserva (visível quando scrolled)
+   4. Seletor Mobile (oculto no desktop)
+   5. Toggle do Menu (oculto no desktop) */
+.nav__right .lang-switch:not(.lang-switch--mobile) {
+  order: 0;
   flex-shrink: 0;
 }
 
-.nav__right .nav__toggle {
+.nav__right .header-manual-link {
+  order: 1;
+}
+
+.nav__right .lang-switch--mobile {
   order: 3;
+  display: none;
+}
+
+.nav__right .nav__toggle {
+  order: 4;
+}
+
+@media (min-width: 901px) {
+  .nav .header-manual-link {
+    min-width: 202px;
+    justify-content: center;
+    text-align: center;
+  }
 }
 
 /* Language Switcher - Segmented Square Clean Design */
@@ -614,8 +641,8 @@ h4 {
   display: none;
 }
 
-/* Mobile Drawer Language Switcher */
-.lang-switch--mobile {
+/* Seletor de Idioma Mobile - quando no drawer (legado) ou no header */
+.drawer .lang-switch--mobile {
   display: inline-flex;
   align-items: center;
   justify-content: flex-start;
@@ -630,7 +657,7 @@ h4 {
   box-shadow: none;
 }
 
-.lang-switch--mobile .lang-switch__btn {
+.drawer .lang-switch--mobile .lang-switch__btn {
   min-width: 38px;
   height: 34px;
   padding: 0 10px;
@@ -640,25 +667,66 @@ h4 {
   border-radius: 4px;
 }
 
-.lang-switch--mobile .lang-switch__btn:hover:not(.is-active) {
+.drawer .lang-switch--mobile .lang-switch__btn:hover:not(.is-active) {
   color: var(--ocean-abyss, #041d3a);
   background: rgba(4, 29, 58, 0.08);
 }
 
-.lang-switch--mobile .lang-switch__btn.is-active {
+.drawer .lang-switch--mobile .lang-switch__btn.is-active {
   color: #ffffff;
   background: var(--ocean-navy, #0b4d7c);
   box-shadow: 0 2px 6px rgba(11, 77, 124, 0.25);
   font-weight: 800;
 }
 
-.lang-switch--mobile .lang-switch__sep {
+.drawer .lang-switch--mobile .lang-switch__sep {
   display: none;
 }
 
+/* No desktop, o seletor mobile fica estritamente oculto */
+@media (min-width: 901px) {
+  .nav__right .lang-switch--mobile {
+    display: none !important;
+  }
+}
+
+/* No mobile, o seletor desktop fica oculto e o seletor mobile fica visível fora do menu sanduíche */
 @media (max-width: 900px) {
-  .nav__right .lang-switch {
-    display: none;
+  .nav__right .lang-switch:not(.lang-switch--mobile) {
+    display: none !important;
+  }
+  .nav__right .header-manual-link {
+    order: 0;
+    min-width: auto;
+  }
+  .nav__right .lang-switch--mobile {
+    display: inline-flex !important;
+    order: 1;
+  }
+  .nav__right .nav__toggle {
+    order: 2;
+  }
+}
+
+@media (max-width: 600px) {
+  .nav .lang-switch__btn {
+    min-width: 30px;
+    height: 28px;
+    padding: 0 6px;
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .nav .lang-switch {
+    gap: 2px;
+    padding: 2px;
+  }
+  .nav .lang-switch__btn {
+    min-width: 26px;
+    height: 26px;
+    padding: 0 4px;
+    font-size: 0.7rem;
   }
 }
 

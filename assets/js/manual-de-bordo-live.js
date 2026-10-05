@@ -56,6 +56,22 @@ function loadYouTubeAPI() {
 
 function initLive() {
   const byId = id => document.getElementById(id);
+  const updateDimensions = () => {
+    const h = document.querySelector('.guide-header')?.offsetHeight;
+    if (h) document.documentElement.style.setProperty('--guide-header-height', `${h}px`);
+    if (window.innerWidth > 768) {
+      const playerH = byId('livePlayerWrapper')?.offsetHeight;
+      if (playerH) cinema.style.setProperty('--live-player-height', `${playerH}px`);
+    } else {
+      cinema.style.removeProperty('--live-player-height');
+    }
+  };
+  updateDimensions();
+  window.addEventListener('resize', updateDimensions, { passive: true });
+  if ('ResizeObserver' in window) {
+    const wrap = byId('livePlayerWrapper');
+    if (wrap) new ResizeObserver(updateDimensions).observe(wrap);
+  }
   byId('loadLivePlayerBtn').disabled = false;
   byId('heroLiveToggleChaptersBtn').disabled = false;
   const panel = byId('heroLiveChaptersPanel');
@@ -162,12 +178,9 @@ function initLive() {
       const text = hasQuery ? excerpt(chapter.transcript, query) : '';
       snippet.hidden = !text;
       if (text) {
-        const label = document.createElement('span');
-        label.className = 'live-chapter-item__snippet-label';
-        label.textContent = copy.transcript;
         const body = document.createElement('span');
         highlighted(body, text, query);
-        snippet.replaceChildren(label, body);
+        snippet.replaceChildren(document.createTextNode('“'), body, document.createTextNode('”'));
       }
       notice.hidden = !(hasQuery && chapter.notice);
       if (!notice.hidden) {
@@ -191,13 +204,23 @@ function initLive() {
     panel.setAttribute('aria-hidden', String(!open));
     toggle.setAttribute('aria-expanded', String(open));
     toggle.setAttribute('aria-label', open ? copy.close : copy.topics);
+    if (matchMedia('(max-width: 768px)').matches) {
+      document.body.classList.toggle('has-live-drawer-open', open);
+    }
     if (open) {
+      updateDimensions();
       if (matchMedia('(max-width: 768px)').matches) cinema.scrollIntoView({ block: 'start', behavior: 'instant' });
       search.focus({ preventScroll: true });
-    } else if (returnFocus) toggle.focus({ preventScroll: true });
+    } else {
+      document.body.classList.remove('has-live-drawer-open');
+      if (returnFocus) toggle.focus({ preventScroll: true });
+    }
   }
   toggle.addEventListener('click', () => setPanel(toggle.getAttribute('aria-expanded') !== 'true'));
   byId('heroLiveChaptersCloseBtn').addEventListener('click', () => setPanel(false));
+  byId('heroLiveChaptersCol').addEventListener('click', event => {
+    if (event.target === byId('heroLiveChaptersCol')) setPanel(false);
+  });
   document.addEventListener('keydown', event => {
     if (event.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
       event.preventDefault();
@@ -258,6 +281,12 @@ function initLive() {
     const secs = String(value % 60).padStart(2, '0');
     return hours ? `${hours}:${minutes}:${secs}` : `${minutes}:${secs}`;
   }
+  function updatePlayPauseUI(isPlaying) {
+    playPause.textContent = isPlaying ? '❚❚' : '▶';
+    const label = isPlaying ? copy.pause : copy.play;
+    playPause.setAttribute('aria-label', label);
+    playPause.setAttribute('title', label);
+  }
   function revealControls() {
     customControls.classList.add('is-visible');
     clearTimeout(controlsTimer);
@@ -277,43 +306,73 @@ function initLive() {
 
   function embedURL(seconds) {
     const url = new URL(`https://www.youtube-nocookie.com/embed/${LIVE_VIDEO_ID}`);
-    url.search = new URLSearchParams({ autoplay: '1', start: String(seconds), enablejsapi: '1', playsinline: '1', rel: '0', origin: location.origin });
+    url.search = new URLSearchParams({
+      autoplay: '1',
+      start: String(seconds),
+      enablejsapi: '1',
+      playsinline: '1',
+      controls: '0',
+      disablekb: '1',
+      fs: '0',
+      iv_load_policy: '3',
+      modestbranding: '1',
+      rel: '0',
+      origin: location.origin
+    });
     return url.href;
   }
   async function connect(myGeneration) {
     try {
       const YT = await loadYouTubeAPI();
       if (myGeneration !== generation || !iframe) return;
-      player = new YT.Player(iframe, { playerVars: { controls: 0, modestbranding: 1, rel: 0, playsinline: 1 }, events: {
-        onReady: event => {
-          if (myGeneration !== generation) return;
-          player = event.target;
-          ready = true;
-          apiFailed = false;
-          errorBox.hidden = true;
-          customControls.hidden = false;
-          duration.textContent = formatTime(player.getDuration?.() || 0);
-          progress.max = String(Math.max(1, Math.floor(player.getDuration?.() || 1)));
-          player.seekTo(pendingSeconds, true);
-          player.playVideo();
-          revealControls();
-          syncTimer();
+      player = new YT.Player(iframe, {
+        playerVars: {
+          autoplay: 1,
+          controls: 0,
+          disablekb: 1,
+          fs: 0,
+          iv_load_policy: 3,
+          modestbranding: 1,
+          rel: 0,
+          playsinline: 1
         },
-        onStateChange: event => {
-          if (myGeneration !== generation) return;
-          playing = event.data === 1;
-          if (playing) current = null;
-          else if (selected) select(selected, false);
-          syncTimer();
-        },
-        onError: () => {
-          if (myGeneration !== generation) return;
-          playing = false;
-          if (selected) select(selected, false);
-          syncTimer();
-          showError(copy.videoError);
+        events: {
+          onReady: event => {
+            if (myGeneration !== generation) return;
+            player = event.target;
+            ready = true;
+            apiFailed = false;
+            errorBox.hidden = true;
+            customControls.hidden = false;
+            const dur = player.getDuration?.() || 0;
+            duration.textContent = formatTime(dur);
+            progress.max = String(Math.max(1, Math.floor(dur)));
+            currentTime.textContent = formatTime(pendingSeconds);
+            progress.value = String(Math.floor(pendingSeconds));
+            player.seekTo(pendingSeconds, true);
+            player.playVideo();
+            updatePlayPauseUI(true);
+            revealControls();
+            syncTimer();
+          },
+          onStateChange: event => {
+            if (myGeneration !== generation) return;
+            playing = event.data === 1;
+            updatePlayPauseUI(playing);
+            if (playing) current = null;
+            else if (selected) select(selected, false);
+            syncTimer();
+          },
+          onError: () => {
+            if (myGeneration !== generation) return;
+            playing = false;
+            updatePlayPauseUI(false);
+            if (selected) select(selected, false);
+            syncTimer();
+            showError(copy.videoError);
+          }
         }
-      }});
+      });
     } catch {
       if (myGeneration !== generation) return;
       apiFailed = true;
@@ -328,6 +387,7 @@ function initLive() {
       current = null;
       player.seekTo(seconds, true);
       player.playVideo();
+      updatePlayPauseUI(true);
       revealControls();
       return;
     }
@@ -353,10 +413,16 @@ function initLive() {
   wrapper.addEventListener('pointerenter', revealControls);
   wrapper.addEventListener('pointerdown', revealControls);
   wrapper.addEventListener('touchstart', revealControls, { passive: true });
-  playPause.addEventListener('click', () => {
+  function togglePlayPause() {
     if (!player) return;
-    if (playing) player.pauseVideo(); else player.playVideo();
+    if (playing) player.pauseVideo();
+    else player.playVideo();
     revealControls();
+  }
+  playPause.addEventListener('click', togglePlayPause);
+  wrapper.addEventListener('click', event => {
+    if (event.target.closest('#heroLiveChaptersCol, button, a, input')) return;
+    if (ready && player) togglePlayPause();
   });
   function jumpChapter(direction) {
     const currentIndex = CHAPTERS.findIndex(chapter => chapter.id === (selected?.id || CHAPTERS[0].id));
@@ -368,7 +434,9 @@ function initLive() {
   previousChapter.addEventListener('click', () => jumpChapter(-1));
   nextChapter.addEventListener('click', () => jumpChapter(1));
   progress.addEventListener('input', () => {
-    if (player) player.seekTo(Number(progress.value), true);
+    const val = Number(progress.value);
+    currentTime.textContent = formatTime(val);
+    if (player) player.seekTo(val, true);
     revealControls();
   });
   byId('loadLivePlayerBtn').addEventListener('click', () => {
@@ -385,6 +453,7 @@ function initLive() {
     player = undefined;
     ready = false;
     playing = false;
+    updatePlayPauseUI(false);
     apiFailed = false;
     errorBox.hidden = true;
     syncTimer();

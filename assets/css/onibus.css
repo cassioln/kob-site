@@ -28,14 +28,22 @@
 }
 
 .bus-header {
-  position: relative;
-  z-index: 5;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  max-width: var(--container);
-  margin-inline: auto;
-  padding: 16px var(--gutter);
+  flex-wrap: nowrap;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px max(var(--gutter), calc((100% - var(--container)) / 2));
+  background: rgba(246, 248, 252, 0.94);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(8, 47, 87, 0.08);
+  box-shadow: 0 4px 16px -4px rgba(8, 47, 87, 0.06);
+  transition: background 0.2s ease, box-shadow 0.2s ease;
 }
 
 .bus-header__brand,
@@ -43,6 +51,7 @@
   display: inline-flex;
   align-items: center;
   width: 122px;
+  flex-shrink: 0;
   transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
 }
 
@@ -62,21 +71,16 @@
 .bus-header__right {
   display: inline-flex;
   align-items: center;
+  flex-wrap: nowrap;
   gap: 12px;
-}
-
-@media (max-width: 700px) {
-  .bus-header { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px 8px; }
-  .bus-header__right { display: contents; }
-  .bus-header .header-manual-link { grid-column: 2; grid-row: 1; justify-self: end; padding: 10px 12px; font-size: .75rem; }
-  .bus-header .lang-switch { grid-column: 1; grid-row: 2; justify-self: start; }
-  .bus-header__main-link { grid-column: 2; grid-row: 2; justify-self: end; }
-  .bus-header .header-manual-link svg { display: none; }
+  flex-shrink: 0;
 }
 
 .bus-header .lang-switch {
   display: inline-flex;
   align-items: center;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
   gap: 3px;
   padding: 3px;
   background: rgba(8, 47, 87, 0.05);
@@ -98,6 +102,8 @@
   letter-spacing: 0.04em;
   color: var(--ocean-navy);
   text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -112,55 +118,164 @@
   box-shadow: 0 1px 3px rgba(8, 47, 87, 0.2);
 }
 
-@media (max-width: 640px) {
-  .bus-header__right {
-    gap: 8px;
-  }
-}
-
-.bus-header__main-link {
+.bus-header .header-manual-link {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-  padding: 8px 16px;
-  background: rgba(8, 47, 87, 0.04);
-  border: 1px solid rgba(8, 47, 87, 0.16);
-  border-radius: 999px;
-  color: var(--ocean-navy);
+  padding: 9px 14px;
+  border-radius: 8px;
+  background: #71206c;
+  border: 1px solid rgba(113, 32, 108, 0.3);
+  color: #ffffff;
   font-family: var(--font-body);
   font-size: 0.82rem;
   font-weight: 700;
   letter-spacing: 0.02em;
   text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
   transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 8px -2px rgba(113, 32, 108, 0.35);
 }
 
-.bus-header__main-link-text-short {
-  display: none;
-}
-
-.bus-header__arrow {
-  display: inline-block;
-  color: var(--ocean-cyan);
-  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), color 0.22s ease;
-}
-
-.bus-header__main-link:hover {
-  background: var(--ocean-navy);
-  border-color: var(--ocean-navy);
+.bus-header .header-manual-link:hover {
+  background: #8e2b88;
+  border-color: #8e2b88;
   color: #ffffff;
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px -4px rgba(8, 47, 87, 0.22);
+  box-shadow: 0 4px 12px -2px rgba(113, 32, 108, 0.45);
 }
 
-.bus-header__main-link:hover .bus-header__arrow {
-  color: var(--sunset-gold);
-  transform: translate(2px, -2px);
-}
-
-.bus-header__main-link:active {
+.bus-header .header-manual-link:active {
   transform: translateY(0);
-  box-shadow: 0 2px 6px -2px rgba(8, 47, 87, 0.2);
+}
+
+.bus-header .header-manual-link svg {
+  flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+  .bus-header {
+    padding-block: 10px;
+    padding-inline: max(12px, calc((100% - var(--container)) / 2));
+    gap: 8px;
+  }
+
+  .bus-header__brand {
+    width: 96px;
+  }
+
+  .bus-header__right {
+    gap: 8px;
+  }
+
+  .bus-header .lang-switch {
+    gap: 2px;
+    padding: 2px;
+  }
+
+  .bus-header .lang-switch__item {
+    min-width: 28px;
+    height: 28px;
+    padding: 0 6px;
+    font-size: 0.75rem;
+  }
+
+  .bus-header .header-manual-link {
+    padding: 8px 12px;
+    font-size: 0.76rem;
+    gap: 6px;
+  }
+
+  .bus-header .header-manual-link svg {
+    width: 15px;
+    height: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .bus-header {
+    padding-block: 8px;
+    padding-inline: max(8px, calc((100% - var(--container)) / 2));
+    gap: 6px;
+  }
+
+  .bus-header__brand {
+    width: clamp(70px, 19vw, 86px);
+  }
+
+  .bus-header__right {
+    gap: 6px;
+  }
+
+  .bus-header .lang-switch {
+    gap: 2px;
+    padding: 2px;
+  }
+
+  .bus-header .lang-switch__item {
+    min-width: 25px;
+    height: 26px;
+    padding: 0 4px;
+    font-size: 0.72rem;
+    border-radius: 3px;
+  }
+
+  .bus-header .header-manual-link {
+    padding: 7px 10px;
+    font-size: 0.73rem;
+    border-radius: 6px;
+    gap: 5px;
+  }
+
+  .bus-header .header-manual-link svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+@media (max-width: 390px) {
+  .bus-header .header-manual-link svg {
+    display: none;
+  }
+
+  .bus-header .header-manual-link {
+    padding: 6px 9px;
+    font-size: 0.72rem;
+  }
+}
+
+@media (max-width: 340px) {
+  .bus-header {
+    padding-inline: 6px;
+    gap: 4px;
+  }
+
+  .bus-header__brand {
+    width: 62px;
+  }
+
+  .bus-header__right {
+    gap: 4px;
+  }
+
+  .bus-header .lang-switch {
+    gap: 1px;
+    padding: 1px;
+  }
+
+  .bus-header .lang-switch__item {
+    min-width: 22px;
+    height: 24px;
+    padding: 0 3px;
+    font-size: 0.66rem;
+  }
+
+  .bus-header .header-manual-link {
+    padding: 5px 6px;
+    font-size: 0.68rem;
+  }
 }
 
 .bus-footer a {
@@ -2921,28 +3036,6 @@
 }
 
 @media (max-width: 580px) {
-  .bus-header {
-    padding-block: 12px;
-  }
-
-  .bus-header__brand {
-    width: 96px;
-  }
-
-  .bus-header__main-link {
-    padding: 6px 12px;
-    font-size: 0.76rem;
-    gap: 6px;
-  }
-
-  .bus-header__main-link-text {
-    display: none;
-  }
-
-  .bus-header__main-link-text-short {
-    display: inline;
-  }
-
   .bus-hero h1 {
     max-width: 11ch;
     font-size: clamp(2.65rem, 14vw, 4.6rem);

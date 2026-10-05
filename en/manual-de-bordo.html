@@ -114,24 +114,44 @@
           <span class="long-text">Official event site</span>
           <span class="short-text">Home</span>
         </a>
+        <button type="button" class="nav__toggle" id="navToggle" aria-label="Open menu" aria-expanded="false"
+          aria-controls="drawer">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round">
+            <path d="M3 6h18M3 12h18M3 18h18"></path>
+          </svg>
+        </button>
       </div>
     </div>
   </header>
 
-  <nav class="guide-nav-bar" aria-label="Guide section navigation">
-    <div class="guide-container">
-      <ul class="guide-nav-bar__list">
-        <li><a class="guide-nav-bar__link is-active" href="#inicio">Home</a></li>
-        <li><a class="guide-nav-bar__link" href="#live">Boarding live recording</a></li>
-        <li><a class="guide-nav-bar__link" href="#preparacao">Preparation</a></li>
-        <li><a class="guide-nav-bar__link" href="#cronograma">Schedule</a></li>
-        <li><a class="guide-nav-bar__link" href="#transporte">Transportation</a></li>
-        <li><a class="guide-nav-bar__link" href="#jogos">Games</a></li>
-        <li><a class="guide-nav-bar__link" href="#duvidas">FAQ</a></li>
-        <li><a class="guide-nav-bar__link" href="#contato">Contact Team</a></li>
-      </ul>
+  <div class="guide-drawer-backdrop" id="guideDrawerBackdrop" aria-hidden="true"></div>
+
+  <!-- DRAWER MANUAL DE BORDO -->
+  <div class="drawer" id="drawer" data-open="false" aria-hidden="true" inert="">
+    <div class="drawer__head">
+      <span class="nav__brand">
+        <img src="/assets/images/brand/kriativos-on-board-menu.png" alt="KOB — Kriativos On Board" width="300" height="192">
+      </span>
+      <button type="button" class="drawer__close" id="drawerClose" aria-label="Close menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round">
+          <path d="M6 6l12 12M18 6L6 18"></path>
+        </svg>
+      </button>
     </div>
-  </nav>
+    <nav aria-label="Onboard Manual navigation">
+      <a href="#live">Boarding live recording</a>
+      <a href="#preparacao">Preparation</a>
+      <a href="#cronograma">Schedule</a>
+      <a href="#transporte">Transportation</a>
+      <a href="#jogos">Games</a>
+      <a href="#duvidas">FAQ</a>
+      <a href="#contato">Contact Team</a>
+    </nav>
+    <a class="btn btn--primary btn--lg" data-analytics-channel="whatsapp" data-analytics-cta-id="guide_drawer_reserve"
+      data-analytics-placement="guide_drawer" data-analytics-intent="reservation"
+      href="https://api.whatsapp.com/send?phone=5513981580498&amp;text=Hello%2C%20Royal%20Trip%21%20I%20want%20to%20secure%20my%20spot%20at%20Kriativos%20On%20Board%202026.%20Can%20you%20help%20me%3F"
+      target="_blank" rel="noopener">Book my cabin</a>
+  </div>
 
   <main id="main">
     <!-- HERO SLIDER / WELCOME (#16) -->
@@ -175,7 +195,8 @@
                   <div class="live-search"><input id="liveSearchInput" type="search" placeholder="E.g. boarding, games, parties…" autocomplete="off" aria-controls="liveChaptersList"><button type="button" id="liveSearchClearBtn" aria-label="Clear search" hidden><svg class="" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
                   <ul class="live-chapters-list" id="liveChaptersList" aria-label="Recording topics"></ul>
                   <p class="live-empty" id="liveEmptyChaptersMsg" role="status" hidden>No topics found. Try another word.</p>
-                                  </div>
+                  <p class="live-source-note">Original recording in Portuguese. Chapter titles are translated.</p>
+                </div>
               </div>
             </aside>
           </div>

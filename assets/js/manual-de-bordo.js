@@ -982,10 +982,18 @@
   // ATIVAÇÃO DE LINKS DE NAVEGAÇÃO AO ROLAR (INTERSECTION OBSERVER)
   // --------------------------------------------------------------------------
   function initNavSpy() {
-    var navLinks = document.querySelectorAll('.guide-nav-bar__link');
-    var dockLinks = document.querySelectorAll('.guide-quick-dock__item');
-    var sections = document.querySelectorAll('section[id]');
-    if (!sections.length) return;
+    var navLinks = document.querySelectorAll('.guide-nav-bar__link, #drawer nav a');
+    if (!navLinks.length) return;
+
+    var targets = [];
+    navLinks.forEach(function (link) {
+      var href = link.getAttribute('href');
+      if (href && href.startsWith('#')) {
+        var el = document.querySelector(href);
+        if (el && targets.indexOf(el) === -1) targets.push(el);
+      }
+    });
+    if (!targets.length) return;
 
     if ('IntersectionObserver' in window) {
       var observer = new IntersectionObserver(
@@ -1001,24 +1009,73 @@
                   link.classList.remove('is-active');
                 }
               });
-              dockLinks.forEach(function (dLink) {
-                var dHref = dLink.getAttribute('href');
-                if (dHref === '#' + id) {
-                  dLink.classList.add('is-active');
-                } else {
-                  dLink.classList.remove('is-active');
-                }
-              });
             }
           });
         },
         { rootMargin: '-20% 0px -70% 0px', threshold: 0 }
       );
 
-      sections.forEach(function (sec) {
-        observer.observe(sec);
+      targets.forEach(function (target) {
+        observer.observe(target);
       });
     }
+  }
+
+  // --------------------------------------------------------------------------
+  // MENU SANDUÍCHE / DRAWER DE NAVEGAÇÃO (IGUAL À HOME)
+  // --------------------------------------------------------------------------
+  function initDrawer() {
+    var drawer = document.getElementById('drawer');
+    var toggle = document.getElementById('navToggle');
+    var closeBtn = document.getElementById('drawerClose');
+    var backdrop = document.getElementById('guideDrawerBackdrop');
+    if (!drawer || !toggle) return;
+
+    function openDrawer() {
+      drawer.dataset.open = 'true';
+      drawer.setAttribute('aria-hidden', 'false');
+      drawer.removeAttribute('inert');
+      toggle.setAttribute('aria-expanded', 'true');
+      if (backdrop) {
+        backdrop.dataset.open = 'true';
+        backdrop.setAttribute('aria-hidden', 'false');
+      }
+      document.body.style.overflow = 'hidden';
+      setInert(true);
+      if (closeBtn) closeBtn.focus();
+    }
+
+    function closeDrawer() {
+      drawer.dataset.open = 'false';
+      drawer.setAttribute('aria-hidden', 'true');
+      drawer.setAttribute('inert', '');
+      toggle.setAttribute('aria-expanded', 'false');
+      if (backdrop) {
+        backdrop.dataset.open = 'false';
+        backdrop.setAttribute('aria-hidden', 'true');
+      }
+      document.body.style.overflow = '';
+      setInert(false);
+      toggle.focus();
+    }
+
+    function setInert(on) {
+      ['main', 'header.guide-header', 'footer'].forEach(function (sel) {
+        var el = document.querySelector(sel);
+        if (!el) return;
+        if (on) el.setAttribute('inert', ''); else el.removeAttribute('inert');
+      });
+    }
+
+    toggle.addEventListener('click', openDrawer);
+    if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
+    if (backdrop) backdrop.addEventListener('click', closeDrawer);
+    drawer.querySelectorAll('a').forEach(function (a) {
+      a.addEventListener('click', closeDrawer);
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && drawer.dataset.open === 'true') closeDrawer();
+    });
   }
 
   // --------------------------------------------------------------------------
@@ -1032,6 +1089,7 @@
     initFAQ();
     initFAQTools();
     initSupportModal();
+    initDrawer();
     initNavSpy();
   });
 })();

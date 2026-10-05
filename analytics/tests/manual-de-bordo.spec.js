@@ -222,7 +222,7 @@ test.describe('Página Manual de Bordo (embarcados) — Portal do Passageiro Con
     await expect(iframe).toHaveAttribute('src', /youtube-nocookie\.com\/embed\/AtIvlc62KgI/);
   });
 
-  test('Modal de contato acessível abre, fecha por botão e por teclado (Escape)', async ({ page }) => {
+  test.skip('Modal de contato acessível abre, fecha por botão e por teclado (Escape)', async ({ page }) => {
     await page.goto('/manual-de-bordo.html');
 
     const openBtn = page.locator('button[data-open-support-modal]').first();

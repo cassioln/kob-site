@@ -273,7 +273,7 @@
   <!-- Fontes da marca (banner KOB): Gobold Extra2 = display, Chantal = acento manuscrito -->
   <link rel="preload" href="assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
 
-  <link rel="stylesheet" href="assets/css/main.css?v=20261004-manual-header">
+  <link rel="stylesheet" href="assets/css/main.css?v=20261005-nav-lang">
   <link rel="stylesheet" href="assets/css/cookie-consent.css?v=20260820-fix-contrast">
   <script defer src="assets/js/cookie-consent.js?v=20260713-5"></script>
 </head>
@@ -430,8 +430,15 @@
       <a href="#faq">Dúvidas</a>
     </nav>
     <div class="nav__right">
-      <a class="btn header-manual-link" href="https://kriativosonboard.com.br/manualdebordo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 7v14M3 3h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5v16h-5a4 4 0 0 0-4 2 4 4 0 0 0-4-2H3Z"/></svg><span>Manual de bordo</span></a>
       <div class="lang-switch" role="group" aria-label="Idioma / Language">
+        <a href="/" class="lang-switch__btn is-active" hreflang="pt-BR" aria-current="page" title="Português (Brasil)">PT</a>
+        <span class="lang-switch__sep" aria-hidden="true">|</span>
+        <a href="/en/" class="lang-switch__btn" hreflang="en" title="English">EN</a>
+        <span class="lang-switch__sep" aria-hidden="true">|</span>
+        <a href="/es/" class="lang-switch__btn" hreflang="es" title="Español">ES</a>
+      </div>
+      <a class="btn header-manual-link" href="https://kriativosonboard.com.br/manualdebordo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 7v14M3 3h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5v16h-5a4 4 0 0 0-4 2 4 4 0 0 0-4-2H3Z"/></svg><span>Manual de bordo</span></a>
+      <div class="lang-switch lang-switch--mobile" role="group" aria-label="Idioma / Language">
         <a href="/" class="lang-switch__btn is-active" hreflang="pt-BR" aria-current="page" title="Português (Brasil)">PT</a>
         <span class="lang-switch__sep" aria-hidden="true">|</span>
         <a href="/en/" class="lang-switch__btn" hreflang="en" title="English">EN</a>
@@ -454,13 +461,8 @@
   <!-- DRAWER MOBILE -->
   <div class="drawer" id="drawer" data-open="false" aria-hidden="true" inert="">
     <div class="drawer__head">
-      <div class="lang-switch lang-switch--mobile" role="group" aria-label="Idioma / Language">
-        <a href="/" class="lang-switch__btn is-active" hreflang="pt-BR" aria-current="page" title="Português (Brasil)">PT</a>
-        <span class="lang-switch__sep" aria-hidden="true">|</span>
-        <a href="/en/" class="lang-switch__btn" hreflang="en" title="English">EN</a>
-        <span class="lang-switch__sep" aria-hidden="true">|</span>
-        <a href="/es/" class="lang-switch__btn" hreflang="es" title="Español">ES</a>
-      </div>
+      <span class="nav__brand"><img src="assets/images/brand/kriativos-on-board-menu.png" alt="KOB — Kriativos On Board"
+          width="300" height="192"></span>
       <button type="button" class="drawer__close" id="drawerClose" aria-label="Fechar menu">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round">
           <path d="M6 6l12 12M18 6L6 18"></path>

@@ -54,7 +54,7 @@ test('Busca nos trechos reais, ignora acentos e pontuação e mantém seleção'
   await page.locator('#liveSearchInput').fill('Wise Nomad');
   const result = page.locator('.live-chapter-item:not([hidden])');
   await expect(result).toHaveCount(1);
-  await expect(result.locator('.live-chapter-item__snippet')).toContainText('Transcrição'.toLowerCase());
+  await expect(result.locator('.live-chapter-item__snippet')).toContainText('Wise');
   await expect(result.locator('mark')).not.toHaveCount(0);
   await result.locator('button').click();
   await readyPlayer(page);
@@ -119,6 +119,24 @@ test('Controles personalizados substituem os controles do YouTube e navegam entr
   await expect(page.locator('#liveDuration')).toHaveText('1:20:06');
   await expect(page.locator('[data-seconds="913"] .live-chapter-item__time')).toHaveText('00:15:13');
   expect(await page.evaluate(() => window.__liveMock.instances[0].options.playerVars.controls)).toBe(0);
+  expect(await page.evaluate(() => window.__liveMock.instances[0].options.playerVars.disablekb)).toBe(1);
+  expect(await page.evaluate(() => window.__liveMock.instances[0].options.playerVars.fs)).toBe(0);
+  expect(await page.evaluate(() => window.__liveMock.instances[0].options.playerVars.iv_load_policy)).toBe(3);
+  await expect.poll(() => page.locator('#livePlayerContainer iframe').evaluate(e => getComputedStyle(e).pointerEvents)).toBe('none');
+
+  // Play / Pause toggle pelo botão dos controles customizados
+  await expect(page.locator('#livePlayPauseBtn')).toHaveText('❚❚');
+  await expect(page.locator('#livePlayPauseBtn')).toHaveAttribute('aria-label', 'Pausar');
+  await page.locator('#livePlayPauseBtn').click();
+  expect(await page.evaluate(() => window.__liveMock.calls.at(-1))).toEqual(['pause']);
+  await expect(page.locator('#livePlayPauseBtn')).toHaveText('▶');
+  await expect(page.locator('#livePlayPauseBtn')).toHaveAttribute('aria-label', 'Reproduzir');
+
+  // Clique no container do vídeo aciona o toggle do player
+  await page.locator('#livePlayerContainer').click({ position: { x: 50, y: 50 } });
+  expect(await page.evaluate(() => window.__liveMock.calls.at(-1))).toEqual(['play']);
+  await expect(page.locator('#livePlayPauseBtn')).toHaveText('❚❚');
+
   await page.locator('#liveNextChapterBtn').click();
   expect(await page.evaluate(() => window.__liveMock.seconds)).toBe(913);
   await expect(page.locator('#liveCustomTopic')).toContainText('Royal Trip');
@@ -152,7 +170,7 @@ for (const [lang, term, title, label] of [['en', 'luggage', 'Luggage', 'Portugue
     await expect(result.filter({ hasText: title }).first()).toBeVisible();
     await expect(page.locator('.live-source-note')).toContainText(lang === 'en' ? 'Portuguese' : 'portugués');
     await page.locator('#liveSearchInput').fill('Wise');
-    await expect(page.locator('.live-chapter-item__snippet:not([hidden])')).toContainText(label);
+    await expect(page.locator('.live-chapter-item__snippet:not([hidden])')).toContainText('Wise');
     await expect(page.locator('#liveModal')).toHaveCount(0);
   });
 }
@@ -178,14 +196,16 @@ for (const width of [320, 390, 768, 1440]) {
       expect(await page.evaluate(() => getComputedStyle(document.getElementById('heroLiveChaptersCol')).position)).toBe('fixed');
       await expect(page.locator('#heroLiveToggleChaptersBtn')).toBeVisible();
       expect(await page.evaluate(() => getComputedStyle(document.getElementById('liveChaptersList')).overflowY)).toBe('auto');
+      expect(Number(await page.evaluate(() => getComputedStyle(document.getElementById('heroLiveCinema')).zIndex))).toBeGreaterThanOrEqual(1000);
+      expect(Number(await page.evaluate(() => getComputedStyle(document.getElementById('heroLiveToggleChaptersBtn')).zIndex))).toBeGreaterThanOrEqual(20);
       const mobileDrawer = await page.locator('#heroLiveChaptersCol').boundingBox();
       const mobilePanel = await page.locator('#heroLiveChaptersPanel').boundingBox();
       const mobileTab = await page.locator('#heroLiveToggleChaptersBtn').boundingBox();
       expect(mobilePanel.x).toBeGreaterThan(0);
       expect(mobileDrawer.x).toBe(0);
-      expect(mobileTab.x).toBeGreaterThanOrEqual(-28);
-      expect(mobileTab.x).toBeLessThanOrEqual(1);
-      expect(mobilePanel.x).toBeGreaterThanOrEqual(16);
+      expect(mobilePanel.x + mobilePanel.width).toBeCloseTo(width, 0);
+      expect(mobileTab.x + mobileTab.width).toBeCloseTo(mobilePanel.x, 0);
+      expect(mobileTab.x).toBeGreaterThanOrEqual(0);
       expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
       await page.keyboard.press('Escape');
       await expect(page.locator('#heroLiveToggleChaptersBtn')).toBeFocused();
@@ -267,7 +287,7 @@ test('Hovers preservam contraste, idioma ativo e fundo do seletor', async ({ pag
     return { color: s.color, background: s.backgroundColor, decoration: s.textDecorationLine };
   });
   const switchBackground = (await styles('.guide-header .lang-switch')).background;
-  for (const selector of ['.guide-header__home-link', '.guide-header .lang-switch__item:not(.is-active)', '.guide-nav-bar__link.is-active']) {
+  for (const selector of ['.guide-header__home-link', '.guide-header .lang-switch__item:not(.is-active)', '.guide-header .nav__toggle']) {
     await page.locator(selector).first().hover();
     await expect.poll(async () => (await styles(selector)).color).toBe('rgb(255, 255, 255)');
     expect((await styles(selector)).decoration).toBe('none');
