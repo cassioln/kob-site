@@ -44,13 +44,13 @@
   <link rel="preload" href="/assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
 
   <link rel="stylesheet" href="/assets/css/main.css?v=20261003-embarcados">
-  <link rel="stylesheet" href="/assets/css/manual-de-bordo.css?v=20261005-topic-player">
+  <link rel="stylesheet" href="/assets/css/manual-de-bordo.css?v=20261005-desktop-display">
   <link rel="stylesheet" href="/assets/css/cookie-consent.css?v=20260820-fix-contrast">
 
   <script defer src="/assets/js/cookie-consent.js?v=20260713-5"></script>
   <script defer src="/assets/js/manual-de-bordo.js?v=20261005-topic-player"></script>
 
-  <script type="module" src="/assets/js/manual-de-bordo-live.js?v=20261005-topic-player"></script>
+  <script type="module" src="/assets/js/manual-de-bordo-live.js?v=20261005-desktop-display"></script>
   <script type="module" src="/assets/js/manual-de-bordo-checklist.js?v=20261005-topic-player"></script>
   <script type="module" src="/assets/js/manual-de-bordo-routing.js?v=20261004-manual"></script>
   <script type="application/ld+json">
@@ -139,10 +139,12 @@
       </button>
     </div>
     <nav aria-label="Onboard Manual navigation">
+      <a class="guide-menu-desktop" href="https://kriativosonboard.com.br/en/">Official event site</a>
       <a href="#live">Boarding live recording</a>
       <a href="#checklist" data-open-checklist>Preparation</a>
       <a href="#cronograma">Schedule</a>
-      <a href="#transporte">Transportation</a>
+      <a class="guide-menu-mobile" href="#transporte">Transportation</a>
+      <a class="guide-menu-desktop" href="https://kriativosonboard.com.br/en/onibus.html">Official Charter</a>
       <a href="#jogos">Games</a>
       <a href="#duvidas">FAQ</a>
       <a href="#contato">Contact Team</a>
@@ -187,6 +189,11 @@
                 <input class="live-custom-controls__progress" id="liveProgress" type="range" min="0" max="1" value="0" step="1" aria-label="Topic progress">
                 <span class="live-custom-controls__time" id="liveDuration">00:00</span>
               </div>
+                <div class="live-total-timeline">
+                  <span id="liveTotalElapsed" aria-hidden="true">00:00</span>
+                  <progress class="live-total-progress" id="liveTotalProgress" max="4806" value="0" aria-label="Full recording progress"></progress>
+                  <span id="liveTotalRemaining" aria-hidden="true">−01:20:06</span>
+                </div>
             </div>
             </div>
 

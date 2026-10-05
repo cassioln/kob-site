@@ -1,4 +1,4 @@
-import { CHAPTERS, LIVE_VIDEO_ID } from './manual-de-bordo-live-data.js?v=20261005-topic-player';
+import { CHAPTERS, LIVE_VIDEO_ID, LIVE_DURATION } from './manual-de-bordo-live-data.js?v=20261005-topic-player';
 import { normalizeSearch, matchChapter, highlightParts, excerpt } from './manual-de-bordo-live-search.js?v=20261005-topic-player';
 
 import { topicAt, topicProgress, seekInTopic } from './manual-de-bordo-live-timeline.js?v=20261005-topic-player';
@@ -9,19 +9,19 @@ const copy = {
   pt: {
     topics: 'Assuntos', close: 'Recolher assuntos',
     selected: 'Selecionado', playing: 'Em reprodução', transcript: 'Trecho da transcrição fornecida', updated: 'Regra atualizada', faq: 'Conferir no guia',
-    videoTitle: 'Live de embarque · Kriativos On Board 2026', apiError: 'Não foi possível sincronizar os assuntos. O vídeo ainda pode ser assistido aqui ou pelo link no YouTube.', previousTopic: 'Assunto anterior', nextTopic: 'Próximo assunto', play: 'Reproduzir', pause: 'Pausar', progress: 'Progresso do assunto', closeGuide: 'Fechar orientação',
+    videoTitle: 'Live de embarque · Kriativos On Board 2026', apiError: 'Não foi possível sincronizar os assuntos. O vídeo ainda pode ser assistido aqui ou pelo link no YouTube.', previousTopic: 'Assunto anterior', nextTopic: 'Próximo assunto', play: 'Reproduzir', pause: 'Pausar', progress: 'Progresso do assunto', remaining: 'Restante', closeGuide: 'Fechar orientação',
     videoError: 'O YouTube não conseguiu reproduzir este vídeo. Tente novamente ou abra o trecho no YouTube.', fullscreenError: 'Não foi possível ampliar. Você pode abrir o vídeo no YouTube.', expand: 'Ampliar vídeo', exit: 'Sair da tela cheia'
   },
   en: {
     topics: 'Topics', close: 'Collapse topics',
     selected: 'Selected', playing: 'Playing', transcript: 'Excerpt of the supplied Portuguese transcript', updated: 'Updated rule', faq: 'Check the guide',
-    videoTitle: 'Boarding live recording · Kriativos On Board 2026', apiError: 'Topic synchronisation is unavailable. You can still watch here or open the video on YouTube.', previousTopic: 'Previous topic', nextTopic: 'Next topic', play: 'Play', pause: 'Pause', progress: 'Topic progress', closeGuide: 'Close guidance',
+    videoTitle: 'Boarding live recording · Kriativos On Board 2026', apiError: 'Topic synchronisation is unavailable. You can still watch here or open the video on YouTube.', previousTopic: 'Previous topic', nextTopic: 'Next topic', play: 'Play', pause: 'Pause', progress: 'Topic progress', remaining: 'Remaining', closeGuide: 'Close guidance',
     videoError: 'YouTube could not play this video. Try again or open this topic on YouTube.', fullscreenError: 'Full screen is unavailable. You can open the video on YouTube.', expand: 'Expand video', exit: 'Exit full screen'
   },
   es: {
     topics: 'Temas', close: 'Recoger temas',
     selected: 'Seleccionado', playing: 'En reproducción', transcript: 'Fragmento de la transcripción proporcionada en portugués', updated: 'Regla actualizada', faq: 'Consultar la guía',
-    videoTitle: 'Charla de embarque · Kriativos On Board 2026', apiError: 'No se pudieron sincronizar los temas. Puedes seguir viendo aquí o abrir el vídeo en YouTube.', previousTopic: 'Tema anterior', nextTopic: 'Siguiente tema', play: 'Reproducir', pause: 'Pausar', progress: 'Progreso del tema', closeGuide: 'Cerrar orientación',
+    videoTitle: 'Charla de embarque · Kriativos On Board 2026', apiError: 'No se pudieron sincronizar los temas. Puedes seguir viendo aquí o abrir el vídeo en YouTube.', previousTopic: 'Tema anterior', nextTopic: 'Siguiente tema', play: 'Reproducir', pause: 'Pausar', progress: 'Progreso del tema', remaining: 'Restante', closeGuide: 'Cerrar orientación',
     videoError: 'YouTube no pudo reproducir el vídeo. Inténtalo de nuevo o abre este tema en YouTube.', fullscreenError: 'No se pudo ampliar. Puedes abrir el vídeo en YouTube.', expand: 'Ampliar vídeo', exit: 'Salir de pantalla completa'
   }
 }[lang] || null;
@@ -109,6 +109,9 @@ function initLive() {
   const progress = byId('liveProgress');
   const currentTime = byId('liveCurrentTime');
   const duration = byId('liveDuration');
+  const totalProgress = byId('liveTotalProgress');
+  const totalElapsed = byId('liveTotalElapsed');
+  const totalRemaining = byId('liveTotalRemaining');
   let selected = null;
   let current = null;
   let pendingSeconds = 0;
@@ -299,6 +302,15 @@ function initLive() {
     progress.value = String(Math.floor(state.elapsed));
     progress.disabled = !ready;
     progress.setAttribute('aria-valuetext', `${formatTime(state.elapsed)} / ${formatTime(state.duration)} · ${selected.titles[lang]}`);
+    const actualDuration = Number(player?.getDuration?.());
+    const fullDuration = Number.isFinite(actualDuration) && actualDuration > 0 ? actualDuration : LIVE_DURATION;
+    const fullElapsed = Math.max(0, Math.min(fullDuration, Number(seconds) || 0));
+    const remaining = Math.max(0, fullDuration - fullElapsed);
+    totalProgress.max = fullDuration;
+    totalProgress.value = fullElapsed;
+    totalElapsed.textContent = formatTime(fullElapsed);
+    totalRemaining.textContent = `−${formatTime(remaining)}`;
+    totalProgress.setAttribute('aria-valuetext', `${formatTime(fullElapsed)} / ${formatTime(fullDuration)} · ${copy.remaining}: ${formatTime(remaining)}`);
   }
   function tick() {
     if (!ready || !player?.getCurrentTime) return;

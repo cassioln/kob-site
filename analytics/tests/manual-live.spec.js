@@ -293,7 +293,7 @@ test('Hovers preservam contraste, idioma ativo e fundo do seletor', async ({ pag
     return { color: s.color, background: s.backgroundColor, decoration: s.textDecorationLine };
   });
   const switchBackground = (await styles('.guide-header .lang-switch')).background;
-  for (const selector of ['.guide-header__home-link', '.guide-header .lang-switch__item:not(.is-active)', '.guide-header .nav__toggle']) {
+  for (const selector of ['.guide-header .lang-switch__item:not(.is-active)', '.guide-header .nav__toggle']) {
     await page.locator(selector).first().hover();
     await expect.poll(async () => (await styles(selector)).color).toBe('rgb(255, 255, 255)');
     expect((await styles(selector)).decoration).toBe('none');
@@ -302,14 +302,14 @@ test('Hovers preservam contraste, idioma ativo e fundo do seletor', async ({ pag
   expect((await styles('.guide-header .lang-switch__item.is-active')).color).toBe('rgb(255, 255, 255)');
   await page.locator('.guide-header .lang-switch__item').last().focus();
   await page.keyboard.press('Tab');
-  await expect(page.locator('.guide-header__home-link')).toBeFocused();
-  await expect.poll(async () => (await styles('.guide-header__home-link')).color).toBe('rgb(255, 255, 255)');
+  await expect(page.locator('.guide-header .nav__toggle')).toBeFocused();
+  await expect.poll(async () => (await styles('.guide-header .nav__toggle')).color).toBe('rgb(255, 255, 255)');
 });
 
-test('Sem JavaScript, há links diretos para todos os capítulos e as respostas continuam disponíveis', async ({ browser }) => {
-  const context = await browser.newContext({ javaScriptEnabled: false });
+test('Sem JavaScript, há links diretos para todos os capítulos e as respostas continuam disponíveis', async ({ browser, baseURL }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false, baseURL });
   const page = await context.newPage();
-  await page.goto('http://127.0.0.1:4173/manual-de-bordo.html');
+  await page.goto('/manual-de-bordo.html');
   await page.locator('.live-noscript summary').click();
   await expect(page.locator('.live-noscript a')).toHaveCount(41);
   await expect(page.locator('#duvidas details.faq-item')).toHaveCount(42);
@@ -427,3 +427,68 @@ test.describe('Aviso por toque',()=>{
     expect(await page.evaluate(()=>window.__liveMock.calls.some(call=>call[0]==='pause'))).toBe(false);
   });
 });
+
+test('Linha total é discreta, não interativa e acompanha a duração real sem alterar o range do assunto', async ({page})=>{
+  await page.setViewportSize({width:1440,height:1000});
+  await page.goto('/manual-de-bordo.html');
+  await page.locator('#loadLivePlayerBtn').click(); await readyPlayer(page);
+  const total=page.locator('#liveTotalProgress');
+  await expect(total).toBeVisible();
+  await expect(total).toHaveJSProperty('max',4806);
+  await expect(total).toHaveJSProperty('value',833);
+  await expect(page.locator('#liveProgress')).toHaveAttribute('max','80');
+  await expect(page.locator('#liveTotalElapsed')).toHaveText('13:53');
+  await expect(page.locator('#liveTotalRemaining')).toHaveText('−1:06:13');
+  expect((await total.boundingBox()).height).toBeLessThanOrEqual(3);
+  expect(await total.evaluate(el=>el.tabIndex)).toBe(-1);
+  expect(await total.evaluate(el=>getComputedStyle(el.parentElement).pointerEvents)).toBe('none');
+  await page.locator('#liveProgress').evaluate(input=>{input.value='30';input.dispatchEvent(new Event('input',{bubbles:true}));});
+  await expect(total).toHaveJSProperty('value',863);
+  await expect(page.locator('#liveCurrentTime')).toHaveText('00:30');
+  await page.evaluate(()=>{window.__liveMock.duration=4807;window.__liveMock.seconds=4807;window.__liveMock.instances[0].events.onStateChange({data:2});});
+  await expect(total).toHaveJSProperty('max',4807);
+  await expect(total).toHaveJSProperty('value',4807);
+  await expect(page.locator('#liveTotalRemaining')).toHaveText('−00:00');
+  await expect(total).toHaveAttribute('aria-valuetext',/Restante: 00:00/);
+  await page.setViewportSize({width:390,height:844});
+  await expect(total).toBeHidden();
+  expect(await page.locator('#liveNextChapterBtn .live-control-icon').evaluate(el=>getComputedStyle(el).order)).toBe('0');
+});
+
+for(const [lang,path,home,charter,prefix] of [
+  ['pt','/manual-de-bordo.html','Site oficial do evento','Fretado Oficial',''],
+  ['en','/en/manual-de-bordo.html','Official event site','Official Charter','/en'],
+  ['es','/es/manual-de-bordo.html','Sitio oficial del evento','Autobús Oficial','/es']
+]){
+ test(`Desktop: título à direita, seta depois do assunto e menu localizado em ${lang}`,async({page})=>{
+  await page.setViewportSize({width:1440,height:1000});await page.goto(path);
+  await expect(page.locator('.guide-header__home-link')).toBeHidden();
+  await page.locator('#navToggle').click();
+  await expect(page.locator('#drawer a').filter({hasText:home})).toBeVisible();
+  await expect(page.locator('#drawer .guide-menu-desktop').last()).toHaveText(charter);
+  await expect(page.locator('#drawer .guide-menu-desktop').last()).toHaveAttribute('href',`https://kriativosonboard.com.br${prefix}/onibus.html`);
+  await expect(page.locator('#drawer .guide-menu-mobile')).toBeHidden();
+  await page.keyboard.press('Escape');
+  await page.locator('#loadLivePlayerBtn').click();await readyPlayer(page);
+  const box=await page.locator('#livePlayerWrapper').boundingBox();
+  const title=page.locator('#liveCustomTopic');const t=await title.boundingBox();
+  expect(t.x+t.width).toBeGreaterThan(box.x+box.width-35);
+  expect(t.y).toBeLessThan(box.y+40);
+  const style=await title.evaluate(el=>{const s=getComputedStyle(el);return {font:s.fontFamily,size:parseFloat(s.fontSize),color:s.color,background:s.backgroundColor,shadow:s.textShadow};});
+  expect(style.font).toContain('Gobold');expect(style.size).toBeGreaterThan(20);
+  expect(style.color).toBe('rgb(255, 255, 255)');expect(style.background).toBe('rgba(0, 0, 0, 0)');expect(style.shadow).not.toBe('none');
+  const next=page.locator('#liveNextChapterBtn');await next.hover();
+  await expect.poll(async()=>(await next.boundingBox()).width).toBeGreaterThan(100);
+  const label=await next.locator('.live-control-label').boundingBox(),icon=await next.locator('.live-control-icon').boundingBox();
+  expect(icon.x).toBeGreaterThan(label.x+label.width-1);
+  await page.setViewportSize({width:390,height:844});
+  await expect(page.locator('.guide-header__home-link')).toBeHidden();
+  await expect(page.locator('#liveTotalProgress')).toBeHidden();
+  await page.locator('#navToggle').click();
+  await expect(page.locator('#drawer .guide-menu-desktop').first()).toBeHidden();
+  await expect(page.locator('#drawer .guide-menu-mobile')).toBeVisible();
+  await expect(page.locator('#drawer .guide-menu-mobile')).toHaveAttribute('href','#transporte');
+  await page.setViewportSize({width:600,height:844});
+  await expect(page.locator('.guide-header__home-link')).toBeVisible();
+ });
+}
