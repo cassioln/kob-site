@@ -461,7 +461,7 @@
 .live-custom-controls__time { min-width: 42px; color: #d7e8f5; font-size: .68rem; font-variant-numeric: tabular-nums; text-align: center; }
 .live-custom-controls__progress { flex: 1; min-width: 80px; accent-color: #ff0033; cursor: pointer; }
 .hero-live-player:fullscreen { width: 100vw; height: 100vh; border: 0; border-radius: 0; aspect-ratio: auto; }
-.live-drawer { --live-tab-width: 52px; position: absolute; top: 0; right: 0; width: min(430px, 100%); height: min(100%, 600px); min-height: 400px; z-index: 4; overflow: hidden; pointer-events: none; }
+.live-drawer { --live-tab-width: 52px; position: absolute; top: 0; right: 0; width: min(430px, 100%); height: 100%; min-height: 0; z-index: 4; overflow: hidden; pointer-events: none; }
 .live-drawer__slide { position: absolute; inset: 0; transform: translateX(0); transition: transform 360ms cubic-bezier(.16, 1, .3, 1); }
 .is-collapsed .live-drawer__slide { transform: translateX(calc(100% - var(--live-tab-width))); transition: transform 220ms cubic-bezier(.4, 0, 1, 1); }
 .live-drawer__tab { position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: var(--live-tab-width); min-height: 190px; padding: 16px 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; border: 1px solid #c679bb; border-right: 0; border-radius: 12px 0 0 12px; background: #71206c; color: #fff; font: 700 .88rem/1.5 var(--font-body); cursor: pointer; pointer-events: auto; overflow: hidden; transition: background .18s ease, border-color .18s ease, box-shadow .18s ease; }
@@ -773,7 +773,7 @@
   left: 0;
   top: 50%;
   transform: translateY(-50%);
-  z-index: 300;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -2020,7 +2020,7 @@
 }
 
 /* Checklist access sits in the corner rather than across the welcome title. */
-.checklist-sidebar-toggle { z-index: 300; top: auto; bottom: 14px; left: 14px; transform: none; flex-direction: row; padding: 10px 12px; border: 1px solid #6a859d; border-radius: 8px; box-shadow: 0 3px 10px rgba(0, 0, 0, .16); transition: background .18s ease; }
+.checklist-sidebar-toggle { z-index: 2; top: auto; bottom: 14px; left: 14px; transform: none; flex-direction: row; padding: 10px 12px; border: 1px solid #6a859d; border-radius: 8px; box-shadow: 0 3px 10px rgba(0, 0, 0, .16); transition: background .18s ease; }
 .checklist-sidebar-toggle:hover, .checklist-sidebar-toggle:focus-visible { transform: none; box-shadow: 0 3px 10px rgba(0, 0, 0, .16); }
 .checklist-sidebar-toggle__label { writing-mode: horizontal-tb; transform: none; font-size: .7rem; letter-spacing: .03em; line-height: 1.5; }
 .checklist-sidebar-toggle__badge { line-height: 1.5; }
