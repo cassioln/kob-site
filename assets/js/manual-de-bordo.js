@@ -534,6 +534,23 @@
         }
       }
 
+      var panels = document.querySelectorAll('#duvidas .faq__panel');
+      panels.forEach(function (panel) {
+        var panelCat = panel.getAttribute('data-category');
+        var itemsInPanel = panel.querySelectorAll('.faq-item');
+        var hasVisibleItems = false;
+        itemsInPanel.forEach(function (item) {
+          if (item.style.display !== 'none') {
+            hasVisibleItems = true;
+          }
+        });
+        if (hasVisibleItems && (currentCategory === 'all' || currentCategory === panelCat)) {
+          panel.style.display = '';
+        } else {
+          panel.style.display = 'none';
+        }
+      });
+
       if (resultsCounter) {
         resultsCounter.textContent = visibleCount.toString();
       }
