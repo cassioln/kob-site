@@ -293,18 +293,29 @@ h4 {
 }
 
 .header-manual-link {
-  padding: 12px 16px;
-  border: 1px solid rgba(255, 255, 255, .35);
-  border-radius: 8px;
-  background: #71206c;
-  color: #fff;
-  font-size: .875rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: var(--r-pill, 6px);
+  background: var(--foam-white, #ffffff);
+  color: var(--action, #71206c);
+  text-decoration: none;
   white-space: nowrap;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.16);
+  transition: transform var(--dur-state) var(--ease-quart),
+    background var(--dur-state) var(--ease-quart),
+    box-shadow var(--dur-state) var(--ease-quart),
+    border-color var(--dur-state) var(--ease-quart),
+    color var(--dur-state) var(--ease-quart);
 }
 
 .header-manual-link:hover {
-  background: #8e2b88;
-  color: #fff;
+  background: #f0f4f8;
+  border-color: #ffffff;
+  color: var(--action-hover, #57127a);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
 }
 
 .header-manual-link:focus-visible {
@@ -312,7 +323,47 @@ h4 {
   outline-offset: 3px;
 }
 
-.header-manual-link svg { flex-shrink: 0; }
+.header-manual-link__icon {
+  flex-shrink: 0;
+  color: var(--action, #71206c);
+  transition: transform var(--dur-state) var(--ease-quart), color var(--dur-state) var(--ease-quart);
+}
+
+.header-manual-link:hover .header-manual-link__icon {
+  transform: scale(1.08);
+  color: var(--action-hover, #57127a);
+}
+
+.header-manual-link__lines {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  text-align: left;
+  line-height: 1.18;
+}
+
+.header-manual-link__sub {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: rgba(113, 32, 108, 0.82);
+  display: block;
+}
+
+.header-manual-link__title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--action, #71206c);
+  display: block;
+  white-space: nowrap;
+}
+
+.header-manual-link__title strong {
+  font-weight: 800;
+  color: var(--action-hover, #57127a);
+  letter-spacing: 0.01em;
+}
 
 .btn--primary:hover {
   background: var(--action-hover);
@@ -463,10 +514,10 @@ h4 {
 .nav[data-scrolled="false"] .nav__links {
   flex: 1 1 auto;
   justify-content: center;
-  gap: clamp(4px, .6vw, 10px);
+  gap: clamp(3px, 0.5vw, 6px);
 }
 
-/* "O evento" e "O que inclui" só aparecem no menu da 1ª dobra (Hero).
+/* "O evento", "O que inclui" e "Manual de Bordo" só aparecem no menu da 1ª dobra (Hero).
    No desktop, o seletor de idioma some ao rolar para dar lugar à marca e ao botão de reserva. */
 .nav[data-scrolled="true"] .nav__link--fold1 {
   display: none;
@@ -482,8 +533,8 @@ h4 {
   color: rgba(255, 255, 255, 0.82);
   text-decoration: none;
   font-weight: 500;
-  padding: 9px 10px;
-  font-size: .875rem;
+  padding: 8px clamp(6px, 0.6vw, 9px);
+  font-size: .85rem;
   white-space: nowrap;
   border-radius: var(--r-pill);
   transition: color var(--dur-state) var(--ease-quart), background var(--dur-state) var(--ease-quart);
@@ -504,14 +555,18 @@ h4 {
 }
 
 .nav[data-scrolled="true"] .btn--primary {
-  background: var(--foam-white);
-  color: var(--action);
+  background: linear-gradient(135deg, rgba(113, 32, 108, 0.95) 0%, rgba(142, 43, 136, 0.98) 100%);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 4px 16px rgba(113, 32, 108, 0.32);
 }
 
 .nav[data-scrolled="true"] .btn--primary:hover {
-  background: var(--mist-100);
-  color: var(--action-hover);
-  box-shadow: rgba(0, 0, 0, 0.28) 0px 12px 40px;
+  background: linear-gradient(135deg, #872681 0%, #a4339d 100%);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 8px 24px rgba(113, 32, 108, 0.5);
+  transform: translateY(-2px);
 }
 
 .nav[data-scrolled="false"] .nav__right .btn--primary {
@@ -547,11 +602,10 @@ h4 {
 }
 
 /* Ordem Desktop Padrão:
-   1. Seletor de Idiomas Desktop (ao lado esquerdo do manual)
-   2. Botão Manual de Bordo
-   3. Botão Primário de Reserva (visível quando scrolled)
-   4. Seletor Mobile (oculto no desktop)
-   5. Toggle do Menu (oculto no desktop) */
+   - No topo (data-scrolled="false"): o link do manual aparece no menu,
+     com o seletor de idiomas à direita.
+   - Ao rolar (data-scrolled="true"): o botão do manual fica à direita, posicionado imediatamente
+     ao lado esquerdo de "Garantir minha vaga" (.btn--primary), ambos com o mesmo tamanho (58px). */
 .nav__right .lang-switch:not(.lang-switch--mobile) {
   order: 0;
   flex-shrink: 0;
@@ -559,6 +613,10 @@ h4 {
 
 .nav__right .header-manual-link {
   order: 1;
+}
+
+.nav__right .btn--primary {
+  order: 2;
 }
 
 .nav__right .lang-switch--mobile {
@@ -572,9 +630,66 @@ h4 {
 
 @media (min-width: 901px) {
   .nav .header-manual-link {
-    min-width: 202px;
+    height: 58px;
+    min-height: 58px;
+    box-sizing: border-box;
+    padding: 0 18px;
+    display: inline-flex;
+    align-items: center;
     justify-content: center;
-    text-align: center;
+    border-radius: var(--r-pill, 6px);
+  }
+
+  .nav[data-scrolled="false"] .nav__links {
+    margin: 0 auto;
+    flex: 0 1 auto;
+  }
+
+  .nav[data-scrolled="false"] .lang-switch:not(.lang-switch--mobile) {
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+
+  /* Ao rolar (data-scrolled="true"):
+     .nav__right fica alinhado à direita contendo o botão do manual à esquerda
+     e o botão 'Garantir minha vaga' à direita, ambos com exatamente 58px de altura */
+  .nav[data-scrolled="true"] .nav__right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: auto;
+  }
+
+  .nav[data-scrolled="true"] .header-manual-link {
+    display: inline-flex;
+    position: relative;
+    order: 1;
+    margin: 0;
+    transform: none;
+  }
+
+  .nav[data-scrolled="true"] .header-manual-link:hover {
+    transform: translateY(-2px);
+  }
+
+  /* Garante que o botão primário tenha exatamente o mesmo tamanho (58px de altura) e proporção */
+  .nav[data-scrolled="true"] .nav__right .btn--primary {
+    height: 58px;
+    min-height: 58px;
+    box-sizing: border-box;
+    padding: 0 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--r-pill, 6px);
+    order: 2;
+  }
+}
+
+/* O botão só é redundante quando o menu completo está visível. */
+@media (min-width: 1321px) {
+  .nav[data-scrolled="false"] .header-manual-link {
+    display: none;
   }
 }
 
@@ -582,44 +697,53 @@ h4 {
 .lang-switch {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
-  background: rgba(4, 29, 58, 0.45);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 6px;
+  justify-content: center;
+  gap: 2px;
+  height: 44px;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: var(--r-sm);
   padding: 3px;
   font-family: var(--font-body);
   user-select: none;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  transition: background var(--dur-fast) ease, border-color var(--dur-fast) ease, box-shadow var(--dur-fast) ease;
+  box-shadow: none;
+  box-sizing: border-box;
+  transition: background var(--dur-fast) ease, border-color var(--dur-fast) ease;
+}
+
+/* Contraste legível sobre qualquer trecho da imagem do hero. */
+.nav[data-scrolled="false"] .lang-switch {
+  background: #041d3a;
 }
 
 .lang-switch:hover {
-  background: rgba(4, 29, 58, 0.62);
-  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.45);
 }
 
 .lang-switch__btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 34px;
-  height: 30px;
-  padding: 0 8px;
+  width: 34px;
+  height: 36px;
+  padding: 0;
   border-radius: 4px;
   color: rgba(255, 255, 255, 0.76);
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 700;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   text-decoration: none;
   line-height: 1;
-  transition: all 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+  transition: color 180ms cubic-bezier(0.16, 1, 0.3, 1), background 180ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .lang-switch__btn:hover:not(.is-active) {
   color: #ffffff;
-  background: rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.12);
   text-decoration: none;
 }
 
@@ -629,10 +753,10 @@ h4 {
 }
 
 .lang-switch__btn.is-active {
-  color: var(--ocean-abyss, #041d3a);
-  background: #ffffff;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.22);
   font-weight: 800;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.22);
+  box-shadow: none;
   cursor: default;
   pointer-events: none;
 }
@@ -690,42 +814,102 @@ h4 {
   }
 }
 
-/* No mobile, o seletor desktop fica oculto e o seletor mobile fica visível fora do menu sanduíche */
+/* No mobile, o seletor desktop fica oculto, o botão de manual fica alinhado à esquerda e o seletor mobile adota a mesma identidade do nav__toggle */
 @media (max-width: 900px) {
+  .nav__right {
+    flex: 1 1 auto;
+    margin-left: 0;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
   .nav__right .lang-switch:not(.lang-switch--mobile) {
     display: none !important;
   }
+
   .nav__right .header-manual-link {
     order: 0;
     min-width: auto;
+    margin-right: auto;
+    height: 44px;
+    min-height: 44px;
+    padding: 4px 10px;
+    gap: 8px;
+    display: inline-flex;
+    align-items: center;
+    box-sizing: border-box;
+    border-radius: var(--r-sm, 6px);
   }
+
+  .nav__right .header-manual-link__icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .nav__right .header-manual-link__sub {
+    font-size: 0.58rem;
+    line-height: 1.1;
+  }
+
+  .nav__right .header-manual-link__title {
+    font-size: 0.74rem;
+    line-height: 1.15;
+  }
+
   .nav__right .lang-switch--mobile {
     display: inline-flex !important;
     order: 1;
   }
+
   .nav__right .nav__toggle {
     order: 2;
+    height: 44px;
+    box-sizing: border-box;
   }
 }
 
 @media (max-width: 600px) {
-  .nav .lang-switch__btn {
-    min-width: 30px;
-    height: 28px;
-    padding: 0 6px;
+  .nav .header-manual-link {
+    padding: 4px 8px;
+    gap: 6px;
+    height: 44px;
+  }
+
+  .nav__right .lang-switch--mobile .lang-switch__btn {
+    width: 30px;
     font-size: 0.75rem;
   }
 }
 
+@media (max-width: 480px) {
+  /* Em telas menores que 480px, oculte o subtítulo para manter proporção perfeita com os botões à direita */
+  .nav .header-manual-link__sub,
+  .nav .header-manual-link__prefix {
+    display: none;
+  }
+
+  .nav .header-manual-link__title {
+    font-size: 0.72rem;
+  }
+}
+
 @media (max-width: 380px) {
-  .nav .lang-switch {
-    gap: 2px;
+  .nav .header-manual-link {
+    padding: 4px 6px;
+    gap: 4px;
+  }
+
+  .nav .header-manual-link__icon {
+    display: none;
+  }
+
+  .nav__right .lang-switch--mobile {
+    gap: 1px;
     padding: 2px;
   }
-  .nav .lang-switch__btn {
-    min-width: 26px;
-    height: 26px;
-    padding: 0 4px;
+
+  .nav__right .lang-switch--mobile .lang-switch__btn {
+    width: 27px;
     font-size: 0.7rem;
   }
 }
@@ -740,6 +924,13 @@ h4 {
   height: 44px;
   align-items: center;
   justify-content: center;
+  transition: background var(--dur-fast) ease, border-color var(--dur-fast) ease;
+}
+
+.nav__toggle:hover,
+.nav__toggle:focus-visible {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.45);
 }
 
 .nav__toggle svg {
@@ -8623,13 +8814,7 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
     display: inline-flex;
   }
 
-  /* No mobile a marca fica oculta (opacity) mas as ações voltam ao fluxo
-     para o botão de menu aparecer, mesmo na primeira dobra. */
-  .nav[data-scrolled="false"] .nav__right {
-    display: flex;
-  }
-
-  /* Tablet/mobile: menu sanduíche sempre alinhado à direita. */
+  /* Tablet/mobile: menu sanduíche e seletor de idioma sempre alinhados à direita */
   .nav__right {
     margin-left: auto;
     justify-content: flex-end;
@@ -8640,8 +8825,6 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
   .nav { gap: 8px; }
   .nav__brand img { height: 44px; }
   .nav__right { gap: 8px; }
-  .nav .header-manual-link { padding: 11px 12px; font-size: .75rem; }
-  .nav .header-manual-link svg { display: none; }
 }
 
 @media (max-width: 560px) {

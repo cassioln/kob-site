@@ -35,7 +35,7 @@
           sessionStorage.setItem('kob_lang_pref', 'es');
           window.location.replace('/es/' + window.location.search + window.location.hash);
         }
-      } catch (e) {}
+      } catch (e) { }
     })();
   </script>
   <script>
@@ -273,7 +273,7 @@
   <!-- Fontes da marca (banner KOB): Gobold Extra2 = display, Chantal = acento manuscrito -->
   <link rel="preload" href="assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
 
-  <link rel="stylesheet" href="assets/css/main.css?v=20261005-nav-lang">
+  <link rel="stylesheet" href="assets/css/main.css?v=20261005-header-validated">
   <link rel="stylesheet" href="assets/css/cookie-consent.css?v=20260820-fix-contrast">
   <script defer src="assets/js/cookie-consent.js?v=20260713-5"></script>
 </head>
@@ -426,20 +426,33 @@
       <a href="#itinerario">Itinerário</a>
       <a href="#valores">Valores</a>
       <a href="#depoimentos">Depoimentos</a>
-      <a href="#hospedagem">Ônibus Fretado</a>
+      <a href="#hospedagem">Transporte e Hospedagem</a>
       <a href="#faq">Dúvidas</a>
+      <a class="nav__link--fold1" href="https://kriativosonboard.com.br/manualdebordo">Manual de Bordo</a>
     </nav>
     <div class="nav__right">
       <div class="lang-switch" role="group" aria-label="Idioma / Language">
-        <a href="/" class="lang-switch__btn is-active" hreflang="pt-BR" aria-current="page" title="Português (Brasil)">PT</a>
+        <a href="/" class="lang-switch__btn is-active" hreflang="pt-BR" aria-current="page"
+          title="Português (Brasil)">PT</a>
         <span class="lang-switch__sep" aria-hidden="true">|</span>
         <a href="/en/" class="lang-switch__btn" hreflang="en" title="English">EN</a>
         <span class="lang-switch__sep" aria-hidden="true">|</span>
         <a href="/es/" class="lang-switch__btn" hreflang="es" title="Español">ES</a>
       </div>
-      <a class="btn header-manual-link" href="https://kriativosonboard.com.br/manualdebordo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 7v14M3 3h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5v16h-5a4 4 0 0 0-4 2 4 4 0 0 0-4-2H3Z"/></svg><span>Manual de bordo</span></a>
+      <a class="btn header-manual-link" href="https://kriativosonboard.com.br/manualdebordo"
+        aria-label="Já garantiu sua cabine? Confira o Manual de Bordo">
+        <svg class="header-manual-link__icon" width="22" height="22" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 7v14M3 3h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5v16h-5a4 4 0 0 0-4 2 4 4 0 0 0-4-2H3Z" />
+        </svg>
+        <span class="header-manual-link__lines">
+          <span class="header-manual-link__sub">Já garantiu sua cabine?</span>
+          <span class="header-manual-link__title"><span class="header-manual-link__prefix">Confira o</span> <strong>Manual de Bordo</strong></span>
+        </span>
+      </a>
       <div class="lang-switch lang-switch--mobile" role="group" aria-label="Idioma / Language">
-        <a href="/" class="lang-switch__btn is-active" hreflang="pt-BR" aria-current="page" title="Português (Brasil)">PT</a>
+        <a href="/" class="lang-switch__btn is-active" hreflang="pt-BR" aria-current="page"
+          title="Português (Brasil)">PT</a>
         <span class="lang-switch__sep" aria-hidden="true">|</span>
         <a href="/en/" class="lang-switch__btn" hreflang="en" title="English">EN</a>
         <span class="lang-switch__sep" aria-hidden="true">|</span>
@@ -476,7 +489,7 @@
       <a href="#itinerario">Itinerário</a>
       <a href="#valores">Valores</a>
       <a href="#depoimentos">Depoimentos</a>
-      <a href="#hospedagem">Ônibus Fretado</a>
+      <a href="#hospedagem">Transporte e Hospedagem</a>
       <a href="#faq">Dúvidas</a>
       <a href="/manualdebordo">Manual de Bordo (Já reservou?)</a>
     </nav>
@@ -1164,88 +1177,88 @@
         <div class="value-panel" id="panel-cabines" role="tabpanel" aria-labelledby="tab-cabines" tabindex="0">
           <div class="price-grid-wrap">
             <div class="price-grid reveal">
-            <article class="price-card">
-              <div class="price-card__head">
-                <span class="price-card__cabin">Cabine interna</span>
-                <span class="price-card__type">A opção mais econômica</span>
-              </div>
-              <div class="price-card__body">
-                <span class="price-card__from">a partir de</span>
-                <span class="price-card__value price-card__value--sold"><span class="cur">12x R$</span><span
-                    class="amount">229<span class="dec">,00</span></span><span class="per">/pessoa</span></span>
-                <span class="price-card__entry">Entrada de R$ 200,00</span>
-                <div class="price-card__rule"></div>
-                <ul class="price-card__list">
-                  <li class="is-sold"><span>Cabine dupla</span><span>Esgotado</span></li>
-                  <li class="is-sold"><span>Cabine tripla</span><span>Esgotado</span></li>
-                  <li class="is-sold"><span>Cabine quádrupla</span><span>Esgotado</span></li>
-                </ul>
-                <button type="button" class="price-card__details" data-cabin="interna" aria-haspopup="dialog">Ver
-                  detalhes</button>
-                <a class="btn btn--primary btn--disabled" aria-disabled="true" tabindex="-1" data-analytics-channel="whatsapp"
-                  data-analytics-cta-id="cabin_internal_reserve" data-analytics-placement="values_cabins"
-                  data-analytics-intent="reservation" data-analytics-item-id="cabin_internal"
-                  data-analytics-item-category="cabin"
-                  href="https://api.whatsapp.com/send?phone=5513981580498&amp;text=Ol%C3%A1%2C%20Royal%20Trip%21%20Vi%20a%20Cabine%20Interna%20na%20se%C3%A7%C3%A3o%20de%20valores%20do%20Kriativos%20On%20Board%202026%20e%20quero%20reservar%20essa%20op%C3%A7%C3%A3o%20no%202%C2%BA%20lote."
-                  target="_blank" rel="noopener">Reservar agora</a>
-              </div>
-            </article>
+              <article class="price-card">
+                <div class="price-card__head">
+                  <span class="price-card__cabin">Cabine interna</span>
+                  <span class="price-card__type">A opção mais econômica</span>
+                </div>
+                <div class="price-card__body">
+                  <span class="price-card__from">a partir de</span>
+                  <span class="price-card__value price-card__value--sold"><span class="cur">12x R$</span><span
+                      class="amount">229<span class="dec">,00</span></span><span class="per">/pessoa</span></span>
+                  <span class="price-card__entry">Entrada de R$ 200,00</span>
+                  <div class="price-card__rule"></div>
+                  <ul class="price-card__list">
+                    <li class="is-sold"><span>Cabine dupla</span><span>Esgotado</span></li>
+                    <li class="is-sold"><span>Cabine tripla</span><span>Esgotado</span></li>
+                    <li class="is-sold"><span>Cabine quádrupla</span><span>Esgotado</span></li>
+                  </ul>
+                  <button type="button" class="price-card__details" data-cabin="interna" aria-haspopup="dialog">Ver
+                    detalhes</button>
+                  <a class="btn btn--primary btn--disabled" aria-disabled="true" tabindex="-1"
+                    data-analytics-channel="whatsapp" data-analytics-cta-id="cabin_internal_reserve"
+                    data-analytics-placement="values_cabins" data-analytics-intent="reservation"
+                    data-analytics-item-id="cabin_internal" data-analytics-item-category="cabin"
+                    href="https://api.whatsapp.com/send?phone=5513981580498&amp;text=Ol%C3%A1%2C%20Royal%20Trip%21%20Vi%20a%20Cabine%20Interna%20na%20se%C3%A7%C3%A3o%20de%20valores%20do%20Kriativos%20On%20Board%202026%20e%20quero%20reservar%20essa%20op%C3%A7%C3%A3o%20no%202%C2%BA%20lote."
+                    target="_blank" rel="noopener">Reservar agora</a>
+                </div>
+              </article>
 
-            <article class="price-card">
-              <div class="price-card__head">
-                <span class="price-card__cabin">Cabine janela</span>
-                <span class="price-card__type">Luz natural a bordo</span>
-              </div>
-              <div class="price-card__body">
-                <span class="price-card__from">a partir de</span>
-                <span class="price-card__value price-card__value--sold"><span class="cur">12x R$</span><span
-                    class="amount">242<span class="dec">,00</span></span><span class="per">/pessoa</span></span>
-                <span class="price-card__entry">Entrada de R$ 200,00</span>
-                <div class="price-card__rule"></div>
-                <ul class="price-card__list">
-                  <li class="is-sold"><span>Cabine dupla</span><span>Esgotado</span></li>
-                  <li class="is-sold"><span>Cabine tripla</span><span>Esgotado</span></li>
-                  <li class="is-sold"><span>Cabine quádrupla</span><span>Esgotado</span></li>
-                </ul>
-                <button type="button" class="price-card__details" data-cabin="janela" aria-haspopup="dialog">Ver
-                  detalhes</button>
-                <a class="btn btn--primary btn--disabled" aria-disabled="true" tabindex="-1" data-analytics-channel="whatsapp"
-                  data-analytics-cta-id="cabin_ocean_view_reserve" data-analytics-placement="values_cabins"
-                  data-analytics-intent="reservation" data-analytics-item-id="cabin_ocean_view"
-                  data-analytics-item-category="cabin"
-                  href="https://api.whatsapp.com/send?phone=5513981580498&amp;text=Ol%C3%A1%2C%20Royal%20Trip%21%20Vi%20a%20Cabine%20Janela%20na%20se%C3%A7%C3%A3o%20de%20valores%20do%20Kriativos%20On%20Board%202026%20e%20quero%20reservar%20essa%20op%C3%A7%C3%A3o%20no%202%C2%BA%20lote."
-                  target="_blank" rel="noopener">Reservar agora</a>
-              </div>
-            </article>
+              <article class="price-card">
+                <div class="price-card__head">
+                  <span class="price-card__cabin">Cabine janela</span>
+                  <span class="price-card__type">Luz natural a bordo</span>
+                </div>
+                <div class="price-card__body">
+                  <span class="price-card__from">a partir de</span>
+                  <span class="price-card__value price-card__value--sold"><span class="cur">12x R$</span><span
+                      class="amount">242<span class="dec">,00</span></span><span class="per">/pessoa</span></span>
+                  <span class="price-card__entry">Entrada de R$ 200,00</span>
+                  <div class="price-card__rule"></div>
+                  <ul class="price-card__list">
+                    <li class="is-sold"><span>Cabine dupla</span><span>Esgotado</span></li>
+                    <li class="is-sold"><span>Cabine tripla</span><span>Esgotado</span></li>
+                    <li class="is-sold"><span>Cabine quádrupla</span><span>Esgotado</span></li>
+                  </ul>
+                  <button type="button" class="price-card__details" data-cabin="janela" aria-haspopup="dialog">Ver
+                    detalhes</button>
+                  <a class="btn btn--primary btn--disabled" aria-disabled="true" tabindex="-1"
+                    data-analytics-channel="whatsapp" data-analytics-cta-id="cabin_ocean_view_reserve"
+                    data-analytics-placement="values_cabins" data-analytics-intent="reservation"
+                    data-analytics-item-id="cabin_ocean_view" data-analytics-item-category="cabin"
+                    href="https://api.whatsapp.com/send?phone=5513981580498&amp;text=Ol%C3%A1%2C%20Royal%20Trip%21%20Vi%20a%20Cabine%20Janela%20na%20se%C3%A7%C3%A3o%20de%20valores%20do%20Kriativos%20On%20Board%202026%20e%20quero%20reservar%20essa%20op%C3%A7%C3%A3o%20no%202%C2%BA%20lote."
+                    target="_blank" rel="noopener">Reservar agora</a>
+                </div>
+              </article>
 
-            <article class="price-card">
-              <div class="price-card__head">
-                <span class="price-card__cabin">Cabine varanda</span>
-                <span class="price-card__type">Sua sacada para o mar</span>
-              </div>
-              <div class="price-card__body">
-                <span class="price-card__from">a partir de</span>
-                <span class="price-card__value price-card__value--sold"><span class="cur">12x R$</span><span
-                    class="amount">297<span class="dec">,00</span></span><span class="per">/pessoa</span></span>
-                <span class="price-card__entry">Entrada de R$ 200,00</span>
-                <div class="price-card__rule"></div>
-                <ul class="price-card__list">
-                  <li class="is-sold"><span>Cabine dupla</span><span>Esgotado</span></li>
-                  <li class="is-sold"><span>Cabine tripla</span><span>Esgotado</span></li>
-                  <li class="is-sold"><span>Cabine quádrupla</span><span>Esgotado</span></li>
-                </ul>
-                <button type="button" class="price-card__details" data-cabin="varanda" aria-haspopup="dialog">Ver
-                  detalhes</button>
-                <a class="btn btn--primary btn--disabled" aria-disabled="true" tabindex="-1" data-analytics-channel="whatsapp"
-                  data-analytics-cta-id="cabin_balcony_reserve" data-analytics-placement="values_cabins"
-                  data-analytics-intent="reservation" data-analytics-item-id="cabin_balcony"
-                  data-analytics-item-category="cabin"
-                  href="https://api.whatsapp.com/send?phone=5513981580498&amp;text=Ol%C3%A1%2C%20Royal%20Trip%21%20Vi%20a%20Cabine%20Varanda%20na%20se%C3%A7%C3%A3o%20de%20valores%20do%20Kriativos%20On%20Board%202026%20e%20quero%20reservar%20essa%20op%C3%A7%C3%A3o%20no%202%C2%BA%20lote."
-                  target="_blank" rel="noopener">Reservar agora</a>
-              </div>
-            </article>
-          </div>
-          <div class="price-stamp-overlay" aria-hidden="true">
+              <article class="price-card">
+                <div class="price-card__head">
+                  <span class="price-card__cabin">Cabine varanda</span>
+                  <span class="price-card__type">Sua sacada para o mar</span>
+                </div>
+                <div class="price-card__body">
+                  <span class="price-card__from">a partir de</span>
+                  <span class="price-card__value price-card__value--sold"><span class="cur">12x R$</span><span
+                      class="amount">297<span class="dec">,00</span></span><span class="per">/pessoa</span></span>
+                  <span class="price-card__entry">Entrada de R$ 200,00</span>
+                  <div class="price-card__rule"></div>
+                  <ul class="price-card__list">
+                    <li class="is-sold"><span>Cabine dupla</span><span>Esgotado</span></li>
+                    <li class="is-sold"><span>Cabine tripla</span><span>Esgotado</span></li>
+                    <li class="is-sold"><span>Cabine quádrupla</span><span>Esgotado</span></li>
+                  </ul>
+                  <button type="button" class="price-card__details" data-cabin="varanda" aria-haspopup="dialog">Ver
+                    detalhes</button>
+                  <a class="btn btn--primary btn--disabled" aria-disabled="true" tabindex="-1"
+                    data-analytics-channel="whatsapp" data-analytics-cta-id="cabin_balcony_reserve"
+                    data-analytics-placement="values_cabins" data-analytics-intent="reservation"
+                    data-analytics-item-id="cabin_balcony" data-analytics-item-category="cabin"
+                    href="https://api.whatsapp.com/send?phone=5513981580498&amp;text=Ol%C3%A1%2C%20Royal%20Trip%21%20Vi%20a%20Cabine%20Varanda%20na%20se%C3%A7%C3%A3o%20de%20valores%20do%20Kriativos%20On%20Board%202026%20e%20quero%20reservar%20essa%20op%C3%A7%C3%A3o%20no%202%C2%BA%20lote."
+                    target="_blank" rel="noopener">Reservar agora</a>
+                </div>
+              </article>
+            </div>
+            <div class="price-stamp-overlay" aria-hidden="true">
               <div class="price-stamp-badge">
                 <span class="price-stamp-badge__inner">ESGOTADO</span>
               </div>
@@ -1255,14 +1268,18 @@
           <div class="cabins-alert reveal" role="status">
             <div class="cabins-alert__main">
               <div class="cabins-alert__icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="12" cy="12" r="10"></circle>
                   <line x1="12" y1="8" x2="12" y2="12"></line>
                   <line x1="12" y1="16" x2="12.01" y2="16"></line>
                 </svg>
               </div>
               <p class="cabins-alert__text">
-                Disponibilidade de vagas e valores a consultar diretamente com a agência parceira <a class="cabins-alert__link" href="https://api.whatsapp.com/send?phone=5513981580498&amp;text=Ol%C3%A1%2C%20Royal%20Trip%21%20Gostaria%20de%20consultar%20a%20disponibilidade%20de%20vagas%20e%20valores%20para%20as%20cabines%20do%20Kriativos%20On%20Board%202026." target="_blank" rel="noopener">Royal Trip</a>.
+                Disponibilidade de vagas e valores a consultar diretamente com a agência parceira <a
+                  class="cabins-alert__link"
+                  href="https://api.whatsapp.com/send?phone=5513981580498&amp;text=Ol%C3%A1%2C%20Royal%20Trip%21%20Gostaria%20de%20consultar%20a%20disponibilidade%20de%20vagas%20e%20valores%20para%20as%20cabines%20do%20Kriativos%20On%20Board%202026."
+                  target="_blank" rel="noopener">Royal Trip</a>.
               </p>
             </div>
             <a class="btn cabins-alert__btn"
@@ -1419,7 +1436,8 @@
         <div class="cabin-modal__content">
           <span class="cabin-modal__eyebrow">Seguro viagem · por pessoa</span>
           <h3 class="cabin-modal__title" id="insuranceModalTitle">Proteção para os imprevistos da viagem</h3>
-          <p class="cabin-modal__lead">O preço aproximado é de <strong>R$ 112 por pessoa</strong>. Consulte a Royal Trip para receber a apólice e confirmar o plano antes de contratar.</p>
+          <p class="cabin-modal__lead">O preço aproximado é de <strong>R$ 112 por pessoa</strong>. Consulte a Royal Trip
+            para receber a apólice e confirmar o plano antes de contratar.</p>
 
           <div class="insurance-coverage insurance-coverage--guidance">
             <section class="insurance-coverage__group">
@@ -1435,13 +1453,15 @@
                 </div>
                 <div>
                   <dt>Cancelamento e prazo de contratação</dt>
-                  <dd>Confirme as condições especiais anunciadas para o grupo: 29 motivos e contratação até 20 dias antes do embarque.</dd>
+                  <dd>Confirme as condições especiais anunciadas para o grupo: 29 motivos e contratação até 20 dias
+                    antes do embarque.</dd>
                 </div>
               </dl>
             </section>
           </div>
 
-          <p class="cabin-modal__note">O seguro é individual. As coberturas, valores, moeda, vigência, reembolso e exclusões são os da apólice contratada. Solicite o documento à Royal Trip antes de pagar.</p>
+          <p class="cabin-modal__note">O seguro é individual. As coberturas, valores, moeda, vigência, reembolso e
+            exclusões são os da apólice contratada. Solicite o documento à Royal Trip antes de pagar.</p>
         </div>
       </div>
     </dialog>
@@ -2184,7 +2204,8 @@
 
         <div class="quotes voices reveal" id="voices" role="region"
           aria-label="Depoimentos de participantes do Kriativos On Board">
-          <blockquote class="quote quote--featured quote--vital" data-voice-id="vital" data-voice-featured="" style="--depth: 1">
+          <blockquote class="quote quote--featured quote--vital" data-voice-id="vital" data-voice-featured=""
+            style="--depth: 1">
             <span class="quote__seal">Designer internacional</span>
             <p>“Foi uma experiência única. O calor dos Kriativos on Board, os amigos que fiz, a alegria de fazer um
               cruzeiro onde podemos jogar, conviver e conhecer muita gente boa é inesquecível, e sem dúvida a não
@@ -2192,7 +2213,8 @@
             <footer>Vital Lacerda <span>@vitallacerda</span></footer>
           </blockquote>
 
-          <blockquote class="quote quote--featured quote--david" data-voice-id="david" data-voice-featured="" style="--depth: 2">
+          <blockquote class="quote quote--featured quote--david" data-voice-id="david" data-voice-featured=""
+            style="--depth: 2">
             <span class="quote__seal">Designer internacional</span>
             <p>“Epitome of friendliness and fun, wrapped in an awesome boat! 🙂 Game on!!!”</p>
             <footer>David Turczi <span>@david_turczi</span></footer>
@@ -2520,15 +2542,25 @@
                 </details>
                 <details>
                   <summary>O que preciso ter no momento do embarque?</summary>
-                  <div>Leve o voucher de embarque impresso e seu documento original em bom estado, com foto que permita a identificação: RG ou CNH para brasileiros neste roteiro nacional. A CNH digital é aceita no aplicativo oficial; fotos, capturas de tela e cópias, mesmo autenticadas, não substituem o documento. Recomendamos levar também o documento físico. Para menores, confirme com a Royal Trip os documentos e as autorizações exigidos conforme quem os acompanha. Estrangeiros devem confirmar com a agência a documentação aplicável à sua nacionalidade.</div>
+                  <div>Leve o voucher de embarque impresso e seu documento original em bom estado, com foto que permita
+                    a identificação: RG ou CNH para brasileiros neste roteiro nacional. A CNH digital é aceita no
+                    aplicativo oficial; fotos, capturas de tela e cópias, mesmo autenticadas, não substituem o
+                    documento. Recomendamos levar também o documento físico. Para menores, confirme com a Royal Trip os
+                    documentos e as autorizações exigidos conforme quem os acompanha. Estrangeiros devem confirmar com a
+                    agência a documentação aplicável à sua nacionalidade.</div>
                 </details>
                 <details>
                   <summary>Quando posso realizar o check-in?</summary>
-                  <div>A Royal Trip cuida da emissão do check-in do grupo. Após o aviso no grupo de WhatsApp, o responsável pela cabine deve chamar Júnior/Royal Trip no privado para solicitar os vouchers oficiais e as etiquetas de bagagem. Confira os dados de todos os passageiros e imprima os documentos antes do embarque.</div>
+                  <div>A Royal Trip cuida da emissão do check-in do grupo. Após o aviso no grupo de WhatsApp, o
+                    responsável pela cabine deve chamar Júnior/Royal Trip no privado para solicitar os vouchers oficiais
+                    e as etiquetas de bagagem. Confira os dados de todos os passageiros e imprima os documentos antes do
+                    embarque.</div>
                 </details>
                 <details>
                   <summary>Preciso estar vacinado para embarcar?</summary>
-                  <div>Não. De acordo com as normas sanitárias vigentes da ANVISA e da MSC Cruzeiros para viagens na costa brasileira, não é mais exigida a comprovação de vacinação contra a Covid-19 nem a apresentação prévia de testes de antígeno.</div>
+                  <div>Não. De acordo com as normas sanitárias vigentes da ANVISA e da MSC Cruzeiros para viagens na
+                    costa brasileira, não é mais exigida a comprovação de vacinação contra a Covid-19 nem a apresentação
+                    prévia de testes de antígeno.</div>
                 </details>
                 <details>
                   <summary>Como embarcar as malas e em que horário?</summary>
@@ -2539,7 +2571,11 @@
                 </details>
                 <details>
                   <summary>Existe traslado até o porto?</summary>
-                  <div>Sim! Disponibilizamos ônibus fretado oficial (ida e volta) saindo da Barra Funda (São Paulo) até o Porto de Santos. A operação conta com dois horários de saída: 1º Ônibus às 06h30 (lotado) e 2º Ônibus com encontro às 06h40 e saída às 07h20 (vagas abertas). O retorno na segunda-feira sai às 10h30 do porto. <a href="https://busao.kriativosonboard.com.br/" target="_blank" rel="noopener">Conheça o
+                  <div>Sim! Disponibilizamos ônibus fretado oficial (ida e volta) saindo da Barra Funda (São Paulo) até
+                    o Porto de Santos. A operação conta com dois horários de saída: 1º Ônibus às 06h30 (lotado) e 2º
+                    Ônibus com encontro às 06h40 e saída às 07h20 (vagas abertas). O retorno na segunda-feira sai às
+                    10h30 do porto. <a href="https://busao.kriativosonboard.com.br/" target="_blank"
+                      rel="noopener">Conheça o
                       ônibus fretado e reserve sua
                       vaga.</a></div>
                 </details>
@@ -2564,7 +2600,12 @@
                 </details>
                 <details>
                   <summary>Grávidas ou bebês podem embarcar no cruzeiro?</summary>
-                  <div>A MSC não permite viajar se a gestação atingir 24 semanas em qualquer momento do cruzeiro. Gestantes abaixo desse limite devem apresentar atestado médico com idade gestacional, data prevista do parto e confirmação de gestação de baixo risco e aptidão para viajar, com CRM, assinatura e carimbo do médico. Informe a Royal Trip com antecedência para encaminhar a documentação e avaliar sua reserva. Bebês podem participar deste minicruzeiro, mas devem constar na reserva da cabine; confirme tarifas e taxas com a agência.</div>
+                  <div>A MSC não permite viajar se a gestação atingir 24 semanas em qualquer momento do cruzeiro.
+                    Gestantes abaixo desse limite devem apresentar atestado médico com idade gestacional, data prevista
+                    do parto e confirmação de gestação de baixo risco e aptidão para viajar, com CRM, assinatura e
+                    carimbo do médico. Informe a Royal Trip com antecedência para encaminhar a documentação e avaliar
+                    sua reserva. Bebês podem participar deste minicruzeiro, mas devem constar na reserva da cabine;
+                    confirme tarifas e taxas com a agência.</div>
                 </details>
               </div>
             </div>
@@ -2576,19 +2617,28 @@
               <div class="faq__list">
                 <details>
                   <summary>Teremos sala para jogar?</summary>
-                  <div>Sim! A Crystal Lounge é o espaço previsto para o Kriativos On Board. Vamos confirmar a sala e os horários no grupo e na programação do evento. As mesas serão de uso livre e rotativo entre os participantes.</div>
+                  <div>Sim! A Crystal Lounge é o espaço previsto para o Kriativos On Board. Vamos confirmar a sala e os
+                    horários no grupo e na programação do evento. As mesas serão de uso livre e rotativo entre os
+                    participantes.</div>
                 </details>
                 <details>
                   <summary>Quais jogos estarão disponíveis?</summary>
-                  <div>Os jogos do acervo oficial são organizados pelo aplicativo Board Game Guru. Você encontrará centenas de jogos modernos dos nossos parceiros e poderá contar com os monitores da Encounter para aprender as regras. Você também pode levar seus próprios jogos!</div>
+                  <div>Os jogos do acervo oficial são organizados pelo aplicativo Board Game Guru. Você encontrará
+                    centenas de jogos modernos dos nossos parceiros e poderá contar com os monitores da Encounter para
+                    aprender as regras. Você também pode levar seus próprios jogos!</div>
                 </details>
                 <details>
                   <summary>Como funciona o aplicativo dos jogos e como participar dos sorteios?</summary>
-                  <div>Utilizamos o aplicativo oficial Board Game Guru (disponível para Android e iOS). No app, entre na página do Kriativos On Board e confirme seu check-in antecipado clicando em "Eu vou" — esse passo é fundamental para concorrer aos sorteios de jogos e brindes exclusivos a bordo! Pelo app você também explora o acervo, descobre quais monitores ensinam cada título e pode cadastrar previamente os jogos que você levará ao navio (com importação direta da Ludopedia ou BoardGameGeek).</div>
+                  <div>Utilizamos o aplicativo oficial Board Game Guru (disponível para Android e iOS). No app, entre na
+                    página do Kriativos On Board e confirme seu check-in antecipado clicando em "Eu vou" — esse passo é
+                    fundamental para concorrer aos sorteios de jogos e brindes exclusivos a bordo! Pelo app você também
+                    explora o acervo, descobre quais monitores ensinam cada título e pode cadastrar previamente os jogos
+                    que você levará ao navio (com importação direta da Ludopedia ou BoardGameGeek).</div>
                 </details>
                 <details>
                   <summary>Posso levar meus jogos e protótipos?</summary>
-                  <div>Sim! Você pode levar quantos jogos quiser, além de protótipos e lançamentos para jogar com a comunidade.</div>
+                  <div>Sim! Você pode levar quantos jogos quiser, além de protótipos e lançamentos para jogar com a
+                    comunidade.</div>
                 </details>
                 <details>
                   <summary>Posso levar jogos para outras áreas do navio?</summary>
@@ -2600,11 +2650,17 @@
                 </details>
                 <details>
                   <summary>Até que horas a sala de jogos fica disponível?</summary>
-                  <div>A ideia é jogar bastante durante o dia e à noite. Os horários da sala serão confirmados no grupo e na programação. No domingo à noite, vamos informar até que horas você pode devolver os jogos e liberar as mesas para o inventário final.</div>
+                  <div>A ideia é jogar bastante durante o dia e à noite. Os horários da sala serão confirmados no grupo
+                    e na programação. No domingo à noite, vamos informar até que horas você pode devolver os jogos e
+                    liberar as mesas para o inventário final.</div>
                 </details>
                 <details>
                   <summary>Como funciona o Wi-Fi e como nos comunicamos a bordo?</summary>
-                  <div>O pacote de internet via satélite da MSC é contratado à parte para navegar na internet externa. Ao conectar-se à rede Wi-Fi interna do navio, você pode usar o aplicativo MSC for Me e seu chat gratuito. Adicione "Kriativo" ao nome ou apelido do perfil para os amigos encontrarem você! Durante a escala em Búzios, pode haver sinal 4G/5G das operadoras brasileiras, conforme a cobertura e sua localização. Confira o dia da escala no itinerário oficial da sua reserva.</div>
+                  <div>O pacote de internet via satélite da MSC é contratado à parte para navegar na internet externa.
+                    Ao conectar-se à rede Wi-Fi interna do navio, você pode usar o aplicativo MSC for Me e seu chat
+                    gratuito. Adicione "Kriativo" ao nome ou apelido do perfil para os amigos encontrarem você! Durante
+                    a escala em Búzios, pode haver sinal 4G/5G das operadoras brasileiras, conforme a cobertura e sua
+                    localização. Confira o dia da escala no itinerário oficial da sua reserva.</div>
                 </details>
                 <details>
                   <summary>O treinamento de segurança é obrigatório?</summary>
@@ -2615,7 +2671,10 @@
                 </details>
                 <details>
                   <summary>Qual a diferença do cruzeiro de board games para outros eventos?</summary>
-                  <div>O Kriativos On Board une o amor pelos jogos com uma viagem de férias completa em alto-mar. Você aproveita pensão completa, acomodação em cabine, lazer de um transatlântico de luxo e um espaço dedicado aos jogos, conforme a programação do evento, para jogar e fazer amizades para a vida toda.</div>
+                  <div>O Kriativos On Board une o amor pelos jogos com uma viagem de férias completa em alto-mar. Você
+                    aproveita pensão completa, acomodação em cabine, lazer de um transatlântico de luxo e um espaço
+                    dedicado aos jogos, conforme a programação do evento, para jogar e fazer amizades para a vida toda.
+                  </div>
                 </details>
               </div>
             </div>
@@ -2641,27 +2700,46 @@
                 </details>
                 <details>
                   <summary>Como funciona o jantar no navio?</summary>
-                  <div>O restaurante principal serve jantar à la carte em turnos pré-agendados, indicados no cartão de bordo, com entrada, prato principal e sobremesa. Chegue no horário: a tolerância de 15 minutos se refere aos pedidos da cozinha. Se perder o turno, consulte as opções do buffet e da pizzaria, que costuma funcionar por quase 24 horas. Confira os horários na programação diária da MSC.</div>
+                  <div>O restaurante principal serve jantar à la carte em turnos pré-agendados, indicados no cartão de
+                    bordo, com entrada, prato principal e sobremesa. Chegue no horário: a tolerância de 15 minutos se
+                    refere aos pedidos da cozinha. Se perder o turno, consulte as opções do buffet e da pizzaria, que
+                    costuma funcionar por quase 24 horas. Confira os horários na programação diária da MSC.</div>
                 </details>
                 <details>
                   <summary>Posso sentar na mesma mesa de jantar com amigos de outras cabines?</summary>
-                  <div>Sim! As mesas do jantar à la carte são atribuídas no check-in. Caso queira juntar familiares e amigos de outras cabines na mesma mesa durante todo o cruzeiro, procure o Metre do restaurante logo após o embarque no primeiro dia (sexta-feira à tarde) com os números de todas as cabines para solicitar a unificação.</div>
+                  <div>Sim! As mesas do jantar à la carte são atribuídas no check-in. Caso queira juntar familiares e
+                    amigos de outras cabines na mesma mesa durante todo o cruzeiro, procure o Metre do restaurante logo
+                    após o embarque no primeiro dia (sexta-feira à tarde) com os números de todas as cabines para
+                    solicitar a unificação.</div>
                 </details>
                 <details>
                   <summary>Sou obrigado a comprar pacote de bebidas?</summary>
-                  <div>Não, a compra é opcional. Se alguém da cabine contratar um pacote, os demais hóspedes devem seguir as regras da MSC: adultos com o mesmo pacote e crianças/adolescentes com o pacote Não Alcoólico para Crianças, conforme a faixa etária. Bebês não precisam de pacote. Confirme com a Royal Trip as condições aplicáveis à sua cabine e o prazo de contratação.</div>
+                  <div>Não, a compra é opcional. Se alguém da cabine contratar um pacote, os demais hóspedes devem
+                    seguir as regras da MSC: adultos com o mesmo pacote e crianças/adolescentes com o pacote Não
+                    Alcoólico para Crianças, conforme a faixa etária. Bebês não precisam de pacote. Confirme com a Royal
+                    Trip as condições aplicáveis à sua cabine e o prazo de contratação.</div>
                 </details>
                 <details>
                   <summary>Quais são os tipos de pacote de bebidas para adultos?</summary>
-                  <div>Não Alcoólico, Easy e Premium Extra. Easy e Premium Extra incluem no máximo 15 bebidas alcoólicas por pessoa por dia; o período diário da MSC vai das 6h às 6h do dia seguinte. Confirme com a Royal Trip os preços, descontos, parcelamento e condições disponíveis no momento da compra.</div>
+                  <div>Não Alcoólico, Easy e Premium Extra. Easy e Premium Extra incluem no máximo 15 bebidas alcoólicas
+                    por pessoa por dia; o período diário da MSC vai das 6h às 6h do dia seguinte. Confirme com a Royal
+                    Trip os preços, descontos, parcelamento e condições disponíveis no momento da compra.</div>
                 </details>
                 <details>
                   <summary>Tenho frigobar na cabine com o pacote Premium?</summary>
-                  <div>Todas as cabines do MSC Música possuem frigobar, porém o consumo dos itens do frigobar NÃO está incluso em nenhum pacote de bebidas (nem no Premium Extra) e é tarifado à parte na conta da cabine. Dica: você pode retirar bebidas em lata ou garrafa nos bares inclusos no seu pacote e guardá-las no frigobar da sua cabine para consumir quando quiser.</div>
+                  <div>Todas as cabines do MSC Música possuem frigobar, porém o consumo dos itens do frigobar NÃO está
+                    incluso em nenhum pacote de bebidas (nem no Premium Extra) e é tarifado à parte na conta da cabine.
+                    Dica: você pode retirar bebidas em lata ou garrafa nos bares inclusos no seu pacote e guardá-las no
+                    frigobar da sua cabine para consumir quando quiser.</div>
                 </details>
                 <details>
                   <summary>O que a cabine oferece e o que preciso levar na mala?</summary>
-                  <div>Todas as cabines oferecem roupas de cama, toalhas de banho e de piscina, sabonete líquido, shampoo, secador de cabelo, TV, ar-condicionado, cofre e tomadas (padrão europeu e americano). O que você DEVE levar: escova e pasta de dente, condicionador de cabelo, protetor solar e adaptadores de tomada se necessário. Lembre-se também de levar roupas confortáveis para as jogatinas, traje esporte fino para o jantar à la carte (não é permitida entrada com regata ou chinelo), roupas brancas para a Festa do Branco e peças temáticas/neon para a Noite Anos 80!</div>
+                  <div>Todas as cabines oferecem roupas de cama, toalhas de banho e de piscina, sabonete líquido,
+                    shampoo, secador de cabelo, TV, ar-condicionado, cofre e tomadas (padrão europeu e americano). O que
+                    você DEVE levar: escova e pasta de dente, condicionador de cabelo, protetor solar e adaptadores de
+                    tomada se necessário. Lembre-se também de levar roupas confortáveis para as jogatinas, traje esporte
+                    fino para o jantar à la carte (não é permitida entrada com regata ou chinelo), roupas brancas para a
+                    Festa do Branco e peças temáticas/neon para a Noite Anos 80!</div>
                 </details>
                 <details>
                   <summary>Preciso ir de roupa de gala para o jantar?</summary>
@@ -2685,11 +2763,15 @@
               <div class="faq__list">
                 <details>
                   <summary>É obrigatório fechar seguro viagem?</summary>
-                  <div>O seguro é opcional e recomendado para imprevistos e despesas médicas. O preço aproximado é de R$ 112 por pessoa; confirme a apólice e as condições com a Royal Trip antes de contratar.</div>
+                  <div>O seguro é opcional e recomendado para imprevistos e despesas médicas. O preço aproximado é de R$
+                    112 por pessoa; confirme a apólice e as condições com a Royal Trip antes de contratar.</div>
                 </details>
                 <details>
                   <summary>Existe recreação infantil ou clubinho para crianças no navio?</summary>
-                  <div>Sim! O Doremi Club da MSC oferece recreação monitorada por faixas etárias para crianças e adolescentes. Os horários são geralmente amplos, por volta das 9h às 23h, e devem ser conferidos na programação diária a bordo. Crianças que já desfraldaram podem permanecer com os monitores; crianças que ainda usam fraldas podem frequentar os espaços com os pais ou responsáveis.</div>
+                  <div>Sim! O Doremi Club da MSC oferece recreação monitorada por faixas etárias para crianças e
+                    adolescentes. Os horários são geralmente amplos, por volta das 9h às 23h, e devem ser conferidos na
+                    programação diária a bordo. Crianças que já desfraldaram podem permanecer com os monitores; crianças
+                    que ainda usam fraldas podem frequentar os espaços com os pais ou responsáveis.</div>
                 </details>
                 <details>
                   <summary>Uso remédio que precisa de refrigeração, como faço?</summary>
@@ -2706,7 +2788,9 @@
                 </details>
                 <details>
                   <summary>Qual festa teremos no navio?</summary>
-                  <div>Teremos duas noites temáticas inesquecíveis: a clássica Festa do Branco (leve uma peça branca) e a Noite Anos 80 (estilo retrô, adereços e cores neon para celebrar no domingo à noite). O uso de trajes temáticos não é obrigatório, mas torna a experiência a bordo ainda mais divertida!</div>
+                  <div>Teremos duas noites temáticas inesquecíveis: a clássica Festa do Branco (leve uma peça branca) e
+                    a Noite Anos 80 (estilo retrô, adereços e cores neon para celebrar no domingo à noite). O uso de
+                    trajes temáticos não é obrigatório, mas torna a experiência a bordo ainda mais divertida!</div>
                 </details>
               </div>
             </div>
@@ -2800,8 +2884,8 @@
               </a>
               <a href="https://boardgameguru.app/" target="_blank" rel="noopener noreferrer"
                 class="partner-card partner-card--partner" aria-label="Board Game Guru - Parceiro">
-                <img src="assets/images/partners/board-game-guru.webp" alt="Board Game Guru" loading="lazy"
-                  width="600" height="163">
+                <img src="assets/images/partners/board-game-guru.webp" alt="Board Game Guru" loading="lazy" width="600"
+                  height="163">
               </a>
             </div>
           </div>

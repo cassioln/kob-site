@@ -273,17 +273,18 @@ test.describe('Internacionalização e Validação de Páginas /en/ e /es/', () 
   });
 
   test('Seletor de idiomas no header mantém posição fixa e estável independente do idioma', async ({ page }) => {
-    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.setViewportSize({ width: 1440, height: 800 });
 
     // 1. Posição no PT
     await page.goto('/');
     const switchPT = page.locator('.nav__right .lang-switch:not(.lang-switch--mobile)');
     const manualPT = page.locator('.nav__right .header-manual-link');
+    const menuManualLinkPT = page.locator('.nav__links a.nav__link--fold1[href*="manualdebordo"]');
     await expect(switchPT).toBeVisible();
+    // No topo (data-scrolled="false"), o botão fica oculto e o link está no menu
+    await expect(manualPT).toBeHidden();
+    await expect(menuManualLinkPT).toBeVisible();
     const boxPT = await switchPT.boundingBox();
-    const boxManualPT = await manualPT.boundingBox();
-    // Valida que no desktop o seletor fica ao lado esquerdo do botão manual
-    expect(boxPT.x).toBeLessThan(boxManualPT.x);
 
     // 2. Posição no EN
     await page.goto('/en/');
@@ -303,17 +304,31 @@ test.describe('Internacionalização e Validação de Páginas /en/ e /es/', () 
     expect(boxPT.y).toBeCloseTo(boxEN.y, 1);
     expect(boxPT.y).toBeCloseTo(boxES.y, 1);
 
-    // Valida que ao rolar a página (scrolled=true), o seletor desktop some do header
+    // Valida que ao rolar a página (scrolled=true):
+    // 1. O link da fold1 no menu some
+    // 2. O seletor desktop some do header
+    // 3. O botão de manual aparece à direita, ao lado esquerdo de Garantir minha vaga com a mesma altura
     await page.locator('#navio').scrollIntoViewIfNeeded();
     await page.waitForTimeout(300);
     await expect(page.locator('header.nav')).toHaveAttribute('data-scrolled', 'true');
     await expect(page.locator('.nav__right .lang-switch:not(.lang-switch--mobile)')).toBeHidden();
+    await expect(page.locator('.nav__links a.nav__link--fold1[href*="manualdebordo"]')).toBeHidden();
+    await expect(manualPT).toBeVisible();
 
-    // Valida que ao retornar ao topo (hero), o seletor reaparece
+    const reserveBtn = page.locator('.nav__right .btn--primary');
+    if (await reserveBtn.isVisible()) {
+      const boxReserve = await reserveBtn.boundingBox();
+      const boxManualScrolled = await manualPT.boundingBox();
+      expect(boxManualScrolled.x).toBeLessThan(boxReserve.x);
+      expect(boxManualScrolled.height).toBeCloseTo(boxReserve.height, 2);
+    }
+
+    // Valida que ao retornar ao topo (hero), o seletor reaparece e o botão manual se oculta novamente
     await page.locator('#top, .hero').first().scrollIntoViewIfNeeded();
     await page.waitForTimeout(300);
     await expect(page.locator('header.nav')).toHaveAttribute('data-scrolled', 'false');
     await expect(page.locator('.nav__right .lang-switch:not(.lang-switch--mobile)')).toBeVisible();
+    await expect(manualPT).toBeHidden();
   });
 
   test('Aviso de moeda em BRL e cotação USD/EUR presente somente nas páginas EN e ES', async ({ page }) => {
@@ -457,3 +472,30 @@ test.describe('Internacionalização e Validação de Páginas /en/ e /es/', () 
   });
 
 });
+
+for (const [lang, path] of [['pt', '/'], ['en', '/en/'], ['es', '/es/']]) {
+  test(`Manual e menu permanecem acessíveis sem recorte no celular e tablet (${lang})`, async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto(`${path}?lang=${lang}`);
+    await expect(page.locator('.hero')).toHaveAttribute('data-intro', 'done');
+    for (const width of [320, 390, 1200]) {
+      await page.setViewportSize({ width, height: 800 });
+      for (const destination of ['#top', '#navio']) {
+        await page.locator(destination).scrollIntoViewIfNeeded();
+        await expect(page.locator('#nav')).toHaveAttribute('data-hidden', 'false');
+        const manual = page.locator('.nav__right .header-manual-link');
+        const toggle = page.locator('#navToggle');
+        await expect(manual).toBeVisible();
+        await expect(toggle).toBeVisible();
+        await expect(manual).toHaveAttribute('href', `https://kriativosonboard.com.br${lang === 'pt' ? '' : '/' + lang}/manualdebordo`);
+        await expect.poll(async () => {
+          const box = await toggle.boundingBox();
+          return box.x + box.width;
+        }).toBeLessThanOrEqual(width);
+        const box = await manual.boundingBox();
+        expect(box.x).toBeGreaterThanOrEqual(0);
+        expect(box.height).toBeGreaterThanOrEqual(44);
+      }
+    }
+  });
+}

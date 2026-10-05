@@ -562,7 +562,7 @@ for(const [lang,path,title] of [
  test(`Marcadores discretos: horários reais, hover, clique e teclado em ${lang}`,async({page})=>{
   await page.setViewportSize({width:1440,height:1000});await page.goto(path);
   await page.locator('#loadLivePlayerBtn').click();await readyPlayer(page);
-  const markers=page.locator('.live-total-marker');await expect(markers).toHaveCount(41);
+  const markers=page.locator('#liveCustomControls .live-total-marker');await expect(markers).toHaveCount(41);
   expect(await markers.evaluateAll(els=>els.filter(el=>el.tabIndex===0).length)).toBe(1);
   const position=await page.locator('.live-total-marker[data-topic-seconds="1852"]').evaluate(el=>({left:el.offsetLeft,width:el.parentElement.parentElement.clientWidth}));
   expect(position.left/position.width).toBeCloseTo(1852/4806,2);
