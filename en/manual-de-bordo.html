@@ -46,11 +46,11 @@
   <link rel="preload" href="/assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
 
   <link rel="stylesheet" href="/assets/css/main.css?v=20261005-ui-final">
-  <link rel="stylesheet" href="/assets/css/manual-de-bordo.css?v=20261005-editorial-live">
+  <link rel="stylesheet" href="/assets/css/manual-de-bordo.css?v=20261005-header-nav">
   <link rel="stylesheet" href="/assets/css/cookie-consent.css?v=20260820-fix-contrast">
 
   <script defer src="/assets/js/cookie-consent.js?v=20260713-5"></script>
-  <script defer src="/assets/js/manual-de-bordo.js?v=20261005-topic-player"></script>
+  <script defer src="/assets/js/manual-de-bordo.js?v=20261005-header-nav"></script>
 
   <script type="module" src="/assets/js/manual-de-bordo-live.js?v=20261005-purple-live"></script>
   <script type="module" src="/assets/js/manual-de-bordo-checklist.js?v=20261005-topic-player"></script>
@@ -102,6 +102,15 @@
           <span class="manual-brand-tag__domain">manualdebordo.kriativosonboard.com.br</span>
         </div>
       </div>
+      <nav class="guide-header__nav" aria-label="Onboard Manual navigation">
+        <a href="#live" class="guide-header__nav-link">Live</a>
+        <a href="#checklist" data-open-checklist class="guide-header__nav-link">Preparation</a>
+        <a href="#cronograma" class="guide-header__nav-link">Schedule</a>
+        <a href="https://kriativosonboard.com.br/en/onibus.html" target="_blank" rel="noopener noreferrer" class="guide-header__nav-link">Charter</a>
+        <a href="#jogos" class="guide-header__nav-link">Games</a>
+        <a href="#duvidas" class="guide-header__nav-link">FAQ</a>
+        <a href="#contato" class="guide-header__nav-link">Contact</a>
+      </nav>
       <div class="guide-header__actions">
         <nav class="lang-switch" aria-label="Language selector">
           <a href="/manual-de-bordo.html" class="lang-switch__item" hreflang="pt-BR" lang="pt-BR">PT</a>
@@ -154,10 +163,6 @@
       <a href="#duvidas">FAQ</a>
       <a href="#contato">Contact Team</a>
     </nav>
-    <a class="btn btn--primary btn--lg" data-analytics-channel="whatsapp" data-analytics-cta-id="guide_drawer_reserve"
-      data-analytics-placement="guide_drawer" data-analytics-intent="reservation"
-      href="https://api.whatsapp.com/send?phone=5513981580498&amp;text=Hello%2C%20Royal%20Trip%21%20I%20want%20to%20secure%20my%20spot%20at%20Kriativos%20On%20Board%202026.%20Can%20you%20help%20me%3F"
-      target="_blank" rel="noopener">Book my cabin</a>
   </div>
 
   <main id="main">
@@ -235,7 +240,8 @@
 
                 <div class="live-total-timeline">
                   <span id="liveTotalElapsed" aria-hidden="true">00:00</span>
-                  <div class="live-total-track" id="liveTotalTrack"><progress class="live-total-progress" id="liveTotalProgress" max="4806" value="0" aria-label="Full recording progress"></progress></div>
+                  <div class="live-total-track" id="liveTotalTrack"><progress class="live-total-progress"
+                      id="liveTotalProgress" max="4806" value="0" aria-label="Full recording progress"></progress></div>
                   <span id="liveTotalRemaining" aria-hidden="true">−01:20:06</span>
                 </div>
               </div>
@@ -280,7 +286,8 @@
             </aside>
           </div>
           <div class="live-toolbar">
-            <p id="heroLiveTopicStatus" role="status">Choose a topic or watch from the beginning.</p>
+            <p class="live-privacy-note">Watching or choosing a topic connects you to YouTube. The service’s privacy
+              policies apply.</p>
             <div><button type="button" id="liveFullscreenBtn" hidden>Expand video</button><a id="liveExternalLink"
                 href="https://www.youtube.com/watch?v=AtIvlc62KgI" target="_blank" rel="noopener noreferrer">Open on
                 YouTube <svg class="" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -291,9 +298,6 @@
           <div class="live-video-error" id="liveVideoError" role="status" hidden>
             <p></p><button type="button" id="liveRetryBtn">Try again</button>
           </div>
-
-          <p class="live-privacy-note">Watching or choosing a topic connects you to YouTube. The service’s privacy
-            policies apply.</p>
           <noscript>
             <details class="live-noscript">
               <summary>Recording topics on YouTube</summary>
@@ -734,47 +738,68 @@
     </section>
 
     <!-- FAQ (#20) -->
-    <section class="guide-section" id="duvidas" aria-labelledby="faq-title">
+    <section class="guide-section preboard-faq" id="duvidas" aria-labelledby="faq-title">
       <div class="guide-container">
-        <header class="guide-section__header">
-          <span class="guide-section__badge">Kriativos’ questions</span>
-          <h2 class="guide-section__title" id="faq-title">FAQ for confirmed guests</h2>
-          <p class="guide-section__intro">
-            Find answers to prepare for your journey and make the most of KOB. For private cabin questions or personal
-            inquiries, contact Royal Trip directly.
-          </p>
+        <header class="faq-manual__head">
+          <div class="faq-manual__title">
+            <p class="faq-manual__script">Frequently Asked Questions</p>
+            <h2 id="faq-title">Questions from <span>confirmed guests.</span></h2>
+            <p class="lead">
+              Find answers to prepare for your journey and make the most of KOB. For private cabin questions or personal
+              inquiries, contact Royal Trip directly.
+            </p>
+          </div>
+          <label class="faq-search" for="faqSearchInput">
+            <span>What do you need to know?</span>
+            <span class="faq-search__field">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle cx="11" cy="11" r="6.5"></circle>
+                <path d="m16 16 4 4"></path>
+              </svg>
+              <input id="faqSearchInput" type="search" placeholder="e.g., documents, luggage, internet, games…" autocomplete="off"
+                aria-describedby="faq-search-status">
+              <button type="button" class="faq-search-clear" id="faqClearBtn" title="Clear search" aria-label="Clear search">Clear</button>
+              <kbd aria-hidden="true">⌘ K</kbd>
+            </span>
+            <small id="faq-search-status" aria-live="polite"><span id="faqResultsCount">42</span> questions organized by category</small>
+          </label>
         </header>
 
-        <div class="faq-search-wrapper">
-          <div class="faq-search-bar">
-            <input type="search" class="faq-search-input" id="faqSearchInput"
-              placeholder="Search questions (e.g., documents, luggage, internet, games)..."
-              aria-label="Search FAQ questions">
-            <button type="button" class="faq-search-clear" id="faqClearBtn">Clear search</button>
-          </div>
-          <!-- Category Controls and View Tools -->
-          <div class="faq-header-controls">
-            <div class="faq-categories" role="toolbar" aria-label="Filter FAQ by category">
-              <button type="button" class="faq-category-btn is-active" data-category="all">All</button>
-              <button type="button" class="faq-category-btn" data-category="preparacao">Preparation</button>
-              <button type="button" class="faq-category-btn" data-category="chegada">Arrival</button>
-              <button type="button" class="faq-category-btn" data-category="jogos">Games & activities</button>
-              <button type="button" class="faq-category-btn" data-category="vida-a-bordo">During the cruise</button>
-              <button type="button" class="faq-category-btn" data-category="desembarque">Disembarkation</button>
-            </div>
+        <div class="faq" style="--faq-progress: 0%">
+          <nav class="faq__nav" aria-label="FAQ categories">
+            <span class="faq__nav-eyebrow">Consultation route</span>
+            <span class="faq__nav-track" aria-hidden="true"><i></i></span>
+            <button type="button" class="faq-category-btn faq__nav-item is-active" data-category="all">
+              All <span class="faq__nav-count">42</span>
+            </button>
+            <button type="button" class="faq-category-btn faq__nav-item" data-category="preparacao">
+              Preparation <span class="faq__nav-count">11</span>
+            </button>
+            <button type="button" class="faq-category-btn faq__nav-item" data-category="chegada">
+              Arrival <span class="faq__nav-count">5</span>
+            </button>
+            <button type="button" class="faq-category-btn faq__nav-item" data-category="jogos">
+              Games & activities <span class="faq__nav-count">8</span>
+            </button>
+            <button type="button" class="faq-category-btn faq__nav-item" data-category="vida-a-bordo">
+              During the cruise <span class="faq__nav-count">15</span>
+            </button>
+            <button type="button" class="faq-category-btn faq__nav-item" data-category="desembarque">
+              Disembarkation <span class="faq__nav-count">3</span>
+            </button>
+
             <div class="faq-tools" aria-label="FAQ view controls">
               <button type="button" class="faq-tool-btn" data-faq-action="expand-all">Expand all</button>
               <button type="button" class="faq-tool-btn" data-faq-action="collapse-all">Collapse all</button>
             </div>
-          </div>
-          <div class="sr-only" aria-live="polite"><span id="faqResultsCount">42</span> questions found.</div>
-        </div>
+          </nav>
 
-        <div class="faq-empty-state" id="faqEmptyState">
-          No matching questions found. Try another term or <a href="#contato">contact the team</a>.
-        </div>
+          <div class="faq__panels">
+            <div class="faq-empty-state" id="faqEmptyState">
+              No matching questions found. Try another term or <a href="#contato">contact the team</a>.
+            </div>
 
-        <div class="faq-list" id="faqList">
+            <div class="faq-list" id="faqList">
           <!-- O01 -->
           <details class="faq-item" id="faq-o01" data-category="preparacao">
             <summary class="faq-item__summary">
@@ -1817,7 +1842,9 @@
           </details>
         </div>
       </div>
-    </section>
+    </div>
+  </div>
+</section>
 
 
 

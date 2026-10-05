@@ -119,7 +119,6 @@ function initLive() {
   const facade = byId('livePlayerFacade');
   const container = byId('livePlayerContainer');
   const wrapper = byId('livePlayerWrapper');
-  const status = byId('heroLiveTopicStatus');
   const errorBox = byId('liveVideoError');
   const external = byId('liveExternalLink');
   const fullscreen = byId('liveFullscreenBtn');
@@ -290,7 +289,6 @@ function initLive() {
     if (changed) guideHelp.hide();
     selected = chapter;
     if (isPlaying) current = chapter;
-    status.textContent = `${isPlaying ? copy.playing : copy.selected} · ${chapter.time} · ${chapter.titles[lang]}`;
     topicTransition.update(chapter.id, chapter.titles[lang], () => updateNotice(chapter));
     lowerThird.hidden = !desktop.matches;
     updateTopicButtons();
@@ -587,7 +585,7 @@ function initLive() {
     try {
       if (document.fullscreenElement) await document.exitFullscreen();
       else await wrapper.requestFullscreen();
-    } catch { status.textContent = copy.fullscreenError; }
+    } catch {}
   });
   document.addEventListener('fullscreenchange', () => {
     fullscreen.replaceChildren(document.createTextNode(document.fullscreenElement ? copy.exit : copy.expand));

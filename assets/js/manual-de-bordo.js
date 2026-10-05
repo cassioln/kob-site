@@ -468,10 +468,34 @@
     var faqItems = document.querySelectorAll('.faq-item');
     var emptyState = document.getElementById('faqEmptyState');
     var resultsCounter = document.getElementById('faqResultsCount');
+    var faqContainer = document.querySelector('#duvidas .faq');
 
     if (!faqItems.length) return;
 
     var currentCategory = 'all';
+
+    // Atualiza contadores dinamicamente em cada botão de categoria
+    categoryBtns.forEach(function (btn) {
+      var cat = btn.getAttribute('data-category');
+      var countEl = btn.querySelector('.faq__nav-count');
+      if (countEl) {
+        if (cat === 'all') {
+          countEl.textContent = faqItems.length.toString();
+        } else {
+          var count = 0;
+          faqItems.forEach(function (item) {
+            if (item.getAttribute('data-category') === cat) count++;
+          });
+          countEl.textContent = count.toString();
+        }
+      }
+    });
+
+    function setFaqProgress(index) {
+      if (!faqContainer || categoryBtns.length <= 1) return;
+      var ratio = index / (categoryBtns.length - 1);
+      faqContainer.style.setProperty('--faq-progress', (ratio * 100) + '%');
+    }
 
     function filterFAQ() {
       var query = searchInput ? normalizeText(searchInput.value) : '';
@@ -515,8 +539,32 @@
       }
     }
 
+    function updateClearBtnVisibility() {
+      if (clearBtn && searchInput) {
+        if (searchInput.value.trim().length > 0) {
+          clearBtn.classList.add('is-visible');
+        } else {
+          clearBtn.classList.remove('is-visible');
+        }
+      }
+    }
+
     if (searchInput) {
-      searchInput.addEventListener('input', filterFAQ);
+      searchInput.addEventListener('input', function () {
+        updateClearBtnVisibility();
+        filterFAQ();
+      });
+
+      document.addEventListener('keydown', function (event) {
+        if ((event.metaKey || event.ctrlKey) && event.key && event.key.toLowerCase() === 'k') {
+          event.preventDefault();
+          searchInput.focus();
+          searchInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        if (event.key === 'Escape' && document.activeElement === searchInput && searchInput.value) {
+          if (clearBtn) clearBtn.click();
+        }
+      });
     }
 
     if (clearBtn) {
@@ -524,6 +572,7 @@
         if (searchInput) {
           searchInput.value = '';
         }
+        updateClearBtnVisibility();
         currentCategory = 'all';
         categoryBtns.forEach(function (btn) {
           if (btn.getAttribute('data-category') === 'all') {
@@ -532,16 +581,18 @@
             btn.classList.remove('is-active');
           }
         });
+        setFaqProgress(0);
         filterFAQ();
         if (searchInput) searchInput.focus();
       });
     }
 
-    categoryBtns.forEach(function (btn) {
+    categoryBtns.forEach(function (btn, index) {
       btn.addEventListener('click', function () {
         categoryBtns.forEach(function (b) { b.classList.remove('is-active'); });
         btn.classList.add('is-active');
         currentCategory = btn.getAttribute('data-category') || 'all';
+        setFaqProgress(index);
         filterFAQ();
       });
     });

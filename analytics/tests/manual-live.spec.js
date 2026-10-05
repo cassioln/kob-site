@@ -43,7 +43,7 @@ test('Não carrega terceiros antes da ação e a última seleção aguarda onRea
   expect(await page.evaluate(() => window.__liveMock.calls)).toEqual([]);
   await readyPlayer(page);
   expect(await page.evaluate(() => window.__liveMock.calls)).toEqual([['seek', 4456], ['play']]);
-  await expect(page.locator('#heroLiveTopicStatus')).toContainText('01:14:16');
+  await expect(page.locator('#liveCustomTopic')).toContainText('Bagagem');
   await expect(page.locator('#liveChapterNote')).toContainText('23 kg');
   await expect(page.locator('#liveExternalLink')).toHaveAttribute('href', /t=4456s$/);
 });
@@ -95,7 +95,7 @@ test('Progresso real do player atualiza o capítulo e a falha mantém alternativ
   await readyPlayer(page);
   await expect(page.locator('#livePlayerContainer iframe')).toHaveAttribute('src', /start=833/);
   await page.evaluate(() => { window.__liveMock.seconds = 2718; });
-  await expect(page.locator('#heroLiveTopicStatus')).toContainText('00:45:15');
+  await expect(page.locator('#liveCustomTopic')).toContainText('Internet');
   await openTopics(page);
   await expect(page.locator('[aria-current="true"][data-seconds="2715"]')).toHaveCount(1);
   await page.evaluate(() => window.__liveMock.instances[0].events.onError({ data: 100 }));
@@ -158,7 +158,7 @@ test('No mobile os controles ficam fora do vídeo e substituem o status textual'
   expect(controlsBox.y).toBeGreaterThanOrEqual(videoBox.y + videoBox.height);
   const tabBox = await page.locator('#heroLiveToggleChaptersBtn').boundingBox();
   expect(tabBox.y + tabBox.height).toBeLessThanOrEqual(videoBox.y + videoBox.height + 1);
-  await expect.poll(() => page.locator('#heroLiveTopicStatus').evaluate(e => getComputedStyle(e).display)).toBe('none');
+  await expect(page.locator('.live-toolbar .live-privacy-note')).toBeVisible();
   await expect(page.locator('#liveCustomTopic')).toContainText('Boas-vindas');
 });
 
@@ -729,13 +729,11 @@ for (const rate of [1, 2]) test(`Entrada automática termina no início do novo 
   await page.clock.runFor(40);
   await expect(title).toHaveAttribute('data-topic-phase', 'enter');
   await expect(title).toContainText('Vouchers');
-  await expect(page.locator('#heroLiveTopicStatus')).toContainText('Documentos');
   await expect(page.locator('#liveChapterNotice')).not.toBeVisible();
   await page.clock.runFor(400);
   await expect(title).not.toHaveAttribute('data-topic-phase');
   await expect(title).not.toHaveAttribute('aria-busy');
   await expect(title).toHaveCSS('opacity', '1');
-  await expect(page.locator('#heroLiveTopicStatus')).toContainText('Vouchers');
   await expect(page.locator('#liveNextChapterBtn')).toHaveAttribute('aria-label', /Mochila/);
   expect(await page.evaluate(() => window.__liveMock.calls.filter(call => call[0] === 'seek'))).toEqual([['seek', 1250]]);
 });
