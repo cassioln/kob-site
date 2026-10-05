@@ -183,10 +183,12 @@ for (const width of [320, 390, 768, 1440]) {
     await page.locator('#heroLiveCinema').scrollIntoViewIfNeeded();
     const videoBefore = await page.locator('#livePlayerWrapper').boundingBox();
     const tabBefore = await page.locator('#heroLiveToggleChaptersBtn').boundingBox();
+    const drawerBefore = await page.locator('#heroLiveChaptersCol').boundingBox();
+    if (width > 768) expect(drawerBefore.height).toBeCloseTo(videoBefore.height, 0);
     expect(tabBefore.height).toBeGreaterThanOrEqual(176);
     expect(tabBefore.x + tabBefore.width).toBeCloseTo(videoBefore.x + videoBefore.width, 0);
     await openTopics(page);
-    expect(await page.locator('.live-drawer__slide').evaluate(e => getComputedStyle(e).transform)).toBe('matrix(1, 0, 0, 1, 0, 0)');
+    expect(['matrix(1, 0, 0, 1, 0, 0)', 'none']).toContain(await page.locator('.live-drawer__slide').evaluate(e => getComputedStyle(e).transform));
     const videoAfter = await page.locator('#livePlayerWrapper').boundingBox();
     expect(videoAfter.width).toBe(videoBefore.width);
     expect(videoAfter.height).toBe(videoBefore.height);
@@ -201,11 +203,14 @@ for (const width of [320, 390, 768, 1440]) {
       const mobileDrawer = await page.locator('#heroLiveChaptersCol').boundingBox();
       const mobilePanel = await page.locator('#heroLiveChaptersPanel').boundingBox();
       const mobileTab = await page.locator('#heroLiveToggleChaptersBtn').boundingBox();
+      const checklistToggle = await page.locator('#checklistSidebarToggle').boundingBox();
       expect(mobilePanel.x).toBeGreaterThan(0);
       expect(mobileDrawer.x).toBe(0);
       expect(mobilePanel.x + mobilePanel.width).toBeCloseTo(width, 0);
       expect(mobileTab.x + mobileTab.width).toBeCloseTo(mobilePanel.x, 0);
       expect(mobileTab.x).toBeGreaterThanOrEqual(0);
+      expect(await page.evaluate(() => Number(getComputedStyle(document.getElementById('checklistSidebarToggle')).zIndex))).toBeLessThan(Number(await page.locator('#heroLiveChaptersCol').evaluate(el => getComputedStyle(el).zIndex)));
+      expect(checklistToggle).not.toBeNull();
       expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
       await page.keyboard.press('Escape');
       await expect(page.locator('#heroLiveToggleChaptersBtn')).toBeFocused();

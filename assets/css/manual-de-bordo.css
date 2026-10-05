@@ -464,7 +464,8 @@
 .live-custom-controls button:hover, .live-custom-controls button:focus-visible { outline: 2px solid #facc15; outline-offset: 2px; }
 .live-custom-controls__time { min-width: 42px; color: #d7e8f5; font-size: .68rem; font-variant-numeric: tabular-nums; text-align: center; }
 .live-custom-controls__progress { flex: 1; min-width: 80px; accent-color: #ff0033; cursor: pointer; }
-.live-drawer { --live-tab-width: 52px; position: absolute; top: 0; right: 0; width: min(430px, 100%); height: 100%; max-height: 100%; z-index: 4; overflow: hidden; pointer-events: none; border-radius: 0 12px 12px 0; }
+.hero-live-player:fullscreen { width: 100vw; height: 100vh; border: 0; border-radius: 0; aspect-ratio: auto; }
+.live-drawer { --live-tab-width: 52px; position: absolute; top: 0; right: 0; width: min(430px, 100%); height: 100%; min-height: 0; z-index: 4; overflow: hidden; pointer-events: none; border-radius: 0 12px 12px 0; }
 @media (min-width: 769px) {
   .live-drawer { height: var(--live-player-height, 100%); max-height: var(--live-player-height, 100%); }
 }
@@ -781,7 +782,7 @@
   left: 0;
   top: 50%;
   transform: translateY(-50%);
-  z-index: 890;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -2028,7 +2029,7 @@
 }
 
 /* Checklist access sits in the corner rather than across the welcome title. */
-.checklist-sidebar-toggle { z-index: 300; top: auto; bottom: 14px; left: 14px; transform: none; flex-direction: row; padding: 10px 12px; border: 1px solid #6a859d; border-radius: 8px; box-shadow: 0 3px 10px rgba(0, 0, 0, .16); transition: background .18s ease; }
+.checklist-sidebar-toggle { z-index: 2; top: auto; bottom: 14px; left: 14px; transform: none; flex-direction: row; padding: 10px 12px; border: 1px solid #6a859d; border-radius: 8px; box-shadow: 0 3px 10px rgba(0, 0, 0, .16); transition: background .18s ease; }
 .checklist-sidebar-toggle:hover, .checklist-sidebar-toggle:focus-visible { transform: none; box-shadow: 0 3px 10px rgba(0, 0, 0, .16); }
 .checklist-sidebar-toggle__label { writing-mode: horizontal-tb; transform: none; font-size: .7rem; letter-spacing: .03em; line-height: 1.5; }
 .checklist-sidebar-toggle__badge { line-height: 1.5; }
