@@ -69,3 +69,21 @@ The user's final Impeccable delight direction replaces the solid cyan subject ba
 - [x] Use new CSS/live-module cache URLs, 20261005-clean-overlay, in all three Manuals.
 - [x] Verify 39 unique live cases after the resize test measures all boxes atomically; final PT/EN/ES position recheck passed. Batched visual QA passed three localized desktop/mobile states. Independent finish review: ship, no blockers.
 - [ ] Publish and verify the final public files and manual aliases.
+
+### Purple inversion and authored topic change (latest request)
+
+- Use #71206c for the controls and notice surface, with white/pale components, legible secondary times and clear keyboard focus. Preserve the thin total timeline and its markers.
+- Keep the desktop subject background transparent, white Gobold lettering and soft navy contour/shadow; increase its display scale. Preserve the fixed right-hand details action and compact mobile placement.
+- Motion thesis: the subject handoff is the focal moment. Exit the old title in 160 ms, leave a 2000 ms interval, then introduce the latest selected title in 360 ms. The notice follows the same subject so it cannot contradict the visible heading. Controls/seeking respond immediately.
+- Use transform and opacity only, no new dependency. Cancel superseded timers on rapid selection; settle immediately on mobile, reduced motion or a hidden document. First selection is immediate. Preserve the existing 340 ms lower-third/controls continuity.
+- Add behavior checks for the interval, latest-selection wins, resize/reduced-motion interruption and automatic playback boundary. Run the live suite, one batched localized visual inspection, independent finish review and documentation, then publish and verify exact commit hashes.
+
+### Updated timing: finish the entrance at the next subject boundary
+
+Latest steering supersedes the post-selection delay: during automatic playback, rehearse the title handoff in the last 2.52 real seconds of the current topic (160 ms exit, 2 s interval, 360 ms entrance). Derive the phases from the actual player time and playback rate, so the next title is fully visible at its start. Hide the previous notice during the handoff and commit the next notice at the boundary. Manual selection is immediate; pause/buffering, reduced motion, mobile and hidden pages cancel anticipation and restore the current title. A bounded animation frame loop runs only within the last four seconds. Verify boundaries, interruption, seek and resume with the existing player simulation.
+
+Hover correction: keep the details target and its popover still while the pointer transfers between them; avoid revealing/moving video controls underneath an active hover target. Six affected hover/touch/position cases passed on the stable preview4175.
+
+Final validation for the anticipated handoff: 44 live Playwright cases passed in 1.5 minutes on the stable4175 preview, including 1×/2× entrance completion, keyboard manual selection, pause/reduced-motion/mobile cancellation, scrub rewind and playback slowdown. Three localized desktop/mobile visual checks passed for the purple composition; six focused hover/touch/position cases also passed. YouTube is simulated. The earlier preview connection reset and automation smooth-scroll failures are retained in review evidence; final assertions are unchanged in intent. Public validation remains pending the exact final workflow.
+
+Independent final review: ship after verifying scrub cancellation and restoration after playback slowdown. Preserve the concurrent bf115a5 home header commit as the publication base; it does not touch the requested player changes.

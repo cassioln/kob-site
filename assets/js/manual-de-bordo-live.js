@@ -5,6 +5,7 @@ import { topicAt, topicProgress, seekInTopic } from './manual-de-bordo-live-time
 import { initLiveGuideHelp } from './manual-de-bordo-live-help.js?v=20261005-topic-player';
 import { initLiveMarkers } from './manual-de-bordo-live-markers.js?v=20261005-lower-third';
 import { initLiveControlMarquee } from './manual-de-bordo-live-marquee.js?v=20261005-ui-final';
+import { initLiveTopicTransition } from './manual-de-bordo-live-topic.js?v=20261005-purple-live';
 
 const lang = document.documentElement.lang.slice(0, 2);
 const copy = {
@@ -124,6 +125,11 @@ function initLive() {
   const fullscreen = byId('liveFullscreenBtn');
   const customControls = byId('liveCustomControls');
   const customTopic = byId('liveCustomTopic');
+  const topicTransition = initLiveTopicTransition(customTopic, () => ({
+    seconds: Number(player?.getCurrentTime?.() || 0),
+    rate: Number(player?.getPlaybackRate?.() || 1),
+    playing: playing && visible
+  }));
   const lowerThird = byId('liveLowerThird');
   const playPause = byId('livePlayPauseBtn');
   const previousChapter = byId('livePreviousChapterBtn');
@@ -285,8 +291,7 @@ function initLive() {
     selected = chapter;
     if (isPlaying) current = chapter;
     status.textContent = `${isPlaying ? copy.playing : copy.selected} · ${chapter.time} · ${chapter.titles[lang]}`;
-    customTopic.textContent = chapter.titles[lang];
-    customTopic.hidden = false;
+    topicTransition.update(chapter.id, chapter.titles[lang], () => updateNotice(chapter));
     lowerThird.hidden = !desktop.matches;
     updateTopicButtons();
     updateProgress(chapter.seconds);
@@ -296,11 +301,14 @@ function initLive() {
       if (isPlaying && row.chapter.id === chapter.id) row.button.setAttribute('aria-current', 'true');
       else row.button.removeAttribute('aria-current');
     }
+  }
+
+  function updateNotice(chapter) {
     noticeGroup.hidden = !chapter.notice;
     note.hidden = !chapter.notice;
     noteAction.hidden = !(chapter.notice && chapter.faqId);
-    if (changed) noteAction.replaceChildren();
-    if (chapter.notice && (changed || !note.childNodes.length)) {
+    noteAction.replaceChildren();
+    if (chapter.notice) {
       const strong = document.createElement('strong');
       strong.textContent = `${copy.updated}: `;
       note.replaceChildren(strong, document.createTextNode(chapter.notice[lang]));
@@ -335,6 +343,7 @@ function initLive() {
     duration.textContent = formatTime(state.duration);
     progress.max = String(state.duration);
     progress.value = String(Math.floor(state.elapsed));
+    progress.style.setProperty('--live-topic-progress', `${Math.min(100, state.elapsed / state.duration * 100)}%`);
     progress.disabled = !ready;
     progress.setAttribute('aria-valuetext', `${formatTime(state.elapsed)} / ${formatTime(state.duration)} · ${selected.titles[lang]}`);
     const actualDuration = Number(player?.getDuration?.());
@@ -354,6 +363,15 @@ function initLive() {
     const chapter = topicAt(seconds);
     if (chapter !== current) { select(chapter, playing); current = chapter; }
     updateProgress(seconds);
+    const next = CHAPTERS[CHAPTERS.indexOf(chapter) + 1];
+    const rate = Number(player?.getPlaybackRate?.() || 1);
+    if (playing && next && (next.seconds - seconds) / rate <= 4) {
+      topicTransition.anticipate({ key: next.id, title: next.titles[lang], seconds: next.seconds }, () => {
+        const actual = topicAt(player.getCurrentTime());
+        select(actual, playing);
+        current = actual;
+      });
+    }
   }
   function syncTimer() {
     clearInterval(timer);
@@ -361,7 +379,7 @@ function initLive() {
     if (ready && playing && visible && !document.hidden) {
       tick();
       timer = setInterval(tick, 1000);
-    }
+    } else topicTransition.cancel();
   }
   function formatTime(seconds) {
     const value = Math.max(0, Math.floor(Number(seconds) || 0));
@@ -376,7 +394,12 @@ function initLive() {
     if (selected) updateTopicButtons();
   }
 
-  function revealControls() {
+  function revealControls(event) {
+    if (event?.type.startsWith('pointer')) {
+      const hovered = document.elementFromPoint(event.clientX, event.clientY);
+      // Keep the details target still while the pointer enters its popover.
+      if (hovered?.closest('#liveChapterNoteAction') || !byId('liveGuidePopover').hidden) return;
+    }
     customControls.classList.add('is-visible');
     clearTimeout(controlsTimer);
     controlsTimer = setTimeout(() => {
@@ -507,6 +530,7 @@ function initLive() {
   lowerThird.addEventListener('focusin', revealControls);
   lowerThird.addEventListener('pointerenter', revealControls);
   wrapper.addEventListener('pointerenter', revealControls);
+  wrapper.addEventListener('pointermove', revealControls);
   wrapper.addEventListener('pointerdown', revealControls);
   wrapper.addEventListener('touchstart', revealControls, { passive: true });
   function togglePlayPause() {
@@ -531,6 +555,7 @@ function initLive() {
   nextChapter.addEventListener('click', () => jumpChapter(1));
   progress.addEventListener('input', () => {
     if (!selected || !ready) return;
+    topicTransition.cancel();
     const seconds = seekInTopic(selected, progress.value, player.getDuration?.());
     player.seekTo(seconds, true);
     updateProgress(seconds);

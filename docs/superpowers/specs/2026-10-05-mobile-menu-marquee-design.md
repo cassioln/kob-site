@@ -18,9 +18,13 @@ Escopo autorizado: refinamento solicitado pelo usuário nas homes PT/EN/ES e nos
 
 ## Cor e detalhes da live
 
-- Superfície dos controles em lavanda clara (#f9f5fb), texto/ícones roxos, play/pause no roxo da aba Assuntos; ações secundárias em lavanda, barra do assunto roxa e progresso geral discreto. Tooltip de assunto na barra geral também claro.
+- Direção atual: controles no roxo #71206c, play/pause branco e ações secundárias claras com ícones roxos. Tempos e barra geral em tons claros, foco dourado e hover branco/ciano suave; manter a barra geral de 3 px, seus marcadores e tooltip claro.
 - Trocar a ação por Mais detalhes / More details / Más detalles, com SVG de informação, superfície, borda, underline e estados de hover/foco/aberto. Preservar popover por mouse, toque e teclado; title traduzido explica a interação.
-- Direção final solicitada com Impeccable delight: título desktop branco em fundo transparente, com contorno navy de 1 px e sombra suave para leitura sobre o vídeo. O aviso tem superfície azul muito clara derivada do ciano da identidade e texto navy; destaque/foco em roxo profundo. Mais detalhes fica fora do role=status, numa div irmã à direita. Largura da composição constante de até 900 px mantém a ação na mesma posição entre assuntos. No mobile, ação abaixo do texto alinhada à direita. Reutilizar os mesmos nós ao redimensionar e ocultar toda a linha quando o assunto não tiver aviso.
+- Direção final solicitada com Impeccable delight: título desktop branco em fundo transparente, com contorno navy de 1 px e sombra suave para leitura sobre o vídeo. Na inversão solicitada em seguida, o aviso passa ao mesmo roxo #71206c, com texto branco, destaque ciano claro e ação branca com texto roxo. O título transparente cresce para clamp(1.7rem, 3.25vw, 3.2rem). Mais detalhes fica fora do role=status, numa div irmã à direita. Largura da composição constante de até 900 px mantém a ação na mesma posição entre assuntos. No mobile, ação abaixo do texto alinhada à direita. Reutilizar os mesmos nós ao redimensionar e ocultar toda a linha quando o assunto não tiver aviso.
+
+## Troca do assunto
+
+No desktop, antecipar a troca automática nos últimos 2.52 segundos reais do assunto: sair em 160 ms, aguardar 2000 ms e entrar em 360 ms, terminando quando o próximo assunto começa. As fases seguem o tempo e a velocidade reais do player; o loop de animação só existe nos últimos quatro segundos. Ocultar o aviso anterior durante a troca e atualizar aviso/controles no início efetivo do próximo assunto. Seleção manual aparece imediatamente. Pausa/buffering, mobile, redução de movimento e documento oculto cancelam a antecipação e restauram o assunto atual. Preservar a continuidade de 340 ms do lower-third ao ocultar/revelar controles, mantendo o alvo Mais detalhes imóvel durante a transferência do mouse para a janela.
 
 ## Verificação e publicação
 

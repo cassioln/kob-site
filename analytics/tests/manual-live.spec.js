@@ -410,6 +410,13 @@ test('Aviso abaixo do assunto no vídeo e guia em janela paralela, sem navegar o
   await expect(trigger).toHaveText('Mais detalhes');
   await expect(trigger.locator('svg[aria-hidden="true"]')).toHaveCount(1);
   await expect(trigger).toHaveCSS('cursor','pointer');
+  // Stop the page's smooth auto-scroll before testing transfer into the popover.
+  await page.evaluate(() => {
+    const video = document.getElementById('livePlayerWrapper').getBoundingClientRect();
+    window.scrollTo({ top: window.scrollY + video.top - 100, behavior: 'instant' });
+  });
+  await page.mouse.move(0, 0);
+  await expect(page.locator('#liveCustomControls')).not.toHaveClass(/is-visible/, { timeout: 5000 });
   await trigger.hover();
   await expect(page.locator('#liveGuidePopover')).toContainText('menores');
   await page.locator('#liveGuidePopover h4').hover();
@@ -659,7 +666,7 @@ for (const [lang, path, details] of [['pt','/manual-de-bordo.html','Mais detalhe
     await expect(text).toHaveCSS('animation-name','none');
     await expect(text).toHaveCSS('text-overflow','ellipsis');
     await expect(page.locator('#liveChapterNoteAction [data-live-faq]')).toHaveText(details);
-    await expect(play).toHaveCSS('background-color','rgb(142, 43, 136)');
+    await expect(play).toHaveCSS('background-color','rgb(216, 245, 255)');
     await page.emulateMedia({ reducedMotion:'no-preference' });
     await page.setViewportSize({ width:1440,height:1000 });
     await play.evaluate(el => el.blur());
@@ -670,3 +677,127 @@ for (const [lang, path, details] of [['pt','/manual-de-bordo.html','Mais detalhe
     await expect(text).toHaveCSS('animation-name','none');
   });
 }
+
+for (const rate of [1, 2]) test(`Entrada automática termina no início do novo assunto, após saída e pausa antecipadas (${rate}x)`, async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.clock.install();
+  await page.goto('/manual-de-bordo.html');
+  await openTopics(page);
+  await page.locator('[data-seconds="1250"]').click();
+  await readyPlayer(page);
+  await page.clock.pauseAt(new Date(await page.evaluate(() => Date.now()) + 10));
+  await page.evaluate(rate => {
+    const anchor = Date.now();
+    const player = window.__liveMock.instances.at(-1);
+    player.getPlaybackRate = () => rate;
+    player.getCurrentTime = () => 1345 - 4 * rate + (Date.now() - anchor) / 1000 * rate;
+  }, rate);
+  const title = page.locator('#liveCustomTopic');
+  await page.clock.runFor(1500);
+  await expect(title).toHaveAttribute('data-topic-phase', 'exit');
+  await expect(title).toContainText('Documentos');
+  await page.clock.runFor(160);
+  await expect(title).toHaveAttribute('data-topic-phase', 'gap');
+  await page.clock.runFor(1970);
+  await expect(title).toHaveAttribute('data-topic-phase', 'gap');
+  await expect(title).toContainText('Documentos');
+  await page.clock.runFor(40);
+  await expect(title).toHaveAttribute('data-topic-phase', 'enter');
+  await expect(title).toContainText('Vouchers');
+  await expect(page.locator('#heroLiveTopicStatus')).toContainText('Documentos');
+  await expect(page.locator('#liveChapterNotice')).not.toBeVisible();
+  await page.clock.runFor(400);
+  await expect(title).not.toHaveAttribute('data-topic-phase');
+  await expect(title).not.toHaveAttribute('aria-busy');
+  await expect(title).toHaveCSS('opacity', '1');
+  await expect(page.locator('#heroLiveTopicStatus')).toContainText('Vouchers');
+  await expect(page.locator('#liveNextChapterBtn')).toHaveAttribute('aria-label', /Mochila/);
+  expect(await page.evaluate(() => window.__liveMock.calls.filter(call => call[0] === 'seek'))).toEqual([['seek', 1250]]);
+});
+
+test('Escolher outro assunto cancela a antecipação e mostra título e regra imediatamente', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.clock.install();
+  await page.goto('/manual-de-bordo.html');
+  await openTopics(page);
+  await page.locator('[data-seconds="1250"]').click();
+  await readyPlayer(page);
+  await page.clock.pauseAt(new Date(await page.evaluate(() => Date.now()) + 10));
+  await page.evaluate(() => { window.__liveMock.seconds = 1342.5; });
+  await page.clock.runFor(1100);
+  const title = page.locator('#liveCustomTopic');
+  await expect(title).toHaveAttribute('aria-busy', 'true');
+  const marker = page.locator('.live-total-marker[data-topic-seconds="4456"]');
+  await marker.focus();
+  await marker.press('Enter');
+  expect(await page.evaluate(() => window.__liveMock.seconds)).toBe(4456);
+  await expect(title).toHaveText('Bagagem');
+  await expect(title).not.toHaveAttribute('data-topic-phase');
+  await expect(page.locator('#liveChapterNote')).toContainText('23 kg');
+  await page.clock.runFor(3000);
+  await expect(title).toHaveText('Bagagem');
+});
+
+test('Pausa, redução de movimento e mobile cancelam a antecipação sem mostrar assunto futuro', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.goto('/manual-de-bordo.html');
+  await openTopics(page);
+  await page.locator('[data-seconds="1250"]').click();
+  await readyPlayer(page);
+  const title = page.locator('#liveCustomTopic');
+  await page.evaluate(() => { window.__liveMock.seconds = 1342.5; });
+  await expect(title).toHaveAttribute('aria-busy', 'true');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect(title).toContainText('Documentos');
+  await expect(title).not.toHaveAttribute('data-topic-phase');
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.evaluate(() => { window.__liveMock.seconds = 1345.1; });
+  await expect(title).toContainText('Vouchers');
+  await expect(title).not.toHaveAttribute('data-topic-phase');
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.evaluate(() => { window.__liveMock.seconds = 1451; });
+  await expect(title).toHaveAttribute('aria-busy', 'true');
+  await page.locator('#livePlayPauseBtn').click();
+  await expect(title).toContainText('Vouchers');
+  await expect(title).not.toHaveAttribute('data-topic-phase');
+});
+
+test('Scrub para trás e redução da velocidade restauram o título dentro da janela de antecipação', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.clock.install();
+  await page.goto('/manual-de-bordo.html');
+  await openTopics(page);
+  await page.locator('[data-seconds="1250"]').click();
+  await readyPlayer(page);
+  await page.clock.pauseAt(new Date(await page.evaluate(() => Date.now()) + 10));
+  await page.evaluate(() => {
+    window.__liveMock.seconds = 1344.8;
+    window.__liveMock.rate = 1;
+    window.__liveMock.instances.at(-1).getPlaybackRate = () => window.__liveMock.rate;
+  });
+  await page.clock.runFor(1100);
+  const title = page.locator('#liveCustomTopic');
+  await expect(title).toContainText('Vouchers');
+  await page.locator('#liveProgress').evaluate(el => {
+    el.value = '92';
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+  });
+  expect(await page.evaluate(() => window.__liveMock.seconds)).toBe(1342);
+  await expect(title).toContainText('Documentos');
+  await expect(title).not.toHaveAttribute('aria-busy');
+  await page.clock.runFor(1100);
+  await expect(title).not.toHaveAttribute('data-topic-phase');
+  await page.evaluate(() => { window.__liveMock.seconds = 1343.4; });
+  await page.clock.runFor(20);
+  await expect(title).toHaveAttribute('data-topic-phase', 'gap');
+  await page.evaluate(() => { window.__liveMock.rate = .5; });
+  await page.clock.runFor(20);
+  await expect(title).toContainText('Documentos');
+  await expect(title).not.toHaveAttribute('aria-busy');
+  await expect(title).not.toHaveAttribute('data-topic-phase');
+});
