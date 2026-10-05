@@ -178,6 +178,14 @@ for (const width of [320, 390, 768, 1440]) {
       expect(await page.evaluate(() => getComputedStyle(document.getElementById('heroLiveChaptersCol')).position)).toBe('fixed');
       await expect(page.locator('#heroLiveToggleChaptersBtn')).toBeVisible();
       expect(await page.evaluate(() => getComputedStyle(document.getElementById('liveChaptersList')).overflowY)).toBe('auto');
+      const mobileDrawer = await page.locator('#heroLiveChaptersCol').boundingBox();
+      const mobilePanel = await page.locator('#heroLiveChaptersPanel').boundingBox();
+      const mobileTab = await page.locator('#heroLiveToggleChaptersBtn').boundingBox();
+      expect(mobilePanel.x).toBeGreaterThan(0);
+      expect(mobileDrawer.x).toBe(0);
+      expect(mobileTab.x).toBeGreaterThanOrEqual(-28);
+      expect(mobileTab.x).toBeLessThanOrEqual(1);
+      expect(mobilePanel.x).toBeGreaterThanOrEqual(16);
       expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
       await page.keyboard.press('Escape');
       await expect(page.locator('#heroLiveToggleChaptersBtn')).toBeFocused();

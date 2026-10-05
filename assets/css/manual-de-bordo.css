@@ -533,9 +533,9 @@
   .manual-welcome h1 { font-size: clamp(1.8rem, 5vw, 2.6rem); }
   .live-drawer { height: calc((100vw - 32px) * .5625); min-height: 0; }
   .hero-live-cinema:not(.is-collapsed) .live-drawer { position: fixed; inset: 0; width: 100vw; height: 100svh; min-height: 0; z-index: 1000; background: rgba(4, 29, 58, .72); pointer-events: auto; }
-  .hero-live-cinema:not(.is-collapsed) .live-drawer__slide { inset: 0 0 0 auto; width: 100vw; background: #f8fafc; box-shadow: -12px 0 30px rgba(0, 0, 0, .3); }
-  .hero-live-cinema:not(.is-collapsed) .live-drawer__panel { inset: 0 0 0 var(--live-tab-width); border: 0; border-radius: 0; padding: 22px 18px; }
-  .hero-live-cinema:not(.is-collapsed) .live-drawer__tab { top: 50%; left: 0; display: flex; min-height: 176px; z-index: 2; border-radius: 0 12px 12px 0; border-left: 0; border-right: 1px solid #c679bb; }
+  .hero-live-cinema:not(.is-collapsed) .live-drawer__slide { inset: 0 24px 0 24px; width: auto; background: #f8fafc; box-shadow: -12px 0 30px rgba(0, 0, 0, .3); }
+  .hero-live-cinema:not(.is-collapsed) .live-drawer__panel { inset: 0; border: 0; border-radius: 12px 0 0 12px; padding: 22px 18px; }
+  .hero-live-cinema:not(.is-collapsed) .live-drawer__tab { top: 50%; left: -52px; display: flex; min-height: 176px; z-index: 2; border-radius: 0 12px 12px 0; border-left: 0; border-right: 1px solid #c679bb; }
   .hero-live-cinema:not(.is-collapsed) .live-chapters-list { overflow-y: auto; }
   .live-drawer__panel { padding: 14px 12px 10px; }
   .live-toolbar { flex-wrap: wrap; }
