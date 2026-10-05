@@ -403,10 +403,10 @@ test('Aviso abaixo do assunto no vídeo e guia em janela paralela, sem navegar o
     const note=await warning.boundingBox(),controls=await page.locator('#liveCustomControls').boundingBox();
     return controls.y-note.y-note.height;
   }).toBeGreaterThan(10);
-  expect(await warning.evaluate(el=>el.parentElement.id)).toBe('liveLowerThird');
+  expect(await warning.evaluate(el=>el.parentElement.parentElement.id)).toBe('liveLowerThird');
   expect((await warning.boundingBox()).y).toBeGreaterThan((await page.locator('#liveCustomTopic').boundingBox()).y);
   const url=page.url();
-  const trigger=warning.locator('[data-live-faq]');
+  const trigger=page.locator('#liveChapterNoteAction [data-live-faq]');
   await expect(trigger).toHaveText('Mais detalhes');
   await expect(trigger.locator('svg[aria-hidden="true"]')).toHaveCount(1);
   await expect(trigger).toHaveCSS('cursor','pointer');
@@ -429,7 +429,7 @@ test.describe('Aviso por toque',()=>{
     await openTopics(page);
     await page.locator('[data-seconds="4456"]').click();
     await readyPlayer(page);
-    const trigger=page.locator('#liveChapterNote [data-live-faq]');
+    const trigger=page.locator('#liveChapterNoteAction [data-live-faq]');
     await trigger.tap();
     await expect(page.locator('#liveGuidePopover')).toContainText('23 kg');
     const box=await page.locator('#liveGuidePopover').boundingBox();
@@ -532,7 +532,7 @@ test('Identificação acompanha o recolhimento real dos controles e retorna suav
   await page.locator('#livePlayerWrapper').hover({position:{x:40,y:40}});
   await expect(controls).toHaveClass(/is-visible/);
   await expect.poll(()=>group.evaluate(el=>el.getBoundingClientRect().bottom-el.parentElement.getBoundingClientRect().bottom)).toBeLessThan(lowered-80);
-  const guide=page.locator('#liveChapterNote [data-live-faq]');await guide.focus();
+  const guide=page.locator('#liveChapterNoteAction [data-live-faq]');await guide.focus();
   await page.waitForTimeout(3400);await expect(controls).toHaveClass(/is-visible/);
   await expect(page.locator('#liveGuidePopover')).toBeVisible();
 });
@@ -541,13 +541,13 @@ test('Movimento reduzido, resize e fullscreen preservam os mesmos elementos e es
   await page.setViewportSize({width:1440,height:1000});await page.emulateMedia({reducedMotion:'reduce'});
   await page.goto('/manual-de-bordo.html');await openTopics(page);await page.locator('[data-seconds="4456"]').click();await readyPlayer(page);
   expect(await page.locator('#liveLowerThird').evaluate(el=>parseFloat(getComputedStyle(el).transitionDuration))).toBeLessThanOrEqual(.001);
-  await expect(page.locator('#liveChapterNote')).toHaveCSS('animation-name','none');
+  await expect(page.locator('#liveChapterNotice')).toHaveCSS('animation-name','none');
   await page.setViewportSize({width:390,height:844});
   await expect(page.locator('#liveLowerThird')).toBeHidden();
-  expect(await page.locator('#liveChapterNote').evaluate(el=>el.parentElement.id)).toBe('live');
+  expect(await page.locator('#liveChapterNote').evaluate(el=>el.parentElement.parentElement.id)).toBe('live');
   expect((await page.locator('#liveChapterNote').boundingBox()).y).toBeLessThan((await page.locator('#livePlayerWrapper').boundingBox()).y);
   await page.setViewportSize({width:850,height:1000});
-  expect(await page.locator('#liveChapterNote').evaluate(el=>el.parentElement.id)).toBe('liveLowerThird');
+  expect(await page.locator('#liveChapterNote').evaluate(el=>el.parentElement.parentElement.id)).toBe('liveLowerThird');
   await expect(page.locator('#liveLowerThird')).toBeVisible();
   await page.locator('#liveFullscreenBtn').click();
   await expect.poll(()=>page.evaluate(()=>document.fullscreenElement?.id)).toBe('livePlayerWrapper');
@@ -591,6 +591,40 @@ for(const [lang,path,title] of [
 }
 
 for (const [lang, path, details] of [['pt','/manual-de-bordo.html','Mais detalhes'], ['en','/en/manual-de-bordo.html','More details'], ['es','/es/manual-de-bordo.html','Más detalles']]) {
+  test(`Detalhes ficam separados do aviso e alinhados à direita entre assuntos (${lang})`, async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    await page.goto(path);
+    await openTopics(page);
+    await page.locator('[data-seconds="1250"]').click();
+    await readyPlayer(page);
+    const note = page.locator('#liveChapterNote');
+    const action = page.locator('#liveChapterNoteAction [data-live-faq]');
+    await expect(note.locator('button')).toHaveCount(0);
+    await expect(action).toHaveText(details);
+    const first = await action.boundingBox();
+    expect(first.x).toBeGreaterThan((await note.boundingBox()).x + (await note.boundingBox()).width);
+    await openTopics(page);
+    await page.locator('[data-seconds="4456"]').click();
+    await expect(note).toContainText('23 kg');
+    const second = await action.boundingBox();
+    expect(second.x + second.width).toBeCloseTo(first.x + first.width, 1);
+    await action.hover();
+    await expect(page.locator('#liveGuidePopover')).toContainText('23 kg');
+    await page.keyboard.press('Escape');
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expect.poll(() => page.locator('#liveChapterNotice').evaluate(el => el.parentElement.id)).toBe('live');
+    await expect.poll(() => page.evaluate(() => {
+      const action = document.querySelector('#liveChapterNoteAction button').getBoundingClientRect();
+      const note = document.querySelector('#liveChapterNote').getBoundingClientRect();
+      const notice = document.querySelector('#liveChapterNotice').getBoundingClientRect();
+      return action.top > note.bottom && action.right <= notice.right;
+    })).toBe(true);
+    await openTopics(page);
+    await page.locator('.live-chapter-item__button').first().click();
+    await expect(page.locator('#liveChapterNotice')).toBeHidden();
+    await expect(action).toHaveCount(0);
+  });
+
   test(`Letreiro só percorre nomes longos em hover/foco e respeita redução de movimento (${lang})`, async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.emulateMedia({ reducedMotion: 'no-preference' });
@@ -624,7 +658,7 @@ for (const [lang, path, details] of [['pt','/manual-de-bordo.html','Mais detalhe
     await page.emulateMedia({ reducedMotion:'reduce' });
     await expect(text).toHaveCSS('animation-name','none');
     await expect(text).toHaveCSS('text-overflow','ellipsis');
-    await expect(page.locator('#liveChapterNote [data-live-faq]')).toHaveText(details);
+    await expect(page.locator('#liveChapterNoteAction [data-live-faq]')).toHaveText(details);
     await expect(play).toHaveCSS('background-color','rgb(142, 43, 136)');
     await page.emulateMedia({ reducedMotion:'no-preference' });
     await page.setViewportSize({ width:1440,height:1000 });

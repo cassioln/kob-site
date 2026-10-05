@@ -60,3 +60,12 @@ Observed production responses cache CSS/JS for 2592000 seconds. The original FTP
 - [x] Use a fresh manual CSS cache version, 20261005-cyan-band, in PT/EN/ES.
 - [x] Inspect the three localized desktop/mobile states in one batch. Contrast: title/body 8.23:1; emphasis/focus 5.76:1; button text 9.88:1 (7.37:1 hover). Independent finish review: ship, no blockers.
 - [ ] Publish through the queued production workflow and verify the final public hashes and manual aliases.
+
+### Final transparent-title direction and separate detail action
+
+The user's final Impeccable delight direction replaces the solid cyan subject band with a white floating title on a transparent background. A 1 px navy contour and soft offset text shadows keep it legible; the editorial notice uses a very pale cyan surface with navy text. The detail action lives in a sibling div outside role=status, with its own right column. The composition has a stable width up to 900 px; mobile stacks the action below the notice, aligned right. JavaScript creates and repositions the group around the existing note, so older HTML remains compatible during asset-first publication. The whole group hides for subjects without notices.
+
+- [x] Implement the separate action column and preserve popover, reduced motion, resize and fullscreen behavior.
+- [x] Use new CSS/live-module cache URLs, 20261005-clean-overlay, in all three Manuals.
+- [x] Verify 39 unique live cases after the resize test measures all boxes atomically; final PT/EN/ES position recheck passed. Batched visual QA passed three localized desktop/mobile states. Independent finish review: ship, no blockers.
+- [ ] Publish and verify the final public files and manual aliases.

@@ -62,23 +62,33 @@ function loadYouTubeAPI() {
 function initLive() {
   const byId = id => document.getElementById(id);
   const desktop = matchMedia('(min-width: 769px)');
+  const note = byId('liveChapterNote');
+  const noticeGroup = document.createElement('div');
+  noticeGroup.id = 'liveChapterNotice';
+  noticeGroup.className = 'live-chapter-notice';
+  noticeGroup.hidden = true;
+  const noteAction = document.createElement('div');
+  noteAction.id = 'liveChapterNoteAction';
+  noteAction.className = 'live-chapter-note__action';
+  noteAction.hidden = true;
+  note.before(noticeGroup);
+  noticeGroup.append(note, noteAction);
   const updateDimensions = () => {
     const controls = byId('liveCustomControls');
     const topic = byId('liveCustomTopic');
     const lowerThird = byId('liveLowerThird');
-    const note = byId('liveChapterNote');
     const video = byId('livePlayerWrapper');
     if (desktop.matches) {
       if (controls.parentElement !== video) video.append(controls);
       if (topic.parentElement !== lowerThird) lowerThird.prepend(topic);
-      if (note.parentElement !== lowerThird) lowerThird.append(note);
+      if (noticeGroup.parentElement !== lowerThird) lowerThird.append(noticeGroup);
       if (lowerThird.nextElementSibling !== controls) video.insertBefore(lowerThird, controls);
       lowerThird.hidden = topic.hidden;
       if (controls.offsetHeight) video.style.setProperty('--live-controls-offset', `${controls.offsetHeight + 12}px`);
     } else {
       if (controls.parentElement !== cinema) cinema.insertBefore(controls, byId('heroLiveChaptersCol'));
       if (topic.parentElement !== controls) controls.prepend(topic);
-      if (note.parentElement !== cinema.parentElement) cinema.before(note);
+      if (noticeGroup.parentElement !== cinema.parentElement) cinema.before(noticeGroup);
       lowerThird.hidden = true;
     }
     const h = document.querySelector('.guide-header')?.offsetHeight;
@@ -110,7 +120,6 @@ function initLive() {
   const wrapper = byId('livePlayerWrapper');
   const status = byId('heroLiveTopicStatus');
   const errorBox = byId('liveVideoError');
-  const note = byId('liveChapterNote');
   const external = byId('liveExternalLink');
   const fullscreen = byId('liveFullscreenBtn');
   const customControls = byId('liveCustomControls');
@@ -287,12 +296,15 @@ function initLive() {
       if (isPlaying && row.chapter.id === chapter.id) row.button.setAttribute('aria-current', 'true');
       else row.button.removeAttribute('aria-current');
     }
+    noticeGroup.hidden = !chapter.notice;
     note.hidden = !chapter.notice;
+    noteAction.hidden = !(chapter.notice && chapter.faqId);
+    if (changed) noteAction.replaceChildren();
     if (chapter.notice && (changed || !note.childNodes.length)) {
       const strong = document.createElement('strong');
       strong.textContent = `${copy.updated}: `;
       note.replaceChildren(strong, document.createTextNode(chapter.notice[lang]));
-      if (chapter.faqId) note.append(' ', guideLink(chapter));
+      if (chapter.faqId) noteAction.replaceChildren(guideLink(chapter));
     }
   }
 
