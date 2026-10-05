@@ -535,7 +535,7 @@
   .hero-live-cinema:not(.is-collapsed) .live-drawer { position: fixed; inset: 0; width: 100vw; height: 100svh; min-height: 0; z-index: 1000; background: rgba(4, 29, 58, .72); pointer-events: auto; }
   .hero-live-cinema:not(.is-collapsed) .live-drawer__slide { inset: 0 24px 0 24px; width: auto; background: #f8fafc; box-shadow: -12px 0 30px rgba(0, 0, 0, .3); }
   .hero-live-cinema:not(.is-collapsed) .live-drawer__panel { inset: 0; border: 0; border-radius: 12px 0 0 12px; padding: 22px 18px; }
-  .hero-live-cinema:not(.is-collapsed) .live-drawer__tab { top: 50%; left: -52px; display: flex; min-height: 176px; z-index: 2; border-radius: 0 12px 12px 0; border-left: 0; border-right: 1px solid #c679bb; }
+  .hero-live-cinema:not(.is-collapsed) .live-drawer__tab { top: 50%; left: -24px; display: flex; min-height: 176px; z-index: 2; border-radius: 0 12px 12px 0; border-left: 0; border-right: 1px solid #c679bb; }
   .hero-live-cinema:not(.is-collapsed) .live-chapters-list { overflow-y: auto; }
   .live-drawer__panel { padding: 14px 12px 10px; }
   .live-toolbar { flex-wrap: wrap; }
@@ -773,7 +773,7 @@
   left: 0;
   top: 50%;
   transform: translateY(-50%);
-  z-index: 890;
+  z-index: 300;
   display: flex;
   flex-direction: column;
   align-items: center;

@@ -183,7 +183,7 @@ for (const width of [320, 390, 768, 1440]) {
       const mobileTab = await page.locator('#heroLiveToggleChaptersBtn').boundingBox();
       expect(mobilePanel.x).toBeGreaterThan(0);
       expect(mobileDrawer.x).toBe(0);
-      expect(mobileTab.x).toBeGreaterThanOrEqual(-28);
+      expect(mobileTab.x).toBeGreaterThanOrEqual(-1);
       expect(mobileTab.x).toBeLessThanOrEqual(1);
       expect(mobilePanel.x).toBeGreaterThanOrEqual(16);
       expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);

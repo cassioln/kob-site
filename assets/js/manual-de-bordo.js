@@ -397,7 +397,7 @@
     function getTagLabel(type) {
       if (type === 'essential') return isEn ? 'Essential' : isEs ? 'Esencial' : 'Essencial';
       if (type === 'recommended') return isEn ? 'Recommended' : isEs ? 'Recomendado' : 'Recomendado';
-      if (type === 'conditional') return isEn ? 'Conditional' : isEs ? 'Condicional' : 'Condicional';
+      if (type === 'conditional') return isEn ? 'If applicable' : isEs ? 'Si aplica' : 'Se aplicável';
       return isEn ? 'Optional' : isEs ? 'Opcional' : 'Opcional';
     }
 
