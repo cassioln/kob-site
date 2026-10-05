@@ -18,4 +18,8 @@ Movimento reduzido elimina o deslocamento animado, mantendo posição final e co
 
 ## Limites e verificação
 
+## Pontos dos assuntos na linha total — instrução adicional
+
+O usuário aprovou a aparência da barra geral e pediu pontos nos inícios de cada assunto, com nome ao passar o mouse e salto ao clicar. A linha e os tempos permanecem iguais; somente os pontos passam a ser interativos. Usar os 41 horários reais, tooltip localizada com horário/nome, clique por posição mais próxima quando alvos se sobrepõem e um único ponto no Tab, com setas/Home/End para alcançar os demais. Enter/Espaço acionam o ponto focado; Escape fecha o tooltip. O ponto atual fica identificado sem competir com o range vermelho. Duração real da API determina as posições. Pontos e tooltip acompanham a visibilidade dos controles e permanecem ausentes no mobile, junto da linha geral existente.
+
 PT, EN e ES devem preservar as 41 entradas da live, 42 FAQs e 25 itens do checklist. Home, ônibus, backend, imagens e textos factuais ficam fora do ajuste. Testar controles visíveis/ocultos/retornando, avisos presentes/ausentes, foco no guia, movimento reduzido, resize nos dois sentidos, fullscreen e API indisponível. Capturar desktop e mobile nos três idiomas numa rodada agrupada; vídeo simulado deve ser rotulado. Encerrar com revisão independente e atualização apenas do brief local do Manual.

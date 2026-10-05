@@ -36,6 +36,18 @@
 
 ### Task 3: Verify meaningful states
 
+### Task 2b: Topic markers on the preserved total line
+
+**Files:** Add `assets/js/manual-de-bordo-live-markers.js`; modify the three Manual HTMLs, main live module, CSS and existing browser tests.
+
+- [ ] Wrap native progress in `<div class="live-total-track" id="liveTotalTrack">`; keep progress and time copy unchanged.
+- [ ] Export `initLiveMarkers({track, chapters, lang, label, onSelect})`, returning `{update(duration, selectedId)}`. Create positioned button dots and one tooltip with DOM textContent. Pointer selections resolve the closest real chapter; keyboard uses roving tabindex with ArrowLeft/Right/Home/End and Enter/Space. Escape dismisses tooltip. The tooltip is hoverable and bounded within the track.
+- [ ] Call the helper from the live module; `onSelect(chapter)` uses existing `select(chapter,false)` and `playAt(chapter.seconds)`. `updateProgress` updates marker percentages and active state with real duration.
+- [ ] Preserve the3px track; dots4px, larger only for hover/focus/current; transparent20px targets. Tooltip navy/white, readable type, no duplicate native tooltip. Restore the native progress's readonly behavior; interactive descendants alone receive pointer events.
+- [ ] Test all41 positions, hover text, pointer and keyboard seek, actual-duration change, stable single player, no accidental pause, and absence on mobile.
+
+### Task 3: Verify meaningful states (continued)
+
 **File:** Modify `analytics/tests/manual-live.spec.js`.
 
 - [ ] Update incumbent desktop assertions to expect the topic inside `liveLowerThird` above controls rather than at the top of the player.
