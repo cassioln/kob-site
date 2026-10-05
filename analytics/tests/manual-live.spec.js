@@ -407,6 +407,9 @@ test('Aviso abaixo do assunto no vídeo e guia em janela paralela, sem navegar o
   expect((await warning.boundingBox()).y).toBeGreaterThan((await page.locator('#liveCustomTopic').boundingBox()).y);
   const url=page.url();
   const trigger=warning.locator('[data-live-faq]');
+  await expect(trigger).toHaveText('Mais detalhes');
+  await expect(trigger.locator('svg[aria-hidden="true"]')).toHaveCount(1);
+  await expect(trigger).toHaveCSS('cursor','pointer');
   await trigger.hover();
   await expect(page.locator('#liveGuidePopover')).toContainText('menores');
   await page.locator('#liveGuidePopover h4').hover();
@@ -585,4 +588,51 @@ for(const [lang,path,title] of [
   expect(await page.evaluate(()=>window.__liveMock.instances.length)).toBe(1);
   await page.setViewportSize({width:390,height:844});await expect(markers.first()).toBeHidden();
  });
+}
+
+for (const [lang, path, details] of [['pt','/manual-de-bordo.html','Mais detalhes'], ['en','/en/manual-de-bordo.html','More details'], ['es','/es/manual-de-bordo.html','Más detalles']]) {
+  test(`Letreiro só percorre nomes longos em hover/foco e respeita redução de movimento (${lang})`, async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.goto(path);
+    await openTopics(page);
+    await page.locator('[data-seconds="1250"]').click();
+    await readyPlayer(page);
+    const play = page.locator('#livePlayPauseBtn');
+    const clip = play.locator('.live-control-label');
+    const text = clip.locator('span');
+    await page.keyboard.press('Tab');
+    await play.focus();
+    await expect(clip).toHaveClass(/is-overflowing/);
+    await expect.poll(async () => (await play.boundingBox()).width).toBeLessThanOrEqual(180);
+    await expect(text).toHaveCSS('animation-name','live-label-marquee');
+    await expect.poll(async () => text.evaluate(el => new DOMMatrix(getComputedStyle(el).transform).m41)).toBeLessThan(-.25);
+    await page.evaluate(() => window.scrollTo(0,document.documentElement.scrollHeight));
+    await expect(text).toHaveCSS('animation-play-state','paused');
+    await play.scrollIntoViewIfNeeded();
+    await expect(text).toHaveCSS('animation-play-state','running');
+    expect(await play.getAttribute('aria-label')).toContain(await text.textContent());
+    expect(await text.evaluate(el => el.scrollWidth)).toBeGreaterThan(await clip.evaluate(el => el.clientWidth));
+    const travel = await clip.evaluate(el => parseFloat(el.style.getPropertyValue('--live-label-travel')));
+    await page.setViewportSize({ width: 850, height: 1000 });
+    await expect.poll(async () => clip.evaluate(el => parseFloat(el.style.getPropertyValue('--live-label-travel')))).toBeLessThan(travel);
+    await play.evaluate(el => el.blur());
+    await page.mouse.move(0,0);
+    await expect(text).toHaveCSS('animation-name','none');
+    await play.hover();
+    await expect(text).toHaveCSS('animation-name','live-label-marquee');
+    await page.emulateMedia({ reducedMotion:'reduce' });
+    await expect(text).toHaveCSS('animation-name','none');
+    await expect(text).toHaveCSS('text-overflow','ellipsis');
+    await expect(page.locator('#liveChapterNote [data-live-faq]')).toHaveText(details);
+    await expect(play).toHaveCSS('background-color','rgb(142, 43, 136)');
+    await page.emulateMedia({ reducedMotion:'no-preference' });
+    await page.setViewportSize({ width:1440,height:1000 });
+    await play.evaluate(el => el.blur());
+    await openTopics(page);
+    await page.locator('[data-seconds="4456"]').click();
+    await play.focus();
+    await expect(clip).not.toHaveClass(/is-overflowing/);
+    await expect(text).toHaveCSS('animation-name','none');
+  });
 }

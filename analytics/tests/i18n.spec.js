@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Internacionalização e Validação de Páginas /en/ e /es/', () => {
 
   test('Página /en/ carrega com idioma, seletor e seção FAQ íntegra', async ({ page }) => {
-    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.setViewportSize({ width: 1440, height: 800 });
     await page.goto('/en/');
     await expect(page).toHaveTitle(/Kriativos On Board/i);
 
@@ -53,7 +53,7 @@ test.describe('Internacionalização e Validação de Páginas /en/ e /es/', () 
   });
 
   test('Página /es/ carrega com idioma, seletor e seção FAQ íntegra', async ({ page }) => {
-    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.setViewportSize({ width: 1440, height: 800 });
     await page.goto('/es/');
     await expect(page).toHaveTitle(/Kriativos On Board/i);
 
@@ -393,6 +393,7 @@ test.describe('Internacionalização e Validação de Páginas /en/ e /es/', () 
     // 3. Visitante com navegador em português acessando a raiz (deve permanecer na raiz /)
     const contextPT = await browser.newContext({ locale: 'pt-BR' });
     const pagePT = await contextPT.newPage();
+    await pagePT.setViewportSize({ width: 1440, height: 800 });
     await pagePT.goto('/');
     await expect(pagePT).toHaveURL(/\/$/);
 
@@ -474,27 +475,49 @@ test.describe('Internacionalização e Validação de Páginas /en/ e /es/', () 
 });
 
 for (const [lang, path] of [['pt', '/'], ['en', '/en/'], ['es', '/es/']]) {
-  test(`Manual e menu permanecem acessíveis sem recorte no celular e tablet (${lang})`, async ({ page }) => {
+  test(`Manual no drawer e idiomas alinhados ao menu no celular e tablet (${lang})`, async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto(`${path}?lang=${lang}`);
     await expect(page.locator('.hero')).toHaveAttribute('data-intro', 'done');
-    for (const width of [320, 390, 1200]) {
-      await page.setViewportSize({ width, height: 800 });
+    for (const width of [320, 390, 1200, 1320]) {
+      await page.setViewportSize({ width, height: width === 320 ? 568 : 800 });
       for (const destination of ['#top', '#navio']) {
         await page.locator(destination).scrollIntoViewIfNeeded();
         await expect(page.locator('#nav')).toHaveAttribute('data-hidden', 'false');
-        const manual = page.locator('.nav__right .header-manual-link');
+        await expect(page.locator('.nav__right .header-manual-link')).toBeHidden();
         const toggle = page.locator('#navToggle');
-        await expect(manual).toBeVisible();
         await expect(toggle).toBeVisible();
+        const languages = page.locator('.nav__right .lang-switch--mobile');
+        await expect(languages).toBeVisible();
+        await expect(languages.locator('[aria-current="page"]')).toHaveText(lang.toUpperCase());
+        const styles = await toggle.evaluate(el => {
+          const s = getComputedStyle(el); return { radius: s.borderRadius, border: s.borderWidth };
+        });
+        for (const button of await languages.locator('a').all()) {
+          const box = await button.boundingBox();
+          expect(box.width).toBeCloseTo(44, 3); expect(box.height).toBeCloseTo(44, 3);
+          expect(box.x).toBeGreaterThanOrEqual(0); expect(box.x + box.width).toBeLessThanOrEqual(width);
+          await expect(button).toHaveCSS('border-radius', styles.radius);
+          await expect(button).toHaveCSS('border-width', styles.border);
+        }
+        await toggle.click();
+        const drawer = page.locator('#drawer');
+        await expect(drawer).toHaveAttribute('aria-hidden', 'false');
+        await expect(drawer.locator('nav a[href*="manualdebordo"]')).toHaveCount(0);
+        const manual = drawer.locator('.drawer__actions .header-manual-link');
+        const reserve = drawer.locator('[data-analytics-cta-id="drawer_reserve"]');
+        await expect(manual).toBeVisible();
         await expect(manual).toHaveAttribute('href', `https://kriativosonboard.com.br${lang === 'pt' ? '' : '/' + lang}/manualdebordo`);
-        await expect.poll(async () => {
-          const box = await toggle.boundingBox();
-          return box.x + box.width;
-        }).toBeLessThanOrEqual(width);
-        const box = await manual.boundingBox();
-        expect(box.x).toBeGreaterThanOrEqual(0);
-        expect(box.height).toBeGreaterThanOrEqual(44);
+        const m = await manual.boundingBox(), r = await reserve.boundingBox();
+        expect(m.width).toBeCloseTo(r.width, 2); expect(m.height).toBe(64); expect(r.height).toBe(64);
+        expect(await manual.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
+        expect(m.y + m.height).toBeLessThan(r.y);
+        await reserve.scrollIntoViewIfNeeded();
+        const visibleReserve = await reserve.boundingBox();
+        expect(visibleReserve.y + visibleReserve.height).toBeLessThanOrEqual(page.viewportSize().height);
+        await page.keyboard.press('Escape');
+        await expect(toggle).toBeFocused();
+        await expect(drawer).toHaveAttribute('aria-hidden', 'true');
       }
     }
   });

@@ -246,7 +246,7 @@
   <!-- Fontes da marca (banner KOB): Gobold Extra2 = display, Chantal = acento manuscrito -->
   <link rel="preload" href="/assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
 
-  <link rel="stylesheet" href="/assets/css/main.css?v=20261005-header-validated">
+  <link rel="stylesheet" href="/assets/css/main.css?v=20261005-mobile-menu">
   <link rel="stylesheet" href="/assets/css/cookie-consent.css?v=20260820-fix-contrast">
   <script defer src="/assets/js/cookie-consent.js?v=20260713-5"></script>
 </head>
@@ -462,12 +462,24 @@
       <a href="#depoimentos">Testimonials</a>
       <a href="#hospedagem">Transportation & Accommodation</a>
       <a href="#faq">FAQ</a>
-      <a href="/en/manualdebordo">Onboard Manual (Already Booked?)</a>
     </nav>
-    <a class="btn btn--primary btn--lg" data-analytics-channel="whatsapp" data-analytics-cta-id="drawer_reserve"
-      data-analytics-placement="mobile_nav" data-analytics-intent="reservation"
-      href="https://api.whatsapp.com/send?phone=5513981580498&amp;text=Hello%2C%20Royal%20Trip%21%20I%20would%20like%20to%20book%20my%20cabin%20for%20Kriativos%20On%20Board%202026.%20Can%20you%20help%20me%3F"
-      target="_blank" rel="noopener">Book Your Spot</a>
+    <div class="drawer__actions">
+      <a class="btn header-manual-link" href="https://kriativosonboard.com.br/en/manualdebordo"
+        aria-label="Already booked your cabin? Check the Onboard Guide">
+        <svg class="header-manual-link__icon" width="22" height="22" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 7v14M3 3h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5v16h-5a4 4 0 0 0-4 2 4 4 0 0 0-4-2H3Z" />
+        </svg>
+        <span class="header-manual-link__lines">
+          <span class="header-manual-link__sub">Already booked your cabin?</span>
+          <span class="header-manual-link__title"><span class="header-manual-link__prefix">Check the</span> <strong>Onboard Guide</strong></span>
+        </span>
+      </a>
+      <a class="btn btn--primary btn--lg" data-analytics-channel="whatsapp" data-analytics-cta-id="drawer_reserve"
+        data-analytics-placement="mobile_nav" data-analytics-intent="reservation"
+        href="https://api.whatsapp.com/send?phone=5513981580498&amp;text=Hello%2C%20Royal%20Trip%21%20I%20would%20like%20to%20book%20my%20cabin%20for%20Kriativos%20On%20Board%202026.%20Can%20you%20help%20me%3F"
+        target="_blank" rel="noopener">Book Your Spot</a>
+    </div>
   </div>
 
   <span id="top"></span>

@@ -4,24 +4,25 @@ import { normalizeSearch, matchChapter, highlightParts, excerpt } from './manual
 import { topicAt, topicProgress, seekInTopic } from './manual-de-bordo-live-timeline.js?v=20261005-topic-player';
 import { initLiveGuideHelp } from './manual-de-bordo-live-help.js?v=20261005-topic-player';
 import { initLiveMarkers } from './manual-de-bordo-live-markers.js?v=20261005-lower-third';
+import { initLiveControlMarquee } from './manual-de-bordo-live-marquee.js?v=20261005-label-marquee';
 
 const lang = document.documentElement.lang.slice(0, 2);
 const copy = {
   pt: {
     topics: 'Assuntos', close: 'Recolher assuntos',
-    selected: 'Selecionado', playing: 'Em reprodução', transcript: 'Trecho da transcrição fornecida', updated: 'Regra atualizada', faq: 'Conferir no guia',
+    selected: 'Selecionado', playing: 'Em reprodução', transcript: 'Trecho da transcrição fornecida', updated: 'Regra atualizada', faq: 'Mais detalhes', detailHint: 'Passe o mouse, toque ou use o teclado para ver mais detalhes',
     videoTitle: 'Live de embarque · Kriativos On Board 2026', apiError: 'Não foi possível sincronizar os assuntos. O vídeo ainda pode ser assistido aqui ou pelo link no YouTube.', previousTopic: 'Assunto anterior', nextTopic: 'Próximo assunto', play: 'Reproduzir', pause: 'Pausar', progress: 'Progresso do assunto', remaining: 'Restante', closeGuide: 'Fechar orientação',
     videoError: 'O YouTube não conseguiu reproduzir este vídeo. Tente novamente ou abra o trecho no YouTube.', fullscreenError: 'Não foi possível ampliar. Você pode abrir o vídeo no YouTube.', expand: 'Ampliar vídeo', exit: 'Sair da tela cheia'
   },
   en: {
     topics: 'Topics', close: 'Collapse topics',
-    selected: 'Selected', playing: 'Playing', transcript: 'Excerpt of the supplied Portuguese transcript', updated: 'Updated rule', faq: 'Check the guide',
+    selected: 'Selected', playing: 'Playing', transcript: 'Excerpt of the supplied Portuguese transcript', updated: 'Updated rule', faq: 'More details', detailHint: 'Hover, tap or use the keyboard for more details',
     videoTitle: 'Boarding live recording · Kriativos On Board 2026', apiError: 'Topic synchronisation is unavailable. You can still watch here or open the video on YouTube.', previousTopic: 'Previous topic', nextTopic: 'Next topic', play: 'Play', pause: 'Pause', progress: 'Topic progress', remaining: 'Remaining', closeGuide: 'Close guidance',
     videoError: 'YouTube could not play this video. Try again or open this topic on YouTube.', fullscreenError: 'Full screen is unavailable. You can open the video on YouTube.', expand: 'Expand video', exit: 'Exit full screen'
   },
   es: {
     topics: 'Temas', close: 'Recoger temas',
-    selected: 'Seleccionado', playing: 'En reproducción', transcript: 'Fragmento de la transcripción proporcionada en portugués', updated: 'Regla actualizada', faq: 'Consultar la guía',
+    selected: 'Seleccionado', playing: 'En reproducción', transcript: 'Fragmento de la transcripción proporcionada en portugués', updated: 'Regla actualizada', faq: 'Más detalles', detailHint: 'Pasa el cursor, toca o usa el teclado para ver más detalles',
     videoTitle: 'Charla de embarque · Kriativos On Board 2026', apiError: 'No se pudieron sincronizar los temas. Puedes seguir viendo aquí o abrir el vídeo en YouTube.', previousTopic: 'Tema anterior', nextTopic: 'Siguiente tema', play: 'Reproducir', pause: 'Pausar', progress: 'Progreso del tema', remaining: 'Restante', closeGuide: 'Cerrar orientación',
     videoError: 'YouTube no pudo reproducir el vídeo. Inténtalo de nuevo o abre este tema en YouTube.', fullscreenError: 'No se pudo ampliar. Puedes abrir el vídeo en YouTube.', expand: 'Ampliar vídeo', exit: 'Salir de pantalla completa'
   }
@@ -118,6 +119,7 @@ function initLive() {
   const playPause = byId('livePlayPauseBtn');
   const previousChapter = byId('livePreviousChapterBtn');
   const nextChapter = byId('liveNextChapterBtn');
+  const controlMarquee = initLiveControlMarquee([previousChapter, playPause, nextChapter]);
   const progress = byId('liveProgress');
   const currentTime = byId('liveCurrentTime');
   const duration = byId('liveDuration');
@@ -160,7 +162,9 @@ function initLive() {
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'live-guide-trigger';
-    button.textContent = copy.faq;
+    button.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7h.01"/></svg>';
+    button.append(document.createTextNode(copy.faq));
+    button.title = copy.detailHint;
     button.dataset.liveFaq = chapter.faqId;
     button.setAttribute('aria-expanded', 'false');
     button.setAttribute('aria-controls', 'liveGuidePopover');
@@ -305,10 +309,12 @@ function initLive() {
     ]) {
       const title = topic?.titles[lang] || '';
       button.disabled = !topic;
-      button.querySelector('.live-control-label > span').textContent = title;
+      const label = button.querySelector('.live-control-label > span');
+      if (label.textContent !== title) label.textContent = title;
       button.setAttribute('aria-label', title ? `${action}: ${title}` : action);
       button.title = title ? `${action}: ${title}` : action;
     }
+    controlMarquee.refresh();
   }
   function updateProgress(seconds) {
     if (!selected) return;

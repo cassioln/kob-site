@@ -11,10 +11,15 @@ Escopo autorizado: refinamento solicitado pelo usuário nas homes PT/EN/ES e nos
 
 ## Letreiro da live
 
-- Nome longo percorre horizontalmente somente quando o botão do assunto é expandido por hover ou foco no desktop. Nomes curtos ficam estáticos.
+- Nome longo percorre horizontalmente somente quando o botão do assunto é expandido por hover ou foco no desktop. Nomes curtos ficam estáticos. Largura máxima do botão expandido cai cerca de 40%: 300 → 180 px no desktop e 230 → 138 px entre 769 e 1000 px (área do texto 130/88 px).
 - Medir a diferença entre largura real do texto e área visível; usar transform, velocidade aproximada de 24 px/s, pausa inicial/final e retorno suave. Recalcular após trocar assunto, carregar fontes ou redimensionar.
 - Manter um único texto no DOM, nome completo em aria-label/title e a ordem dos ícones atual. Redução de movimento mantém texto estático com reticências; celular preserva controles compactos.
 - Parar a animação ao recolher o botão ou ocultar a página. Nenhuma nova dependência.
+
+## Cor e detalhes da live
+
+- Superfície dos controles em lavanda clara (#f9f5fb), texto/ícones roxos, play/pause no roxo da aba Assuntos; ações secundárias em lavanda, barra do assunto roxa e progresso geral discreto. Tooltip de assunto na barra geral também claro.
+- Trocar a ação por Mais detalhes / More details / Más detalles, com SVG de informação, superfície, borda, underline e estados de hover/foco/aberto. Preservar popover por mouse, toque e teclado; title traduzido explica a interação.
 
 ## Verificação e publicação
 
