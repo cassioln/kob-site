@@ -20,6 +20,7 @@ Escopo autorizado: refinamento solicitado pelo usuário nas homes PT/EN/ES e nos
 
 - Superfície dos controles em lavanda clara (#f9f5fb), texto/ícones roxos, play/pause no roxo da aba Assuntos; ações secundárias em lavanda, barra do assunto roxa e progresso geral discreto. Tooltip de assunto na barra geral também claro.
 - Trocar a ação por Mais detalhes / More details / Más detalles, com SVG de informação, superfície, borda, underline e estados de hover/foco/aberto. Preservar popover por mouse, toque e teclado; title traduzido explica a interação.
+- A faixa desktop do assunto e do aviso usa o azul claro da identidade (`--ocean-cyan`, #29c3f5), sólido atrás de todo o texto e com fade somente na saída. Título e aviso em azul-marinho (`--ocean-abyss`, #041d3a), sem sombra no título; destaque e foco em roxo profundo. Contrastes: 8,23:1 para título/aviso e 5,76:1 para destaque/foco. O botão Mais detalhes continua roxo com texto branco.
 
 ## Verificação e publicação
 

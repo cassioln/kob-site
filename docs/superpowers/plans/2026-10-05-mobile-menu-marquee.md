@@ -44,12 +44,19 @@
 ### Task 3: Finish and publish
 
 - [x] Inspect one batch of screenshots/measurements; fix concrete issues together, confirm once if required.
-- [ ] Obtain fresh independent Impeccable finish review and document scoped surface contracts; preserve global documentation drift.
+- [x] Obtain fresh independent Impeccable finish review and document scoped surface contracts; preserve global documentation drift.
 - [ ] Run `git diff --check`, commit explicit paths, fetch and push main without force.
 - [ ] Confirm the deploy workflow succeeds for the exact commit and production files match local hashes; verify localized navigation and player behavior in production. Keep the YouTube simulation limitation explicit.
 
-Validation: 2026-10-05, 50 unique Playwright cases passed (14 i18n + 36 live). Three marquee cases repeated after adding offscreen-pause assertions: passed. 42 localized home header states and three localized live states verified; YouTube API simulated with the existing cover for visual QA. Publication pending final independent review.
+Validation: 2026-10-05, 50 unique Playwright cases passed (14 i18n + 36 live). Three marquee cases repeated after adding offscreen-pause assertions: passed. 42 localized home header states and three localized live states verified locally and in production; YouTube API simulated with the existing cover for visual QA. Six menu/marquee regressions passed after cache-reference changes. Independent finish review: ship. UI commit df6a9b2 published successfully; final publication follows the cache correction and latest cyan-band request.
 
 ### Deployment cache correction
 
 Observed production responses cache CSS/JS for 2592000 seconds. The original FTP mirror published root HTML before JS; the new HTML cache URL could therefore cache the old module. Stage changed tracked assets under .github (excluded from the ordinary mirror), upload those files without deletion, verify their public SHA-256 hashes, then run the existing mirror. Shallow history misses fall back to all tracked assets; preserve the excluded creators directory. Queue future production runs without cancellation. Final HTML/module references use a fresh ui-final cache version after the first transfer finishes. Validate preparation with a temporary Git fixture (modified/new/renamed/deleted assets, excluded creators, missing-history fallback, no-assets case) and confirm the real GitHub stage verifies the changed module before HTML.
+
+### Cyan subject band requested after the light-controls update
+
+- [x] Replace the desktop lower-third dark scrim with the existing ocean-cyan token; keep it opaque under text and fade only beyond the reading area. Use ocean-abyss text, purple-deep emphasis/focus and remove title shadow. Keep layout, motion and popover behavior.
+- [x] Use a fresh manual CSS cache version, 20261005-cyan-band, in PT/EN/ES.
+- [x] Inspect the three localized desktop/mobile states in one batch. Contrast: title/body 8.23:1; emphasis/focus 5.76:1; button text 9.88:1 (7.37:1 hover). Independent finish review: ship, no blockers.
+- [ ] Publish through the queued production workflow and verify the final public hashes and manual aliases.
