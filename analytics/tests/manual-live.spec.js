@@ -125,6 +125,17 @@ test('Controles personalizados substituem os controles do YouTube e navegam entr
   expect(await page.evaluate(() => window.__liveMock.seconds)).toBe(833);
 });
 
+test('No mobile os controles ficam fora do vídeo e substituem o status textual', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/manual-de-bordo.html');
+  await page.locator('#loadLivePlayerBtn').click();
+  await readyPlayer(page);
+  await expect(page.locator('#liveCustomControls')).toBeVisible();
+  await expect.poll(() => page.locator('#liveCustomControls').evaluate(e => getComputedStyle(e).position)).toBe('static');
+  await expect.poll(() => page.locator('#heroLiveTopicStatus').evaluate(e => getComputedStyle(e).display)).toBe('none');
+  await expect(page.locator('#liveCustomTopic')).toContainText('Boas-vindas');
+});
+
 for (const [lang, term, title, label] of [['en', 'luggage', 'Luggage', 'Portuguese transcript'], ['es', 'equipaje', 'Equipaje', 'portugués']]) {
   test(`Capítulos e busca localizados em ${lang}, transcrição identificada como português`, async ({ page }) => {
     await page.goto(`/${lang}/manual-de-bordo.html`);

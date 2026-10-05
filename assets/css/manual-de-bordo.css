@@ -535,6 +535,11 @@
   .live-drawer__panel { padding: 14px 12px 10px; }
   .live-toolbar { flex-wrap: wrap; }
   .live-toolbar p { flex: 1 0 100%; }
+  .live-custom-controls { position: static; inset: auto; margin-top: 12px; opacity: 1; transform: none; pointer-events: auto; padding: 12px; }
+  .live-custom-controls__row { flex-wrap: wrap; }
+  .live-custom-controls__progress { order: 5; flex: 1 0 100%; }
+  .live-custom-controls__time:last-child { margin-left: auto; }
+  .live-toolbar #heroLiveTopicStatus { display: none; }
   .manual-telemetry { grid-template-columns: repeat(2, 1fr); gap: 15px 20px; }
   .guide-header__inner { gap: 10px; padding-top: 10px; padding-bottom: 10px; }
   .guide-header__brand img { height: 40px; }
