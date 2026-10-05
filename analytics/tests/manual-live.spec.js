@@ -417,6 +417,14 @@ test('Aviso abaixo do assunto no vídeo e guia em janela paralela, sem navegar o
   });
   await page.mouse.move(0, 0);
   await expect(page.locator('#liveCustomControls')).not.toHaveClass(/is-visible/, { timeout: 5000 });
+  // Class removal starts the retreat; hover transfer needs its settled position.
+  await expect.poll(() => page.locator('#liveLowerThird').evaluate(async el => {
+    const offset = () => new DOMMatrix(getComputedStyle(el).transform).m42;
+    const before = offset();
+    await new Promise(requestAnimationFrame);
+    await new Promise(requestAnimationFrame);
+    return before === 0 && offset() === 0;
+  })).toBe(true);
   await trigger.hover();
   await expect(page.locator('#liveGuidePopover')).toContainText('menores');
   await page.locator('#liveGuidePopover h4').hover();
@@ -497,9 +505,9 @@ for(const [lang,path,home,charter,prefix] of [
   expect(t.x).toBeGreaterThan(box.x+20);
   expect(t.x).toBeLessThan(box.x+25);
   expect(t.y).toBeGreaterThan(box.y+box.height/2);
-  const style=await title.evaluate(el=>{const s=getComputedStyle(el);return {font:s.fontFamily,size:parseFloat(s.fontSize),color:s.color,background:s.backgroundColor,shadow:s.textShadow};});
+  const style=await title.evaluate(el=>{const s=getComputedStyle(el);return {font:s.fontFamily,size:parseFloat(s.fontSize),color:s.color,background:s.backgroundImage,shadow:s.textShadow};});
   expect(style.font).toContain('Gobold');expect(style.size).toBeGreaterThan(20);
-  expect(style.color).toBe('rgb(255, 255, 255)');expect(style.background).toBe('rgba(0, 0, 0, 0)');expect(style.shadow).not.toBe('none');
+  expect(style.color).toBe('rgb(255, 255, 255)');expect(style.background).toContain('linear-gradient');expect(style.shadow).not.toBe('none');
   const next=page.locator('#liveNextChapterBtn');await next.hover();
   await expect.poll(async()=>(await next.boundingBox()).width).toBeGreaterThan(100);
   const label=await next.locator('.live-control-label').boundingBox(),icon=await next.locator('.live-control-icon').boundingBox();
@@ -618,6 +626,22 @@ for (const [lang, path, details] of [['pt','/manual-de-bordo.html','Mais detalhe
     await action.hover();
     await expect(page.locator('#liveGuidePopover')).toContainText('23 kg');
     await page.keyboard.press('Escape');
+    for (const width of [769, 850]) {
+      await page.setViewportSize({ width, height: 1000 });
+      await expect(page.locator('#heroLiveToggleChaptersBtn')).toHaveAttribute('aria-expanded', 'false');
+      expect(await page.locator('#heroLiveChaptersCol').evaluate(el => el.scrollLeft)).toBe(0);
+      await expect.poll(() => page.evaluate(() => {
+        const action = document.querySelector('#liveChapterNoteAction button').getBoundingClientRect();
+        const tab = document.querySelector('#heroLiveToggleChaptersBtn').getBoundingClientRect();
+        return action.right < tab.left;
+      })).toBe(true);
+      const placement = await page.locator('#heroLiveToggleChaptersBtn').evaluate(el => {
+        const tab = el.getBoundingClientRect(), drawer = document.getElementById('heroLiveChaptersCol').getBoundingClientRect();
+        return { center: tab.top + tab.height / 2 - drawer.top, target: Math.max(95, drawer.height / 4), top: tab.top - drawer.top };
+      });
+      expect(placement.center).toBeCloseTo(placement.target, 0);
+      expect(placement.top).toBeGreaterThanOrEqual(0);
+    }
     await page.setViewportSize({ width: 390, height: 844 });
     await expect.poll(() => page.locator('#liveChapterNotice').evaluate(el => el.parentElement.id)).toBe('live');
     await expect.poll(() => page.evaluate(() => {

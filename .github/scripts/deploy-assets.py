@@ -1,4 +1,4 @@
-"""Stage changed public assets, then verify their bytes before publishing HTML."""
+"""Stage changed assets and all CSS/JS before publishing their HTML references."""
 import hashlib
 import os
 from pathlib import Path
@@ -36,10 +36,12 @@ else:
     before = os.environ.get("KOB_DEPLOY_BEFORE", "")
     exists = subprocess.run(["git", "cat-file", "-e", before + "^{commit}"], capture_output=True).returncode == 0
     command = ["git", "diff", "--name-only", "--no-renames", "--diff-filter=ACM", "-z", before, "HEAD", "--", "assets"] if exists else ["git", "ls-files", "-z", "assets"]
-    paths = subprocess.check_output(command).split(b"\0")
+    paths = set(filter(None, subprocess.check_output(command).split(b"\0")))
+    # A superseded/failed deploy may contain imported modules absent from this diff.
+    paths.update(filter(None, subprocess.check_output(["git", "ls-files", "-z", "--", "assets/css", "assets/js"]).split(b"\0")))
     stage.mkdir(parents=True, exist_ok=True)
     count = 0
-    for raw in filter(None, paths):
+    for raw in sorted(paths):
         relative = Path(os.fsdecode(raw))
         source = root / relative
         if relative.as_posix().startswith("assets/images/creators/") or not source.is_file() or root not in source.resolve().parents:

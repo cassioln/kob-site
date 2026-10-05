@@ -75,6 +75,7 @@ jobs:
             -x ^loop_finder/
             -x ^node_modules/
             -x ^tests?/
+            -x ^docs/superpowers/
             -x ^README\.md$
             -x ^PRODUCT\.md$
             -x ^DESIGN\.md$
