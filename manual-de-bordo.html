@@ -84,15 +84,15 @@
 
   <!-- Estilos Globais e Específicos -->
   <link rel="stylesheet" href="/assets/css/main.css?v=20261003-embarcados">
-  <link rel="stylesheet" href="/assets/css/manual-de-bordo.css?v=20261004-manual">
+  <link rel="stylesheet" href="/assets/css/manual-de-bordo.css?v=20261005-topic-player">
   <link rel="stylesheet" href="/assets/css/cookie-consent.css?v=20260820-fix-contrast">
 
   <script defer src="/assets/js/cookie-consent.js?v=20260713-5"></script>
-  <script defer src="/assets/js/manual-de-bordo.js?v=20261004-manual"></script>
+  <script defer src="/assets/js/manual-de-bordo.js?v=20261005-topic-player"></script>
 
-  <script type="module" src="/assets/js/manual-de-bordo-live.js?v=20261004-manual"></script>
+  <script type="module" src="/assets/js/manual-de-bordo-live.js?v=20261005-topic-player"></script>
 
-  <script type="module" src="/assets/js/manual-de-bordo-checklist.js?v=20261004-manual-share"></script>
+  <script type="module" src="/assets/js/manual-de-bordo-checklist.js?v=20261005-topic-player"></script>
   <script type="module" src="/assets/js/manual-de-bordo-routing.js?v=20261004-manual"></script>
 
   <!-- Schema JSON-LD -->
@@ -218,7 +218,7 @@
     </div>
     <nav aria-label="Navegação pelo Manual de Bordo">
       <a href="#live">Live de embarque</a>
-      <a href="#preparacao">Preparação</a>
+      <a href="#checklist" data-open-checklist>Preparação</a>
       <a href="#cronograma">Cronograma</a>
       <a href="#transporte">Transporte</a>
       <a href="#jogos">Jogos</a>
@@ -240,7 +240,7 @@
             <h1 id="manual-welcome-title">Bora embarcar,<br><span>Kriativo?</span></h1>
             <p class="manual-welcome__intro">Chegue tranquilo e aproveite cada partida. Relembre a live por assunto,
               prepare a mala e tire suas dúvidas.</p>
-            <div class="manual-welcome__links"><a href="#preparacao">Meu checklist <svg class="" width="18" height="18"
+            <div class="manual-welcome__links"><a href="#checklist" data-open-checklist>Meu checklist <svg class="" width="18" height="18"
                   viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                   stroke-linejoin="round" aria-hidden="true">
                   <path d="M7 17 17 7M7 7h10v10" />
@@ -257,6 +257,7 @@
           <div class="manual-live__heading">
             <h2 id="live-title">Live de embarque</h2>
           </div>
+          <div class="live-chapter-note" id="liveChapterNote" role="status" hidden></div>
           <div class="hero-live-cinema is-collapsed" id="heroLiveCinema">
             <div class="hero-live-player" id="livePlayerWrapper">
               <div class="live-facade" id="livePlayerFacade">
@@ -271,22 +272,25 @@
                   </svg>Assistir à gravação</button>
               </div>
               <div class="live-player-container" id="livePlayerContainer" hidden></div>
-            </div>
-            <div class="live-custom-controls" id="liveCustomControls" hidden aria-label="Controles do vídeo">
-              <div class="live-custom-controls__topic" id="liveCustomTopic" aria-live="polite"></div>
+
+              <div class="live-custom-controls__topic" id="liveCustomTopic" hidden aria-live="polite"></div>
+              <div class="live-custom-controls" id="liveCustomControls" hidden aria-label="Controles do vídeo">
+
               <div class="live-custom-controls__row">
                 <button class="live-custom-controls__nav" type="button" id="livePreviousChapterBtn"
-                  aria-label="Assunto anterior" title="Assunto anterior">‹</button>
+                  aria-label="Assunto anterior" title="Assunto anterior"><svg class="live-control-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg><span class="live-control-label"><span></span></span></button>
                 <button class="live-custom-controls__play" type="button" id="livePlayPauseBtn" aria-label="Reproduzir"
-                  title="Reproduzir">▶</button>
+                  title="Reproduzir"><svg class="live-control-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 5 11 7-11 7Z"/></svg><span class="live-control-label"><span></span></span></button>
                 <button class="live-custom-controls__nav" type="button" id="liveNextChapterBtn"
-                  aria-label="Próximo assunto" title="Próximo assunto">›</button>
+                  aria-label="Próximo assunto" title="Próximo assunto"><svg class="live-control-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><span class="live-control-label"><span></span></span></button>
                 <span class="live-custom-controls__time" id="liveCurrentTime">00:00</span>
                 <input class="live-custom-controls__progress" id="liveProgress" type="range" min="0" max="1" value="0"
-                  step="1" aria-label="Progresso do vídeo">
+                  step="1" aria-label="Progresso do assunto">
                 <span class="live-custom-controls__time" id="liveDuration">00:00</span>
               </div>
             </div>
+            </div>
+
             <aside class="live-drawer" id="heroLiveChaptersCol" aria-label="Assuntos">
               <div class="live-drawer__slide">
                 <button class="live-drawer__tab" type="button" id="heroLiveToggleChaptersBtn" disabled
@@ -336,69 +340,54 @@
           <div class="live-video-error" id="liveVideoError" role="status" hidden>
             <p></p><button type="button" id="liveRetryBtn">Tentar novamente</button>
           </div>
-          <div class="live-chapter-note" id="liveChapterNote" hidden></div>
+
           <p class="live-privacy-note">Ao assistir ou escolher um assunto, você se conecta ao YouTube. As políticas de
             privacidade do serviço se aplicam.</p>
           <noscript>
             <details class="live-noscript">
               <summary>Assuntos da live no YouTube</summary>
               <ol>
-                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=833s" target="_blank"
-                    rel="noopener noreferrer">00:13:53 · Boas-vindas e apresentação da viagem</a></li>
-                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=913s" target="_blank"
-                    rel="noopener noreferrer">00:15:13 · Royal Trip e quarta edição do KOB</a></li>
-                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=1009s" target="_blank"
-                    rel="noopener noreferrer">00:16:49 · Datas, desembarque e retorno do fretado</a></li>
-                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=1036s" target="_blank"
-                    rel="noopener noreferrer">00:17:16 · Parceiros do evento</a></li>
-                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=1250s" target="_blank"
-                    rel="noopener noreferrer">00:20:50 · Documentos e autorização para menores</a></li>
-                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=1345s" target="_blank"
-                    rel="noopener noreferrer">00:22:25 · Vouchers, check-in e etiquetas</a></li>
-                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=1702s" target="_blank"
-                    rel="noopener noreferrer">00:28:22 · Aeroportos e chegada a Santos</a></li>
-                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=1765s" target="_blank"
-                    rel="noopener noreferrer">00:29:25 · Estacionamento no Concais</a></li>
-                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=1852s" target="_blank"
-                    rel="noopener noreferrer">00:30:52 · Cruise Card, cartões e gastos a bordo</a></li>
-                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=1963s" target="_blank"
-                    rel="noopener noreferrer">00:32:43 · Buffet e liberação das cabines</a></li>
-                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=2041s" target="_blank"
-                    rel="noopener noreferrer">00:34:01 · Encontro, kits e mural de programação</a></li>
-                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=2161s" target="_blank"
-                    rel="noopener noreferrer">00:36:01 · Roupas e Festa do Branco</a></li>
-                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=2276s" target="_blank"
-                    rel="noopener noreferrer">00:37:56 · Gestantes</a></li>
-                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=2339s" target="_blank"
-                    rel="noopener noreferrer">00:38:59 · Bebês na reserva</a></li>
-                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=2368s" target="_blank"
-                    rel="noopener noreferrer">00:39:28 · Água, chá, café e sistema Aqua</a></li>
-                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=2423s" target="_blank"
-                    rel="noopener noreferrer">00:40:23 · Pacotes de bebidas</a></li>
-                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=2715s" target="_blank"
-                    rel="noopener noreferrer">00:45:15 · Internet por aparelho e sinal em Búzios</a></li>
-                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=2894s" target="_blank"
-                    rel="noopener noreferrer">00:48:14 · Jantar, turnos e mesas com amigos</a></li>
-                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=3154s" target="_blank"
-                    rel="noopener noreferrer">00:52:34 · Frigobar e cobranças</a></li>
-                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=3213s" target="_blank"
-                    rel="noopener noreferrer">00:53:33 · Tema Anos 80 e encerramento</a></li>
-                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=3506s" target="_blank"
-                    rel="noopener noreferrer">00:58:26 · Restaurantes de especialidades</a></li>
-                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=3766s" target="_blank"
-                    rel="noopener noreferrer">01:02:46 · MSC for Me e chat interno</a></li>
-                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=3942s" target="_blank"
-                    rel="noopener noreferrer">01:05:42 · Board Game Guru e sorteios</a></li>
-                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=4265s" target="_blank"
-                    rel="noopener noreferrer">01:11:05 · Seguro e despesas médicas</a></li>
-                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=4389s" target="_blank"
-                    rel="noopener noreferrer">01:13:09 · Crianças e clubinho</a></li>
-                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=4456s" target="_blank"
-                    rel="noopener noreferrer">01:14:16 · Bagagem</a></li>
-                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=4481s" target="_blank"
-                    rel="noopener noreferrer">01:14:41 · Cabine e itens para a mala</a></li>
-                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=4712s" target="_blank"
-                    rel="noopener noreferrer">01:18:32 · Grupo oficial e recados finais</a></li>
+                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=833s" target="_blank" rel="noopener noreferrer">00:13:53 · Boas-vindas e apresentação da viagem</a></li>
+                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=913s" target="_blank" rel="noopener noreferrer">00:15:13 · Royal Trip e quarta edição do KOB</a></li>
+                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=1009s" target="_blank" rel="noopener noreferrer">00:16:49 · Datas, desembarque e retorno do fretado</a></li>
+                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=1036s" target="_blank" rel="noopener noreferrer">00:17:16 · Parceiros do evento</a></li>
+                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=1250s" target="_blank" rel="noopener noreferrer">00:20:50 · Documentos e autorização para menores</a></li>
+                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=1345s" target="_blank" rel="noopener noreferrer">00:22:25 · Vouchers, check-in e etiquetas</a></li>
+                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=1453s" target="_blank" rel="noopener noreferrer">00:24:13 · Mochila para aproveitar o primeiro dia</a></li>
+                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=1502s" target="_blank" rel="noopener noreferrer">00:25:02 · Chegada ao porto e senha de embarque</a></li>
+                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=1535s" target="_blank" rel="noopener noreferrer">00:25:35 · Fretado e confirmação do seu ônibus</a></li>
+                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=1702s" target="_blank" rel="noopener noreferrer">00:28:22 · Aeroportos e chegada a Santos</a></li>
+                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=1765s" target="_blank" rel="noopener noreferrer">00:29:25 · Estacionamento no Concais</a></li>
+                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=1852s" target="_blank" rel="noopener noreferrer">00:30:52 · Cruise Card, cartões e gastos a bordo</a></li>
+                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=1963s" target="_blank" rel="noopener noreferrer">00:32:43 · Buffet e liberação das cabines</a></li>
+                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=2041s" target="_blank" rel="noopener noreferrer">00:34:01 · Encontro, kits e mural de programação</a></li>
+                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=2161s" target="_blank" rel="noopener noreferrer">00:36:01 · Festa do Branco</a></li>
+                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=2190s" target="_blank" rel="noopener noreferrer">00:36:30 · Roupas, calçados e agasalho</a></li>
+                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=2276s" target="_blank" rel="noopener noreferrer">00:37:56 · Gestantes</a></li>
+                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=2339s" target="_blank" rel="noopener noreferrer">00:38:59 · Bebês na reserva</a></li>
+                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=2368s" target="_blank" rel="noopener noreferrer">00:39:28 · Água, chá, café e sistema Aqua</a></li>
+                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=2423s" target="_blank" rel="noopener noreferrer">00:40:23 · Pacotes de bebidas</a></li>
+                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=2544s" target="_blank" rel="noopener noreferrer">00:42:24 · Bebidas avulsas e contratação antecipada</a></li>
+                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=2654s" target="_blank" rel="noopener noreferrer">00:44:14 · Internet: pacotes e contratação</a></li>
+                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=2715s" target="_blank" rel="noopener noreferrer">00:45:15 · Internet por aparelho e sinal em Búzios</a></li>
+                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=2894s" target="_blank" rel="noopener noreferrer">00:48:14 · Restaurantes e turnos do jantar</a></li>
+                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=2996s" target="_blank" rel="noopener noreferrer">00:49:56 · Jantar com amigos de outras cabines</a></li>
+                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=3094s" target="_blank" rel="noopener noreferrer">00:51:34 · Horário e tolerância no jantar</a></li>
+                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=3154s" target="_blank" rel="noopener noreferrer">00:52:34 · Frigobar e cobranças</a></li>
+                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=3213s" target="_blank" rel="noopener noreferrer">00:53:33 · Tema Anos 80 e encerramento</a></li>
+                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=3506s" target="_blank" rel="noopener noreferrer">00:58:26 · Restaurantes de especialidades</a></li>
+                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=3766s" target="_blank" rel="noopener noreferrer">01:02:46 · MSC for Me e chat interno</a></li>
+                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=3814s" target="_blank" rel="noopener noreferrer">01:03:34 · Guru e inscrição manual nos sorteios</a></li>
+                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=3942s" target="_blank" rel="noopener noreferrer">01:05:42 · Como confirmar “Eu vou” no Guru</a></li>
+                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=4009s" target="_blank" rel="noopener noreferrer">01:06:49 · Acervo, monitores e jogos favoritos</a></li>
+                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=4102s" target="_blank" rel="noopener noreferrer">01:08:22 · Levar jogos e importar sua coleção</a></li>
+                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=4265s" target="_blank" rel="noopener noreferrer">01:11:05 · Seguro e despesas médicas</a></li>
+                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=4389s" target="_blank" rel="noopener noreferrer">01:13:09 · Crianças e clubinho</a></li>
+                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=4456s" target="_blank" rel="noopener noreferrer">01:14:16 · Bagagem</a></li>
+                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=4481s" target="_blank" rel="noopener noreferrer">01:14:41 · Itens permitidos e proibidos na mala</a></li>
+                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=4509s" target="_blank" rel="noopener noreferrer">01:15:09 · O que a cabine oferece</a></li>
+                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=4657s" target="_blank" rel="noopener noreferrer">01:17:37 · Premiações para quem compartilha jogos</a></li>
+                <li><a href="https://www.youtube.com/watch?v=AtIvlc62KgI&amp;t=4712s" target="_blank" rel="noopener noreferrer">01:18:32 · Grupo oficial e recados finais</a></li>
               </ol>
             </details>
           </noscript>
@@ -427,476 +416,7 @@
     </section>
 
     <!-- CHECKLIST DE PREPARAÇÃO (#18) -->
-    <section class="guide-section" id="preparacao" aria-labelledby="checklist-title">
-      <div class="guide-container">
-        <header class="guide-section__header guide-section__header--illustrated">
-          <h2 class="guide-section__title" id="checklist-title">Meu checklist de preparação</h2>
-          <p class="guide-section__intro">
-            Marque o que você já conferiu. Esta lista é uma ajuda pessoal e não valida sua reserva nem substitui a
-            análise dos documentos pela agência e pela MSC.
-          </p>
-          <img class="guide-section__mascot" src="/assets/images/manual/kriativa-checklist.png" alt="" width="480"
-            height="720" loading="lazy" decoding="async">
-        </header>
 
-        <div class="checklist-card" id="checklistContainer">
-          <!-- Barra de Progresso -->
-          <div class="checklist-progress-bar">
-            <div class="checklist-progress-bar__header">
-              <span class="checklist-progress-bar__text" id="checklistProgressText">0 de 16 itens essenciais ou
-                aplicáveis conferidos</span>
-            </div>
-            <div class="checklist-progress-bar__track" id="checklistProgressBar" role="progressbar" aria-valuenow="0"
-              aria-valuemin="0" aria-valuemax="100" aria-label="Progresso do checklist">
-              <div class="checklist-progress-bar__fill" id="checklistProgressFill"></div>
-            </div>
-          </div>
-
-          <div class="checklist-completed-msg" id="checklistCompletedMsg">
-            🎉 Você conferiu os itens essenciais e aplicáveis desta lista! Continue acompanhando os avisos da equipe e
-            as
-            instruções da sua reserva.
-          </div>
-
-          <!-- Abas de Filtro por Grupo (Redução do Scroll) -->
-          <div class="checklist-tabs" role="tablist" aria-label="Filtrar grupos do checklist">
-            <button type="button" class="checklist-tab is-active" role="tab" aria-selected="true" data-group="all">
-              Todos <span class="checklist-tab__count">25</span>
-            </button>
-            <button type="button" class="checklist-tab" role="tab" aria-selected="false" data-group="1">
-              1. Documentos <span class="checklist-tab__count">9</span>
-            </button>
-            <button type="button" class="checklist-tab" role="tab" aria-selected="false" data-group="2">
-              2. Bagagem <span class="checklist-tab__count">6</span>
-            </button>
-            <button type="button" class="checklist-tab" role="tab" aria-selected="false" data-group="3">
-              3. Trajeto <span class="checklist-tab__count">5</span>
-            </button>
-            <button type="button" class="checklist-tab" role="tab" aria-selected="false" data-group="4">
-              4. Jogos &amp; Bordo <span class="checklist-tab__count">5</span>
-            </button>
-          </div>
-
-          <!-- GRUPO 1: DOCUMENTOS E RESERVA -->
-          <div class="checklist-group" data-group-id="1">
-            <h3 class="checklist-group__title">1. Documentos e Reserva</h3>
-            <ul class="checklist-list">
-              <li class="checklist-item" data-checklist-id="reserva-dados" data-checklist-type="essential">
-                <input type="checkbox" id="chk-reserva-dados" class="checklist-item__checkbox"
-                  aria-describedby="desc-reserva-dados">
-                <div class="checklist-item__body">
-                  <div class="checklist-item__header-row">
-                    <span class="checklist-item__tag checklist-item__tag--essential">Essencial</span>
-                    <a class="checklist-item__ref" href="#faq-o02">Ver orientação (O02/O06)</a>
-                  </div>
-                  <label for="chk-reserva-dados" class="checklist-item__text" id="desc-reserva-dados">
-                    Conferi os dados e os passageiros da minha cabine com a Royal Trip.
-                  </label>
-                </div>
-              </li>
-
-              <li class="checklist-item" data-checklist-id="grupo-acompanhantes" data-checklist-type="recommended">
-                <input type="checkbox" id="chk-grupo-acompanhantes" class="checklist-item__checkbox"
-                  aria-describedby="desc-grupo-acompanhantes">
-                <div class="checklist-item__body">
-                  <div class="checklist-item__header-row">
-                    <span class="checklist-item__tag checklist-item__tag--recommended">Recomendado</span>
-                    <a class="checklist-item__ref" href="#faq-o41">Ver orientação (O41)</a>
-                  </div>
-                  <label for="chk-grupo-acompanhantes" class="checklist-item__text" id="desc-grupo-acompanhantes">
-                    Pedi a inclusão dos acompanhantes e familiares nos avisos oficiais do evento.
-                  </label>
-                </div>
-              </li>
-
-              <li class="checklist-item" data-checklist-id="voucher-solicitado" data-checklist-type="essential">
-                <input type="checkbox" id="chk-voucher-solicitado" class="checklist-item__checkbox"
-                  aria-describedby="desc-voucher-solicitado">
-                <div class="checklist-item__body">
-                  <div class="checklist-item__header-row">
-                    <span class="checklist-item__tag checklist-item__tag--essential">Essencial</span>
-                    <a class="checklist-item__ref" href="#faq-o02">Ver orientação (O02)</a>
-                  </div>
-                  <label for="chk-voucher-solicitado" class="checklist-item__text" id="desc-voucher-solicitado">
-                    Após o aviso no grupo, chamei Júnior no privado para receber vouchers e etiquetas.
-                  </label>
-                </div>
-              </li>
-
-              <li class="checklist-item" data-checklist-id="voucher-impresso" data-checklist-type="essential">
-                <input type="checkbox" id="chk-voucher-impresso" class="checklist-item__checkbox"
-                  aria-describedby="desc-voucher-impresso">
-                <div class="checklist-item__body">
-                  <div class="checklist-item__header-row">
-                    <span class="checklist-item__tag checklist-item__tag--essential">Essencial</span>
-                    <a class="checklist-item__ref" href="#faq-o02">Ver orientação (O02)</a>
-                  </div>
-                  <label for="chk-voucher-impresso" class="checklist-item__text" id="desc-voucher-impresso">
-                    Imprimi os vouchers e conferi os dados e instruções da minha reserva.
-                  </label>
-                </div>
-              </li>
-
-              <li class="checklist-item" data-checklist-id="documento" data-checklist-type="essential">
-                <input type="checkbox" id="chk-documento" class="checklist-item__checkbox"
-                  aria-describedby="desc-documento">
-                <div class="checklist-item__body">
-                  <div class="checklist-item__header-row">
-                    <span class="checklist-item__tag checklist-item__tag--essential">Essencial</span>
-                    <a class="checklist-item__ref" href="#faq-o03">Ver orientação (O03)</a>
-                  </div>
-                  <label for="chk-documento" class="checklist-item__text" id="desc-documento">
-                    Separei um documento aceito pela MSC, em bom estado e com foto reconhecível; prefiro levar também o
-                    físico.
-                  </label>
-                </div>
-              </li>
-
-              <li class="checklist-item" data-checklist-id="menor-documentos" data-checklist-type="conditional">
-                <input type="checkbox" id="chk-menor-documentos" class="checklist-item__checkbox"
-                  aria-describedby="desc-menor-documentos">
-                <div class="checklist-item__body">
-                  <div class="checklist-item__header-row">
-                    <span class="checklist-item__tag checklist-item__tag--conditional">Se aplicável</span>
-                    <a class="checklist-item__ref" href="#faq-o04">Ver orientação (O04)</a>
-                  </div>
-                  <label for="chk-menor-documentos" class="checklist-item__text" id="desc-menor-documentos">
-                    Confirmei com a agência os documentos e autorizações dos menores que viajam comigo.
-                  </label>
-                  <label class="checklist-item__na-toggle">
-                    <input type="checkbox" class="checklist-item__na-checkbox" id="na-menor-documentos">
-                    Não viajo com menores (não se aplica)
-                  </label>
-                </div>
-              </li>
-
-              <li class="checklist-item" data-checklist-id="estrangeiro-documentos" data-checklist-type="conditional">
-                <input type="checkbox" id="chk-estrangeiro-documentos" class="checklist-item__checkbox"
-                  aria-describedby="desc-estrangeiro-documentos">
-                <div class="checklist-item__body">
-                  <div class="checklist-item__header-row">
-                    <span class="checklist-item__tag checklist-item__tag--conditional">Se aplicável</span>
-                    <a class="checklist-item__ref" href="#faq-o04">Ver orientação (O04)</a>
-                  </div>
-                  <label for="chk-estrangeiro-documentos" class="checklist-item__text" id="desc-estrangeiro-documentos">
-                    Confirmei a documentação aplicável à minha nacionalidade e situação de residência.
-                  </label>
-                  <label class="checklist-item__na-toggle">
-                    <input type="checkbox" class="checklist-item__na-checkbox" id="na-estrangeiro-documentos">
-                    Sou brasileiro residente (não se aplica)
-                  </label>
-                </div>
-              </li>
-
-              <li class="checklist-item" data-checklist-id="requisitos-saude" data-checklist-type="essential">
-                <input type="checkbox" id="chk-requisitos-saude" class="checklist-item__checkbox"
-                  aria-describedby="desc-requisitos-saude">
-                <div class="checklist-item__body">
-                  <div class="checklist-item__header-row">
-                    <span class="checklist-item__tag checklist-item__tag--essential">Essencial</span>
-                    <a class="checklist-item__ref" href="#faq-o07">Ver orientação (O07)</a>
-                  </div>
-                  <label for="chk-requisitos-saude" class="checklist-item__text" id="desc-requisitos-saude">
-                    Conferi as exigências sanitárias vigentes para o meu embarque.
-                  </label>
-                </div>
-              </li>
-
-              <li class="checklist-item" data-checklist-id="necessidades-especiais" data-checklist-type="conditional">
-                <input type="checkbox" id="chk-necessidades-especiais" class="checklist-item__checkbox"
-                  aria-describedby="desc-necessidades-especiais">
-                <div class="checklist-item__body">
-                  <div class="checklist-item__header-row">
-                    <span class="checklist-item__tag checklist-item__tag--conditional">Se aplicável</span>
-                    <a class="checklist-item__ref" href="#faq-o05">Ver orientação (O05/O37)</a>
-                  </div>
-                  <label for="chk-necessidades-especiais" class="checklist-item__text" id="desc-necessidades-especiais">
-                    Combinei com a agência, por canal privado, os cuidados especiais de acessibilidade, gestação ou
-                    saúde necessárias para minha viagem.
-                  </label>
-                  <label class="checklist-item__na-toggle">
-                    <input type="checkbox" class="checklist-item__na-checkbox" id="na-necessidades-especiais">
-                    Não necessito de providências especiais (não se aplica)
-                  </label>
-                </div>
-              </li>
-            </ul>
-          </div>
-
-          <!-- GRUPO 2: BAGAGEM E ITENS -->
-          <div class="checklist-group" data-group-id="2">
-            <h3 class="checklist-group__title">2. Bagagem e Itens</h3>
-            <ul class="checklist-list">
-              <li class="checklist-item" data-checklist-id="bagagem-limites" data-checklist-type="essential">
-                <input type="checkbox" id="chk-bagagem-limites" class="checklist-item__checkbox"
-                  aria-describedby="desc-bagagem-limites">
-                <div class="checklist-item__body">
-                  <div class="checklist-item__header-row">
-                    <span class="checklist-item__tag checklist-item__tag--essential">Essencial</span>
-                    <a class="checklist-item__ref" href="#faq-o08">Ver orientação (O08)</a>
-                  </div>
-                  <label for="chk-bagagem-limites" class="checklist-item__text" id="desc-bagagem-limites">
-                    Conferi o limite de bagagem da MSC e os limites separados de avião e transporte terrestre, se
-                    utilizados.
-                  </label>
-                </div>
-              </li>
-
-              <li class="checklist-item" data-checklist-id="etiquetas" data-checklist-type="essential">
-                <input type="checkbox" id="chk-etiquetas" class="checklist-item__checkbox"
-                  aria-describedby="desc-etiquetas">
-                <div class="checklist-item__body">
-                  <div class="checklist-item__header-row">
-                    <span class="checklist-item__tag checklist-item__tag--essential">Essencial</span>
-                    <a class="checklist-item__ref" href="#faq-o09">Ver orientação (O09)</a>
-                  </div>
-                  <label for="chk-etiquetas" class="checklist-item__text" id="desc-etiquetas">
-                    Imprimi e coloquei as etiquetas da MSC nas malas que vou despachar.
-                  </label>
-                </div>
-              </li>
-
-              <li class="checklist-item" data-checklist-id="mala-mao" data-checklist-type="essential">
-                <input type="checkbox" id="chk-mala-mao" class="checklist-item__checkbox"
-                  aria-describedby="desc-mala-mao">
-                <div class="checklist-item__body">
-                  <div class="checklist-item__header-row">
-                    <span class="checklist-item__tag checklist-item__tag--essential">Essencial</span>
-                    <a class="checklist-item__ref" href="#faq-o09">Ver orientação (O09)</a>
-                  </div>
-                  <label for="chk-mala-mao" class="checklist-item__text" id="desc-mala-mao">
-                    Separei documentos, itens de valor, medicamentos e o que precisarei enquanto as malas não chegam.
-                  </label>
-                </div>
-              </li>
-
-              <li class="checklist-item" data-checklist-id="itens-permitidos" data-checklist-type="essential">
-                <input type="checkbox" id="chk-itens-permitidos" class="checklist-item__checkbox"
-                  aria-describedby="desc-itens-permitidos">
-                <div class="checklist-item__body">
-                  <div class="checklist-item__header-row">
-                    <span class="checklist-item__tag checklist-item__tag--essential">Essencial</span>
-                    <a class="checklist-item__ref" href="#faq-o10">Ver orientação (O10)</a>
-                  </div>
-                  <label for="chk-itens-permitidos" class="checklist-item__text" id="desc-itens-permitidos">
-                    Conferi a lista oficial de itens permitidos e proibidos antes de fechar a mala.
-                  </label>
-                </div>
-              </li>
-
-              <li class="checklist-item" data-checklist-id="higiene" data-checklist-type="recommended">
-                <input type="checkbox" id="chk-higiene" class="checklist-item__checkbox"
-                  aria-describedby="desc-higiene">
-                <div class="checklist-item__body">
-                  <div class="checklist-item__header-row">
-                    <span class="checklist-item__tag checklist-item__tag--recommended">Recomendado</span>
-                    <a class="checklist-item__ref" href="#faq-o11">Ver orientação (O11)</a>
-                  </div>
-                  <label for="chk-higiene" class="checklist-item__text" id="desc-higiene">
-                    Separei meus itens pessoais de higiene, inclusive escova, pasta de dente e condicionador.
-                  </label>
-                </div>
-              </li>
-
-              <li class="checklist-item" data-checklist-id="roupas-confortaveis" data-checklist-type="recommended">
-                <input type="checkbox" id="chk-roupas-confortaveis" class="checklist-item__checkbox"
-                  aria-describedby="desc-roupas-confortaveis">
-                <div class="checklist-item__body">
-                  <div class="checklist-item__header-row">
-                    <span class="checklist-item__tag checklist-item__tag--recommended">Recomendado</span>
-                    <a class="checklist-item__ref" href="#faq-o25">Ver orientação (O25)</a>
-                  </div>
-                  <label for="chk-roupas-confortaveis" class="checklist-item__text" id="desc-roupas-confortaveis">
-                    Separei roupas e calçados confortáveis, roupa para o jantar e um agasalho leve.
-                  </label>
-                </div>
-              </li>
-            </ul>
-          </div>
-
-          <!-- GRUPO 3: TRAJETO E CONTA DE BORDO -->
-          <div class="checklist-group" data-group-id="3">
-            <h3 class="checklist-group__title">3. Trajeto e Conta de Bordo</h3>
-            <ul class="checklist-list">
-              <li class="checklist-item" data-checklist-id="trajeto-porto" data-checklist-type="essential">
-                <input type="checkbox" id="chk-trajeto-porto" class="checklist-item__checkbox"
-                  aria-describedby="desc-trajeto-porto">
-                <div class="checklist-item__body">
-                  <div class="checklist-item__header-row">
-                    <span class="checklist-item__tag checklist-item__tag--essential">Essencial</span>
-                    <a class="checklist-item__ref" href="#faq-o12">Ver orientação (O12/O13/O14)</a>
-                  </div>
-                  <label for="chk-trajeto-porto" class="checklist-item__text" id="desc-trajeto-porto">
-                    Planejei meu deslocamento até Santos com margem para trânsito e imprevistos.
-                  </label>
-                </div>
-              </li>
-
-              <li class="checklist-item" data-checklist-id="fretado-reserva" data-checklist-type="conditional">
-                <input type="checkbox" id="chk-fretado-reserva" class="checklist-item__checkbox"
-                  aria-describedby="desc-fretado-reserva">
-                <div class="checklist-item__body">
-                  <div class="checklist-item__header-row">
-                    <span class="checklist-item__tag checklist-item__tag--conditional">Se aplicável</span>
-                    <a class="checklist-item__ref" href="#faq-o12">Ver orientação (O12)</a>
-                  </div>
-                  <label for="chk-fretado-reserva" class="checklist-item__text" id="desc-fretado-reserva">
-                    Conferi o veículo atribuído à minha reserva, o ponto de encontro e o horário do fretado.
-                  </label>
-                  <label class="checklist-item__na-toggle">
-                    <input type="checkbox" class="checklist-item__na-checkbox" id="na-fretado-reserva">
-                    Não utilizarei o fretado oficial KOB (não se aplica)
-                  </label>
-                </div>
-              </li>
-
-              <li class="checklist-item" data-checklist-id="carro-estacionamento" data-checklist-type="conditional">
-                <input type="checkbox" id="chk-carro-estacionamento" class="checklist-item__checkbox"
-                  aria-describedby="desc-carro-estacionamento">
-                <div class="checklist-item__body">
-                  <div class="checklist-item__header-row">
-                    <span class="checklist-item__tag checklist-item__tag--conditional">Se aplicável</span>
-                    <a class="checklist-item__ref" href="#faq-o14">Ver orientação (O14)</a>
-                  </div>
-                  <label for="chk-carro-estacionamento" class="checklist-item__text" id="desc-carro-estacionamento">
-                    Confirmei minha reserva de estacionamento e as instruções de chegada.
-                  </label>
-                  <label class="checklist-item__na-toggle">
-                    <input type="checkbox" class="checklist-item__na-checkbox" id="na-carro-estacionamento">
-                    Não irei de carro próprio (não se aplica)
-                  </label>
-                </div>
-              </li>
-
-              <li class="checklist-item" data-checklist-id="cartao-conta" data-checklist-type="conditional">
-                <input type="checkbox" id="chk-cartao-conta" class="checklist-item__checkbox"
-                  aria-describedby="desc-cartao-conta">
-                <div class="checklist-item__body">
-                  <div class="checklist-item__header-row">
-                    <span class="checklist-item__tag checklist-item__tag--conditional">Se aplicável</span>
-                    <a class="checklist-item__ref" href="#faq-o34">Ver orientação (O34)</a>
-                  </div>
-                  <label for="chk-cartao-conta" class="checklist-item__text" id="desc-cartao-conta">
-                    Conferi com a agência/MSC os meios aceitos para a conta de bordo e separei o cartão físico, se vou
-                    usá-lo.
-                  </label>
-                  <label class="checklist-item__na-toggle">
-                    <input type="checkbox" class="checklist-item__na-checkbox" id="na-cartao-conta">
-                    Não utilizarei cartão para conta de bordo (não se aplica)
-                  </label>
-                </div>
-              </li>
-
-              <li class="checklist-item" data-checklist-id="seguro" data-checklist-type="conditional">
-                <input type="checkbox" id="chk-seguro" class="checklist-item__checkbox" aria-describedby="desc-seguro">
-                <div class="checklist-item__body">
-                  <div class="checklist-item__header-row">
-                    <span class="checklist-item__tag checklist-item__tag--conditional">Se aplicável</span>
-                    <a class="checklist-item__ref" href="#faq-o36">Ver orientação (O36)</a>
-                  </div>
-                  <label for="chk-seguro" class="checklist-item__text" id="desc-seguro">
-                    Se contratei seguro, guardei a apólice e o canal de assistência e conferi cobertura e moeda.
-                  </label>
-                  <label class="checklist-item__na-toggle">
-                    <input type="checkbox" class="checklist-item__na-checkbox" id="na-seguro">
-                    Não contratei seguro viagem (não se aplica)
-                  </label>
-                </div>
-              </li>
-            </ul>
-          </div>
-
-          <!-- GRUPO 4: JOGOS E CONVIVÊNCIA -->
-          <div class="checklist-group" data-group-id="4">
-            <h3 class="checklist-group__title">4. Jogos e Convivência</h3>
-            <ul class="checklist-list">
-              <li class="checklist-item" data-checklist-id="guru" data-checklist-type="recommended">
-                <input type="checkbox" id="chk-guru" class="checklist-item__checkbox" aria-describedby="desc-guru">
-                <div class="checklist-item__body">
-                  <div class="checklist-item__header-row">
-                    <span class="checklist-item__tag checklist-item__tag--recommended">Recomendado</span>
-                    <a class="checklist-item__ref" href="#faq-o20">Ver orientação (O20/O21)</a>
-                  </div>
-                  <label for="chk-guru" class="checklist-item__text" id="desc-guru">
-                    Acessei o evento no Board Game Guru e marquei “Eu vou”, ou combinei a inscrição manual com a
-                    Encounter.
-                  </label>
-                </div>
-              </li>
-
-              <li class="checklist-item" data-checklist-id="jogos-proprios" data-checklist-type="conditional">
-                <input type="checkbox" id="chk-jogos-proprios" class="checklist-item__checkbox"
-                  aria-describedby="desc-jogos-proprios">
-                <div class="checklist-item__body">
-                  <div class="checklist-item__header-row">
-                    <span class="checklist-item__tag checklist-item__tag--conditional">Se aplicável</span>
-                    <a class="checklist-item__ref" href="#faq-o22">Ver orientação (O22)</a>
-                  </div>
-                  <label for="chk-jogos-proprios" class="checklist-item__text" id="desc-jogos-proprios">
-                    Se vou compartilhar jogos, cadastrei os títulos no app e identifiquei o que é meu.
-                  </label>
-                  <label class="checklist-item__na-toggle">
-                    <input type="checkbox" class="checklist-item__na-checkbox" id="na-jogos-proprios">
-                    Não levarei jogos próprios para compartilhar (não se aplica)
-                  </label>
-                </div>
-              </li>
-
-              <li class="checklist-item" data-checklist-id="branco-anos80" data-checklist-type="optional">
-                <input type="checkbox" id="chk-branco-anos80" class="checklist-item__checkbox"
-                  aria-describedby="desc-branco-anos80">
-                <div class="checklist-item__body">
-                  <div class="checklist-item__header-row">
-                    <span class="checklist-item__tag checklist-item__tag--optional">Opcional</span>
-                    <a class="checklist-item__ref" href="#faq-o26">Ver orientação (O26)</a>
-                  </div>
-                  <label for="chk-branco-anos80" class="checklist-item__text" id="desc-branco-anos80">
-                    Se quero participar dos trajes temáticos, separei peças brancas e/ou Anos 80.
-                  </label>
-                </div>
-              </li>
-
-              <li class="checklist-item" data-checklist-id="jogos-espera" data-checklist-type="optional">
-                <input type="checkbox" id="chk-jogos-espera" class="checklist-item__checkbox"
-                  aria-describedby="desc-jogos-espera">
-                <div class="checklist-item__body">
-                  <div class="checklist-item__header-row">
-                    <span class="checklist-item__tag checklist-item__tag--optional">Opcional</span>
-                  </div>
-                  <label for="chk-jogos-espera" class="checklist-item__text" id="desc-jogos-espera">
-                    Se quero jogar durante a espera, separei um jogo compacto na bagagem de mão.
-                  </label>
-                </div>
-              </li>
-
-              <li class="checklist-item" data-checklist-id="caneta-acessorios" data-checklist-type="optional">
-                <input type="checkbox" id="chk-caneta-acessorios" class="checklist-item__checkbox"
-                  aria-describedby="desc-caneta-acessorios">
-                <div class="checklist-item__body">
-                  <div class="checklist-item__header-row">
-                    <span class="checklist-item__tag checklist-item__tag--optional">Opcional</span>
-                  </div>
-                  <label for="chk-caneta-acessorios" class="checklist-item__text" id="desc-caneta-acessorios">
-                    Separei caneta, bloco e acessórios de jogos que eu queira usar.
-                  </label>
-                </div>
-              </li>
-            </ul>
-          </div>
-
-          <div class="checklist-share" data-checklist-share></div>
-
-          <div class="checklist-actions">
-            <p class="checklist-persistence-note">
-              🔒 Seu progresso fica salvo somente neste navegador. Você pode apagá-lo quando quiser.
-            </p>
-            <button type="button" class="checklist-reset-btn" id="checklistResetBtn">
-              Apagar meu progresso
-            </button>
-          </div>
-        </div>
-      </div>
-    </section>
 
     <!-- CRONOGRAMA (#19) -->
     <section class="guide-section" id="cronograma" aria-labelledby="cronograma-title">
@@ -2635,11 +2155,17 @@
     </div>
 
     <div class="checklist-sidebar__progress">
-      <div class="checklist-sidebar__progress-bar">
+      <div class="checklist-sidebar__progress-bar" id="checklistSidebarProgressBar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" aria-label="Progresso do checklist">
         <div class="checklist-sidebar__progress-fill" id="checklistSidebarProgressFill"></div>
       </div>
       <span class="checklist-sidebar__progress-text" id="checklistSidebarProgressText">0 de 16 conferidos</span>
     </div>
+
+<div class="checklist-completed-msg" id="checklistCompletedMsg">
+            🎉 Você conferiu os itens essenciais e aplicáveis desta lista! Continue acompanhando os avisos da equipe e
+            as
+            instruções da sua reserva.
+          </div>
 
     <div class="checklist-sidebar__nav" role="group" aria-label="Filtrar grupos na sidebar">
       <button type="button" class="checklist-sidebar__nav-item is-active" aria-pressed="true"
@@ -2655,14 +2181,425 @@
     </div>
 
     <div class="checklist-sidebar__body" id="checklistSidebarList" aria-label="Itens do checklist">
-      <!-- Gerado/espelhado dinamicamente via JS com checkboxes sincronizados -->
+      <div id="checklistContainer">
+<div class="checklist-group" data-group-id="1">
+            <h3 class="checklist-group__title">1. Documentos e Reserva</h3>
+            <ul class="checklist-list">
+              <li class="checklist-item checklist-sidebar-item" data-checklist-id="reserva-dados" data-sidebar-item-id="reserva-dados" data-checklist-type="essential">
+                <input type="checkbox" id="chk-reserva-dados" class="checklist-item__checkbox checklist-sidebar-item__checkbox"
+                  aria-describedby="desc-reserva-dados">
+                <div class="checklist-item__body checklist-sidebar-item__content">
+                  <div class="checklist-item__header-row checklist-sidebar-item__header">
+                    <span class="checklist-item__tag checklist-item__tag--essential">Essencial</span>
+                    <a class="checklist-item__ref" href="#faq-o02">Ver orientação (O02/O06)</a>
+                  </div>
+                  <label for="chk-reserva-dados" class="checklist-item__text checklist-sidebar-item__text" id="desc-reserva-dados">
+                    Conferi os dados e os passageiros da minha cabine com a Royal Trip.
+                  </label>
+                </div>
+              </li>
+
+              <li class="checklist-item checklist-sidebar-item" data-checklist-id="grupo-acompanhantes" data-sidebar-item-id="grupo-acompanhantes" data-checklist-type="recommended">
+                <input type="checkbox" id="chk-grupo-acompanhantes" class="checklist-item__checkbox checklist-sidebar-item__checkbox"
+                  aria-describedby="desc-grupo-acompanhantes">
+                <div class="checklist-item__body checklist-sidebar-item__content">
+                  <div class="checklist-item__header-row checklist-sidebar-item__header">
+                    <span class="checklist-item__tag checklist-item__tag--recommended">Recomendado</span>
+                    <a class="checklist-item__ref" href="#faq-o41">Ver orientação (O41)</a>
+                  </div>
+                  <label for="chk-grupo-acompanhantes" class="checklist-item__text checklist-sidebar-item__text" id="desc-grupo-acompanhantes">
+                    Pedi a inclusão dos acompanhantes e familiares nos avisos oficiais do evento.
+                  </label>
+                </div>
+              </li>
+
+              <li class="checklist-item checklist-sidebar-item" data-checklist-id="voucher-solicitado" data-sidebar-item-id="voucher-solicitado" data-checklist-type="essential">
+                <input type="checkbox" id="chk-voucher-solicitado" class="checklist-item__checkbox checklist-sidebar-item__checkbox"
+                  aria-describedby="desc-voucher-solicitado">
+                <div class="checklist-item__body checklist-sidebar-item__content">
+                  <div class="checklist-item__header-row checklist-sidebar-item__header">
+                    <span class="checklist-item__tag checklist-item__tag--essential">Essencial</span>
+                    <a class="checklist-item__ref" href="#faq-o02">Ver orientação (O02)</a>
+                  </div>
+                  <label for="chk-voucher-solicitado" class="checklist-item__text checklist-sidebar-item__text" id="desc-voucher-solicitado">
+                    Após o aviso no grupo, chamei Júnior no privado para receber vouchers e etiquetas.
+                  </label>
+                </div>
+              </li>
+
+              <li class="checklist-item checklist-sidebar-item" data-checklist-id="voucher-impresso" data-sidebar-item-id="voucher-impresso" data-checklist-type="essential">
+                <input type="checkbox" id="chk-voucher-impresso" class="checklist-item__checkbox checklist-sidebar-item__checkbox"
+                  aria-describedby="desc-voucher-impresso">
+                <div class="checklist-item__body checklist-sidebar-item__content">
+                  <div class="checklist-item__header-row checklist-sidebar-item__header">
+                    <span class="checklist-item__tag checklist-item__tag--essential">Essencial</span>
+                    <a class="checklist-item__ref" href="#faq-o02">Ver orientação (O02)</a>
+                  </div>
+                  <label for="chk-voucher-impresso" class="checklist-item__text checklist-sidebar-item__text" id="desc-voucher-impresso">
+                    Imprimi os vouchers e conferi os dados e instruções da minha reserva.
+                  </label>
+                </div>
+              </li>
+
+              <li class="checklist-item checklist-sidebar-item" data-checklist-id="documento" data-sidebar-item-id="documento" data-checklist-type="essential">
+                <input type="checkbox" id="chk-documento" class="checklist-item__checkbox checklist-sidebar-item__checkbox"
+                  aria-describedby="desc-documento">
+                <div class="checklist-item__body checklist-sidebar-item__content">
+                  <div class="checklist-item__header-row checklist-sidebar-item__header">
+                    <span class="checklist-item__tag checklist-item__tag--essential">Essencial</span>
+                    <a class="checklist-item__ref" href="#faq-o03">Ver orientação (O03)</a>
+                  </div>
+                  <label for="chk-documento" class="checklist-item__text checklist-sidebar-item__text" id="desc-documento">
+                    Separei um documento aceito pela MSC, em bom estado e com foto reconhecível; prefiro levar também o
+                    físico.
+                  </label>
+                </div>
+              </li>
+
+              <li class="checklist-item checklist-sidebar-item" data-checklist-id="menor-documentos" data-sidebar-item-id="menor-documentos" data-checklist-type="conditional">
+                <input type="checkbox" id="chk-menor-documentos" class="checklist-item__checkbox checklist-sidebar-item__checkbox"
+                  aria-describedby="desc-menor-documentos">
+                <div class="checklist-item__body checklist-sidebar-item__content">
+                  <div class="checklist-item__header-row checklist-sidebar-item__header">
+                    <span class="checklist-item__tag checklist-item__tag--conditional">Se aplicável</span>
+                    <a class="checklist-item__ref" href="#faq-o04">Ver orientação (O04)</a>
+                  </div>
+                  <label for="chk-menor-documentos" class="checklist-item__text checklist-sidebar-item__text" id="desc-menor-documentos">
+                    Confirmei com a agência os documentos e autorizações dos menores que viajam comigo.
+                  </label>
+                  <label class="checklist-item__na-toggle checklist-sidebar-item__na">
+                    <input type="checkbox" class="checklist-item__na-checkbox checklist-sidebar-item__na-checkbox" id="na-menor-documentos">
+                    Não viajo com menores (não se aplica)
+                  </label>
+                </div>
+              </li>
+
+              <li class="checklist-item checklist-sidebar-item" data-checklist-id="estrangeiro-documentos" data-sidebar-item-id="estrangeiro-documentos" data-checklist-type="conditional">
+                <input type="checkbox" id="chk-estrangeiro-documentos" class="checklist-item__checkbox checklist-sidebar-item__checkbox"
+                  aria-describedby="desc-estrangeiro-documentos">
+                <div class="checklist-item__body checklist-sidebar-item__content">
+                  <div class="checklist-item__header-row checklist-sidebar-item__header">
+                    <span class="checklist-item__tag checklist-item__tag--conditional">Se aplicável</span>
+                    <a class="checklist-item__ref" href="#faq-o04">Ver orientação (O04)</a>
+                  </div>
+                  <label for="chk-estrangeiro-documentos" class="checklist-item__text checklist-sidebar-item__text" id="desc-estrangeiro-documentos">
+                    Confirmei a documentação aplicável à minha nacionalidade e situação de residência.
+                  </label>
+                  <label class="checklist-item__na-toggle checklist-sidebar-item__na">
+                    <input type="checkbox" class="checklist-item__na-checkbox checklist-sidebar-item__na-checkbox" id="na-estrangeiro-documentos">
+                    Sou brasileiro residente (não se aplica)
+                  </label>
+                </div>
+              </li>
+
+              <li class="checklist-item checklist-sidebar-item" data-checklist-id="requisitos-saude" data-sidebar-item-id="requisitos-saude" data-checklist-type="essential">
+                <input type="checkbox" id="chk-requisitos-saude" class="checklist-item__checkbox checklist-sidebar-item__checkbox"
+                  aria-describedby="desc-requisitos-saude">
+                <div class="checklist-item__body checklist-sidebar-item__content">
+                  <div class="checklist-item__header-row checklist-sidebar-item__header">
+                    <span class="checklist-item__tag checklist-item__tag--essential">Essencial</span>
+                    <a class="checklist-item__ref" href="#faq-o07">Ver orientação (O07)</a>
+                  </div>
+                  <label for="chk-requisitos-saude" class="checklist-item__text checklist-sidebar-item__text" id="desc-requisitos-saude">
+                    Conferi as exigências sanitárias vigentes para o meu embarque.
+                  </label>
+                </div>
+              </li>
+
+              <li class="checklist-item checklist-sidebar-item" data-checklist-id="necessidades-especiais" data-sidebar-item-id="necessidades-especiais" data-checklist-type="conditional">
+                <input type="checkbox" id="chk-necessidades-especiais" class="checklist-item__checkbox checklist-sidebar-item__checkbox"
+                  aria-describedby="desc-necessidades-especiais">
+                <div class="checklist-item__body checklist-sidebar-item__content">
+                  <div class="checklist-item__header-row checklist-sidebar-item__header">
+                    <span class="checklist-item__tag checklist-item__tag--conditional">Se aplicável</span>
+                    <a class="checklist-item__ref" href="#faq-o05">Ver orientação (O05/O37)</a>
+                  </div>
+                  <label for="chk-necessidades-especiais" class="checklist-item__text checklist-sidebar-item__text" id="desc-necessidades-especiais">
+                    Combinei com a agência, por canal privado, os cuidados especiais de acessibilidade, gestação ou
+                    saúde necessárias para minha viagem.
+                  </label>
+                  <label class="checklist-item__na-toggle checklist-sidebar-item__na">
+                    <input type="checkbox" class="checklist-item__na-checkbox checklist-sidebar-item__na-checkbox" id="na-necessidades-especiais">
+                    Não necessito de providências especiais (não se aplica)
+                  </label>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <!-- GRUPO 2: BAGAGEM E ITENS -->
+          <div class="checklist-group" data-group-id="2">
+            <h3 class="checklist-group__title">2. Bagagem e Itens</h3>
+            <ul class="checklist-list">
+              <li class="checklist-item checklist-sidebar-item" data-checklist-id="bagagem-limites" data-sidebar-item-id="bagagem-limites" data-checklist-type="essential">
+                <input type="checkbox" id="chk-bagagem-limites" class="checklist-item__checkbox checklist-sidebar-item__checkbox"
+                  aria-describedby="desc-bagagem-limites">
+                <div class="checklist-item__body checklist-sidebar-item__content">
+                  <div class="checklist-item__header-row checklist-sidebar-item__header">
+                    <span class="checklist-item__tag checklist-item__tag--essential">Essencial</span>
+                    <a class="checklist-item__ref" href="#faq-o08">Ver orientação (O08)</a>
+                  </div>
+                  <label for="chk-bagagem-limites" class="checklist-item__text checklist-sidebar-item__text" id="desc-bagagem-limites">
+                    Conferi o limite de bagagem da MSC e os limites separados de avião e transporte terrestre, se
+                    utilizados.
+                  </label>
+                </div>
+              </li>
+
+              <li class="checklist-item checklist-sidebar-item" data-checklist-id="etiquetas" data-sidebar-item-id="etiquetas" data-checklist-type="essential">
+                <input type="checkbox" id="chk-etiquetas" class="checklist-item__checkbox checklist-sidebar-item__checkbox"
+                  aria-describedby="desc-etiquetas">
+                <div class="checklist-item__body checklist-sidebar-item__content">
+                  <div class="checklist-item__header-row checklist-sidebar-item__header">
+                    <span class="checklist-item__tag checklist-item__tag--essential">Essencial</span>
+                    <a class="checklist-item__ref" href="#faq-o09">Ver orientação (O09)</a>
+                  </div>
+                  <label for="chk-etiquetas" class="checklist-item__text checklist-sidebar-item__text" id="desc-etiquetas">
+                    Imprimi e coloquei as etiquetas da MSC nas malas que vou despachar.
+                  </label>
+                </div>
+              </li>
+
+              <li class="checklist-item checklist-sidebar-item" data-checklist-id="mala-mao" data-sidebar-item-id="mala-mao" data-checklist-type="essential">
+                <input type="checkbox" id="chk-mala-mao" class="checklist-item__checkbox checklist-sidebar-item__checkbox"
+                  aria-describedby="desc-mala-mao">
+                <div class="checklist-item__body checklist-sidebar-item__content">
+                  <div class="checklist-item__header-row checklist-sidebar-item__header">
+                    <span class="checklist-item__tag checklist-item__tag--essential">Essencial</span>
+                    <a class="checklist-item__ref" href="#faq-o09">Ver orientação (O09)</a>
+                  </div>
+                  <label for="chk-mala-mao" class="checklist-item__text checklist-sidebar-item__text" id="desc-mala-mao">
+                    Separei documentos, itens de valor, medicamentos e o que precisarei enquanto as malas não chegam.
+                  </label>
+                </div>
+              </li>
+
+              <li class="checklist-item checklist-sidebar-item" data-checklist-id="itens-permitidos" data-sidebar-item-id="itens-permitidos" data-checklist-type="essential">
+                <input type="checkbox" id="chk-itens-permitidos" class="checklist-item__checkbox checklist-sidebar-item__checkbox"
+                  aria-describedby="desc-itens-permitidos">
+                <div class="checklist-item__body checklist-sidebar-item__content">
+                  <div class="checklist-item__header-row checklist-sidebar-item__header">
+                    <span class="checklist-item__tag checklist-item__tag--essential">Essencial</span>
+                    <a class="checklist-item__ref" href="#faq-o10">Ver orientação (O10)</a>
+                  </div>
+                  <label for="chk-itens-permitidos" class="checklist-item__text checklist-sidebar-item__text" id="desc-itens-permitidos">
+                    Conferi a lista oficial de itens permitidos e proibidos antes de fechar a mala.
+                  </label>
+                </div>
+              </li>
+
+              <li class="checklist-item checklist-sidebar-item" data-checklist-id="higiene" data-sidebar-item-id="higiene" data-checklist-type="recommended">
+                <input type="checkbox" id="chk-higiene" class="checklist-item__checkbox checklist-sidebar-item__checkbox"
+                  aria-describedby="desc-higiene">
+                <div class="checklist-item__body checklist-sidebar-item__content">
+                  <div class="checklist-item__header-row checklist-sidebar-item__header">
+                    <span class="checklist-item__tag checklist-item__tag--recommended">Recomendado</span>
+                    <a class="checklist-item__ref" href="#faq-o11">Ver orientação (O11)</a>
+                  </div>
+                  <label for="chk-higiene" class="checklist-item__text checklist-sidebar-item__text" id="desc-higiene">
+                    Separei meus itens pessoais de higiene, inclusive escova, pasta de dente e condicionador.
+                  </label>
+                </div>
+              </li>
+
+              <li class="checklist-item checklist-sidebar-item" data-checklist-id="roupas-confortaveis" data-sidebar-item-id="roupas-confortaveis" data-checklist-type="recommended">
+                <input type="checkbox" id="chk-roupas-confortaveis" class="checklist-item__checkbox checklist-sidebar-item__checkbox"
+                  aria-describedby="desc-roupas-confortaveis">
+                <div class="checklist-item__body checklist-sidebar-item__content">
+                  <div class="checklist-item__header-row checklist-sidebar-item__header">
+                    <span class="checklist-item__tag checklist-item__tag--recommended">Recomendado</span>
+                    <a class="checklist-item__ref" href="#faq-o25">Ver orientação (O25)</a>
+                  </div>
+                  <label for="chk-roupas-confortaveis" class="checklist-item__text checklist-sidebar-item__text" id="desc-roupas-confortaveis">
+                    Separei roupas e calçados confortáveis, roupa para o jantar e um agasalho leve.
+                  </label>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <!-- GRUPO 3: TRAJETO E CONTA DE BORDO -->
+          <div class="checklist-group" data-group-id="3">
+            <h3 class="checklist-group__title">3. Trajeto e Conta de Bordo</h3>
+            <ul class="checklist-list">
+              <li class="checklist-item checklist-sidebar-item" data-checklist-id="trajeto-porto" data-sidebar-item-id="trajeto-porto" data-checklist-type="essential">
+                <input type="checkbox" id="chk-trajeto-porto" class="checklist-item__checkbox checklist-sidebar-item__checkbox"
+                  aria-describedby="desc-trajeto-porto">
+                <div class="checklist-item__body checklist-sidebar-item__content">
+                  <div class="checklist-item__header-row checklist-sidebar-item__header">
+                    <span class="checklist-item__tag checklist-item__tag--essential">Essencial</span>
+                    <a class="checklist-item__ref" href="#faq-o12">Ver orientação (O12/O13/O14)</a>
+                  </div>
+                  <label for="chk-trajeto-porto" class="checklist-item__text checklist-sidebar-item__text" id="desc-trajeto-porto">
+                    Planejei meu deslocamento até Santos com margem para trânsito e imprevistos.
+                  </label>
+                </div>
+              </li>
+
+              <li class="checklist-item checklist-sidebar-item" data-checklist-id="fretado-reserva" data-sidebar-item-id="fretado-reserva" data-checklist-type="conditional">
+                <input type="checkbox" id="chk-fretado-reserva" class="checklist-item__checkbox checklist-sidebar-item__checkbox"
+                  aria-describedby="desc-fretado-reserva">
+                <div class="checklist-item__body checklist-sidebar-item__content">
+                  <div class="checklist-item__header-row checklist-sidebar-item__header">
+                    <span class="checklist-item__tag checklist-item__tag--conditional">Se aplicável</span>
+                    <a class="checklist-item__ref" href="#faq-o12">Ver orientação (O12)</a>
+                  </div>
+                  <label for="chk-fretado-reserva" class="checklist-item__text checklist-sidebar-item__text" id="desc-fretado-reserva">
+                    Conferi o veículo atribuído à minha reserva, o ponto de encontro e o horário do fretado.
+                  </label>
+                  <label class="checklist-item__na-toggle checklist-sidebar-item__na">
+                    <input type="checkbox" class="checklist-item__na-checkbox checklist-sidebar-item__na-checkbox" id="na-fretado-reserva">
+                    Não utilizarei o fretado oficial KOB (não se aplica)
+                  </label>
+                </div>
+              </li>
+
+              <li class="checklist-item checklist-sidebar-item" data-checklist-id="carro-estacionamento" data-sidebar-item-id="carro-estacionamento" data-checklist-type="conditional">
+                <input type="checkbox" id="chk-carro-estacionamento" class="checklist-item__checkbox checklist-sidebar-item__checkbox"
+                  aria-describedby="desc-carro-estacionamento">
+                <div class="checklist-item__body checklist-sidebar-item__content">
+                  <div class="checklist-item__header-row checklist-sidebar-item__header">
+                    <span class="checklist-item__tag checklist-item__tag--conditional">Se aplicável</span>
+                    <a class="checklist-item__ref" href="#faq-o14">Ver orientação (O14)</a>
+                  </div>
+                  <label for="chk-carro-estacionamento" class="checklist-item__text checklist-sidebar-item__text" id="desc-carro-estacionamento">
+                    Confirmei minha reserva de estacionamento e as instruções de chegada.
+                  </label>
+                  <label class="checklist-item__na-toggle checklist-sidebar-item__na">
+                    <input type="checkbox" class="checklist-item__na-checkbox checklist-sidebar-item__na-checkbox" id="na-carro-estacionamento">
+                    Não irei de carro próprio (não se aplica)
+                  </label>
+                </div>
+              </li>
+
+              <li class="checklist-item checklist-sidebar-item" data-checklist-id="cartao-conta" data-sidebar-item-id="cartao-conta" data-checklist-type="conditional">
+                <input type="checkbox" id="chk-cartao-conta" class="checklist-item__checkbox checklist-sidebar-item__checkbox"
+                  aria-describedby="desc-cartao-conta">
+                <div class="checklist-item__body checklist-sidebar-item__content">
+                  <div class="checklist-item__header-row checklist-sidebar-item__header">
+                    <span class="checklist-item__tag checklist-item__tag--conditional">Se aplicável</span>
+                    <a class="checklist-item__ref" href="#faq-o34">Ver orientação (O34)</a>
+                  </div>
+                  <label for="chk-cartao-conta" class="checklist-item__text checklist-sidebar-item__text" id="desc-cartao-conta">
+                    Conferi com a agência/MSC os meios aceitos para a conta de bordo e separei o cartão físico, se vou
+                    usá-lo.
+                  </label>
+                  <label class="checklist-item__na-toggle checklist-sidebar-item__na">
+                    <input type="checkbox" class="checklist-item__na-checkbox checklist-sidebar-item__na-checkbox" id="na-cartao-conta">
+                    Não utilizarei cartão para conta de bordo (não se aplica)
+                  </label>
+                </div>
+              </li>
+
+              <li class="checklist-item checklist-sidebar-item" data-checklist-id="seguro" data-sidebar-item-id="seguro" data-checklist-type="conditional">
+                <input type="checkbox" id="chk-seguro" class="checklist-item__checkbox checklist-sidebar-item__checkbox" aria-describedby="desc-seguro">
+                <div class="checklist-item__body checklist-sidebar-item__content">
+                  <div class="checklist-item__header-row checklist-sidebar-item__header">
+                    <span class="checklist-item__tag checklist-item__tag--conditional">Se aplicável</span>
+                    <a class="checklist-item__ref" href="#faq-o36">Ver orientação (O36)</a>
+                  </div>
+                  <label for="chk-seguro" class="checklist-item__text checklist-sidebar-item__text" id="desc-seguro">
+                    Se contratei seguro, guardei a apólice e o canal de assistência e conferi cobertura e moeda.
+                  </label>
+                  <label class="checklist-item__na-toggle checklist-sidebar-item__na">
+                    <input type="checkbox" class="checklist-item__na-checkbox checklist-sidebar-item__na-checkbox" id="na-seguro">
+                    Não contratei seguro viagem (não se aplica)
+                  </label>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <!-- GRUPO 4: JOGOS E CONVIVÊNCIA -->
+          <div class="checklist-group" data-group-id="4">
+            <h3 class="checklist-group__title">4. Jogos e Convivência</h3>
+            <ul class="checklist-list">
+              <li class="checklist-item checklist-sidebar-item" data-checklist-id="guru" data-sidebar-item-id="guru" data-checklist-type="recommended">
+                <input type="checkbox" id="chk-guru" class="checklist-item__checkbox checklist-sidebar-item__checkbox" aria-describedby="desc-guru">
+                <div class="checklist-item__body checklist-sidebar-item__content">
+                  <div class="checklist-item__header-row checklist-sidebar-item__header">
+                    <span class="checklist-item__tag checklist-item__tag--recommended">Recomendado</span>
+                    <a class="checklist-item__ref" href="#faq-o20">Ver orientação (O20/O21)</a>
+                  </div>
+                  <label for="chk-guru" class="checklist-item__text checklist-sidebar-item__text" id="desc-guru">
+                    Acessei o evento no Board Game Guru e marquei “Eu vou”, ou combinei a inscrição manual com a
+                    Encounter.
+                  </label>
+                </div>
+              </li>
+
+              <li class="checklist-item checklist-sidebar-item" data-checklist-id="jogos-proprios" data-sidebar-item-id="jogos-proprios" data-checklist-type="conditional">
+                <input type="checkbox" id="chk-jogos-proprios" class="checklist-item__checkbox checklist-sidebar-item__checkbox"
+                  aria-describedby="desc-jogos-proprios">
+                <div class="checklist-item__body checklist-sidebar-item__content">
+                  <div class="checklist-item__header-row checklist-sidebar-item__header">
+                    <span class="checklist-item__tag checklist-item__tag--conditional">Se aplicável</span>
+                    <a class="checklist-item__ref" href="#faq-o22">Ver orientação (O22)</a>
+                  </div>
+                  <label for="chk-jogos-proprios" class="checklist-item__text checklist-sidebar-item__text" id="desc-jogos-proprios">
+                    Se vou compartilhar jogos, cadastrei os títulos no app e identifiquei o que é meu.
+                  </label>
+                  <label class="checklist-item__na-toggle checklist-sidebar-item__na">
+                    <input type="checkbox" class="checklist-item__na-checkbox checklist-sidebar-item__na-checkbox" id="na-jogos-proprios">
+                    Não levarei jogos próprios para compartilhar (não se aplica)
+                  </label>
+                </div>
+              </li>
+
+              <li class="checklist-item checklist-sidebar-item" data-checklist-id="branco-anos80" data-sidebar-item-id="branco-anos80" data-checklist-type="optional">
+                <input type="checkbox" id="chk-branco-anos80" class="checklist-item__checkbox checklist-sidebar-item__checkbox"
+                  aria-describedby="desc-branco-anos80">
+                <div class="checklist-item__body checklist-sidebar-item__content">
+                  <div class="checklist-item__header-row checklist-sidebar-item__header">
+                    <span class="checklist-item__tag checklist-item__tag--optional">Opcional</span>
+                    <a class="checklist-item__ref" href="#faq-o26">Ver orientação (O26)</a>
+                  </div>
+                  <label for="chk-branco-anos80" class="checklist-item__text checklist-sidebar-item__text" id="desc-branco-anos80">
+                    Se quero participar dos trajes temáticos, separei peças brancas e/ou Anos 80.
+                  </label>
+                </div>
+              </li>
+
+              <li class="checklist-item checklist-sidebar-item" data-checklist-id="jogos-espera" data-sidebar-item-id="jogos-espera" data-checklist-type="optional">
+                <input type="checkbox" id="chk-jogos-espera" class="checklist-item__checkbox checklist-sidebar-item__checkbox"
+                  aria-describedby="desc-jogos-espera">
+                <div class="checklist-item__body checklist-sidebar-item__content">
+                  <div class="checklist-item__header-row checklist-sidebar-item__header">
+                    <span class="checklist-item__tag checklist-item__tag--optional">Opcional</span>
+                  </div>
+                  <label for="chk-jogos-espera" class="checklist-item__text checklist-sidebar-item__text" id="desc-jogos-espera">
+                    Se quero jogar durante a espera, separei um jogo compacto na bagagem de mão.
+                  </label>
+                </div>
+              </li>
+
+              <li class="checklist-item checklist-sidebar-item" data-checklist-id="caneta-acessorios" data-sidebar-item-id="caneta-acessorios" data-checklist-type="optional">
+                <input type="checkbox" id="chk-caneta-acessorios" class="checklist-item__checkbox checklist-sidebar-item__checkbox"
+                  aria-describedby="desc-caneta-acessorios">
+                <div class="checklist-item__body checklist-sidebar-item__content">
+                  <div class="checklist-item__header-row checklist-sidebar-item__header">
+                    <span class="checklist-item__tag checklist-item__tag--optional">Opcional</span>
+                  </div>
+                  <label for="chk-caneta-acessorios" class="checklist-item__text checklist-sidebar-item__text" id="desc-caneta-acessorios">
+                    Separei caneta, bloco e acessórios de jogos que eu queira usar.
+                  </label>
+                </div>
+              </li>
+            </ul>
+          </div>
+      </div>
     </div>
 
     <div class="checklist-sidebar__footer">
       <div class="checklist-share" data-checklist-share></div>
-      <a href="#preparacao" class="checklist-sidebar__goto-btn" id="checklistSidebarGotoBtn">
-        Ver Checklist Completo na Página
-      </a>
+<div class="checklist-actions">
+            <p class="checklist-persistence-note">
+              🔒 Seu progresso fica salvo somente neste navegador. Você pode apagá-lo quando quiser.
+            </p>
+            <button type="button" class="checklist-reset-btn" id="checklistResetBtn">
+              Apagar meu progresso
+            </button>
+          </div>
     </div>
   </aside>
 

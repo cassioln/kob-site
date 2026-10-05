@@ -4,10 +4,10 @@ import fs from 'node:fs';
 import { CHAPTERS } from '../../assets/js/manual-de-bordo-live-data.js';
 import { normalizeSearch, matchChapter, excerpt, highlightParts } from '../../assets/js/manual-de-bordo-live-search.js';
 
-const expected = [833,913,1009,1036,1250,1345,1702,1765,1852,1963,2041,2161,2276,2339,2368,2423,2715,2894,3154,3213,3506,3766,3942,4265,4389,4456,4481,4712];
-test('28 capítulos cronológicos com conversão exata dos tempos e títulos PT/EN/ES', () => {
+const expected = [1453,1502,1535,2190,2544,2654,2996,3094,3814,4009,4102,4509,4657,833,913,1009,1036,1250,1345,1702,1765,1852,1963,2041,2161,2276,2339,2368,2423,2715,2894,3154,3213,3506,3766,3942,4265,4389,4456,4481,4712].sort((a,b)=>a-b);
+test('41 assuntos cronológicos com conversão exata dos tempos e títulos PT/EN/ES', () => {
   assert.deepEqual(CHAPTERS.map(c=>c.seconds), expected);
-  assert.equal(new Set(CHAPTERS.map(c=>c.id)).size,28);
+  assert.equal(new Set(CHAPTERS.map(c=>c.id)).size,41);
   for(const c of CHAPTERS){ assert.equal(c.time.split(':').reduce((s,n)=>s*60+Number(n),0),c.seconds); for(const l of ['pt','en','es'])assert.ok(c.titles[l]); }
 });
 test('busca usa a fala fornecida e separa os avisos das informações divergentes', () => {
@@ -17,8 +17,7 @@ test('busca usa a fala fornecida e separa os avisos das informações divergente
   assert.doesNotMatch(items.transcript,/chapinha sem certificação/);
   const partners=CHAPTERS.find(c=>c.seconds===1036);
   assert.doesNotMatch(partners.transcript,/Moedas & Co|Jogue & Vista/); assert.match(partners.transcript,/Fácil Shopping/);
-  const guru=CHAPTERS.find(c=>c.seconds===3942);
-  for(const term of ['Encounter','favoritar','Ludopedia','BoardGameGeek','premiações'])assert.ok(guru.transcript.includes(term));
+  for(const [term,seconds] of [['Encounter',3814],['favoritos',4009],['Ludopedia',4102],['BoardGameGeek',4102],['premiações',4657]])assert.ok(matchChapter(CHAPTERS.find(c=>c.seconds===seconds),term));
   const child=CHAPTERS.find(c=>c.seconds===4389); assert.match(child.transcript,/refeições/);
 });
 test('consultas de vários termos ignoram acentos, caixa e pontuação, inclusive em EN/ES',()=>{
@@ -27,7 +26,7 @@ test('consultas de vários termos ignoram acentos, caixa e pontuação, inclusiv
     const found=CHAPTERS.filter(c=>matchChapter(c,q,lang)); assert.ok(found.some(c=>c.seconds===sec),q);
   }
   assert.equal(CHAPTERS.filter(c=>matchChapter(c,'jantar documentacao impossivel')).length,0);
-  assert.equal(CHAPTERS.filter(c=>matchChapter(c,'')).length,28);
+  assert.equal(CHAPTERS.filter(c=>matchChapter(c,'')).length,41);
 });
 test('snippets e destaques preservam caracteres originais, offsets Unicode e texto potencialmente malicioso',()=>{
   const input='🚢 Água, CAFÉ e pão. <img src=x onerror=alert(1)> & festa';

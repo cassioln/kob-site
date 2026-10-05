@@ -160,9 +160,6 @@
     var checklistRoot = document.getElementById('checklistContainer');
     if (!checklistRoot) return;
 
-    var progressText = document.getElementById('checklistProgressText');
-    var progressFill = document.getElementById('checklistProgressFill');
-    var progressBar = document.getElementById('checklistProgressBar');
     var completedMsg = document.getElementById('checklistCompletedMsg');
     var resetBtn = document.getElementById('checklistResetBtn');
 
@@ -273,19 +270,6 @@
 
       // Atualizar progresso
       var percentage = totalApplicable > 0 ? Math.round((checkedCount / totalApplicable) * 100) : 0;
-      if (progressFill) progressFill.style.width = percentage + '%';
-      if (progressBar) progressBar.setAttribute('aria-valuenow', percentage.toString());
-
-      if (progressText) {
-        if (isEn) {
-          progressText.textContent = checkedCount + ' of ' + totalApplicable + ' essential or applicable items checked';
-        } else if (isEs) {
-          progressText.textContent = checkedCount + ' de ' + totalApplicable + ' ítems esenciales o aplicables verificados';
-        } else {
-          progressText.textContent = checkedCount + ' de ' + totalApplicable + ' itens essenciais ou aplicáveis conferidos';
-        }
-      }
-
       if (completedMsg) {
         if (totalApplicable > 0 && checkedCount === totalApplicable) {
           completedMsg.classList.add('is-visible');
@@ -294,36 +278,14 @@
         }
       }
 
-      // Atualizar progresso no Boarding Pass da Hero (Slide 1)
-      var heroBoardingText = document.getElementById('heroBoardingProgressText');
-      var heroBoardingBar = document.getElementById('heroBoardingProgressBar');
-      if (heroBoardingText) {
-        if (isEn) {
-          heroBoardingText.textContent = checkedCount + ' of ' + totalApplicable + ' ready';
-        } else if (isEs) {
-          heroBoardingText.textContent = checkedCount + ' de ' + totalApplicable + ' listos';
-        } else {
-          heroBoardingText.textContent = checkedCount + ' de ' + totalApplicable + ' concluídos';
-        }
-      }
-      if (heroBoardingBar) {
-        heroBoardingBar.style.width = percentage + '%';
-        var heroBoardingBarWrap = heroBoardingBar.parentElement;
-        if (heroBoardingBarWrap && heroBoardingBarWrap.getAttribute('role') === 'progressbar') {
-          heroBoardingBarWrap.setAttribute('aria-valuenow', percentage.toString());
-        }
-      }
-
       // Atualizar a Sidebar retrátil
       if (sidebarController && typeof sidebarController.update === 'function') {
-        sidebarController.update(checkedCount, totalApplicable, percentage, items);
+        sidebarController.update(checkedCount, totalApplicable, percentage);
       }
     }
 
     // Inicializar Sidebar Retrátil na Lateral Esquerda
-    var sidebarController = initChecklistSidebar(items, function () {
-      saveAndRefresh();
-    });
+    var sidebarController = initChecklistSidebar();
 
     // Reset button
     if (resetBtn) {
@@ -365,7 +327,7 @@
   // --------------------------------------------------------------------------
   // SIDEBAR RETRÁTIL DO CHECKLIST (SLIDERBAR LATERAL ESQUERDA)
   // --------------------------------------------------------------------------
-  function initChecklistSidebar(mainItems, onStateChange) {
+  function initChecklistSidebar() {
     var sidebarToggle = document.getElementById('checklistSidebarToggle');
     var sidebarToggleBadge = document.getElementById('checklistSidebarToggleBadge');
     var sidebarBackdrop = document.getElementById('checklistSidebarBackdrop');
@@ -375,7 +337,7 @@
     var sidebarProgressText = document.getElementById('checklistSidebarProgressText');
     var sidebarList = document.getElementById('checklistSidebarList');
     var sidebarNavItems = document.querySelectorAll('.checklist-sidebar__nav-item');
-    var sidebarGotoBtn = document.getElementById('checklistSidebarGotoBtn');
+    var sidebarProgressBar = document.getElementById('checklistSidebarProgressBar');
 
     if (!sidebarAside || !sidebarToggle || !sidebarList) {
       return null;
@@ -384,89 +346,6 @@
     var lang = (document.documentElement.lang || 'pt-BR').toLowerCase();
     var isEn = lang.startsWith('en');
     var isEs = lang.startsWith('es');
-
-    function escapeHtml(str) {
-      if (!str) return '';
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
-    }
-
-    function getTagLabel(type) {
-      if (type === 'essential') return isEn ? 'Essential' : isEs ? 'Esencial' : 'Essencial';
-      if (type === 'recommended') return isEn ? 'Recommended' : isEs ? 'Recomendado' : 'Recomendado';
-      if (type === 'conditional') return isEn ? 'If applicable' : isEs ? 'Si aplica' : 'Se aplicável';
-      return isEn ? 'Optional' : isEs ? 'Opcional' : 'Opcional';
-    }
-
-    // Montar os itens compactos da sidebar espelhando a lista principal
-    sidebarList.innerHTML = '';
-    mainItems.forEach(function (mainItem) {
-      var id = mainItem.getAttribute('data-checklist-id');
-      if (!id) return;
-
-      var type = mainItem.getAttribute('data-checklist-type') || 'essential';
-      var groupEl = mainItem.closest('.checklist-group');
-      var groupId = groupEl ? groupEl.getAttribute('data-group-id') || '1' : '1';
-
-      var titleEl = mainItem.querySelector('.checklist-item__text');
-      var titleText = titleEl ? titleEl.textContent.replace(/\s+/g, ' ').trim() : id;
-      var tagLabel = getTagLabel(type);
-      var mainNa = mainItem.querySelector('.checklist-item__na-checkbox');
-      var helpLabel = isEn ? 'Guidance' : isEs ? 'Orientación' : 'Orientação';
-      var naLabel = isEn ? 'Does not apply to me' : isEs ? 'No se aplica a mí' : 'Não se aplica a mim';
-
-      var div = document.createElement('div');
-      div.className = 'checklist-sidebar-item';
-      div.setAttribute('data-sidebar-item-id', id);
-      div.setAttribute('data-sidebar-group', groupId);
-
-      div.innerHTML =
-        '<input type="checkbox" class="checklist-sidebar-item__checkbox" id="sidebar_chk_' + escapeHtml(id) + '" aria-label="' + escapeHtml(titleText) + '">' +
-        '<div class="checklist-sidebar-item__content">' +
-          '<div class="checklist-sidebar-item__header">' +
-            '<span class="checklist-sidebar-item__tag checklist-sidebar-item__tag--' + escapeHtml(type) + '">' + escapeHtml(tagLabel) + '</span>' +
-            '<button type="button" class="checklist-help-trigger" data-checklist-help="' + escapeHtml(id) + '" aria-label="' + helpLabel + ': ' + escapeHtml(titleText) + '"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7h.01"/></svg></button>' +
-          '</div>' +
-          '<label for="sidebar_chk_' + escapeHtml(id) + '" class="checklist-sidebar-item__text">' + escapeHtml(titleText) + '</label>' +
-          (mainNa ? '<label class="checklist-sidebar-item__na"><input type="checkbox" class="checklist-sidebar-item__na-checkbox"> ' + naLabel + '</label>' : '') +
-        '</div>';
-
-      sidebarList.appendChild(div);
-
-      // Evento de clique / alteração na sidebar sincronizando com a página principal
-      var sCheckbox = div.querySelector('.checklist-sidebar-item__checkbox');
-      if (sCheckbox) {
-        sCheckbox.addEventListener('change', function () {
-          var mainCheckbox = mainItem.querySelector('.checklist-item__checkbox');
-          if (mainCheckbox && !mainCheckbox.disabled) {
-            mainCheckbox.checked = sCheckbox.checked;
-            if (sCheckbox.checked) {
-              mainItem.classList.add('is-checked');
-              div.classList.add('is-checked');
-            } else {
-              mainItem.classList.remove('is-checked');
-              div.classList.remove('is-checked');
-            }
-            if (typeof onStateChange === 'function') {
-              onStateChange();
-            }
-          } else {
-            // Se estava desabilitado (ex: N/A marcado na página principal), reverte o checkbox
-            sCheckbox.checked = mainCheckbox ? mainCheckbox.checked : false;
-          }
-        });
-      }
-
-      var sidebarNa = div.querySelector('.checklist-sidebar-item__na-checkbox');
-      if (sidebarNa) sidebarNa.addEventListener('change', function () {
-        mainNa.checked = sidebarNa.checked;
-        mainNa.dispatchEvent(new Event('change', { bubbles: true }));
-      });
-
-    });
 
     // Abrir e Fechar Sidebar
     function openSidebar() {
@@ -516,17 +395,16 @@
       }
     });
 
-    // Botão de rodapé "Ver Checklist Completo na Página"
-    if (sidebarGotoBtn) {
-      sidebarGotoBtn.addEventListener('click', function (e) {
-        e.preventDefault();
-        closeSidebar();
-        var prepSection = document.getElementById('preparacao');
-        if (prepSection) {
-          prepSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      });
+    document.addEventListener('click', function (event) {
+      if (!event.target.closest('[data-open-checklist]')) return;
+      event.preventDefault();
+      openSidebar();
+    });
+    function openFromHash() {
+      if (location.hash === '#checklist' || location.hash === '#preparacao') openSidebar();
     }
+    window.addEventListener('hashchange', openFromHash);
+    openFromHash();
 
     // Filtragem de grupos dentro da Sidebar
     sidebarNavItems.forEach(function (navBtn) {
@@ -537,14 +415,14 @@
         document.dispatchEvent(new Event('checklist:close'));
         sidebarNavItems.forEach(function (button) { button.setAttribute('aria-pressed', String(button === navBtn)); });
         var filterGroup = navBtn.getAttribute('data-sidebar-group') || 'all';
-        var sidebarItems = sidebarList.querySelectorAll('.checklist-sidebar-item');
+        var sidebarItems = sidebarList.querySelectorAll('.checklist-group');
 
         sidebarItems.forEach(function (sItem) {
-          var itemGroup = sItem.getAttribute('data-sidebar-group');
+          var itemGroup = sItem.getAttribute('data-group-id');
           if (filterGroup === 'all' || itemGroup === filterGroup) {
-            sItem.style.display = 'flex';
+            sItem.hidden = false;
           } else {
-            sItem.style.display = 'none';
+            sItem.hidden = true;
           }
         });
       });
@@ -552,7 +430,7 @@
 
     // Função de atualização chamada por saveAndRefresh()
     return {
-      update: function (checkedCount, totalApplicable, percentage, currentMainItems) {
+      update: function (checkedCount, totalApplicable, percentage) {
         // Atualizar badge do botão flutuante
         if (sidebarToggleBadge) {
           sidebarToggleBadge.textContent = checkedCount + '/' + totalApplicable;
@@ -561,6 +439,7 @@
         // Atualizar barra de progresso da sidebar
         if (sidebarProgressFill) {
           sidebarProgressFill.style.transform = 'scaleX(' + (percentage / 100) + ')';
+          sidebarProgressBar.setAttribute('aria-valuenow', String(percentage));
         }
 
         // Atualizar texto de progresso da sidebar
@@ -574,37 +453,7 @@
           }
         }
 
-        // Atualizar o estado de cada checkbox e visual do item da sidebar
-        currentMainItems.forEach(function (mainItem) {
-          var id = mainItem.getAttribute('data-checklist-id');
-          if (!id) return;
 
-          var mainCheckbox = mainItem.querySelector('.checklist-item__checkbox');
-          var mainNa = mainItem.querySelector('.checklist-item__na-checkbox');
-          var isChecked = mainCheckbox ? mainCheckbox.checked : false;
-          var isNa = mainNa ? mainNa.checked : false;
-
-          var sItem = sidebarList.querySelector('[data-sidebar-item-id="' + id + '"]');
-          if (sItem) {
-            var sCheckbox = sItem.querySelector('.checklist-sidebar-item__checkbox');
-            var sidebarNa = sItem.querySelector('.checklist-sidebar-item__na-checkbox');
-            if (sidebarNa) sidebarNa.checked = isNa;
-            if (sCheckbox) {
-              sCheckbox.checked = isChecked;
-              sCheckbox.disabled = isNa;
-            }
-            if (isChecked) {
-              sItem.classList.add('is-checked');
-            } else {
-              sItem.classList.remove('is-checked');
-            }
-            if (isNa) {
-              sItem.classList.add('is-not-applicable');
-            } else {
-              sItem.classList.remove('is-not-applicable');
-            }
-          }
-        });
       }
     };
   }
@@ -894,35 +743,6 @@
   }
 
   // --------------------------------------------------------------------------
-  // ABAS DO CHECKLIST (#18 UX OPTIMIZATION)
-  // --------------------------------------------------------------------------
-  function initChecklistTabs() {
-    var tabs = document.querySelectorAll('.checklist-tab');
-    var groups = document.querySelectorAll('.checklist-group');
-    if (!tabs.length || !groups.length) return;
-
-    tabs.forEach(function (tab) {
-      tab.addEventListener('click', function () {
-        tabs.forEach(function (t) {
-          t.classList.remove('is-active');
-          t.setAttribute('aria-selected', 'false');
-        });
-        tab.classList.add('is-active');
-        tab.setAttribute('aria-selected', 'true');
-
-        var targetGroup = tab.getAttribute('data-group');
-        groups.forEach(function (group) {
-          if (targetGroup === 'all' || group.getAttribute('data-group-id') === targetGroup) {
-            group.classList.remove('is-hidden');
-          } else {
-            group.classList.add('is-hidden');
-          }
-        });
-      });
-    });
-  }
-
-  // --------------------------------------------------------------------------
   // ABAS DO CRONOGRAMA (#19 UX OPTIMIZATION)
   // --------------------------------------------------------------------------
   function initTimelineTabs() {
@@ -1084,7 +904,6 @@
   document.addEventListener('DOMContentLoaded', function () {
     initCountdown();
     initChecklist();
-    initChecklistTabs();
     initTimelineTabs();
     initFAQ();
     initFAQTools();

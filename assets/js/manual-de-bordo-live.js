@@ -1,24 +1,27 @@
-import { CHAPTERS, LIVE_VIDEO_ID } from './manual-de-bordo-live-data.js';
-import { normalizeSearch, matchChapter, highlightParts, excerpt } from './manual-de-bordo-live-search.js';
+import { CHAPTERS, LIVE_VIDEO_ID } from './manual-de-bordo-live-data.js?v=20261005-topic-player';
+import { normalizeSearch, matchChapter, highlightParts, excerpt } from './manual-de-bordo-live-search.js?v=20261005-topic-player';
+
+import { topicAt, topicProgress, seekInTopic } from './manual-de-bordo-live-timeline.js?v=20261005-topic-player';
+import { initLiveGuideHelp } from './manual-de-bordo-live-help.js?v=20261005-topic-player';
 
 const lang = document.documentElement.lang.slice(0, 2);
 const copy = {
   pt: {
     topics: 'Assuntos', close: 'Recolher assuntos',
     selected: 'Selecionado', playing: 'Em reprodução', transcript: 'Trecho da transcrição fornecida', updated: 'Regra atualizada', faq: 'Conferir no guia',
-    videoTitle: 'Live de embarque · Kriativos On Board 2026', apiError: 'Não foi possível sincronizar os assuntos. O vídeo ainda pode ser assistido aqui ou pelo link no YouTube.', previousTopic: 'Assunto anterior', nextTopic: 'Próximo assunto', play: 'Reproduzir', pause: 'Pausar', progress: 'Progresso do vídeo',
+    videoTitle: 'Live de embarque · Kriativos On Board 2026', apiError: 'Não foi possível sincronizar os assuntos. O vídeo ainda pode ser assistido aqui ou pelo link no YouTube.', previousTopic: 'Assunto anterior', nextTopic: 'Próximo assunto', play: 'Reproduzir', pause: 'Pausar', progress: 'Progresso do assunto', closeGuide: 'Fechar orientação',
     videoError: 'O YouTube não conseguiu reproduzir este vídeo. Tente novamente ou abra o trecho no YouTube.', fullscreenError: 'Não foi possível ampliar. Você pode abrir o vídeo no YouTube.', expand: 'Ampliar vídeo', exit: 'Sair da tela cheia'
   },
   en: {
     topics: 'Topics', close: 'Collapse topics',
     selected: 'Selected', playing: 'Playing', transcript: 'Excerpt of the supplied Portuguese transcript', updated: 'Updated rule', faq: 'Check the guide',
-    videoTitle: 'Boarding live recording · Kriativos On Board 2026', apiError: 'Topic synchronisation is unavailable. You can still watch here or open the video on YouTube.', previousTopic: 'Previous topic', nextTopic: 'Next topic', play: 'Play', pause: 'Pause', progress: 'Video progress',
+    videoTitle: 'Boarding live recording · Kriativos On Board 2026', apiError: 'Topic synchronisation is unavailable. You can still watch here or open the video on YouTube.', previousTopic: 'Previous topic', nextTopic: 'Next topic', play: 'Play', pause: 'Pause', progress: 'Topic progress', closeGuide: 'Close guidance',
     videoError: 'YouTube could not play this video. Try again or open this topic on YouTube.', fullscreenError: 'Full screen is unavailable. You can open the video on YouTube.', expand: 'Expand video', exit: 'Exit full screen'
   },
   es: {
     topics: 'Temas', close: 'Recoger temas',
     selected: 'Seleccionado', playing: 'En reproducción', transcript: 'Fragmento de la transcripción proporcionada en portugués', updated: 'Regla actualizada', faq: 'Consultar la guía',
-    videoTitle: 'Charla de embarque · Kriativos On Board 2026', apiError: 'No se pudieron sincronizar los temas. Puedes seguir viendo aquí o abrir el vídeo en YouTube.', previousTopic: 'Tema anterior', nextTopic: 'Siguiente tema', play: 'Reproducir', pause: 'Pausar', progress: 'Progreso del vídeo',
+    videoTitle: 'Charla de embarque · Kriativos On Board 2026', apiError: 'No se pudieron sincronizar los temas. Puedes seguir viendo aquí o abrir el vídeo en YouTube.', previousTopic: 'Tema anterior', nextTopic: 'Siguiente tema', play: 'Reproducir', pause: 'Pausar', progress: 'Progreso del tema', closeGuide: 'Cerrar orientación',
     videoError: 'YouTube no pudo reproducir el vídeo. Inténtalo de nuevo o abre este tema en YouTube.', fullscreenError: 'No se pudo ampliar. Puedes abrir el vídeo en YouTube.', expand: 'Ampliar vídeo', exit: 'Salir de pantalla completa'
   }
 }[lang] || null;
@@ -56,7 +59,18 @@ function loadYouTubeAPI() {
 
 function initLive() {
   const byId = id => document.getElementById(id);
+  const desktop = matchMedia('(min-width: 769px)');
   const updateDimensions = () => {
+    const controls = byId('liveCustomControls');
+    const topic = byId('liveCustomTopic');
+    const video = byId('livePlayerWrapper');
+    if (desktop.matches) {
+      if (controls.parentElement !== video) video.append(controls);
+      if (topic.parentElement !== video) video.append(topic);
+    } else {
+      if (controls.parentElement !== cinema) cinema.insertBefore(controls, byId('heroLiveChaptersCol'));
+      if (topic.parentElement !== controls) controls.prepend(topic);
+    }
     const h = document.querySelector('.guide-header')?.offsetHeight;
     if (h) document.documentElement.style.setProperty('--guide-header-height', `${h}px`);
     if (window.innerWidth > 768) {
@@ -108,6 +122,7 @@ function initLive() {
   let generation = 0;
   let controlsTimer;
   const rows = [];
+  const guideHelp = initLiveGuideHelp(copy);
 
   function highlighted(element, text, query) {
     const fragment = document.createDocumentFragment();
@@ -123,16 +138,14 @@ function initLive() {
   }
 
   function guideLink(chapter) {
-    const link = document.createElement('a');
-    link.textContent = copy.faq;
-    link.href = `#${chapter.faqId}`;
-    link.addEventListener('click', () => {
-      byId('faqClearBtn')?.click();
-      setPanel(false, false);
-      const target = byId(chapter.faqId);
-      if (target) target.open = true;
-    });
-    return link;
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'live-guide-trigger';
+    button.textContent = copy.faq;
+    button.dataset.liveFaq = chapter.faqId;
+    button.setAttribute('aria-expanded', 'false');
+    button.setAttribute('aria-controls', 'liveGuidePopover');
+    return button;
   }
 
   for (const chapter of CHAPTERS) {
@@ -149,7 +162,10 @@ function initLive() {
     const title = document.createElement('span');
     title.className = 'live-chapter-item__title';
     title.textContent = chapter.titles[lang];
-    button.append(time, title);
+    const playIcon = document.createElement('span');
+    playIcon.className = 'live-chapter-item__play';
+    playIcon.innerHTML = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m10 8 6 4-6 4Z"/></svg>';
+    button.append(time, title, playIcon);
     const snippet = document.createElement('p');
     snippet.className = 'live-chapter-item__snippet';
     snippet.hidden = true;
@@ -228,14 +244,19 @@ function initLive() {
     }
   });
   document.addEventListener('pointerdown', event => {
-    if (toggle.getAttribute('aria-expanded') === 'true' && !byId('heroLiveChaptersCol').contains(event.target)) setPanel(false, false);
+    if (toggle.getAttribute('aria-expanded') === 'true' && !byId('heroLiveChaptersCol').contains(event.target) && !byId('liveGuidePopover').contains(event.target)) setPanel(false, false);
   });
 
   function select(chapter, isPlaying) {
+    const changed = selected?.id !== chapter.id;
+    if (changed) guideHelp.hide();
     selected = chapter;
     if (isPlaying) current = chapter;
     status.textContent = `${isPlaying ? copy.playing : copy.selected} · ${chapter.time} · ${chapter.titles[lang]}`;
     customTopic.textContent = chapter.titles[lang];
+    customTopic.hidden = false;
+    updateTopicButtons();
+    updateProgress(chapter.seconds);
     external.href = `https://www.youtube.com/watch?v=${LIVE_VIDEO_ID}&t=${chapter.seconds}s`;
     for (const row of rows) {
       row.button.toggleAttribute('data-selected', row.chapter.id === chapter.id);
@@ -243,7 +264,7 @@ function initLive() {
       else row.button.removeAttribute('aria-current');
     }
     note.hidden = !chapter.notice;
-    if (chapter.notice) {
+    if (chapter.notice && (changed || !note.childNodes.length)) {
       const strong = document.createElement('strong');
       strong.textContent = `${copy.updated}: `;
       note.replaceChildren(strong, document.createTextNode(chapter.notice[lang]));
@@ -255,16 +276,36 @@ function initLive() {
     errorBox.hidden = false;
     errorBox.querySelector('p').textContent = message;
   }
+  function updateTopicButtons() {
+    const index = CHAPTERS.findIndex(topic => topic.id === selected.id);
+    for (const [button, topic, action] of [
+      [previousChapter, CHAPTERS[index - 1], copy.previousTopic],
+      [nextChapter, CHAPTERS[index + 1], copy.nextTopic],
+      [playPause, selected, playing ? copy.pause : copy.play]
+    ]) {
+      const title = topic?.titles[lang] || '';
+      button.disabled = !topic;
+      button.querySelector('.live-control-label > span').textContent = title;
+      button.setAttribute('aria-label', title ? `${action}: ${title}` : action);
+      button.title = title ? `${action}: ${title}` : action;
+    }
+  }
+  function updateProgress(seconds) {
+    if (!selected) return;
+    const state = topicProgress(selected, seconds, player?.getDuration?.());
+    currentTime.textContent = formatTime(state.elapsed);
+    duration.textContent = formatTime(state.duration);
+    progress.max = String(state.duration);
+    progress.value = String(Math.floor(state.elapsed));
+    progress.disabled = !ready;
+    progress.setAttribute('aria-valuetext', `${formatTime(state.elapsed)} / ${formatTime(state.duration)} · ${selected.titles[lang]}`);
+  }
   function tick() {
-    if (!ready || !playing || !player?.getCurrentTime) return;
+    if (!ready || !player?.getCurrentTime) return;
     const seconds = player.getCurrentTime();
-    const total = player.getDuration?.() || 0;
-    currentTime.textContent = formatTime(seconds);
-    duration.textContent = formatTime(total);
-    progress.max = String(Math.max(1, Math.floor(total)));
-    progress.value = String(Math.min(Math.floor(seconds), Math.floor(total || seconds)));
-    const chapter = CHAPTERS.findLast(item => item.seconds <= seconds);
-    if (chapter && chapter !== current) select(chapter, true);
+    const chapter = topicAt(seconds);
+    if (chapter !== current) { select(chapter, playing); current = chapter; }
+    updateProgress(seconds);
   }
   function syncTimer() {
     clearInterval(timer);
@@ -282,16 +323,16 @@ function initLive() {
     return hours ? `${hours}:${minutes}:${secs}` : `${minutes}:${secs}`;
   }
   function updatePlayPauseUI(isPlaying) {
-    playPause.textContent = isPlaying ? '❚❚' : '▶';
-    const label = isPlaying ? copy.pause : copy.play;
-    playPause.setAttribute('aria-label', label);
-    playPause.setAttribute('title', label);
+    const icon = playPause.querySelector('.live-control-icon');
+    icon.innerHTML = isPlaying ? '<path d="M9 5v14M15 5v14"/>' : '<path d="m8 5 11 7-11 7Z"/>';
+    if (selected) updateTopicButtons();
   }
+
   function revealControls() {
     customControls.classList.add('is-visible');
     clearTimeout(controlsTimer);
     controlsTimer = setTimeout(() => {
-      if (playing && !customControls.matches(':hover')) customControls.classList.remove('is-visible');
+      if (desktop.matches && playing && !customControls.matches(':hover,:focus-within')) customControls.classList.remove('is-visible');
     }, 3200);
   }
   if ('IntersectionObserver' in window) {
@@ -304,16 +345,16 @@ function initLive() {
   document.addEventListener('visibilitychange', syncTimer);
   window.addEventListener('pagehide', () => { clearInterval(timer); });
 
-  function embedURL(seconds) {
+  function embedURL(seconds, nativeControls = false) {
     const url = new URL(`https://www.youtube-nocookie.com/embed/${LIVE_VIDEO_ID}`);
     url.search = new URLSearchParams({
       autoplay: '1',
       start: String(seconds),
       enablejsapi: '1',
       playsinline: '1',
-      controls: '0',
-      disablekb: '1',
-      fs: '0',
+      controls: nativeControls ? '1' : '0',
+      disablekb: nativeControls ? '0' : '1',
+      fs: nativeControls ? '1' : '0',
       iv_load_policy: '3',
       modestbranding: '1',
       rel: '0',
@@ -344,11 +385,8 @@ function initLive() {
             apiFailed = false;
             errorBox.hidden = true;
             customControls.hidden = false;
-            const dur = player.getDuration?.() || 0;
-            duration.textContent = formatTime(dur);
-            progress.max = String(Math.max(1, Math.floor(dur)));
-            currentTime.textContent = formatTime(pendingSeconds);
-            progress.value = String(Math.floor(pendingSeconds));
+            wrapper.classList.remove('has-api-error');
+            updateProgress(pendingSeconds);
             player.seekTo(pendingSeconds, true);
             player.playVideo();
             updatePlayPauseUI(true);
@@ -359,8 +397,9 @@ function initLive() {
             if (myGeneration !== generation) return;
             playing = event.data === 1;
             updatePlayPauseUI(playing);
-            if (playing) current = null;
-            else if (selected) select(selected, false);
+            current = null;
+            tick();
+            if (!playing) revealControls();
             syncTimer();
           },
           onError: () => {
@@ -378,7 +417,8 @@ function initLive() {
       apiFailed = true;
       showError(copy.apiError);
       // Keep the same timed iframe usable when the API itself is blocked.
-      iframe.src = embedURL(pendingSeconds);
+      wrapper.classList.add('has-api-error');
+      iframe.src = embedURL(pendingSeconds, true);
     }
   }
   function playAt(seconds = 0) {
@@ -392,7 +432,7 @@ function initLive() {
       return;
     }
     if (iframe) {
-      if (apiFailed) iframe.src = embedURL(seconds);
+      if (apiFailed) iframe.src = embedURL(seconds, true);
       return;
     }
     iframe = document.createElement('iframe');
@@ -408,6 +448,7 @@ function initLive() {
     fullscreen.hidden = !wrapper.requestFullscreen;
     connect(++generation);
   }
+  customControls.addEventListener('focusin', revealControls);
   customControls.addEventListener('pointerenter', revealControls);
   customControls.addEventListener('pointermove', revealControls);
   wrapper.addEventListener('pointerenter', revealControls);
@@ -421,7 +462,7 @@ function initLive() {
   }
   playPause.addEventListener('click', togglePlayPause);
   wrapper.addEventListener('click', event => {
-    if (event.target.closest('#heroLiveChaptersCol, button, a, input')) return;
+    if (event.target.closest('#heroLiveChaptersCol, #liveCustomControls, button, a, input')) return;
     if (ready && player) togglePlayPause();
   });
   function jumpChapter(direction) {
@@ -434,9 +475,10 @@ function initLive() {
   previousChapter.addEventListener('click', () => jumpChapter(-1));
   nextChapter.addEventListener('click', () => jumpChapter(1));
   progress.addEventListener('input', () => {
-    const val = Number(progress.value);
-    currentTime.textContent = formatTime(val);
-    if (player) player.seekTo(val, true);
+    if (!selected || !ready) return;
+    const seconds = seekInTopic(selected, progress.value, player.getDuration?.());
+    player.seekTo(seconds, true);
+    updateProgress(seconds);
     revealControls();
   });
   byId('loadLivePlayerBtn').addEventListener('click', () => {
@@ -455,6 +497,8 @@ function initLive() {
     playing = false;
     updatePlayPauseUI(false);
     apiFailed = false;
+    customControls.hidden = true;
+    wrapper.classList.remove('has-api-error');
     errorBox.hidden = true;
     syncTimer();
     playAt(resumeSeconds);

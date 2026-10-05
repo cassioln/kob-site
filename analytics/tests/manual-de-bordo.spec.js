@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+test.beforeEach(async({page})=>{await page.addInitScript(()=>localStorage.setItem('cookie_consent_status','denied'));});
 
 test.beforeEach(async ({ page }) => {
   await page.route(/https:\/\/.*youtube(?:-nocookie)?\.com\/.*/, route => route.fulfill({ contentType: 'text/html', body: '<html><body>Mock video</body></html>' }));
@@ -6,7 +7,7 @@ test.beforeEach(async ({ page }) => {
 
 test.describe('Página Manual de Bordo (embarcados) — Portal do Passageiro Confirmado', () => {
 
-  test('Página /manual-de-bordo.html carrega com estrutura completa, 25 itens de checklist, 42 perguntas e 28 capítulos', async ({ page }) => {
+  test('Página /manual-de-bordo.html carrega com estrutura completa, 25 itens de checklist, 42 perguntas e 41 assuntos', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 800 });
     await page.goto('/manual-de-bordo.html');
 
@@ -50,9 +51,9 @@ test.describe('Página Manual de Bordo (embarcados) — Portal do Passageiro Con
     const faqCategoryTabs = page.locator('.faq-category-btn');
     await expect(faqCategoryTabs).toHaveCount(6);
 
-    // Live: 28 capítulos
+    // Live: 41 assuntos
     const liveChapters = page.locator('.live-chapter-item');
-    await expect(liveChapters).toHaveCount(28);
+    await expect(liveChapters).toHaveCount(41);
 
     // Canais de suporte
     await expect(page.locator('a[href*="5513981580498"]').first()).toBeVisible();
@@ -84,6 +85,7 @@ test.describe('Página Manual de Bordo (embarcados) — Portal do Passageiro Con
     await page.reload();
 
     const firstItem = page.locator('[data-checklist-id="reserva-dados"]');
+    await page.locator('#checklistSidebarToggle').click();
     await expect(firstItem).toBeVisible();
 
     // Marca o primeiro item como concluído
@@ -98,11 +100,12 @@ test.describe('Página Manual de Bordo (embarcados) — Portal do Passageiro Con
     await expect(minorItem).toHaveClass(/is-not-applicable/);
 
     // Verifica barra de progresso e texto
-    const progressText = page.locator('#checklistProgressText');
+    const progressText = page.locator('#checklistSidebarProgressText');
     await expect(progressText).toContainText('conferidos');
 
     // Recarrega a página e valida persistência no localStorage
     await page.reload();
+    await page.locator('#checklistSidebarToggle').click();
     const reloadedFirst = page.locator('[data-checklist-id="reserva-dados"]');
     const reloadedMinor = page.locator('[data-checklist-id="menor-documentos"]');
     await expect(reloadedFirst).toHaveClass(/is-checked/);
@@ -116,13 +119,12 @@ test.describe('Página Manual de Bordo (embarcados) — Portal do Passageiro Con
 
     await expect(reloadedFirst).not.toHaveClass(/is-checked/);
     await expect(reloadedMinor).not.toHaveClass(/is-not-applicable/);
-    await expect(page.locator('#checklistProgressText')).toContainText('0 de');
+    await expect(page.locator('#checklistSidebarProgressText')).toContainText('0 de');
   });
 
   test('Sidebar Retrátil do Checklist: expansão/redução, sincronização bidirecional e filtros', async ({ page }) => {
     await page.goto('/manual-de-bordo.html');
     // The consent dialog stays above shortcuts; answer it before using the sidebar.
-    await page.locator('[data-cookie-action="deny"]').click();
 
     const toggleBtn = page.locator('#checklistSidebarToggle');
     const sidebar = page.locator('#checklistSidebar');
@@ -206,12 +208,12 @@ test.describe('Página Manual de Bordo (embarcados) — Portal do Passageiro Con
     await chapterSearch.fill('voucher');
 
     const visibleChapters = page.locator('.live-chapter-item:not([hidden])');
-    await expect(visibleChapters).toHaveCount(1);
-    await expect(visibleChapters.first()).toContainText('Vouchers');
+    await expect(visibleChapters).toHaveCount(2);
+    await expect(visibleChapters.filter({has:page.locator('[data-seconds="1345"]')})).toContainText('Vouchers');
 
     // Limpa busca
     await chapterSearch.fill('');
-    await expect(page.locator('.live-chapter-item')).toHaveCount(28);
+    await expect(page.locator('.live-chapter-item')).toHaveCount(41);
 
     await page.locator('#heroLiveChaptersCloseBtn').click();
     // Clica no botão de carregar da fachada
@@ -261,8 +263,8 @@ test.describe('Página Manual de Bordo (embarcados) — Portal do Passageiro Con
     // 42 perguntas no FAQ
     await expect(page.locator('#duvidas details.faq-item')).toHaveCount(42);
 
-    // 28 capítulos na live
-    await expect(page.locator('.live-chapter-item')).toHaveCount(28);
+    // 41 assuntos na live
+    await expect(page.locator('.live-chapter-item')).toHaveCount(41);
 
     // Busca no FAQ em inglês
     const searchInput = page.locator('#faqSearchInput');
@@ -289,8 +291,8 @@ test.describe('Página Manual de Bordo (embarcados) — Portal do Passageiro Con
     // 42 perguntas no FAQ
     await expect(page.locator('#duvidas details.faq-item')).toHaveCount(42);
 
-    // 28 capítulos na live
-    await expect(page.locator('.live-chapter-item')).toHaveCount(28);
+    // 41 assuntos na live
+    await expect(page.locator('.live-chapter-item')).toHaveCount(41);
 
     // Busca no FAQ em espanhol
     const searchInput = page.locator('#faqSearchInput');

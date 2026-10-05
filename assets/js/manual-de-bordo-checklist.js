@@ -1,7 +1,7 @@
 const words = {
-  pt: { title: 'Meu checklist de bordo · KOB 2026', copy: 'Copiar', email: 'E-mail', whatsapp: 'WhatsApp', print: 'Imprimir', checked: 'Conferido', pending: 'Pendente', na: 'Não se aplica', greeting: 'Olá,\n\nSegue meu checklist para o Kriativos On Board 2026.', note: 'Esta lista é uma ajuda pessoal e não valida a reserva nem substitui as orientações da agência e da MSC.', copied: 'Checklist copiado com suas marcações.', failed: 'Não foi possível copiar automaticamente. Selecione e copie o texto abaixo.', guidance: 'Orientação', close: 'Fechar orientação', fallback: 'Confira este item com a agência e com a organização antes de embarcar.', all: 'As opções incluem os 25 itens e suas marcações.', printError: 'Não foi possível abrir a impressão. Você pode copiar o checklist.' },
-  en: { title: 'My onboard checklist · KOB 2026', copy: 'Copy', email: 'Email', whatsapp: 'WhatsApp', print: 'Print', checked: 'Checked', pending: 'Pending', na: 'Not applicable', greeting: 'Hello,\n\nHere is my checklist for Kriativos On Board 2026.', note: 'This is a personal aid. It does not validate your reservation or replace agency and MSC instructions.', copied: 'Checklist copied with your current marks.', failed: 'Automatic copying is unavailable. Select and copy the text below.', guidance: 'Guidance', close: 'Close guidance', fallback: 'Check this item with the agency and event team before boarding.', all: 'Each option includes all 25 items and your marks.', printError: 'Printing is unavailable. You can copy the checklist instead.' },
-  es: { title: 'Mi checklist de a bordo · KOB 2026', copy: 'Copiar', email: 'Correo', whatsapp: 'WhatsApp', print: 'Imprimir', checked: 'Verificado', pending: 'Pendiente', na: 'No se aplica', greeting: 'Hola,\n\nEste es mi checklist para Kriativos On Board 2026.', note: 'Esta lista es una ayuda personal. No valida la reserva ni sustituye las indicaciones de la agencia y MSC.', copied: 'Checklist copiado con tus marcas actuales.', failed: 'No se pudo copiar automáticamente. Selecciona y copia el texto de abajo.', guidance: 'Orientación', close: 'Cerrar orientación', fallback: 'Confirma este punto con la agencia y el equipo antes de embarcar.', all: 'Cada opción incluye los 25 elementos y tus marcas.', printError: 'No se pudo abrir la impresión. Puedes copiar el checklist.' }
+  pt: { title: 'Meu checklist de bordo · KOB 2026', copy: 'Copiar', email: 'E-mail', whatsapp: 'WhatsApp', print: 'Imprimir', checked: 'Conferido', pending: 'Pendente', na: 'Não se aplica', greeting: 'Olá,\n\nSegue meu checklist para o Kriativos On Board 2026.', note: 'Esta lista é uma ajuda pessoal e não valida a reserva nem substitui as orientações da agência e da MSC.', copied: 'Checklist copiado com suas marcações.', failed: 'Não foi possível copiar automaticamente. Selecione e copie o texto abaixo.', guidance: 'Orientação', close: 'Fechar orientação', fallback: 'Confira este item com a agência e com a organização antes de embarcar.', share: 'Compartilhar', printError: 'Não foi possível abrir a impressão. Você pode copiar o checklist.' },
+  en: { title: 'My onboard checklist · KOB 2026', copy: 'Copy', email: 'Email', whatsapp: 'WhatsApp', print: 'Print', checked: 'Checked', pending: 'Pending', na: 'Not applicable', greeting: 'Hello,\n\nHere is my checklist for Kriativos On Board 2026.', note: 'This is a personal aid. It does not validate your reservation or replace agency and MSC instructions.', copied: 'Checklist copied with your current marks.', failed: 'Automatic copying is unavailable. Select and copy the text below.', guidance: 'Guidance', close: 'Close guidance', fallback: 'Check this item with the agency and event team before boarding.', share: 'Share', printError: 'Printing is unavailable. You can copy the checklist instead.' },
+  es: { title: 'Mi checklist de a bordo · KOB 2026', copy: 'Copiar', email: 'Correo', whatsapp: 'WhatsApp', print: 'Imprimir', checked: 'Verificado', pending: 'Pendiente', na: 'No se aplica', greeting: 'Hola,\n\nEste es mi checklist para Kriativos On Board 2026.', note: 'Esta lista es una ayuda personal. No valida la reserva ni sustituye las indicaciones de la agencia y MSC.', copied: 'Checklist copiado con tus marcas actuales.', failed: 'No se pudo copiar automáticamente. Selecciona y copia el texto de abajo.', guidance: 'Orientación', close: 'Cerrar orientación', fallback: 'Confirma este punto con la agencia y el equipo antes de embarcar.', share: 'Compartir', printError: 'No se pudo abrir la impresión. Puedes copiar el checklist.' }
 };
 const text = (lang) => words[lang] || words.pt;
 const infoIcon = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7h.01"/></svg>';
@@ -42,8 +42,8 @@ function initChecklistTools() {
   const roots = [...document.querySelectorAll('[data-checklist-share]')];
   const icons = { copy:'<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h4"/>', email:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 6 9 7 9-7"/>', whatsapp:'<path d="M21 11.5a8.5 8.5 0 0 1-12.7 7.4L3 21l2.1-5.3A8.5 8.5 0 1 1 21 11.5Z"/><path d="M8 8c0 4 4 8 8 8l1-3-3-1-1 1-2-2 1-1-1-3Z"/>', print:'<path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/><path d="M18 12h.01"/>' };
   const snapshot = () => ({
-    progress: clean(document.getElementById('checklistProgressText')),
-    url: `${document.querySelector('link[rel="canonical"]').href}#preparacao`,
+    progress: clean(document.getElementById('checklistSidebarProgressText')),
+    url: `${document.querySelector('link[rel="canonical"]').href}#checklist`,
     groups:[...document.querySelectorAll('#checklistContainer .checklist-group')].map(group => ({ title:clean(group.querySelector('h3')), items:[...group.querySelectorAll('.checklist-item')].map(item => ({ title:clean(item.querySelector('.checklist-item__text')), checked:item.querySelector('.checklist-item__checkbox').checked, na:Boolean(item.querySelector('.checklist-item__na-checkbox')?.checked) })) }))
   });
   function updateLinks() {
@@ -62,9 +62,9 @@ function initChecklistTools() {
       control.innerHTML=`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icons[action]}</svg><span>${w[action]}</span>`;
       controls.append(control);
     }
-    const note=document.createElement('p'); note.className='checklist-share__note'; note.textContent=w.all;
+    const heading=document.createElement('p'); heading.className='checklist-share__heading'; heading.textContent=w.share;
     const status=document.createElement('p'); status.className='checklist-share__status'; status.setAttribute('role','status');
-    root.append(controls,note,status);
+    root.append(heading,controls,status);
     controls.addEventListener('click', async event => {
       const control=event.target.closest('[data-checklist-export]'); if(!control) return;
       const action=control.dataset.checklistExport;
@@ -83,7 +83,7 @@ function initChecklistTools() {
     });
   });
   document.addEventListener('change', event => { if(event.target.matches('.checklist-item__checkbox,.checklist-item__na-checkbox,.checklist-sidebar-item__checkbox,.checklist-sidebar-item__na-checkbox')) updateLinks(); });
-  document.getElementById('checklistResetBtn')?.addEventListener('click',updateLinks);
+  document.getElementById('checklistResetBtn')?.addEventListener('click',()=>setTimeout(updateLinks,0));
   updateLinks();
 
   const guidance=new Map();

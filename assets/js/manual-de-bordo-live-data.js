@@ -1,6 +1,7 @@
-// Fonte: transcrição integral fornecida pelo usuário da live AtIvlc62KgI.
-// Fala original em português; correções editoriais ficam em notice e nunca são apresentadas como fala.
+// Fontes: transcrição fornecida e legendas automáticas originais pt-orig da live AtIvlc62KgI.
+// Novos recortes e timestamps verificados em 2026-10-05; avisos editoriais não são falas.
 export const LIVE_VIDEO_ID = "AtIvlc62KgI";
+export const LIVE_DURATION = 4806;
 export const CHAPTERS = [
   {
     "id": "chapter-833",
@@ -79,6 +80,55 @@ export const CHAPTERS = [
     },
     "keywords": "voucher vouchers checkin check-in etiquetas impressão junior whatsapp PDF privado labels label check in imprimir",
     "transcript": "Como funciona o Check-in e Voucher:\nDiferente dos anos anteriores na Costa Cruzeiros onde o hóspede precisava preencher o check-in online, na MSC a Royal Trip faz todo o procedimento interno!\nO Júnior emitirá e liberará os vouchers com QR Code e as etiquetas de bagagem de cada cabine. Quando ele avisar no grupo do WhatsApp, cada responsável o chama no privado para receber o documento em PDF. Basta imprimir e levar no porto junto ao documento oficial."
+  },
+  {
+    "id": "chapter-1453",
+    "time": "00:24:13",
+    "seconds": 1453,
+    "titles": {
+      "pt": "Mochila para aproveitar o primeiro dia",
+      "en": "Day bag for your first day",
+      "es": "Mochila para el primer día"
+    },
+    "keywords": "mochila piscina embarque mala mochila mochila piscina day bag carry on pool backpack",
+    "transcript": "E agora o que a gente quer saber, o pessoal tá perguntado, né? Onde a gente se encontra? Primeiro, onde a gente se encontra? Entrou no navio, primeiro, a a o que a gente indica, né? Eh, é sempre levar uma mochilinha com roupas de piscina, toalhas, porque a sua mala vai demorar um pouco para subir, né? Então a primeira coisa lá no desembarque ela vai demorar para subir, vai liberar a cabine porque vão est limpando, né, todas as cabines. Então vai liberar umas 2 3 horas da tarde mais ou menos por aí. Mas começa a liberar às 13. É, então assim é um processo demorado, gente. Vão com a cabeça aberta porque é um caos para entrar no porto. Então já fica a a a palavra, né? É, o dia do embarque ele é estressante em qualquer lugar do mundo.",
+    "faqId": "faq-o09"
+  },
+  {
+    "id": "chapter-1502",
+    "time": "00:25:02",
+    "seconds": 1502,
+    "titles": {
+      "pt": "Chegada ao porto e senha de embarque",
+      "en": "Port arrival and boarding queue",
+      "es": "Llegada al puerto y turno de embarque"
+    },
+    "keywords": "porto senha horário embarque voucher chegada queue boarding port arrival turno puerto",
+    "transcript": "Eh, então a nossa dica sempre é chegar cedo no Porto. Quem vai vir no ônibus, o horário tá perfeito. E quem for vir por conta, procurem chegar às 9 da manhã ou antes das 9 da manhã no Porto. Por quê? Para poder despachar a bagagem e pegar a senha. O embarque ele é feito por senha. Quando vocês pegarem o vcher, vai tá escrito um horário de embarque lá. Desconsiderem. E esse horário cheguem antes às 9 da manhã ou antes para poder pegar a senha e aí se vocês vão ser os primeiros a embarcar, aí o stress é bem menor.",
+    "faqId": "faq-o01",
+    "notice": {
+      "pt": "Siga a janela de chegada e as instruções do voucher e da agência; não desconsidere o horário da sua reserva.",
+      "en": "Follow the arrival window and instructions on your voucher and from the agency; do not ignore your booking time.",
+      "es": "Sigue la franja de llegada y las instrucciones del voucher y de la agencia; no ignores la hora de tu reserva."
+    }
+  },
+  {
+    "id": "chapter-1535",
+    "time": "00:25:35",
+    "seconds": 1535,
+    "titles": {
+      "pt": "Fretado e confirmação do seu ônibus",
+      "en": "Charter bus and your assigned departure",
+      "es": "Autobús KOB y salida asignada"
+    },
+    "keywords": "ônibus fretado ônibus 2 barra funda 6h30 7h20 horários charter bus assigned departure autobus horarios",
+    "transcript": "É isso. E lembrando que a gente faz a a o translado do ônibus, né? a gente freta o ônibus para ir e aí a gente já fechou o ônibus, estamos com mais ou menos 50% da capacidade do segundo. E o pessoal perguntou, né, pra gente, né, o Serginho também que sempre tá com a gente. Um beijo pro Serginho, que é um criativo aí desde o primeiro. Falou assim: \"Puxa, eu chego na Barra Funda 6:30, não dá para eu pegar o ônibus nesse horário porque pode ser que atrase.\" Então, a gente tá flexibilizando, vai ver essa parte dessa flexibilidade do horário do segundo ônibus para a gente não ter que cancelar essas 25 pessoas que já fecharam o ônibus, né? Porque a ideia do ônibus é ajudar todo mundo a poder chegar mais rápido no porto. Então, a para não ter esse problema de de cancelar o segundo, então a gente tá vendo essa possibilidade de flexibilizar a parte do segundo ônibus, tá bom? Então, a gente vai avisar lá no grupo, né? A gente vai formalizar isso para vocês. A gente, o primeiro ônibus já tem, eh, já está fechado, então a gente vai sair às 6:30, 6:40 no máximo, que é o horário seguro, né? Horário seguro. Reforçando aqui que veio a pergunta aqui, eh, perguntaram do horário de embarque. Horário de embarque de qualquer navio, ele inicia quando termina o desembarque da saída anterior. Isso ocorre por volta das 10, 10:30. Se tudo correr eh perfeitamente, às vezes tem algum atraso, alguma coisa de alfândega ou algum atendimento médico, aí vai atrasar um pouquinho paraas 11, 11:30. Se todo mundo chegar antes, até 9 horas da manhã ou antes, quando for 11:30, meio-dia, tá todo mundo a bordo já tomando seu drink, seu shopinho, almoçando, que o almoço já vai estar servido. Então, eh, eu sempre brinco que para entrar no navio você tem que tomar um chá e o chá mais gostoso é sempre o primeiro. Uhum. Então cheguem cedo para não ter dor de cabeça. É isso. Então assim, a gente vai flexibilizar a parte do segundo ano. Falando de chegar cedo, seria interessante já falar pro pessoal subir com uma malinha nas costas assim. A gente falou, é, a gente falou, então assim, sempre subir com a mochilinha para poder aproveitar o navio antes de liberarem as cabines. Essa parte do segundo ônibus a gente vai formalizar no grupo, tá bom? E também vamos informar aí depois quando a gente finalizar os a listagem dos ônibus, quem tá no primeiro ônibus, quem tá no segundo ônibus, tá bom? Então a gente vai flexibilizar o segundo somente, o primeiro vai continuar a mesma coisa e a gente vai mandar para todo mundo depois só confirmando o horário, beleza? Eh, a onde a gente se encontra, que acontece quando a gente embarca, né? Ah, a parte do falando de entrar do do estacionamento, bastante gente",
+    "faqId": "faq-o12",
+    "notice": {
+      "pt": "Os horários do fretado já estão no guia. Confira o ônibus atribuído à sua reserva.",
+      "en": "The charter times are now in the guide. Check the bus assigned to your booking.",
+      "es": "Los horarios del autobús ya están en la guía. Comprueba el autobús asignado a tu reserva."
+    }
   },
   {
     "id": "chapter-1702",
@@ -169,12 +219,25 @@ export const CHAPTERS = [
     "time": "00:36:01",
     "seconds": 2161,
     "titles": {
-      "pt": "Roupas e Festa do Branco",
-      "en": "Clothing and the White Party",
-      "es": "Ropa y Fiesta de Blanco"
+      "pt": "Festa do Branco",
+      "en": "White Party",
+      "es": "Fiesta de Blanco"
     },
     "keywords": "roupa branco festa regata chinelo jantar frio agasalho roupas white party dress clothing jacket ropa fiesta blanco abrigo",
-    "transcript": "O que vestir:\n- Durante o dia: roupas leves de praia/piscina, bermudas, chinelos e calçados confortáveis (evitar salto alto fino devido ao balanço do navio e longas caminhadas).\n- À noite: traje esporte fino ou casual arrumado (estilo shopping/restaurante). No restaurante principal à la carte não é permitido entrar de regata ou chinelo de dedo.\n- Levar agasalho leve ou corta-vento: à noite o vento no deck externo e o ar-condicionado interno costumam ser frios.\n\nFesta do Branco:\n- Tradição oficial da MSC e 100% confirmada. Recomenda-se que todos levem peças de roupa brancas (camiseta, bermuda, vestido, etc.)."
+    "transcript": "- Tradição oficial da MSC e 100% confirmada. Recomenda-se que todos levem peças de roupa brancas (camiseta, bermuda, vestido, etc.)."
+  },
+  {
+    "id": "chapter-2190",
+    "time": "00:36:30",
+    "seconds": 2190,
+    "titles": {
+      "pt": "Roupas, calçados e agasalho",
+      "en": "Clothes, shoes and a light jacket",
+      "es": "Ropa, calzado y abrigo ligero"
+    },
+    "keywords": "roupas roupa calçado regata chinelo agasalho frio dress shoes clothes jacket ropa abrigo zapatos",
+    "transcript": "A Ju tinha perguntado, né, na lá no grupo de que roupa levar. Ju, você tem que levar uma roupa de piscina. Não é indicado salto muito alto porque você anda bastante lá dentro do navio. Então é legal um saltinho, quadradinho, tal. Mas que não confortável, eu sou criador do appuiv, vim aqui hoje para mostrar para vocês o aplicativo que vai ser usado no evento que vocês vão precisar baixar interagir um acervo dos jogos que vai para saber quem são os monitores que podem ajudar vocês. Eles não gostam aqui entre chinelo no restaurante do jantar. participar do no almoço é o self service ali na piscina, então é tranquilo. É basicamente as roupas de um cruzeiro é durante o dia roupa de praia e a noite é a roupa que você vai num shopping. Exato. Então assim, eh, Ju que perguntou, né? Eh, mais ou menos essas dicas, né? Vai com roupa confortável, leva sempre se você tem frio igual eu, [risadas] eu sempre levo uma blusa, apesar de nunca ter usado, mas eu levo porque vai que, né, esfria lá à noite e tudo mais, é, é ventania para tudo quanto é lado lá fora, então leva uma, né, se você precisar, mas o branco leva com certeza e roupas mais confortáveis para você usar durante o navio, rasteirinha e sapatinho mais confortável, né, tênis e tudo mais. Eh, outra coisa que o pessoal tinha perguntado, grávidas falou, né?",
+    "faqId": "faq-o25"
   },
   {
     "id": "chapter-2276",
@@ -249,6 +312,42 @@ export const CHAPTERS = [
     "faqId": "faq-o30"
   },
   {
+    "id": "chapter-2544",
+    "time": "00:42:24",
+    "seconds": 2544,
+    "titles": {
+      "pt": "Bebidas avulsas e contratação antecipada",
+      "en": "Pay-as-you-go drinks and advance booking",
+      "es": "Bebidas sueltas y compra anticipada"
+    },
+    "keywords": "pacote bebidas avulsas antecipado preço preços parcelamento drinks package advance price bebidas anticipado precio",
+    "transcript": "E quem não comprou? Quem não comprou, faz o cadastro do cartão de crédito no na sua cabine ou faz um depósito em reais ou dólar para deixar de crédito na cabine e vai consumindo normalmente com a chave da do navio igualzinho do Costa e paga no final. Tipo, eu quero fazer antes porque antes compensa, né? O pacote de bebida antecipado é menos da metade do preço. O easy hoje ele tá R$ 768 por pessoa. O não em 12 vezes. O não alcoólico tá R$ 615. A bordo a o ano passado quem tava comprando o pacote de R$ 600 a bordo tava R$ 1.300 por pessoa. Que a a bordo é tudo em dólar e o valor é completamente diferente, tá? Então, quem não comprou ainda e quiser comprar, dá para fazer comigo até 20 dias antes do embarque e pode parcelar em 12 vezes novamente, sem problema. E quem não comprou o pacote, pode levar uma garrafinha para encher a água? Na teoria não pode levar uma um squeeze, mas todo mundo leva. Eles não não é proibido embarcar. Então eles não gostam que você vai com a garrafinha lá na e encha lá. Só que tem um monte de copo do lado. Nada te impede de colocar a garrafa do lado, encher o copo e colocar na garrafa. [risadas] Um jeitinho brasileiro, né? Tem uma uma plaquinha lá, garrafinha com X, não encher. Mas o copo pode. Tudo com a garrafa do lado. Mas se vier o sistema Aqua também não vai acabar esse problema. É, eu acho que esse sistema Aqua é bem legal, né? E então fica a dica aí para quem não fechou ainda o [roncando] pacote até 20 dias antes chamar o Júnior, você parcela em duas vezes e não tem dor de cabeça. Dá pro parcela quanto sou bola de matemática? Não, 12 600 uns R$ 40 mais ou menos o não alcoólico e 50 e pouco o easy. Isso. Então vale a pena, né? Você não passar também.",
+    "faqId": "faq-o30",
+    "notice": {
+      "pt": "Valores e prazos citados são da apresentação. Confirme a oferta atual com a Royal Trip.",
+      "en": "Prices and deadlines quoted belong to the presentation. Confirm the current offer with Royal Trip.",
+      "es": "Los precios y plazos citados corresponden a la charla. Confirma la oferta actual con Royal Trip."
+    }
+  },
+  {
+    "id": "chapter-2654",
+    "time": "00:44:14",
+    "seconds": 2654,
+    "titles": {
+      "pt": "Internet: pacotes e contratação",
+      "en": "Internet packages and booking",
+      "es": "Internet: paquetes y compra"
+    },
+    "keywords": "internet pacote streaming whatsapp preço wifi packages streaming price internet paquetes precio",
+    "transcript": "Falando de pacote então a Tati perguntou do pacote de internet. Pacote de internet. Tati quer ficar online lá dentro lá. Você tem que ficar offline. Vou não vou recordar. Eu sei praticamente tudo de cabeça, mas o valor do pacote de internet ele ele muda bastante e às vezes entra desconto, então acabo não gravando. Mas para três noites, se eu não me engano, deve est uns R$ 240. Você pode parcelar em 12 vezes também, tá? Eh, e tem o pacote com streaming, que é um pouco mais caro. E esse é o pacote de redes sociais, né? WhatsApp, Messenger, você consegue acessar o Instagram ali, bem basicão, só para comunicação. E esse valor é para todo o Cruzeiro por aparelho. Uma observação importante, quem viajou no Costa, você conseguia utilizar um pacote em vários aparelhos. Não era roteando, era o se eu colocasse a internet nesse, a hora que ela logasse ali na mesma chave, derrubava do meu. MSC não tem jeito. Se você entrar no seu aparelho, é nele que ele vai ficar até o final do cruzeiro.",
+    "faqId": "faq-o32",
+    "notice": {
+      "pt": "O preço da internet varia. Confirme o pacote e os aparelhos incluídos antes de contratar.",
+      "en": "Internet prices vary. Confirm the package and included devices before booking.",
+      "es": "El precio de internet varía. Confirma el paquete y los dispositivos incluidos antes de comprar."
+    }
+  },
+  {
     "id": "chapter-2715",
     "time": "00:45:15",
     "seconds": 2715,
@@ -271,18 +370,49 @@ export const CHAPTERS = [
     "time": "00:48:14",
     "seconds": 2894,
     "titles": {
-      "pt": "Jantar, turnos e mesas com amigos",
-      "en": "Dinner sittings and tables with friends",
-      "es": "Cena, turnos y mesas con amigos"
+      "pt": "Restaurantes e turnos do jantar",
+      "en": "Restaurants and dinner sittings",
+      "es": "Restaurantes y turnos de cena"
     },
     "keywords": "jantar turnos mesa amigos maître maitre cozinha tolerância atraso 15 minutos dinner sitting table late cena turno retraso",
-    "transcript": "Restaurantes Inclusos:\n- Buffet da Piscina: Self-service livre para café da manhã, almoço, lanche da tarde, jantar e madrugada (pizzaria quase 24 horas).\n- Restaurante Principal (À la Carte): Jantar com serviço completo (entrada, prato principal e sobremesa, com possibilidade de repetir pratos).\n- Horário e Mesa Fixos: Indicados no cartão da cabine (1º turno ~19h15; 2º turno ~21h30).\n- Tolerância de atraso: No máximo 15 minutos! Se passar disso, a cozinha não aceita o pedido e o hóspede terá que jantar no buffet da piscina.\n- Para sentar junto: Quem viaja em cabines separadas e quer sentar na mesma mesa no jantar à la carte deve procurar o Metre na recepção logo no primeiro dia, assim que embarcar.",
+    "transcript": "Restaurantes Inclusos:\n- Buffet da Piscina: Self-service livre para café da manhã, almoço, lanche da tarde, jantar e madrugada (pizzaria quase 24 horas).\n- Restaurante Principal (À la Carte): Jantar com serviço completo (entrada, prato principal e sobremesa, com possibilidade de repetir pratos).\n- Horário e Mesa Fixos: Indicados no cartão da cabine (1º turno ~19h15; 2º turno ~21h30).",
     "notice": {
       "pt": "Os turnos efetivos estão no cartão de bordo; a tolerância citada se refere aos pedidos da cozinha.",
       "en": "Your actual sitting is on the cruise card; the grace period refers to kitchen orders.",
       "es": "El turno efectivo está en la tarjeta; la tolerancia citada se refiere a los pedidos de cocina."
     },
     "faqId": "faq-o28"
+  },
+  {
+    "id": "chapter-2996",
+    "time": "00:49:56",
+    "seconds": 2996,
+    "titles": {
+      "pt": "Jantar com amigos de outras cabines",
+      "en": "Dinner with friends in other cabins",
+      "es": "Cenar con amigos de otros camarotes"
+    },
+    "keywords": "jantar mesa metre maître amigos outras cabines dinner tables friends cabins cenar amigos mesa",
+    "transcript": "E aí, vamos supor que foi, tá indo eu, minha esposa e minha irmã com marido, meu cunhado com sobrinho. Estamos em várias cabines. Eh, o que vai estar marcado aqui é por cabines. Se vocês quiserem sentar juntos no jantar, logo no primeiro dia, quando embarcar, já tem que passar na recepção e perguntar onde é que tá o metre. Eles vão informar o lugar que o metre vai est e o horário. Então aí uma pessoa de cada cabine vai até o metre e fala: \"Nós estamos em um grupo e a gente quer sentar junto\". Aí ele junta vocês nessa mesa de jantar. Tem que ser feito no primeiro dia. Passou o primeiro jantar, esquece, vai continuar onde vocês estão. Eh, o Alacart é muito legal pela experiência que a Karen já falou. Os pratos são bem refinados, é bem gostoso. Lá você senta, vem o garçom, te passa o cardápio, você escolhe a entrada pr principal, sobremesa, repete. Aí no começo eu não pegava, não gostei. Demorou. A comida foi pouca, a gente chama de self service, o bandejão carinhosamente também. O bandejão lá em cima vai estar funcionando, sobe, pode comer de novo. Vai ter lanche rolando também. A pizzaria vai est aberta funcionando. Então não se preocupem comida. É isso. E assim, ah, eu gostei muito desse prato, não tem problema que é estão te servindo ali, você pode pedir de novo, mas é ideal que você peça tudo antes, porque eles tm tudo programado na cozinha. Então, tipo, ah, eu quero uma entrada, duas sobremesas, o prato principal e eu quero as duas sobremesas, mas já pede antes, porque eles já conseguem, eles trazem tudo programado, tá? Sim. É,",
+    "faqId": "faq-o29"
+  },
+  {
+    "id": "chapter-3094",
+    "time": "00:51:34",
+    "seconds": 3094,
+    "titles": {
+      "pt": "Horário e tolerância no jantar",
+      "en": "Dinner time and late arrival",
+      "es": "Horario y retrasos en la cena"
+    },
+    "keywords": "jantar tolerância atraso 15 minutos turno dinner late arrival sitting cena retraso turno",
+    "transcript": "lembrando de programação, tem o horário que vocês vão jantar. Isso que ou é 19:15 ou é 21:30. Se você chegar mais do que 15 minutos atrasado do horário que tá no seu cartão, você não pode mais entrar para jantar. Você vai ter que jantar no bandejão. No bandejão. Por quê? Porque o garçom espera esses 15 minutos, todo mundo senta na mesa, ele vem, tira o pedido de todo mundo e aí a cozinha que fica lá embaixo preparando preparando, começa a mandar os pratos. Então, se você chegar atrasado, você atrasa a mesa inteira para comer, porque o garçom, quando ele serve, ele vai servir entrada para todo mundo. Enquanto todo mundo não terminar de comer, ele não tira e serve o próximo prato. Então, se você chega meia hora atrasado, a pessoa a comida do pessoal vai est quase chegando e a sua ainda vai sair o pedido. Então, por isso que não pode entrar. É isso. Jantar e refeições explicados. E a parte agora do frigobar, né? Frigobar. Os navios possuem frigobar. A MSC normalmente deixa ele abastecido.",
+    "faqId": "faq-o28",
+    "notice": {
+      "pt": "Confira o turno e o horário no seu Cruise Card e confirme as orientações com a equipe a bordo.",
+      "en": "Check the sitting and time on your Cruise Card and confirm instructions with the onboard crew.",
+      "es": "Comprueba el turno y la hora en tu Cruise Card y confirma las indicaciones con el equipo a bordo."
+    }
   },
   {
     "id": "chapter-3154",
@@ -342,7 +472,7 @@ export const CHAPTERS = [
       "es": "MSC for Me y chat interno"
     },
     "keywords": "msc for me aplicativo app chat mensagens kriativo criativo perfil gratuito WiFi chat messages mensajes sin coste",
-    "transcript": "Chat Gratuito no App MSC for Me:\n- Mesmo sem comprar pacote de internet, ao conectar no Wi-Fi interno do navio todos podem acessar o app MSC for Me.\n- O app possui um chat gratuito interno para troca de mensagens entre passageiros a bordo.\n- Dica da comunidade: Adicione \"Criativo\" ao seu nome ou apelido no app para facilitar a localização dos amigos do grupo!",
+    "transcript": "Mesmo sem comprar pacote de internet, ao conectar no Wi-Fi interno do navio todos podem acessar o app MSC for Me. O app possui um chat gratuito interno para troca de mensagens entre passageiros a bordo. Dica: adicione “Criativo” ao seu nome ou apelido no app para facilitar a localização dos amigos do grupo!",
     "notice": {
       "pt": "O chat não é internet externa gratuita; a MSC informa o serviço para hóspedes acima de 16 anos.",
       "en": "Chat is not free external internet; MSC lists it for guests over 16.",
@@ -351,16 +481,55 @@ export const CHAPTERS = [
     "faqId": "faq-o33"
   },
   {
+    "id": "chapter-3814",
+    "time": "01:03:34",
+    "seconds": 3814,
+    "titles": {
+      "pt": "Guru e inscrição manual nos sorteios",
+      "en": "Guru and manual raffle registration",
+      "es": "Guru e inscripción manual en sorteos"
+    },
+    "keywords": "Guru sorteio eu vou app Encounter manual monitor inscrição raffle registration manual sorteos inscripcion monitor",
+    "transcript": "olhando lá. E falando em aplicativo, nós temos uma novidade esse ano que é o guru, né? Então, para quem ainda não baixou o guru, gente, fica a dica, porque você precisa estar já com o eu embarcado lá, eu vou, entendeu? Você já precisa baixar o guru e colocar eu vou. Por quê? Porque além de você saber tudo sobre o evento, você também vai saber os jogos que vão ter a bordo, né? Eu não sei ainda se tá tudo atualizado, jogos que você tem a bordo e também quando você coloca lá eu vou, né? Você consegue ver o acervo aqui. Então você consegue ver quem sabe ensinar, eh, quais jogos você tem interesse em jogar. Então você vai colocar um tiquezinho lá de de tem o interesse, né? Tem um videinho aqui. Ah, tem um vídeo. Mas antes eu gostaria de falar que é super importante porque os sorteios vai ser feito a partir do aplicativo quem tiver logado lá. Se você, ah, eu não tenho esse aplicativo, não vou baixar, você tem que pedir por um monitor da Encounter fazer o seu check no seu nome, né? Ele consegue fazer adicionar aos sorteios, né, para você poder participar, mesmo que você não baixe, tá bom? Então, é importante, se você não baixar, pedir para um eh monitor poder fazer o seu incluir na lista dos sorteios para você eh conseguir participar. Vamos ver se entra. E aí, criativos, tudo bem? Meu nome é Bruno, eu sou criador do app Board Game Guru e eu vou estar embarcado com vocês no Criativos Onard. Eu vim aqui hoje",
+    "faqId": "faq-o21"
+  },
+  {
     "id": "chapter-3942",
     "time": "01:05:42",
     "seconds": 3942,
     "titles": {
-      "pt": "Board Game Guru e sorteios",
-      "en": "Board Game Guru and prize draws",
-      "es": "Board Game Guru y sorteos"
+      "pt": "Como confirmar “Eu vou” no Guru",
+      "en": "How to confirm attendance in Guru",
+      "es": "Cómo confirmar “Yo voy” en Guru"
     },
     "keywords": "board game guru Eu vou Encounter sorteios inscrição manual favorito favoritos ludopedia boardgamegeek BGG compartilhar monitores acervo jogos protótipos favoritos jogos compartir premios raffle draws games library",
-    "transcript": "Apresentação de Bruno Oliveira (criador do app Board Game Guru):\nO app oficial para a gestão de jogos e sorteios a bordo do Kriativos On Board 2026. Disponível para Android e iOS.\n- Check-in Antecipado (\"Eu vou\"): Todos os participantes devem baixar o app, acessar o banner do evento e clicar em \"Eu vou\" para validar a presença. Este check-in é obrigatório para participar dos sorteios de brindes e jogos a bordo! (Caso alguém não consiga baixar, deve solicitar ao monitor da Encounter para inserir o nome na lista).\n- Acervo de Jogos: Consulta a lista de jogos disponíveis a bordo com filtros avançados (número de jogadores, complexidade, etc.).\n- Monitores e Regras: Clicando no ícone do chapéu de mestre, descobre-se quais monitores ou organizadores sabem ensinar as regras de cada jogo.\n- Interesse de Jogadores: É possível favoritar jogos de interesse, permitindo que a organização e a Encounter dimensionem mesas e monitores antecipadamente.\n- \"Levar Jogos\": Participantes podem cadastrar quais jogos próprios pretendem levar a bordo, com importação direta da coleção da Ludopedia ou BoardGameGeek (BGG). Quem levar mais jogos para compartilhar com o grupo receberá premiações e surpresas especiais."
+    "transcript": "Apresentação de Bruno Oliveira (criador do app Board Game Guru):\nO app oficial para a gestão de jogos e sorteios a bordo do Kriativos On Board 2026. Disponível para Android e iOS.\n- Check-in Antecipado (\"Eu vou\"): Todos os participantes devem baixar o app, acessar o banner do evento e clicar em \"Eu vou\" para validar a presença. Este check-in é obrigatório para participar dos sorteios de brindes e jogos a bordo! (Caso alguém não consiga baixar, deve solicitar ao monitor da Encounter para inserir o nome na lista)."
+  },
+  {
+    "id": "chapter-4009",
+    "time": "01:06:49",
+    "seconds": 4009,
+    "titles": {
+      "pt": "Acervo, monitores e jogos favoritos",
+      "en": "Game library, teachers and favourites",
+      "es": "Ludoteca, monitores y favoritos"
+    },
+    "keywords": "acervo filtros número jogadores monitor coração favoritar Guru games library filters players teachers favorites juegos favoritos monitores",
+    "transcript": "aqui para cima a gente tem esse botão de acervo que é muito legal porque se vocês clicarem vocês vão ver todos os jogos que vão estar disponíveis lá no navio pra gente jogar, tá? Eh, eles não tão todos cadastrados ainda. Por enquanto é só uma parte. O pessoal da organização aí, o Thiago e a Car ainda estão fazendo isso. Eh, mas você já pode ver algumas coisas aqui. Por exemplo, num jogo que tem esse chapeuzinho de mestre, se você fizer um swipe pro lado, você vai ver aqui, ó, quem pode ensinar. Clicando aqui, você vai ver quem consegue ensinar o jogo lá no navio para vocês. Então, nesse caso aqui, ó, Karen consegue ensinar, Thiago também, tá? Além disso, vocês podem demonstrar interesse no jogo. Então, para saber, para todo mundo saber que vocês querem jogar um jogo, é só clicar no coraçãozinho ali, ó. E, ó, o jogo fica favoritado por vocês aqui para que eh os monitores saibam quais são as mesas que eles vão ter que abrir, quantos monitores eles vão ter que deixar disponíveis para eh eh ensinar cada jogo, coisas desse tipo, tá? E além disso, vocês podem ver eh eh os jogos filtrados aqui por esse filtro. Então, vocês clicarem lá em filtro, vocês podem, por exemplo, ó, pegar e filtrar por número de jogadores. Consigo aplicar para ver quantos jogador, quantos jogos tem disponíveis para [roncando] seis ou mais jogadores. Ó, eu vou filtrar aqui agora por Hitster, que é um dos meus favoritos. Opa. Ah, agora sim, Hitster. Então, ó, Hitster Bingo. Legal. Ó, já vou dizer que eu quero jogar Hitster Bingo, tá? E esse aqui, ó, tem uma tagzinha chamado Bruno Oliveira, que sou eu, né? porque sou eu que tô levando esse jogo, tá? E eu falei que vou levar",
+    "faqId": "faq-o20"
+  },
+  {
+    "id": "chapter-4102",
+    "time": "01:08:22",
+    "seconds": 4102,
+    "titles": {
+      "pt": "Levar jogos e importar sua coleção",
+      "en": "Bring games and import your collection",
+      "es": "Llevar juegos e importar tu colección"
+    },
+    "keywords": "levar jogos coleção Ludopedia Ludopédia BoardGameGeek BGG Guru importar compartilhamento bring games collection import compartir juegos coleccion",
+    "transcript": "o jogo para lá. Isso é uma coisa que o pessoal do Criativos Onard incentiva, né, que o pessoal levar os jogos para lá. Então vou ensinar vocês a fazer isso agora. Vou voltar pra página do Criativos, rolar de novo lá pra parte de eventos. Já tem aqui, ó, os jogos que eu tenho interesse já vão aparecer aqui. Então, ó, abstratos e Hitster, tá? E eu posso clicar no botão de levar jogos e vai abrir aqui, ó, uma tela para eu dizer quais são os jogos que eu vou levar. Nesse caso aqui, a minha coleção ainda não tá cadastrada no app. Eu vou clicar nesse nesse link para importar minha coleção. Eu tenho uma coleção cadastrada na Ludopédia, poderia ser no BG também. Eu vou dizer aqui o meu nome de usuário no na Ludopédia. E voltando lá, agora que minha coleção já tá disponível, eu vou clicar em levar jogos. E tem todos os jogos da minha coleção aqui, ó. Eu senti falta do Hitster lá B. Ah, tá aqui, ó. Agora eu vou dizer pro pessoal liberar aí mais um jogo e esse jogo ele vai ser enviado paraa avaliação dos organizadores, pro pessoal dar OK lá e dizer que e saber quem quem tá levando cada jogo, tá? Então é isso aí. Mostrei para vocês aqui várias funcionalidades. Vocês também podem ver fotos aqui dos eventos anteriores, tá? E outras funcionalidades que não tem a ver com eventos que eu convido vocês a explorar, tá? O Board Game Guru, ele tem conteúdo para mais de 350 jogos e um monte de ferramenta para todo mundo que ama jogos de tabuleiro. Então, fiquem à vontade aí de explorar eh as funcionalidades do app, mandem mensagem aí com no Fale com Guru eh pra organização aqui do aplicativo também e a gente se vê em breve ou na na pré ou lá a bordo, tá bom, pessoal? Um abraço, valeu.",
+    "faqId": "faq-o22"
   },
   {
     "id": "chapter-4265",
@@ -421,18 +590,44 @@ export const CHAPTERS = [
     "time": "01:14:41",
     "seconds": 4481,
     "titles": {
-      "pt": "Cabine e itens para a mala",
-      "en": "Cabin amenities and what to pack",
-      "es": "Camarote y qué llevar en la maleta"
+      "pt": "Itens permitidos e proibidos na mala",
+      "en": "Allowed and prohibited luggage items",
+      "es": "Objetos permitidos y prohibidos"
     },
     "keywords": "cabine toalha secador ferro shampoo pasta dente condicionador chapinha drone proibido itens tomada amenities cabin toiletries hairdryer iron prohibited camarote secador plancha pasta dientes",
-    "transcript": "O que levar e o que é proibido:\n- Proibido expressamente: Ferro de passar roupa (bloqueado sumariamente no raio-X), armas, substâncias ilícitas, drones.\n- Itens da cabine: A cabine conta com toalhas de banho, roupa de cama, sabonete líquido, shampoo, secador de cabelo, TV, ar-condicionado e cofre.\n- O que NÃO tem na cabine e DEVE ser levado: Creme dental (pasta de dente) e condicionador de cabelo.",
+    "transcript": "O que levar e o que é proibido:\n- Proibido expressamente: Ferro de passar roupa (bloqueado sumariamente no raio-X), armas, substâncias ilícitas, drones.",
     "notice": {
       "pt": "Use a lista MSC atual: secador e chapinha são permitidos; transportar drone e usá-lo a bordo são situações diferentes.",
       "en": "Use the current MSC list: hairdryers and straighteners are allowed; carrying a drone differs from using it onboard.",
       "es": "Use la lista MSC actual: secadores y planchas de pelo están permitidos; transportar un dron no es lo mismo que usarlo a bordo."
     },
     "faqId": "faq-o10"
+  },
+  {
+    "id": "chapter-4509",
+    "time": "01:15:09",
+    "seconds": 4509,
+    "titles": {
+      "pt": "O que a cabine oferece",
+      "en": "What your cabin provides",
+      "es": "Qué ofrece el camarote"
+    },
+    "keywords": "cabine secador toalhas shampoo condicionador pasta dente cofre amenities cabin toiletries toothpaste hairdryer camarote secador toallas",
+    "transcript": "Na cabine tem secador, esquecemos de falar, nas cabines todas são super confortáveis e elas vão ter lá o banheiro privativo, eh, sabonete líquido e toalhas de shampo. Sabonete, shampoo. Sabonete shampoo. Não tem pasta de dente e nem condicionador, então precisa levar roupa de cama e roupa de banho, cofre, o frigobar, televisão, ar condicionado e um secadorzinho que fica na ou num suporte dentro do banheiro ou na na gaveta da penteadeira. Frigobar, só usem, tipo, coloquem suas coisas lá dentro, não retire de colar. Como MSC entrega a lata, o deles o sistema é diferente do Costa, você pode ir lá pega, eu quero duas cocas. Você pega, leva pra cabine e coloca ali. De madrugada você toma sua água, sua coquinha, sem ter que se preocupar em depois em repor.",
+    "faqId": "faq-o11"
+  },
+  {
+    "id": "chapter-4657",
+    "time": "01:17:37",
+    "seconds": 4657,
+    "titles": {
+      "pt": "Premiações para quem compartilha jogos",
+      "en": "Rewards for sharing games",
+      "es": "Premios por compartir juegos"
+    },
+    "keywords": "premiação premiações premios premiacoes compartilhar jogos acervo levar games sharing rewards prizes juegos compartir",
+    "transcript": "você quer levar. Lembrando que levem jogos porque vai ter coisa para quem levar mais jogos. Lembrem-se disso. Quem levar mais jogos, disponibilizar pra galera, vai ganhar alguma coisa muito legal que a gente tá preparando. Acessórios BG, Ludopêdia, BGZO, BGBG, que é BG Barueri e Bardgame São Paulo. Obrigado por pelo apoio. E também esse",
+    "faqId": "faq-o22"
   },
   {
     "id": "chapter-4712",
