@@ -308,6 +308,8 @@ test('A orelha permanece unida ao painel durante a animação', async ({ page })
 });
 
 test('Hovers preservam contraste, idioma ativo e fundo do seletor', async ({ page }) => {
+  // Above 1024px the header shows horizontal links instead of the menu button.
+  await page.setViewportSize({ width: 1024, height: 800 });
   await page.goto('/manual-de-bordo.html');
   const styles = selector => page.locator(selector).first().evaluate(e => {
     const s = getComputedStyle(e);
@@ -524,12 +526,18 @@ for(const [lang,path,home,charter,prefix] of [
  test(`Desktop: identificação na base, seta depois do assunto e menu localizado em ${lang}`,async({page})=>{
   await page.setViewportSize({width:1440,height:1000});await page.goto(path);
   await expect(page.locator('.guide-header__home-link')).toBeHidden();
+  // Wide desktop: horizontal links replace the menu button; the logo leads home.
+  await expect(page.locator('#navToggle')).toBeHidden();
+  await expect(page.locator('.guide-header__brand')).toHaveAttribute('href',`https://kriativosonboard.com.br${prefix}/`);
+  await expect(page.locator(`.guide-header__nav-link[href="https://kriativosonboard.com.br${prefix}/onibus.html"]`)).toBeVisible();
+  await page.setViewportSize({width:1024,height:1000});
   await page.locator('#navToggle').click();
   await expect(page.locator('#drawer a').filter({hasText:home})).toBeVisible();
   await expect(page.locator('#drawer .guide-menu-desktop').last()).toHaveText(charter);
   await expect(page.locator('#drawer .guide-menu-desktop').last()).toHaveAttribute('href',`https://kriativosonboard.com.br${prefix}/onibus.html`);
   await expect(page.locator('#drawer .guide-menu-mobile')).toBeHidden();
   await page.keyboard.press('Escape');
+  await page.setViewportSize({width:1440,height:1000});
   await page.locator('#loadLivePlayerBtn').click();await readyPlayer(page);
   const box=await page.locator('#livePlayerWrapper').boundingBox();
   const title=page.locator('#liveCustomTopic');const t=await title.boundingBox();
@@ -545,7 +553,7 @@ for(const [lang,path,home,charter,prefix] of [
   expect(icon.x).toBeGreaterThan(label.x+label.width-1);
   await page.setViewportSize({width:390,height:844});
   await expect(page.locator('.guide-header__home-link')).toBeHidden();
-  await expect(page.locator('#liveTotalProgress')).toBeHidden();
+  await expect(page.locator('#liveTotalProgress')).toBeVisible();
   await page.locator('#navToggle').click();
   await expect(page.locator('#drawer .guide-menu-desktop').first()).toBeHidden();
   await expect(page.locator('#drawer .guide-menu-mobile')).toBeVisible();
@@ -673,12 +681,18 @@ for (const [lang, path, details] of [['pt','/manual-de-bordo.html','Mais detalhe
       expect(placement.top).toBeGreaterThanOrEqual(0);
     }
     await page.setViewportSize({ width: 390, height: 844 });
-    await expect.poll(() => page.locator('#liveChapterNotice').evaluate(el => el.parentElement.id)).toBe('live');
+    // Mobile: once 4s of the topic have played, the notice floats over the video and
+    // "details" hangs from its bottom-right corner.
+    await expect.poll(() => page.locator('#liveChapterNotice').evaluate(el => el.parentElement.id)).toBe('livePlayerWrapper');
+    // The progress clock only runs while the player is on screen, and the resize can scroll it away.
+    await page.locator('#livePlayerWrapper').scrollIntoViewIfNeeded();
+    await page.evaluate(() => { window.__liveMock.seconds = 4461; });
+    await expect(page.locator('#liveChapterNotice')).toBeVisible();
     await expect.poll(() => page.evaluate(() => {
       const action = document.querySelector('#liveChapterNoteAction button').getBoundingClientRect();
-      const note = document.querySelector('#liveChapterNote').getBoundingClientRect();
+      const video = document.querySelector('#livePlayerWrapper').getBoundingClientRect();
       const notice = document.querySelector('#liveChapterNotice').getBoundingClientRect();
-      return action.top > note.bottom && action.right <= notice.right;
+      return notice.top >= video.top && action.top >= notice.bottom - 1 && Math.abs(action.right - notice.right) <= 1 && action.bottom <= video.bottom;
     })).toBe(true);
     await openTopics(page);
     await page.locator('.live-chapter-item__button').first().click();
