@@ -1983,7 +1983,12 @@
         aria-valuemin="0" aria-valuemax="100" aria-label="Checklist progress">
         <div class="checklist-sidebar__progress-fill" id="checklistSidebarProgressFill"></div>
       </div>
-      <span class="checklist-sidebar__progress-text" id="checklistSidebarProgressText">0 of 16 completed</span>
+      <div class="checklist-sidebar__progress-meta">
+        <span class="checklist-sidebar__progress-text" id="checklistSidebarProgressText">0 of 16 completed</span>
+        <button type="button" class="checklist-reset-btn" id="checklistResetBtn">
+          Reset checklist progress
+        </button>
+      </div>
     </div>
 
     <div class="checklist-completed-msg" id="checklistCompletedMsg">
@@ -2487,9 +2492,6 @@
         <p class="checklist-persistence-note">
           This is a personal aid. It does not validate your reservation or replace agency and MSC instructions.
         </p>
-        <button type="button" class="checklist-reset-btn" id="checklistResetBtn">
-          Reset checklist progress
-        </button>
       </div>
     </div>
   </aside>

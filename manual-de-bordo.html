@@ -2215,7 +2215,12 @@
         aria-valuemin="0" aria-valuemax="100" aria-label="Progresso do checklist">
         <div class="checklist-sidebar__progress-fill" id="checklistSidebarProgressFill"></div>
       </div>
-      <span class="checklist-sidebar__progress-text" id="checklistSidebarProgressText">0 de 16 conferidos</span>
+      <div class="checklist-sidebar__progress-meta">
+        <span class="checklist-sidebar__progress-text" id="checklistSidebarProgressText">0 de 16 conferidos</span>
+        <button type="button" class="checklist-reset-btn" id="checklistResetBtn">
+          Apagar meu progresso
+        </button>
+      </div>
     </div>
 
     <div class="checklist-completed-msg" id="checklistCompletedMsg">
@@ -2723,9 +2728,6 @@
         <p class="checklist-persistence-note">
           Esta lista é uma ajuda pessoal e não valida a reserva nem substitui as orientações da agência e da MSC.
         </p>
-        <button type="button" class="checklist-reset-btn" id="checklistResetBtn">
-          Apagar meu progresso
-        </button>
       </div>
     </div>
   </aside>
