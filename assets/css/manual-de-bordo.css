@@ -3277,9 +3277,9 @@
 }
 
 .checklist-reset-btn:hover {
-  background: #71206c;
+  background: #b91c1c;
   color: #fff;
-  border-color: #71206c;
+  border-color: #b91c1c;
 }
 
 /* --------------------------------------------------------------------------
@@ -4928,6 +4928,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 5px;
   padding: 3px 8px;
   border: 1px solid #b7c8d6;
   border-radius: 4px;
@@ -4942,12 +4943,17 @@
   transition: background .15s ease, color .15s ease, border-color .15s ease;
 }
 
+.checklist-sidebar .checklist-reset-btn svg {
+  flex-shrink: 0;
+  display: block;
+}
+
 .checklist-sidebar .checklist-reset-btn:is(:hover, :focus-visible) {
   color: #fff;
-  background: #71206c;
-  border-color: #71206c;
+  background: #b91c1c;
+  border-color: #b91c1c;
   text-decoration: none;
-  outline: 2px solid #71206c;
+  outline: 2px solid #b91c1c;
   outline-offset: 1px;
 }
 
