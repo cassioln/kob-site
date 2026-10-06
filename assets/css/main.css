@@ -8465,6 +8465,7 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
   color: color-mix(in oklab, var(--foam-white) 72%, var(--ocean-cyan));
   font-size: 0.96rem;
   line-height: 1.6;
+  font-family: var(--font-script);
 }
 
 .footer__voyage-code {
