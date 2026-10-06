@@ -45,6 +45,8 @@
   .guide-header__nav-link,
   .guide-menu-desktop,
   .guide-menu-mobile,
+  .live-group-invite,
+  .live-support-link,
   .checklist-sidebar__nav-item,
   .checklist-group__toggle,
   .checklist-share__button,
@@ -77,6 +79,8 @@
   .guide-header__nav-link,
   .guide-menu-desktop,
   .guide-menu-mobile,
+  .live-group-invite,
+  .live-support-link,
   .checklist-sidebar__nav-item,
   .checklist-group__toggle,
   .checklist-share__button,
@@ -1675,6 +1679,172 @@
   font-size: 1rem;
 }
 
+.live-notice-label {
+  display: inline-flex;
+  align-items: center;
+  gap: .35em;
+  white-space: nowrap;
+}
+
+.live-notice-label svg {
+  width: 1em;
+  height: 1em;
+  flex: none;
+}
+
+.live-chapter-notice .live-chapter-note .live-notice-support strong {
+  color: inherit;
+  font-size: inherit;
+}
+
+.live-chapter-notice[data-notice-kind="support"] {
+  border-top-color: #00aeef;
+}
+
+.live-notice-update:not([hidden]) + .live-notice-support {
+  margin-top: 8px;
+}
+
+.live-chapter-note__action:has(.live-support-link) {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.guide-page .live-chapter-notice .live-chapter-note__action .live-guide-trigger--secondary {
+  border: 0;
+  background: transparent;
+  color: #07658c;
+  box-shadow: none;
+  text-decoration: underline;
+  text-underline-offset: .2em;
+}
+
+.guide-page .live-chapter-notice .live-chapter-note__action .live-guide-trigger--secondary:is(:hover, :focus-visible, [aria-expanded="true"]) {
+  background: #def3fc;
+  color: #064b6b;
+}
+
+@media (max-width: 768px) {
+  .hero-live-player>.live-chapter-notice:is([data-notice-kind="support"], [data-notice-kind="mixed"])>.live-chapter-note {
+    max-height: var(--live-note-body-max-height);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #087da9 #e2f4fc;
+    overscroll-behavior: contain;
+  }
+
+  .hero-live-player .live-chapter-note:focus-visible {
+    outline: 2px solid #087da9;
+    outline-offset: 3px;
+  }
+
+  .guide-page .hero-live-player .live-chapter-note__action:has(.live-support-link) .live-guide-trigger {
+    min-height: 44px;
+    margin: 0;
+  }
+
+  .guide-page .hero-live-player .live-chapter-notice .live-chapter-note__action .live-guide-trigger--secondary {
+    background: #f5fcff;
+    color: #07658c;
+    box-shadow: none;
+  }
+}
+
+.live-group-invite:not([hidden]) {
+  --live-invite-green: #087b41;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  box-sizing: border-box;
+  max-width: 100%;
+  min-height: 44px;
+  padding: 10px 15px;
+  border-radius: 10px;
+  background: var(--live-invite-green);
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(4, 29, 58, .22);
+  font: 400 clamp(1.05rem, 1.5vw, 1.3rem)/1.3 var(--font-display);
+  text-decoration: none;
+  pointer-events: auto;
+}
+
+.live-group-invite span {
+  text-decoration: none;
+}
+
+.live-group-invite__logo {
+  color: #fff;
+  flex: none;
+}
+
+.live-group-invite__logo path:last-child {
+  fill: var(--live-invite-green);
+}
+
+.guide-page .live-group-invite:is(:hover, :focus-visible) {
+  --live-invite-green: #066637;
+  color: #fff;
+  background: var(--live-invite-green);
+}
+
+.live-group-invite:focus-visible {
+  outline: 3px solid var(--sunset-gold, #ffc20e);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .live-group-invite:not([hidden]) {
+    animation: live-group-invite-in 420ms cubic-bezier(.16, 1, .3, 1);
+  }
+}
+
+@keyframes live-group-invite-in {
+  from {
+    opacity: 0;
+    clip-path: inset(0 100% 0 0 round 10px);
+    transform: translateX(-8px);
+  }
+  to {
+    opacity: 1;
+    clip-path: inset(0 round 10px);
+    transform: translateX(0);
+  }
+}
+
+@media (min-width: 769px) {
+  .hero-live-player>.live-group-invite {
+    position: absolute;
+    inset: 18px auto auto 22px;
+    max-width: calc(100% - 44px - var(--live-tab-width));
+    z-index: 3;
+  }
+}
+
+@media (max-width: 768px) {
+  .live-lower-third>.live-group-invite:not([hidden]) {
+    gap: 7px;
+    min-height: 44px;
+    margin: 0 0 6px;
+    padding: 6px 10px;
+    font-size: .8rem;
+  }
+
+  .live-lower-third>.live-group-invite .live-group-invite__logo {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* Reserve a stable video canvas for simultaneous guidance and the group invite. */
+@media (max-width: 768px) {
+  .hero-live-cinema .hero-live-player {
+    min-height: var(--live-guidance-min-height, 240px);
+  }
+}
+
 .live-chapter-note__action {
   justify-self: end;
   font-size: .8rem;
@@ -1717,7 +1887,7 @@
     transition: opacity 160ms ease;
   }
 
-  /* As on mobile, the rule notice joins the lower third once 4s of its topic have played. */
+  /* As on mobile, the update joins the lower third at its mapped utterance. */
   .hero-live-player:not(.is-notice-due) .live-lower-third .live-chapter-notice {
     display: none !important;
   }
@@ -2099,7 +2269,7 @@
     border-radius: 8px;
     color: #fff;
     background: linear-gradient(110deg, #07658c, #087da9 67%, #058cb9);
-    font: 400 clamp(.98rem, 4.6vw, 1.25rem)/1.18 var(--font-display);
+    font: 400 clamp(.85rem, 3.7vw, 1rem)/1.25 var(--font-display);
     text-wrap: balance;
     text-shadow: 0 2px 4px rgba(4, 29, 58, .2);
     -webkit-line-clamp: 2;
@@ -2119,7 +2289,7 @@
     transition: none;
   }
 
-  /* Updated-rule notice floats over the top of the video (once 4s of the topic have played),
+  /* The update floats over the top of the video at its mapped utterance,
      so nothing below it moves. Same palette as the desktop notice; "Mais detalhes" hangs from
      its bottom-right corner like a tab, and "−" folds the notice into a badge. */
   .hero-live-player>.live-chapter-notice:not([hidden]) {
@@ -2162,15 +2332,32 @@
   .hero-live-player .live-chapter-note__action {
     position: absolute;
     top: 100%;
+    left: 0;
     right: 0;
-    font-size: .68rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 4px;
+    font-size: .75rem;
+  }
+
+  .hero-live-player .live-chapter-note__action:has(.live-support-link) {
+    flex-wrap: nowrap;
+  }
+
+  .hero-live-player .live-chapter-note__action:has(.live-support-link) .live-guide-trigger {
+    flex: 0 1 auto;
+    min-width: 0;
+    white-space: normal;
+    text-align: center;
   }
 
   .guide-page .hero-live-player .live-chapter-note__action .live-guide-trigger {
-    min-height: 26px;
+    min-height: 44px;
     gap: 5px;
     margin: 0;
-    padding: 3px 10px 4px;
+    padding: 4px 8px;
+    font: 600 .75rem/1.35 var(--font-body);
     border: 0;
     border-radius: 0 0 8px 8px;
     color: #041d3a;
@@ -4038,17 +4225,85 @@
    -------------------------------------------------------------------------- */
 .games-layout {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-auto-flow: column;
+  grid-auto-columns: 88%;
   gap: 24px;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scroll-snap-type: x mandatory;
+  padding: 4px 0 16px;
+  scrollbar-width: thin;
+  scrollbar-color: #c9b4cc #edf3f7;
+}
+
+.games-layout:focus-visible {
+  outline: 2px solid var(--kriativa-purple, #71206c);
+  outline-offset: 4px;
+}
+
+.games-carousel__controls {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.games-carousel__controls[hidden] { display: none; }
+
+.games-carousel__position {
+  margin-right: 6px;
+  color: #536479;
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.games-carousel__arrow {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid #d7c8da;
+  border-radius: 10px;
+  background: #fff;
+  color: var(--kriativa-purple, #71206c);
+  cursor: pointer;
+  transition: background-color 160ms ease-out, color 160ms ease-out;
+}
+
+.games-carousel__arrow:hover:not(:disabled) {
+  background: var(--kriativa-purple, #71206c);
+  color: #fff;
+}
+
+.games-carousel__arrow:focus-visible {
+  outline: 2px solid var(--kriativa-purple, #71206c);
+  outline-offset: 3px;
+}
+
+.games-carousel__arrow:disabled {
+  color: #8a94a0;
+  background: #f2f5f7;
+  border-color: #e2e8f0;
+  cursor: default;
 }
 
 @media (min-width: 640px) {
   .games-layout {
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-auto-columns: calc((100% - 24px) / 1.5);
+  }
+}
+
+@media (min-width: 960px) {
+  .games-layout {
+    grid-auto-columns: calc((100% - 48px) / 2.15);
   }
 }
 
 .game-block {
+  min-width: 0;
+  scroll-snap-align: start;
   background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: var(--guide-card-radius, 18px);

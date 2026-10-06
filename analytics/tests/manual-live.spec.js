@@ -1,4 +1,6 @@
 import { test, expect } from '@playwright/test';
+import { CHAPTERS, GROUP_INVITE_URL } from '../../assets/js/manual-de-bordo-live-data.js';
+import { SUPPORT_NOTICES } from '../../assets/js/manual-de-bordo-live-support.js';
 
 async function mockPlayer(page) {
   await page.route(/https:\/\/.*youtube(?:-nocookie)?\.com\/.*/, route => route.fulfill({ contentType: 'text/html', body: '<html><body>Mock video</body></html>' }));
@@ -27,7 +29,7 @@ async function readyPlayer(page) {
   await page.evaluate(() => { const player = window.__liveMock.instances.at(-1); player.events.onReady({ target: player }); });
 }
 
-// The rule notice only appears once 4s of its topic have played.
+// Advance the mock to the mapped utterance, independent of the topic start.
 async function playIntoTopic(page, seconds) {
   await page.evaluate(seconds => { window.__liveMock.seconds = seconds; }, seconds);
   await expect(page.locator('#liveChapterNotice')).toBeVisible();
@@ -372,6 +374,8 @@ test('API bloqueada informa a limitação e permite trocar de capítulo no mesmo
   await expect(page.locator('#livePlayerContainer iframe')).toHaveCount(1);
   await expect(page.locator('#livePlayerContainer iframe')).toHaveAttribute('src', /start=1852/);
   await expect(page.locator('#liveExternalLink')).toHaveAttribute('href', /t=1852s$/);
+  await expect(page.locator('#liveChapterNotice')).toBeHidden();
+  await expect(page.locator('#liveGroupInvite')).toBeHidden();
 });
 
 test('Progresso por assunto: scrub relativo, troca automática e duração final real', async ({ page }) => {
@@ -442,7 +446,7 @@ test('Aviso abaixo do assunto no vídeo e guia em janela paralela, sem navegar o
   await expect(row.locator('.live-chapter-item__play')).toHaveCSS('opacity','1');
   await row.click();
   await readyPlayer(page);
-  await page.evaluate(() => { window.__liveMock.seconds = 1255; });
+  await page.evaluate(() => { window.__liveMock.seconds = 1319; });
   await expect(page.locator('#liveChapterNotice')).toBeVisible();
   const warning=page.locator('#liveChapterNote');
   await expect.poll(async()=>{
@@ -493,8 +497,8 @@ test.describe('Aviso por toque',()=>{
     // Choosing a topic keeps the sheet open; close it to reach the notice under the video.
     await expect(page.locator('#heroLiveToggleChaptersBtn')).toHaveAttribute('aria-expanded','true');
     await page.locator('#heroLiveChaptersCloseBtn').tap();
-    // The notice floats over the video once 4s of the topic have played.
-    await page.evaluate(()=>{ window.__liveMock.seconds=4461; });
+    // The notice floats over the video at the mapped luggage utterance.
+    await page.evaluate(()=>{ window.__liveMock.seconds=4462; });
     const trigger=page.locator('#liveChapterNoteAction [data-live-faq]');
     await expect(trigger).toBeVisible();
     await trigger.tap();
@@ -591,7 +595,7 @@ test('Identificação acompanha o recolhimento real dos controles e retorna suav
   await page.emulateMedia({reducedMotion:'no-preference'});
   await page.goto('/manual-de-bordo.html');
   await openTopics(page);await page.locator('[data-seconds="1535"]').click();await readyPlayer(page);
-  await playIntoTopic(page, 1540);
+  await playIntoTopic(page, 1564);
   const group=page.locator('#liveLowerThird'),controls=page.locator('#liveCustomControls');
   await page.mouse.move(0,0);
   await expect.poll(async()=>{
@@ -610,7 +614,7 @@ test('Identificação acompanha o recolhimento real dos controles e retorna suav
   await page.locator('#livePlayerWrapper').hover({position:{x:40,y:40}});
   await expect(controls).toHaveClass(/is-visible/);
   await expect.poll(()=>group.evaluate(el=>el.getBoundingClientRect().bottom-el.parentElement.getBoundingClientRect().bottom)).toBeLessThan(lowered-80);
-  await page.evaluate(() => { window.__liveMock.seconds = 1540; });
+  await page.evaluate(() => { window.__liveMock.seconds = 1564; });
   await expect(page.locator('#liveChapterNotice')).toBeVisible();
   const guide=page.locator('#liveChapterNoteAction [data-live-faq]');await guide.focus();
   await page.waitForTimeout(3400);await expect(controls).toHaveClass(/is-visible/);
@@ -676,7 +680,7 @@ for (const [lang, path, details] of [['pt','/manual-de-bordo.html','Mais detalhe
     await openTopics(page);
     await page.locator('[data-seconds="1250"]').click();
     await readyPlayer(page);
-    await page.evaluate(() => { window.__liveMock.seconds = 1255; });
+    await page.evaluate(() => { window.__liveMock.seconds = 1319; });
     await expect(page.locator('#liveChapterNotice')).toBeVisible();
     const note = page.locator('#liveChapterNote');
     const action = page.locator('#liveChapterNoteAction [data-live-faq]');
@@ -686,10 +690,10 @@ for (const [lang, path, details] of [['pt','/manual-de-bordo.html','Mais detalhe
     expect(first.x).toBeGreaterThan((await note.boundingBox()).x + (await note.boundingBox()).width);
     await openTopics(page);
     await page.locator('[data-seconds="4456"]').click();
-    await page.evaluate(() => { window.__liveMock.seconds = 4461; });
+    await page.evaluate(() => { window.__liveMock.seconds = 4462; });
     await expect(page.locator('#liveChapterNotice')).toBeVisible();
     await expect(note).toContainText('23 kg');
-    await playIntoTopic(page, 4461);
+    await playIntoTopic(page, 4462);
     const second = await action.boundingBox();
     expect(second.x + second.width).toBeCloseTo(first.x + first.width, 1);
     await action.hover();
@@ -712,12 +716,12 @@ for (const [lang, path, details] of [['pt','/manual-de-bordo.html','Mais detalhe
       expect(placement.top).toBeGreaterThanOrEqual(0);
     }
     await page.setViewportSize({ width: 390, height: 844 });
-    // Mobile: once 4s of the topic have played, the notice floats over the video and
+    // Mobile: at the mapped utterance, the notice floats over the video and
     // "details" hangs from its bottom-right corner.
     await expect.poll(() => page.locator('#liveChapterNotice').evaluate(el => el.parentElement.id)).toBe('livePlayerWrapper');
     // The progress clock only runs while the player is on screen, and the resize can scroll it away.
     await page.locator('#livePlayerWrapper').scrollIntoViewIfNeeded();
-    await page.evaluate(() => { window.__liveMock.seconds = 4461; });
+    await page.evaluate(() => { window.__liveMock.seconds = 4462; });
     await expect(page.locator('#liveChapterNotice')).toBeVisible();
     await expect.poll(() => page.evaluate(() => {
       const action = document.querySelector('#liveChapterNoteAction button').getBoundingClientRect();
@@ -768,6 +772,7 @@ for (const [lang, path, details] of [['pt','/manual-de-bordo.html','Mais detalhe
     await play.hover();
     await expect(text).toHaveCSS('animation-name','none');
     await expect(text).toHaveCSS('text-overflow','ellipsis');
+    await playIntoTopic(page, 1319);
     await expect(page.locator('#liveChapterNoteAction [data-live-faq]')).toHaveText(details);
     await expect(play).toHaveCSS('background-color','rgb(216, 245, 255)');
     await page.emulateMedia({ reducedMotion:'no-preference' });
@@ -818,7 +823,7 @@ for (const rate of [1, 2]) test(`Entrada automática termina no início do novo 
   expect(await page.evaluate(() => window.__liveMock.calls.filter(call => call[0] === 'seek'))).toEqual([['seek', 1250]]);
 });
 
-test('Escolher outro assunto cancela a antecipação e mostra título e regra imediatamente', async ({ page }) => {
+test('Escolher outro assunto cancela a antecipação e aguarda a fala para exibir o aviso', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.clock.install();
@@ -951,7 +956,7 @@ for (const width of [390, 1440]) {
   });
 }
 
-test('No mobile o aviso flutua sobre o vídeo após 4s e recolhe para um selo no canto superior esquerdo', async ({ page }) => {
+test('No mobile o aviso entra na fala de menores e recolhe para um selo no canto superior esquerdo', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/manual-de-bordo.html');
   await openTopics(page);
@@ -960,7 +965,7 @@ test('No mobile o aviso flutua sobre o vídeo após 4s e recolhe para um selo no
   await page.locator('#heroLiveChaptersCloseBtn').click();
   const notice = page.locator('#liveChapterNotice');
   await expect(notice).toBeHidden();
-  await page.evaluate(() => { window.__liveMock.seconds = 1255; });
+  await page.evaluate(() => { window.__liveMock.seconds = 1319; });
   await expect(notice).toBeVisible();
   const video = await page.locator('#livePlayerWrapper').boundingBox();
   const box = await notice.boundingBox();
@@ -986,7 +991,7 @@ test('No mobile o aviso flutua sobre o vídeo após 4s e recolhe para um selo no
   await expect(page.locator('.live-chapter-notice__collapse')).toBeFocused();
 });
 
-test('No desktop o aviso entra na faixa inferior só após 4s do assunto', async ({ page }) => {
+test('No desktop o aviso aguarda a fala específica de cada assunto', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto('/manual-de-bordo.html');
   await openTopics(page);
@@ -995,13 +1000,312 @@ test('No desktop o aviso entra na faixa inferior só após 4s do assunto', async
   const notice = page.locator('#liveChapterNotice');
   await expect(page.locator('#liveCustomTopic')).toBeVisible();
   await expect(notice).toBeHidden();
-  await page.evaluate(() => { window.__liveMock.seconds = 1255; });
+  await page.evaluate(() => { window.__liveMock.seconds = 1319; });
   await expect(notice).toBeVisible();
   expect(await notice.evaluate(el => el.parentElement.id)).toBe('liveLowerThird');
-  // Each new topic waits its own 4s.
+  // The luggage update waits for its own mapped utterance.
   await openTopics(page);
   await page.locator('[data-seconds="4456"]').click();
   await expect(notice).toBeHidden();
-  await page.evaluate(() => { window.__liveMock.seconds = 4461; });
+  await page.evaluate(() => { window.__liveMock.seconds = 4462; });
   await expect(notice).toBeVisible();
+});
+
+async function pauseAtLiveTime(page, seconds) {
+  await page.evaluate(seconds => {
+    window.__liveMock.seconds = seconds;
+    window.__liveMock.instances.at(-1).pauseVideo();
+  }, seconds);
+}
+
+for (const width of [390, 1440]) {
+  test(`Os 22 avisos obedecem às falas mapeadas, inclusive ao voltar (${width}px)`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/manual-de-bordo.html');
+    await page.locator('#loadLivePlayerBtn').click();
+    await readyPlayer(page);
+    const notice = page.locator('#liveChapterNotice');
+    const note = page.locator('#liveChapterNote');
+    for (const topic of CHAPTERS.filter(topic => topic.notice)) {
+      await pauseAtLiveTime(page, topic.noticeSeconds - .001);
+      await expect(notice).toBeHidden();
+      await pauseAtLiveTime(page, topic.noticeSeconds);
+      await expect(notice).toBeVisible();
+      await expect(note).toContainText(topic.notice.pt);
+      await expect(note.locator('.live-notice-update .live-notice-label')).toHaveText('ATUALIZAÇÃO');
+      await expect(note.locator('.live-notice-update svg[aria-hidden="true"]')).toHaveCount(1);
+      await pauseAtLiveTime(page, topic.noticeSeconds - 1);
+      await expect(notice).toBeHidden();
+    }
+    await pauseAtLiveTime(page, 4509);
+    await expect(notice).toBeHidden();
+    // A long delay is tied to the 80s proposal, not to the chapter introduction.
+    await pauseAtLiveTime(page, 3217);
+    await expect(notice).toBeHidden();
+    await pauseAtLiveTime(page, 3271.88);
+    await expect(notice).toBeVisible();
+    await pauseAtLiveTime(page, 3506);
+    await expect(notice).toBeHidden();
+  });
+}
+
+for (const [path, label, inviteCopy] of [
+  ['/manual-de-bordo.html', 'ATUALIZAÇÃO', 'Clique aqui para entrar no grupo'],
+  ['/en/manual-de-bordo.html', 'UPDATE', 'Click here to join the group'],
+  ['/es/manual-de-bordo.html', 'ACTUALIZACIÓN', 'Haz clic aquí para entrar al grupo']
+]) {
+  test(`Rótulo com atenção, convite e posicionamento em ${path}`, async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    await page.goto(path);
+    await page.locator('#loadLivePlayerBtn').click();
+    await readyPlayer(page);
+    await pauseAtLiveTime(page, 1319);
+    await expect(page.locator('#liveChapterNote .live-notice-label')).toHaveText(label);
+    await openTopics(page);
+    await page.locator('#liveSearchInput').fill('90 kg');
+    await expect(page.locator('.live-chapter-item:not([hidden]) .live-notice-label')).toHaveText(label);
+    await page.locator('#heroLiveChaptersCloseBtn').click();
+    await pauseAtLiveTime(page, 1356.158);
+    const invite = page.locator('#liveGroupInvite');
+    await expect(invite).toBeHidden();
+    await pauseAtLiveTime(page, 1356.159);
+    await expect(invite).toBeVisible();
+    await expect(invite).toHaveText(inviteCopy);
+    await expect(invite).toHaveAttribute('href', GROUP_INVITE_URL);
+    await expect(invite).toHaveAttribute('target', '_blank');
+    await expect(invite).toHaveAttribute('rel', 'noopener noreferrer');
+    await expect(invite.locator('svg[aria-hidden="true"]')).toHaveCount(1);
+    const checkInviteStyle = async () => {
+      const styles = await invite.evaluate(el => {
+        const invite = getComputedStyle(el), topic = getComputedStyle(document.getElementById('liveCustomTopic'));
+        return { font: invite.fontFamily, topicFont: topic.fontFamily, size: parseFloat(invite.fontSize), topicSize: parseFloat(topic.fontSize) };
+      });
+      expect(styles.font).toBe(styles.topicFont);
+      expect(styles.size).toBeLessThan(styles.topicSize);
+      await expect(invite).toHaveCSS('color', 'rgb(255, 255, 255)');
+      await expect(invite).toHaveCSS('background-color', 'rgb(8, 123, 65)');
+      await expect(invite.locator('svg')).toHaveCSS('color', 'rgb(255, 255, 255)');
+    };
+    await checkInviteStyle();
+    await expect.poll(async () => {
+      const box = await invite.boundingBox(), video = await page.locator('#livePlayerWrapper').boundingBox();
+      return Math.abs(box.x - video.x - 22) < 2 && Math.abs(box.y - video.y - 18) < 2;
+    }).toBe(true);
+    await page.setViewportSize({ width: 390, height: 1000 });
+    await expect.poll(() => invite.evaluate(el => el.nextElementSibling?.id)).toBe('liveCustomTopic');
+    await checkInviteStyle();
+    await expect.poll(async () => {
+      const box = await invite.boundingBox(), topic = await page.locator('#liveCustomTopic').boundingBox();
+      return box.y + box.height <= topic.y - 5;
+    }).toBe(true);
+    await expect(invite).toHaveCSS('animation-name', 'live-group-invite-in');
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await expect(invite).toHaveCSS('animation-name', 'none');
+    await pauseAtLiveTime(page, 1368.159);
+    await expect(invite).toBeHidden();
+    // This "grupo" is a dinner party; it must not display a WhatsApp invitation.
+    await pauseAtLiveTime(page, 3024.92);
+    await expect(invite).toBeHidden();
+  });
+}
+
+test('Convite continua estável entre menções próximas e abre o grupo apenas após clique', async ({ page, context }) => {
+  await page.goto('/manual-de-bordo.html');
+  await page.locator('#loadLivePlayerBtn').click();
+  await readyPlayer(page);
+  const invite = page.locator('#liveGroupInvite');
+  await invite.evaluate(el => {
+    window.__inviteEntrances = 0;
+    el.addEventListener('animationstart', () => window.__inviteEntrances++);
+  });
+  await pauseAtLiveTime(page, 4748);
+  await expect(invite).toBeVisible();
+  await expect.poll(() => page.evaluate(() => window.__inviteEntrances)).toBe(1);
+  await pauseAtLiveTime(page, 4766);
+  await expect(invite).toBeVisible();
+  await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+  expect(await page.evaluate(() => window.__inviteEntrances)).toBe(1);
+  const source = page.url();
+  await context.route('https://chat.whatsapp.com/**', route => route.fulfill({ body: 'Grupo de teste' }));
+  const opened = page.waitForEvent('popup');
+  await invite.click();
+  const popup = await opened;
+  await expect(popup).toHaveURL(GROUP_INVITE_URL);
+  expect(page.url()).toBe(source);
+  await popup.close();
+  await invite.focus();
+  await pauseAtLiveTime(page, 4781.4);
+  await expect(invite).toBeHidden();
+  await expect(page.locator('#livePlayPauseBtn')).toBeFocused();
+  await pauseAtLiveTime(page, 4750);
+  await expect(invite).toBeVisible();
+});
+
+for (const width of [390, 1440]) {
+  test(`Os nove apoios aprovados seguem suas falas e preservam atualizações (${width}px)`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/manual-de-bordo.html');
+    await page.locator('#loadLivePlayerBtn').click();
+    await readyPlayer(page);
+    const support = page.locator('.live-notice-support');
+    for (const approved of SUPPORT_NOTICES) for (const start of approved.cueSeconds) {
+      await pauseAtLiveTime(page, start - .001);
+      await expect(support).toHaveCount(0);
+      await pauseAtLiveTime(page, start);
+      await expect(support).toBeVisible();
+      await expect(support).toHaveAttribute('data-support-id', approved.id);
+      await expect(support).toHaveText(approved.texts.pt);
+      await expect(support.locator('.live-notice-label')).toHaveCount(0);
+      if (approved.emphasis) await expect(support.locator('strong')).toHaveText(approved.emphasis.pt);
+      else await expect(support.locator('strong')).toHaveCount(0);
+      if (approved.action.href) await expect(page.locator('.live-support-link')).toHaveAttribute('href', approved.action.href);
+      else await expect(page.locator(`#liveChapterNoteAction [data-live-faq="${approved.action.faqId}"]`)).toBeVisible();
+      await pauseAtLiveTime(page, start + 12);
+      await expect(support).toHaveCount(0);
+      await pauseAtLiveTime(page, start + 1);
+      await expect(support).toBeVisible();
+      await pauseAtLiveTime(page, start - 1);
+      await expect(support).toHaveCount(0);
+    }
+    await pauseAtLiveTime(page, 1674);
+    await expect(page.locator('#liveChapterNotice')).toHaveAttribute('data-notice-kind', 'mixed');
+    await expect(page.locator('.live-notice-update')).toContainText('Os horários do fretado já estão no guia.');
+    await expect(page.locator('#liveChapterNoteAction [data-live-faq="faq-o12"]')).toBeVisible();
+    await pauseAtLiveTime(page, 1717);
+    await expect(page.locator('#liveChapterNotice')).toBeHidden();
+    await pauseAtLiveTime(page, 1742);
+    await expect(page.locator('#liveChapterNotice')).toHaveAttribute('data-notice-kind', 'support');
+    await expect(page.locator('.live-notice-update')).toHaveCount(0);
+    await expect(page.locator('#liveChapterNoteAction [data-live-faq="faq-o13"]')).toHaveCount(0);
+    await pauseAtLiveTime(page, 1754);
+    await expect(page.locator('#liveChapterNotice')).toBeHidden();
+    await expect(page.locator('.live-support-link')).toHaveCount(0);
+    for (const rejected of [1034.839, 1291.600, 1358.400, 2124.839, 2166.079, 2444.599, 3008.559, 3162.760, 3985.920, 4523.280]) {
+      await pauseAtLiveTime(page, rejected);
+      await expect(support).toHaveCount(0);
+    }
+  });
+}
+
+for (const [lang, path] of [
+  ['pt', '/manual-de-bordo.html'],
+  ['en', '/en/manual-de-bordo.html'],
+  ['es', '/es/manual-de-bordo.html']
+]) {
+  test(`Textos aprovados e destinos dos apoios em ${lang}`, async ({ page }) => {
+    await page.goto(path);
+    await page.locator('#loadLivePlayerBtn').click();
+    await readyPlayer(page);
+    for (const id of ['support-01', 'support-02', 'support-03', 'support-18']) {
+      const approved = SUPPORT_NOTICES.find(item => item.id === id);
+      await pauseAtLiveTime(page, approved.cueSeconds[0] + 1);
+      const support = page.locator('.live-notice-support');
+      await expect(support).toHaveText(approved.texts[lang]);
+      await expect(support.locator('.live-notice-label')).toHaveCount(0);
+      if (approved.emphasis) {
+        await expect(support.locator('strong')).toHaveText(approved.emphasis[lang]);
+        const styles = await support.evaluate(el => {
+          const body = getComputedStyle(el), bold = getComputedStyle(el.querySelector('strong'));
+          return { bodyColor: body.color, boldColor: bold.color, bodySize: body.fontSize, boldSize: bold.fontSize, boldWeight: bold.fontWeight };
+        });
+        expect(styles.boldColor).toBe(styles.bodyColor);
+        expect(styles.boldSize).toBe(styles.bodySize);
+        expect(Number(styles.boldWeight)).toBeGreaterThanOrEqual(700);
+      } else await expect(support.locator('strong')).toHaveCount(0);
+      const link = page.locator('.live-support-link');
+      await expect(link).toHaveText(approved.action.labels[lang]);
+      await expect(link).toHaveAttribute('href', approved.action.href);
+      await expect(link).toHaveAttribute('target', '_blank');
+      await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+      expect(await link.getAttribute('aria-label')).toContain(approved.action.labels[lang]);
+    }
+  });
+}
+
+test('Apoio externo não carrega a operadora antes do clique e devolve foco ao expirar', async ({ page, context }) => {
+  const requests = [];
+  page.on('request', request => { if (request.url().includes('viacaocometa.com.br')) requests.push(request.url()); });
+  await page.goto('/manual-de-bordo.html');
+  await page.locator('#loadLivePlayerBtn').click();
+  await readyPlayer(page);
+  await pauseAtLiveTime(page, 1742);
+  const link = page.locator('.live-support-link');
+  expect(requests).toEqual([]);
+  const original = page.url();
+  await context.route('https://www.viacaocometa.com.br/**', route => route.fulfill({ body: 'Destino Cometa simulado' }));
+  const opened = page.waitForEvent('popup');
+  await link.click();
+  const popup = await opened;
+  await expect(popup).toHaveURL('https://www.viacaocometa.com.br/transfer');
+  expect(page.url()).toBe(original);
+  await popup.close();
+  await link.focus();
+  await pauseAtLiveTime(page, 1754);
+  await expect(page.locator('#livePlayPauseBtn')).toBeFocused();
+});
+
+test('Apoio interno usa o popover e mantém o vídeo e a URL', async ({ page }) => {
+  await page.goto('/manual-de-bordo.html');
+  await page.locator('#loadLivePlayerBtn').click();
+  await readyPlayer(page);
+  const original = page.url();
+  await pauseAtLiveTime(page, 1089);
+  await page.locator('#liveChapterNoteAction [data-live-faq="faq-o24"]').hover();
+  await expect(page.locator('#liveGuidePopover')).toContainText('Encounter');
+  await pauseAtLiveTime(page, 1101);
+  await expect(page.locator('#liveGuidePopover')).toBeHidden();
+  await pauseAtLiveTime(page, 1763);
+  // The existing update and the support refer to the same FAQ: one control.
+  await expect(page.locator('#liveChapterNoteAction [data-live-faq="faq-o13"]')).toHaveCount(1);
+  await page.locator('#liveChapterNoteAction [data-live-faq="faq-o13"]').hover();
+  await expect(page.locator('#liveGuidePopover')).toContainText('Rodoviária de Santos');
+  expect(page.url()).toBe(original);
+  await expect(page.locator('#livePlayerContainer iframe')).toHaveCount(1);
+});
+
+test('Mobile preserva recolhimento e apoios não encobrem o convite e o assunto', async ({ page }) => {
+  for (const lang of ['pt', 'en', 'es']) for (const width of [320, 390]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.goto(`/${lang === 'pt' ? '' : `${lang}/`}manual-de-bordo.html`);
+    await page.locator('#loadLivePlayerBtn').click();
+    await readyPlayer(page);
+    await pauseAtLiveTime(page, 1674);
+    if (lang === 'en' && width === 320) {
+      // Wider font metrics can wrap actions after the notice is already visible.
+      await page.addStyleTag({ content: '.live-chapter-note__action .live-guide-trigger { font-size: 1rem !important; }' });
+    }
+    await expect(page.locator('#liveGroupInvite')).toBeVisible();
+    await expect(page.locator('.live-notice-support')).toBeVisible();
+    await expect.poll(async () => {
+      const actions = await page.locator('#liveChapterNoteAction').boundingBox();
+      const invite = await page.locator('#liveGroupInvite').boundingBox();
+      return invite.y - actions.y - actions.height;
+    }).toBeGreaterThanOrEqual(6);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
+  await page.setViewportSize({ width: 320, height: 1000 });
+  await page.goto('/manual-de-bordo.html');
+  await page.locator('#loadLivePlayerBtn').click();
+  await readyPlayer(page);
+  await pauseAtLiveTime(page, 1674);
+  await expect(page.locator('#liveGroupInvite')).toBeVisible();
+  const actions = page.locator('#liveChapterNoteAction');
+  await expect(actions.locator('.live-support-link')).toBeVisible();
+  await expect.poll(async () => {
+    const a = await actions.boundingBox(), invite = await page.locator('#liveGroupInvite').boundingBox();
+    return a.y + a.height < invite.y;
+  }).toBe(true);
+  await page.locator('.live-chapter-notice__collapse').click();
+  await expect(page.locator('.live-notice-pill span')).toHaveText('Atualização · Apoio');
+  await pauseAtLiveTime(page, 1779);
+  await expect(page.locator('.live-notice-pill span')).toHaveText('Apoio');
+  await page.locator('.live-notice-pill').click();
+  await expect(page.locator('.live-notice-support')).toBeVisible();
+  await expect(page.locator('.live-chapter-notice__collapse')).toBeFocused();
+  await page.locator('.live-chapter-notice__collapse').click();
+  await pauseAtLiveTime(page, 1791);
+  await expect(page.locator('.live-notice-pill')).toBeHidden();
+  await expect(page.locator('#livePlayPauseBtn')).toBeFocused();
 });

@@ -1,10 +1,11 @@
 import { test, expect } from '@playwright/test';
 
 test('Timeline animated track and gold marker works across PT, EN and ES', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('cookie_consent_status', 'denied'));
   const routes = [
-    { url: 'http://localhost:8085/manual-de-bordo.html', lang: 'pt' },
-    { url: 'http://localhost:8085/en/manual-de-bordo.html', lang: 'en' },
-    { url: 'http://localhost:8085/es/manual-de-bordo.html', lang: 'es' }
+    { url: '/manual-de-bordo.html', lang: 'pt' },
+    { url: '/en/manual-de-bordo.html', lang: 'en' },
+    { url: '/es/manual-de-bordo.html', lang: 'es' }
   ];
 
   for (const item of routes) {

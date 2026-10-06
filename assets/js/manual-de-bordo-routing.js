@@ -1,7 +1,8 @@
 export function manualLanguagePath(lang, path, host) {
   const prefix = lang === 'pt' ? '' : `/${lang}`;
-  if (/^manualdebordo\./i.test(host)) return `${prefix}/`;
-  if (/^(www\.)?kriativosonboard\.com\.br$/i.test(host) || /(?:^|\/)manualdebordo\/?$/.test(path)) return `${prefix}/manualdebordo`;
+  if (/^manualdebordo\.kriativosonboard\.com\.br$/i.test(host)) return `${prefix}/`;
+  if (/^(?:(?:www\.)?kriativosonboard|manualdebordo\.kriativos)\.com\.br$/i.test(host)) return `https://manualdebordo.kriativosonboard.com.br${prefix}/`;
+  if (/(?:^|\/)manualdebordo\/?$/.test(path)) return `${prefix}/manualdebordo`;
   return `${prefix}/manual-de-bordo.html`;
 }
 if (typeof document !== 'undefined') {

@@ -11,11 +11,11 @@
   <meta name="robots" content="index, follow">
   <meta name="theme-color" content="#041d3a">
   <meta http-equiv="content-language" content="en">
-  <link rel="canonical" href="https://kriativosonboard.com.br/en/manualdebordo">
-  <link rel="alternate" hreflang="pt-BR" href="https://kriativosonboard.com.br/manualdebordo">
-  <link rel="alternate" hreflang="en" href="https://kriativosonboard.com.br/en/manualdebordo">
-  <link rel="alternate" hreflang="es" href="https://kriativosonboard.com.br/es/manualdebordo">
-  <link rel="alternate" hreflang="x-default" href="https://kriativosonboard.com.br/manualdebordo">
+  <link rel="canonical" href="https://manualdebordo.kriativosonboard.com.br/en/">
+  <link rel="alternate" hreflang="pt-BR" href="https://manualdebordo.kriativosonboard.com.br/">
+  <link rel="alternate" hreflang="en" href="https://manualdebordo.kriativosonboard.com.br/en/">
+  <link rel="alternate" hreflang="es" href="https://manualdebordo.kriativosonboard.com.br/es/">
+  <link rel="alternate" hreflang="x-default" href="https://manualdebordo.kriativosonboard.com.br/">
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
@@ -27,7 +27,7 @@
     content="Onboard Manual KOB 2026: Everything you need to know before boarding | Kriativos On Board">
   <meta property="og:description"
     content="Official Onboard Manual for Kriativos On Board 2026 aboard MSC Musica. Document checklist, luggage limits, transportation, schedule, gaming rules, and trip guidelines.">
-  <meta property="og:url" content="https://kriativosonboard.com.br/en/manualdebordo">
+  <meta property="og:url" content="https://manualdebordo.kriativosonboard.com.br/en/">
   <meta property="og:image" content="https://kriativosonboard.com.br/assets/images/brand/og-home.jpg">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title"
@@ -46,30 +46,31 @@
   <link rel="preload" href="/assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
 
   <link rel="stylesheet" href="/assets/css/main.css?v=20261005-ui-final">
-  <link rel="stylesheet" href="/assets/css/manual-de-bordo.css?v=20261006-footer-identity">
+  <link rel="stylesheet" href="/assets/css/manual-de-bordo.css?v=20261006-manual-carousel">
   <link rel="stylesheet" href="/assets/css/cookie-consent.css?v=20260820-fix-contrast">
 
   <script defer src="/assets/js/cookie-consent.js?v=20260713-5"></script>
   <script defer src="/assets/js/manual-de-bordo.js?v=20261006-timeline-animation"></script>
 
-  <script type="module" src="/assets/js/manual-de-bordo-live.js?v=20261006-live-loading"></script>
+  <script type="module" src="/assets/js/manual-de-bordo-live.js?v=20261006-notice-layout"></script>
   <script type="module" src="/assets/js/manual-de-bordo-checklist.js?v=20261005-topic-player"></script>
-  <script type="module" src="/assets/js/manual-de-bordo-routing.js?v=20261004-manual"></script>
+  <script type="module" src="/assets/js/manual-de-bordo-routing.js?v=20261006-manual-domain"></script>
+  <script type="module" src="/assets/js/manual-games-carousel.js?v=20261006-manual-carousel"></script>
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@graph": [
         {
           "@type": "WebPage",
-          "@id": "https://kriativosonboard.com.br/en/manualdebordo",
-          "url": "https://kriativosonboard.com.br/en/manualdebordo",
+          "@id": "https://manualdebordo.kriativosonboard.com.br/en/",
+          "url": "https://manualdebordo.kriativosonboard.com.br/en/",
           "name": "Onboard Manual KOB 2026: Everything you need to know before boarding | Kriativos On Board",
           "description": "Everything you need to know before boarding for confirmed guests of the Kriativos On Board 2026 board game cruise aboard MSC Musica.",
           "inLanguage": "en"
         },
         {
           "@type": "FAQPage",
-          "@id": "https://kriativosonboard.com.br/en/manualdebordo#duvidas",
+          "@id": "https://manualdebordo.kriativosonboard.com.br/en/#duvidas",
           "mainEntity": [
             {
               "@type": "Question",
@@ -113,9 +114,9 @@
       </nav>
       <div class="guide-header__actions">
         <nav class="lang-switch" aria-label="Language selector">
-          <a href="/manual-de-bordo.html" class="lang-switch__item" hreflang="pt-BR" lang="pt-BR">PT</a>
+          <a href="https://manualdebordo.kriativosonboard.com.br/" class="lang-switch__item" hreflang="pt-BR" lang="pt-BR">PT</a>
           <span class="lang-switch__item is-active" aria-current="page">EN</span>
-          <a href="/es/manual-de-bordo.html" class="lang-switch__item" hreflang="es" lang="es">ES</a>
+          <a href="https://manualdebordo.kriativosonboard.com.br/es/" class="lang-switch__item" hreflang="es" lang="es">ES</a>
         </nav>
         <a class="guide-header__home-link" href="https://kriativosonboard.com.br/en/"
           aria-label="Back to main KOB website">
@@ -723,66 +724,77 @@
             height="720" loading="lazy" decoding="async">
         </header>
 
-        <div class="games-layout">
-          <article class="game-block">
-            <h3 class="game-block__title">Your gaming lounge</h3>
-            <p class="game-block__text">
-              Crystal Lounge is the planned venue for KOB gaming sessions. The room still depends on final ship
-              confirmation. Tables
-              operate on an open, rotating basis: please make room for other players once your game concludes.
-            </p>
-            <p class="game-block__text">
-              Extensive hours are planned throughout the day and evening. There is no promise of 24h non-stop
-              operation. Respect Sunday's inventory return cutoff time.
-            </p>
-          </article>
+        <div class="games-carousel">
+          <div class="games-carousel__controls" hidden>
+            <span class="games-carousel__position" data-games-position role="status" aria-live="polite" aria-atomic="true"></span>
+            <button class="games-carousel__arrow" type="button" data-games-previous aria-label="Previous cards" aria-controls="gamesTrack">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+            </button>
+            <button class="games-carousel__arrow" type="button" data-games-next aria-label="Next cards" aria-controls="gamesTrack">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg>
+            </button>
+          </div>
+          <div class="games-layout" id="gamesTrack" tabindex="0" role="region" aria-labelledby="jogos-title">
+            <article class="game-block">
+              <h3 class="game-block__title">Your gaming lounge</h3>
+              <p class="game-block__text">
+                Crystal Lounge is the planned venue for KOB gaming sessions. The room still depends on final ship
+                confirmation. Tables
+                operate on an open, rotating basis: please make room for other players once your game concludes.
+              </p>
+              <p class="game-block__text">
+                Extensive hours are planned throughout the day and evening. There is no promise of 24h non-stop
+                operation. Respect Sunday's inventory return cutoff time.
+              </p>
+            </article>
 
-          <article class="game-block">
-            <h3 class="game-block__title">Welcome kit &amp; schedule</h3>
-            <p class="game-block__text">
-              The kit includes a lanyard/badge for cabin keys, wristband, commemorative collectible coin, and a
-              sturdy board game tote bag from Fácil Shopping. Pickup is estimated for 16:00/16:30 on day one.
-            </p>
-            <p class="game-block__text">
-              The entrance board in the gaming hall will display the daily timetable. Check official channels for any
-              schedule updates.
-            </p>
-          </article>
+            <article class="game-block">
+              <h3 class="game-block__title">Welcome kit &amp; schedule</h3>
+              <p class="game-block__text">
+                The kit includes a lanyard/badge for cabin keys, wristband, commemorative collectible coin, and a
+                sturdy board game tote bag from Fácil Shopping. Pickup is estimated for 16:00/16:30 on day one.
+              </p>
+              <p class="game-block__text">
+                The entrance board in the gaming hall will display the daily timetable. Check official channels for any
+                schedule updates.
+              </p>
+            </article>
 
-          <article class="game-block">
-            <h3 class="game-block__title">Board Game Guru App</h3>
-            <p class="game-block__text">
-              Download <a href="https://boardgameguru.app/" target="_blank" rel="noopener noreferrer">Board Game
-                Guru</a>
-              (available on iOS and Android) and open the Kriativos On Board event page. Tap ‘I’m going’ to be eligible
-              for raffles.
-            </p>
-            <p class="game-block__text">
-              If unable to use the app, contact Encounter staff to request manual registration. Use the app to browse
-              the
-              game catalog, filter titles, and bookmark favorites.
-            </p>
-          </article>
+            <article class="game-block">
+              <h3 class="game-block__title">Board Game Guru App</h3>
+              <p class="game-block__text">
+                Download <a href="https://boardgameguru.app/" target="_blank" rel="noopener noreferrer">Board Game
+                  Guru</a>
+                (available on iOS and Android) and open the Kriativos On Board event page. Tap ‘I’m going’ to be eligible
+                for raffles.
+              </p>
+              <p class="game-block__text">
+                If unable to use the app, contact Encounter staff to request manual registration. Use the app to browse
+                the
+                game catalog, filter titles, and bookmark favorites.
+              </p>
+            </article>
 
-          <article class="game-block">
-            <h3 class="game-block__title">Monitors &amp; Finding tables</h3>
-            <p class="game-block__text">
-              Encounter monitors will help you select games and teach rules. Solo travelers and newcomers can easily
-              connect with friendly groups.
-            </p>
-            <p class="game-block__text">
-              You are welcome to bring personal board games and prototypes, within luggage limits. When taking library
-              games outside the lounge, register your name and cabin with the monitor desk.
-            </p>
-          </article>
+            <article class="game-block">
+              <h3 class="game-block__title">Monitors &amp; Finding tables</h3>
+              <p class="game-block__text">
+                Encounter monitors will help you select games and teach rules. Solo travelers and newcomers can easily
+                connect with friendly groups.
+              </p>
+              <p class="game-block__text">
+                You are welcome to bring personal board games and prototypes, within luggage limits. When taking library
+                games outside the lounge, register your name and cabin with the monitor desk.
+              </p>
+            </article>
 
-          <article class="game-block">
-            <h3 class="game-block__title">Tournaments &amp; Closing party</h3>
-            <p class="game-block__text">
-              Check the daily notice board for confirmed tournaments and raffle schedules. Bring your 80s retro outfit
-              for Sunday night's farewell celebration!
-            </p>
-          </article>
+            <article class="game-block">
+              <h3 class="game-block__title">Tournaments &amp; Closing party</h3>
+              <p class="game-block__text">
+                Check the daily notice board for confirmed tournaments and raffle schedules. Bring your 80s retro outfit
+                for Sunday night's farewell celebration!
+              </p>
+            </article>
+          </div>
         </div>
       </div>
     </section>
@@ -2015,9 +2027,9 @@
           </div>
           <div class="footer__bottom-actions">
             <nav class="lang-switch" aria-label="Select language">
-              <a href="/manual-de-bordo.html" class="lang-switch__item" hreflang="pt-BR" lang="pt-BR">PT</a>
+              <a href="https://manualdebordo.kriativosonboard.com.br/" class="lang-switch__item" hreflang="pt-BR" lang="pt-BR">PT</a>
               <span class="lang-switch__item is-active" aria-current="page">EN</span>
-              <a href="/es/manual-de-bordo.html" class="lang-switch__item" hreflang="es" lang="es">ES</a>
+              <a href="https://manualdebordo.kriativosonboard.com.br/es/" class="lang-switch__item" hreflang="es" lang="es">ES</a>
             </nav>
             <div class="ksio-powered-line">
               Powered by <a href="https://ksio.dev" target="_blank" rel="noopener noreferrer">ksio.dev</a>
