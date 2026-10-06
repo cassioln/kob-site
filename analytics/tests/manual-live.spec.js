@@ -27,6 +27,12 @@ async function readyPlayer(page) {
   await page.evaluate(() => { const player = window.__liveMock.instances.at(-1); player.events.onReady({ target: player }); });
 }
 
+// The rule notice only appears once 4s of its topic have played.
+async function playIntoTopic(page, seconds) {
+  await page.evaluate(seconds => { window.__liveMock.seconds = seconds; }, seconds);
+  await expect(page.locator('#liveChapterNotice')).toBeVisible();
+}
+
 test.beforeEach(async ({ page }) => { await page.addInitScript(()=>localStorage.setItem('cookie_consent_status','denied')); await mockPlayer(page); });
 
 test('Não carrega terceiros antes da ação e a última seleção aguarda onReady', async ({ page }) => {
@@ -421,6 +427,7 @@ test('Aviso abaixo do assunto no vídeo e guia em janela paralela, sem navegar o
   await expect(row.locator('.live-chapter-item__play')).toHaveCSS('opacity','1');
   await row.click();
   await readyPlayer(page);
+  await playIntoTopic(page, 1255);
   const warning=page.locator('#liveChapterNote');
   await expect.poll(async()=>{
     const note=await warning.boundingBox(),controls=await page.locator('#liveCustomControls').boundingBox();
@@ -568,6 +575,7 @@ test('Identificação acompanha o recolhimento real dos controles e retorna suav
   await page.emulateMedia({reducedMotion:'no-preference'});
   await page.goto('/manual-de-bordo.html');
   await openTopics(page);await page.locator('[data-seconds="1535"]').click();await readyPlayer(page);
+  await playIntoTopic(page, 1540);
   const group=page.locator('#liveLowerThird'),controls=page.locator('#liveCustomControls');
   await page.mouse.move(0,0);
   await expect.poll(async()=>{
@@ -650,6 +658,7 @@ for (const [lang, path, details] of [['pt','/manual-de-bordo.html','Mais detalhe
     await openTopics(page);
     await page.locator('[data-seconds="1250"]').click();
     await readyPlayer(page);
+    await playIntoTopic(page, 1255);
     const note = page.locator('#liveChapterNote');
     const action = page.locator('#liveChapterNoteAction [data-live-faq]');
     await expect(note.locator('button')).toHaveCount(0);
@@ -659,6 +668,7 @@ for (const [lang, path, details] of [['pt','/manual-de-bordo.html','Mais detalhe
     await openTopics(page);
     await page.locator('[data-seconds="4456"]').click();
     await expect(note).toContainText('23 kg');
+    await playIntoTopic(page, 4461);
     const second = await action.boundingBox();
     expect(second.x + second.width).toBeCloseTo(first.x + first.width, 1);
     await action.hover();
@@ -716,7 +726,8 @@ for (const [lang, path, details] of [['pt','/manual-de-bordo.html','Mais detalhe
     await expect.poll(async () => (await play.boundingBox()).width).toBeLessThanOrEqual(180);
     await expect(text).toHaveCSS('animation-name','live-label-marquee');
     await expect.poll(async () => text.evaluate(el => new DOMMatrix(getComputedStyle(el).transform).m41)).toBeLessThan(-.25);
-    await page.evaluate(() => window.scrollTo(0,document.documentElement.scrollHeight));
+    // Instant: the site scrolls smoothly, and a scroll still running would pull the button from under the pointer later.
+    await page.evaluate(() => window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'instant' }));
     await expect(text).toHaveCSS('animation-play-state','paused');
     await play.scrollIntoViewIfNeeded();
     await expect(text).toHaveCSS('animation-play-state','running');
@@ -754,7 +765,8 @@ for (const rate of [1, 2]) test(`Entrada automática termina no início do novo 
   await openTopics(page);
   await page.locator('[data-seconds="1250"]').click();
   await readyPlayer(page);
-  await page.clock.pauseAt(new Date(await page.evaluate(() => Date.now()) + 10));
+  // Margin for slower machines (CI): pausing at a time already past throws.
+  await page.clock.pauseAt(new Date(await page.evaluate(() => Date.now()) + 1000));
   await page.evaluate(rate => {
     const anchor = Date.now();
     const player = window.__liveMock.instances.at(-1);
@@ -790,7 +802,8 @@ test('Escolher outro assunto cancela a antecipação e mostra título e regra im
   await openTopics(page);
   await page.locator('[data-seconds="1250"]').click();
   await readyPlayer(page);
-  await page.clock.pauseAt(new Date(await page.evaluate(() => Date.now()) + 10));
+  // Margin for slower machines (CI): pausing at a time already past throws.
+  await page.clock.pauseAt(new Date(await page.evaluate(() => Date.now()) + 1000));
   await page.evaluate(() => { window.__liveMock.seconds = 1342.5; });
   await page.clock.runFor(1100);
   const title = page.locator('#liveCustomTopic');
@@ -840,7 +853,8 @@ test('Scrub para trás e redução da velocidade restauram o título dentro da j
   await openTopics(page);
   await page.locator('[data-seconds="1250"]').click();
   await readyPlayer(page);
-  await page.clock.pauseAt(new Date(await page.evaluate(() => Date.now()) + 10));
+  // Margin for slower machines (CI): pausing at a time already past throws.
+  await page.clock.pauseAt(new Date(await page.evaluate(() => Date.now()) + 1000));
   await page.evaluate(() => {
     window.__liveMock.seconds = 1344.8;
     window.__liveMock.rate = 1;
