@@ -421,6 +421,8 @@ test('Aviso abaixo do assunto no vídeo e guia em janela paralela, sem navegar o
   await expect(row.locator('.live-chapter-item__play')).toHaveCSS('opacity','1');
   await row.click();
   await readyPlayer(page);
+  await page.evaluate(() => { window.__liveMock.seconds = 1255; });
+  await expect(page.locator('#liveChapterNotice')).toBeVisible();
   const warning=page.locator('#liveChapterNote');
   await expect.poll(async()=>{
     const note=await warning.boundingBox(),controls=await page.locator('#liveCustomControls').boundingBox();
@@ -586,6 +588,8 @@ test('Identificação acompanha o recolhimento real dos controles e retorna suav
   await page.locator('#livePlayerWrapper').hover({position:{x:40,y:40}});
   await expect(controls).toHaveClass(/is-visible/);
   await expect.poll(()=>group.evaluate(el=>el.getBoundingClientRect().bottom-el.parentElement.getBoundingClientRect().bottom)).toBeLessThan(lowered-80);
+  await page.evaluate(() => { window.__liveMock.seconds = 1540; });
+  await expect(page.locator('#liveChapterNotice')).toBeVisible();
   const guide=page.locator('#liveChapterNoteAction [data-live-faq]');await guide.focus();
   await page.waitForTimeout(3400);await expect(controls).toHaveClass(/is-visible/);
   await expect(page.locator('#liveGuidePopover')).toBeVisible();
@@ -650,6 +654,8 @@ for (const [lang, path, details] of [['pt','/manual-de-bordo.html','Mais detalhe
     await openTopics(page);
     await page.locator('[data-seconds="1250"]').click();
     await readyPlayer(page);
+    await page.evaluate(() => { window.__liveMock.seconds = 1255; });
+    await expect(page.locator('#liveChapterNotice')).toBeVisible();
     const note = page.locator('#liveChapterNote');
     const action = page.locator('#liveChapterNoteAction [data-live-faq]');
     await expect(note.locator('button')).toHaveCount(0);
@@ -658,6 +664,8 @@ for (const [lang, path, details] of [['pt','/manual-de-bordo.html','Mais detalhe
     expect(first.x).toBeGreaterThan((await note.boundingBox()).x + (await note.boundingBox()).width);
     await openTopics(page);
     await page.locator('[data-seconds="4456"]').click();
+    await page.evaluate(() => { window.__liveMock.seconds = 4461; });
+    await expect(page.locator('#liveChapterNotice')).toBeVisible();
     await expect(note).toContainText('23 kg');
     const second = await action.boundingBox();
     expect(second.x + second.width).toBeCloseTo(first.x + first.width, 1);
@@ -728,9 +736,12 @@ for (const [lang, path, details] of [['pt','/manual-de-bordo.html','Mais detalhe
     await play.evaluate(el => el.blur());
     await page.mouse.move(0,0);
     await expect(text).toHaveCSS('animation-name','none');
-    await play.hover();
-    await expect(text).toHaveCSS('animation-name','live-label-marquee');
+    await expect.poll(async () => {
+      await play.hover();
+      return text.evaluate(el => getComputedStyle(el).animationName);
+    }).toBe('live-label-marquee');
     await page.emulateMedia({ reducedMotion:'reduce' });
+    await play.hover();
     await expect(text).toHaveCSS('animation-name','none');
     await expect(text).toHaveCSS('text-overflow','ellipsis');
     await expect(page.locator('#liveChapterNoteAction [data-live-faq]')).toHaveText(details);

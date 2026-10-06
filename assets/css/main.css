@@ -565,12 +565,17 @@ h4 {
 }
 
 .nav__links a.is-active,
-.nav__links a[aria-current="true"],
+.nav__links a[aria-current="true"] {
+  color: var(--foam-white) !important;
+  background: rgba(255, 255, 255, 0.12) !important;
+  box-shadow: none !important;
+}
+
 .nav[data-scrolled="true"] .nav__links a.is-active,
 .nav[data-scrolled="true"] .nav__links a[aria-current="true"] {
-  color: #ffffff !important;
-  background: var(--kriativa-purple, #71206c) !important;
-  box-shadow: 0 2px 10px rgba(113, 32, 108, 0.4);
+  color: var(--foam-white) !important;
+  background: rgba(255, 255, 255, 0.16) !important;
+  box-shadow: none !important;
 }
 
 .nav[data-scrolled="true"] .btn--primary {
