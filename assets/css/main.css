@@ -8603,6 +8603,12 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
   font-size: 1rem;
   letter-spacing: 0.035em;
   text-align: right;
+  margin-left: auto;
+}
+
+.footer__bottom-main > .ksio-powered-line {
+  margin-left: auto;
+  text-align: right;
 }
 
 .ksio-powered-line a {
@@ -8627,6 +8633,8 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
   align-items: center;
   gap: 20px;
   flex-wrap: wrap;
+  margin-left: auto;
+  justify-content: flex-end;
 }
 
 .footer__bottom-actions .lang-switch,
@@ -8785,7 +8793,14 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
   }
 
   .ksio-powered-line {
-    text-align: left;
+    text-align: right;
+    margin-left: auto;
+  }
+
+  .footer__bottom-main > .ksio-powered-line {
+    width: 100%;
+    text-align: right;
+    align-self: flex-end;
   }
 
   .footer__legal {
