@@ -620,6 +620,71 @@
   font-size: 1.15rem;
 }
 
+/* Loading: the cover stays over the embed (dimmed, with a spinner) until the video plays. */
+.hero-live-player:is(.is-loading, .is-revealing) .live-facade {
+  z-index: 1;
+}
+
+.hero-live-player.is-revealing .live-facade {
+  opacity: 0;
+  transition: opacity 280ms ease;
+}
+
+.hero-live-player:is(.is-loading, .is-revealing) .live-play-button {
+  display: none;
+}
+
+.live-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: rgba(4, 29, 58, .55);
+  color: #fff;
+  font: 600 .88rem/1.4 var(--font-body);
+  text-shadow: 0 1px 3px rgba(0, 10, 25, .5);
+}
+
+.live-loading__spinner {
+  width: 38px;
+  height: 38px;
+  border: 3px solid rgba(255, 255, 255, .28);
+  border-top-color: var(--sunset-gold, #ffc20e);
+  border-radius: 50%;
+  animation: live-spin .8s linear infinite;
+}
+
+@keyframes live-notice-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes live-pill-attention {
+  50% {
+    transform: scale(1.06);
+    box-shadow: 0 0 0 4px rgba(255, 194, 14, .35), 0 4px 14px rgba(4, 29, 58, .3);
+  }
+}
+
+@keyframes live-warning-breathe {
+  50% {
+    opacity: .5;
+    transform: scale(.88);
+  }
+}
+
+@keyframes live-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .live-player-container {
   position: absolute;
   inset: 0;
@@ -1175,11 +1240,13 @@
   pointer-events: none;
 }
 
-/* Mobile-only parts of the topics sheet and the details sheet. */
+/* Mobile-only parts of the topics sheet, the details sheet and the floating notice. */
 .live-drawer__grab,
 .live-drawer__tab-count,
 .live-drawer__tab-hint,
-.live-guide-backdrop {
+.live-guide-backdrop,
+.live-chapter-notice__collapse,
+.live-notice-pill {
   display: none;
 }
 
@@ -1837,6 +1904,17 @@
     display: none;
   }
 
+  .live-loading {
+    gap: 8px;
+    padding-bottom: 44px;
+    font-size: .8rem;
+  }
+
+  .live-loading__spinner {
+    width: 30px;
+    height: 30px;
+  }
+
   .live-lower-third .live-custom-controls__topic {
     display: -webkit-box;
     width: fit-content;
@@ -1867,66 +1945,135 @@
     transition: none;
   }
 
-  /* Updated-rule notice: a slim strip under the video; "details" follows the last word. */
-  .hero-live-cinema>.live-chapter-notice:not([hidden]) {
+  /* Updated-rule notice floats over the top of the video (once 4s of the topic have played),
+     so nothing below it moves. Same palette as the desktop notice; "Mais detalhes" hangs from
+     its bottom-right corner like a tab, and "−" folds the notice into a badge. */
+  .hero-live-player>.live-chapter-notice:not([hidden]) {
     display: block;
-    margin: 8px 0 0;
-    padding: 8px 10px 8px 11px;
-    border: 1px solid #24486a;
-    border-left: 3px solid var(--sunset-gold, #ffc20e);
+    position: absolute;
+    inset: 8px 8px auto;
+    z-index: 2;
+    margin: 0;
+    padding: 8px 34px 8px 11px;
+    border: 0;
+    border-top: 2px solid var(--sunset-gold, #ffc20e);
     border-radius: 10px;
-    background: #0a2a4d;
-    color: #d1e3f0;
-    font-size: .76rem;
-    line-height: 1.55;
+    background: #f5fcff;
+    box-shadow: 0 8px 24px rgba(4, 29, 58, .28);
+    color: #082f57;
+    font-size: .75rem;
+    line-height: 1.45;
+    animation: live-notice-in 260ms cubic-bezier(.16, 1, .3, 1);
   }
 
-  .hero-live-cinema>.live-chapter-notice>.live-chapter-note {
-    display: inline;
+  .hero-live-player>.live-chapter-notice:has(>.live-chapter-note__action:not([hidden])) {
+    border-bottom-right-radius: 0;
+  }
+
+  .hero-live-player:is(:not(.is-notice-due), .is-notice-collapsed)>.live-chapter-notice {
+    display: none !important;
+  }
+
+  .hero-live-player>.live-chapter-notice>.live-chapter-note {
     color: inherit;
     font-size: inherit;
     line-height: inherit;
   }
 
-  .hero-live-cinema>.live-chapter-notice strong {
-    color: #fcd34d;
+  .hero-live-player>.live-chapter-notice strong {
+    color: #725200;
     font-size: inherit;
   }
 
-  .hero-live-cinema .live-chapter-note__action {
-    display: inline;
-    margin-left: 4px;
-    font-size: .7rem;
+  .hero-live-player .live-chapter-note__action {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    font-size: .68rem;
   }
 
-  .guide-page .hero-live-cinema .live-chapter-note__action .live-guide-trigger {
-    min-height: 24px;
-    gap: 6px;
-    padding: 2px 9px 2px 11px;
-    border: 1px solid rgba(252, 211, 77, .45);
-    border-radius: 999px;
-    color: #fcd34d;
-    background: transparent;
+  .guide-page .hero-live-player .live-chapter-note__action .live-guide-trigger {
+    min-height: 26px;
+    gap: 5px;
+    margin: 0;
+    padding: 3px 10px 4px;
+    border: 0;
+    border-radius: 0 0 8px 8px;
+    color: #041d3a;
+    background: var(--sunset-gold, #ffc20e);
+    box-shadow: 0 6px 14px rgba(4, 29, 58, .25);
     white-space: nowrap;
   }
 
-  .guide-page .hero-live-cinema .live-chapter-note__action .live-guide-trigger:is(:hover, :focus-visible, [aria-expanded="true"]) {
-    color: #ffe08a;
-    background: rgba(252, 211, 77, .14);
+  .guide-page .hero-live-player .live-chapter-note__action .live-guide-trigger:is(:hover, :focus-visible, [aria-expanded="true"]) {
+    color: #001327;
+    background: #ffd147;
   }
 
-  .hero-live-cinema .live-chapter-note__action .live-guide-trigger svg {
-    display: none;
+  .hero-live-player .live-chapter-note__action .live-guide-trigger svg {
+    width: 14px;
+    height: 14px;
   }
 
-  .hero-live-cinema .live-chapter-note__action .live-guide-trigger::after {
-    content: '';
-    width: 6px;
-    height: 6px;
-    margin-top: 1px;
-    border-right: 1.5px solid currentColor;
-    border-bottom: 1.5px solid currentColor;
-    transform: rotate(-45deg);
+  .live-chapter-notice__collapse {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    border-radius: 6px;
+    color: #082f57;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .live-chapter-notice__collapse:is(:hover, :focus-visible) {
+    background: rgba(4, 29, 58, .08);
+  }
+
+  .live-chapter-notice__collapse:focus-visible,
+  .live-notice-pill:focus-visible {
+    outline: 2px solid #ffc20e;
+    outline-offset: 2px;
+  }
+
+  .live-notice-pill:not([hidden]) {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 30px;
+    padding: 4px 8px 4px 9px;
+    border: 1px solid rgba(4, 29, 58, .12);
+    border-radius: 6px;
+    color: #041d3a;
+    background: var(--sunset-gold, #ffc20e);
+    box-shadow: 0 4px 14px rgba(4, 29, 58, .3);
+    font: 700 .7rem/1 var(--font-body);
+    cursor: pointer;
+  }
+
+  .live-notice-pill:hover {
+    background: #ffd147;
+  }
+
+  .live-notice-pill:focus-visible {
+    outline-color: #fff;
+  }
+
+  .live-notice-pill.is-new {
+    animation: live-pill-attention 1.1s ease 2;
+  }
+
+  .live-notice-pill__icon {
+    animation: live-warning-breathe 2.4s ease-in-out infinite;
   }
 
   .live-toolbar {
@@ -1959,27 +2106,38 @@
     gap: 10px 8px;
   }
 
-  #livePreviousChapterBtn {
-    grid-column: 1 / 3;
-  }
-
-  #liveNextChapterBtn {
-    grid-column: 4 / 6;
+  /* Topic progress on top; previous / play / next below it. */
+  #liveCurrentTime {
+    grid-area: 1 / 1;
   }
 
   #liveProgress {
-    grid-column: 2 / 5;
+    grid-area: 1 / 2 / auto / 5;
     min-width: 0;
   }
 
+  #liveDuration {
+    grid-area: 1 / 5;
+  }
+
+  #livePreviousChapterBtn {
+    grid-area: 2 / 1 / auto / 3;
+  }
+
+  #liveNextChapterBtn {
+    grid-area: 2 / 4 / auto / 6;
+  }
+
+  /* Same height as play/pause; the topic name stays on one line. */
   .live-custom-controls .live-custom-controls__nav {
     grid-template-columns: auto minmax(0, 1fr);
     grid-template-areas: "icon dir" "label label";
-    align-content: start;
+    align-content: center;
     justify-content: stretch;
     gap: 3px 2px;
-    min-height: 60px;
-    padding: 8px 9px;
+    height: 56px;
+    min-height: 0;
+    padding: 0 10px;
     border-radius: 8px;
     color: #fff;
     background: rgba(255, 255, 255, .1);
@@ -2010,15 +2168,19 @@
 
   .live-custom-controls__nav .live-control-label {
     grid-area: label;
+    justify-self: stretch;
     max-width: none;
   }
 
-  /* Titles are short enough to show in full; clamping would cut them without an ellipsis. */
   .live-custom-controls__nav .live-control-label>span {
-    width: auto;
-    white-space: normal;
+    width: max-content;
+    white-space: nowrap;
     opacity: 1;
     font: 600 .72rem/1.35 var(--font-body);
+  }
+
+  .live-custom-controls #liveNextChapterBtn .live-control-label>span {
+    margin-left: auto;
   }
 
   .live-custom-controls #liveNextChapterBtn {
@@ -2029,7 +2191,7 @@
   }
 
   .live-custom-controls .live-custom-controls__play {
-    grid-column: 3;
+    grid-area: 2 / 3;
     grid-template-columns: auto;
     place-items: center;
     width: 56px;
@@ -2343,6 +2505,18 @@
 
   .guide-header__home-link .short-text {
     display: none;
+  }
+}
+
+/* Mobile has no hover: names that don't fit scroll on their own, as the desktop marquee does on hover. */
+@media (max-width: 768px) and (prefers-reduced-motion: no-preference) {
+  .live-custom-controls__nav .live-control-label.is-overflowing {
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 6px, #000 calc(100% - 6px), transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 6px, #000 calc(100% - 6px), transparent);
+  }
+
+  .live-custom-controls__nav:not(:disabled) .live-control-label.is-overflowing>span {
+    animation: live-label-marquee var(--live-label-duration, 8s) linear infinite alternate;
   }
 }
 
@@ -2671,6 +2845,14 @@
   transform: scaleX(0);
   transform-origin: left;
   transition: transform .2s ease;
+}
+
+.checklist-sidebar__progress-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .checklist-sidebar__progress-text {
@@ -3095,9 +3277,9 @@
 }
 
 .checklist-reset-btn:hover {
-  background: #71206c;
+  background: #b91c1c;
   color: #fff;
-  border-color: #71206c;
+  border-color: #b91c1c;
 }
 
 /* --------------------------------------------------------------------------
@@ -4743,17 +4925,36 @@
 }
 
 .checklist-sidebar .checklist-reset-btn {
-  padding: 4px 0;
-  border: 0;
-  background: transparent;
-  font-size: .7rem;
-  text-decoration: underline;
-  text-underline-offset: 3px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 3px 8px;
+  border: 1px solid #b7c8d6;
+  border-radius: 4px;
+  background: #f4f7fa;
+  color: #16324c;
+  font-size: .68rem;
+  font-weight: 600;
+  line-height: 1.3;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+
+.checklist-sidebar .checklist-reset-btn svg {
+  flex-shrink: 0;
+  display: block;
 }
 
 .checklist-sidebar .checklist-reset-btn:is(:hover, :focus-visible) {
-  color: #71206c;
-  background: transparent;
+  color: #fff;
+  background: #b91c1c;
+  border-color: #b91c1c;
+  text-decoration: none;
+  outline: 2px solid #b91c1c;
+  outline-offset: 1px;
 }
 
 @media (prefers-reduced-motion: reduce) {

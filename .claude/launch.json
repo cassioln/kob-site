@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "kob-site",
+      "runtimeExecutable": "php",
+      "runtimeArgs": ["-S", "localhost:8086", "router.php"],
+      "port": 8086,
+      "autoPort": false
+    }
+  ]
+}
