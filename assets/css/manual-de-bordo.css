@@ -4530,8 +4530,11 @@
 
 @media (prefers-reduced-motion: reduce) {
 
+  /* The global reduced-motion rule gives every element a tiny transition; inside the sheet that
+     would keep its buttons "hidden" for a frame and block focusing them when it opens. */
   .live-drawer__slide,
   .live-drawer__panel,
+  .live-drawer__panel *,
   .live-drawer__arrow,
   .hero-live-player::after {
     transition: none !important;
