@@ -966,9 +966,11 @@ test('No mobile o aviso flutua sobre o vídeo após 4s e recolhe para um selo no
   await expect(pill).toBeVisible();
   await expect(pill).toContainText('Atualização');
   await expect(pill).toBeFocused();
+  // Measure the video again: Playwright may scroll the page to click "−".
   const pillBox = await pill.boundingBox();
-  expect(pillBox.y).toBeLessThan(video.y + 20);
-  expect(pillBox.x).toBeLessThan(video.x + 20);
+  const videoNow = await page.locator('#livePlayerWrapper').boundingBox();
+  expect(pillBox.y).toBeLessThan(videoNow.y + 20);
+  expect(pillBox.x).toBeLessThan(videoNow.x + 20);
   await pill.click();
   await expect(notice).toBeVisible();
   await expect(pill).toBeHidden();
