@@ -8451,6 +8451,11 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
   border-top: 1px solid color-mix(in oklab, var(--foam-white) 13%, transparent);
 }
 
+.footer__inner > .footer__deck:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
 .footer__brand img {
   display: block;
   width: clamp(172px, 18vw, 230px);
@@ -8612,6 +8617,52 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
   text-underline-offset: 3px;
 }
 
+.footer__bottom-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.footer__bottom-actions .lang-switch,
+.footer .lang-switch {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: var(--r-sm, 6px);
+  padding: 2px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.footer .lang-switch__item {
+  display: inline-block;
+  padding: 3px 8px;
+  color: rgba(255, 255, 255, 0.7) !important;
+  text-decoration: none !important;
+  text-decoration-line: none !important;
+  border-radius: 4px;
+  transition: color var(--dur-fast) ease, background var(--dur-fast) ease;
+}
+
+.footer .lang-switch__item:hover:not(.is-active),
+.footer .lang-switch__item:hover {
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.16) !important;
+  text-decoration: none !important;
+  text-decoration-line: none !important;
+}
+
+.footer .lang-switch__item.is-active {
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.22) !important;
+  cursor: default;
+  text-decoration: none !important;
+  text-decoration-line: none !important;
+}
+
 @keyframes footer-route-draw {
   from {
     stroke-dashoffset: 1;
@@ -8721,6 +8772,11 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
 
   .footer__privacy-controls {
     gap: 12px 18px;
+  }
+
+  .footer__bottom-actions {
+    width: 100%;
+    justify-content: space-between;
   }
 
   .ksio-powered-line {

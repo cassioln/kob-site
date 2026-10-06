@@ -1962,33 +1962,74 @@
     </div>
   </aside>
 
-  <footer class="guide-footer">
-    <div class="guide-container guide-footer__inner">
-      <div class="guide-footer__top">
-        <a href="/es/" class="guide-footer__brand" aria-label="Kriativos On Board — Inicio">
-          <img src="/assets/images/brand/kriativos-on-board-logo.webp" alt="Kriativos On Board" width="2930"
-            height="1796">
-        </a>
-        <nav class="guide-footer__nav" aria-label="Enlaces del pie de página">
+  <footer class="footer guide-footer" aria-labelledby="footer-guide-nav-title">
+    <div class="footer__horizon" aria-hidden="true">
+      <svg viewBox="0 0 1440 180" preserveAspectRatio="none">
+        <path class="footer__route-shadow" pathLength="1"
+          d="M-20 112C190 42 382 154 570 92S907 27 1094 86s244 36 376-12"></path>
+        <path class="footer__route-line" pathLength="1" d="M-20 112C190 42 382 154 570 92S907 27 1094 86s244 36 376-12">
+        </path>
+        <circle class="footer__route-marker footer__route-marker--cyan" cx="570" cy="92" r="6"></circle>
+        <circle class="footer__route-marker footer__route-marker--magenta" cx="1094" cy="86" r="6"></circle>
+      </svg>
+    </div>
+
+    <div class="container footer__inner">
+      <div class="footer__deck">
+        <div class="footer__brand">
+          <a href="/es/" aria-label="Kriativos On Board — Inicio">
+            <img src="/assets/images/brand/kriativos-on-board-logo.webp" alt="Kriativos On Board" width="2930"
+              height="1796">
+          </a>
+          <p>Prepárate para embarcar con nosotros</p>
+          <span class="footer__voyage-code">Santos · Búzios · 20–23 nov 2026</span>
+        </div>
+
+        <nav class="footer__col" aria-labelledby="footer-guide-nav-title">
+          <h3 id="footer-guide-nav-title">Navegación de la Guía</h3>
           <a href="/es/">Volver al inicio</a>
           <a href="#live">Transmisión de embarque</a>
-          <a href="/politica-de-privacidade.html">Política de privacidad</a>
-          <a href="/termos-de-transporte.html">Términos de transporte</a>
+          <a href="#checklist">Checklist de preparación</a>
+          <a href="#cronograma">Cronograma del viaje</a>
+          <a href="#jogos">Ludoteca y Juegos</a>
+        </nav>
+
+        <nav class="footer__col" aria-labelledby="footer-guide-support-title">
+          <h3 id="footer-guide-support-title">Soporte y Viaje</h3>
           <a href="https://api.whatsapp.com/send?phone=5513981580498" target="_blank"
-            rel="noopener noreferrer">Contactar
-            a Royal Trip</a>
+            rel="noopener noreferrer">Contactar a Royal Trip</a>
+          <a href="https://busao.kriativosonboard.com.br/es/">Autobús chárter</a>
+          <a href="/termos-de-transporte.html">Términos de transporte</a>
+          <a href="#faq">Preguntas frecuentes</a>
         </nav>
       </div>
 
-      <div class="guide-footer__bottom">
-        <div>
-          © 2026 Kriativos On Board · MSC Musica 20 al 23 de noviembre de 2026.
+      <div class="footer__bottom">
+        <div class="footer__bottom-main">
+          <div class="footer__privacy-controls">
+            <a class="footer__cookie-policy" href="/politica-de-privacidade.html">Política de privacidad</a>
+            <a class="footer__cookie-policy" href="/politica-de-cookies.html">Política de cookies</a>
+            <a class="footer__cookie-policy" href="/termos-de-transporte.html">Términos de transporte</a>
+            <button class="footer__cookie-preferences" type="button" data-cookie-preferences>Revisar preferencias de
+              cookies</button>
+          </div>
+          <div class="footer__bottom-actions">
+            <nav class="lang-switch" aria-label="Seleccionar idioma">
+              <a href="/manual-de-bordo.html" class="lang-switch__item" hreflang="pt-BR" lang="pt-BR">PT</a>
+              <a href="/en/manual-de-bordo.html" class="lang-switch__item" hreflang="en" lang="en">EN</a>
+              <span class="lang-switch__item is-active" aria-current="page">ES</span>
+            </nav>
+            <div class="ksio-powered-line">
+              Powered by <a href="https://ksio.dev" target="_blank" rel="noopener noreferrer">ksio.dev</a>
+            </div>
+          </div>
         </div>
-        <nav class="lang-switch" aria-label="Seleccionar idioma">
-          <a href="/manual-de-bordo.html" class="lang-switch__item" hreflang="pt-BR" lang="pt-BR">PT</a>
-          <a href="/en/manual-de-bordo.html" class="lang-switch__item" hreflang="en" lang="en">EN</a>
-          <span class="lang-switch__item is-active" aria-current="page">ES</span>
-        </nav>
+
+        <div class="footer__legal">
+          <span>© 2026 Kriativos On Board. Todos los derechos reservados. · MSC Musica 20 al 23 de noviembre de 2026.</span>
+          <span class="footer__legal-sep" aria-hidden="true">·</span>
+          <span>Agencia aliada: Royal Trip · CNPJ 16.957.402/0001-19</span>
+        </div>
       </div>
     </div>
   </footer>
