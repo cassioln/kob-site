@@ -1265,7 +1265,7 @@ test('Apoio interno usa o popover e mantém o vídeo e a URL', async ({ page }) 
   await expect(page.locator('#livePlayerContainer iframe')).toHaveCount(1);
 });
 
-test('Mobile preserva recolhimento e apoios não encobrem o convite e o assunto', async ({ page }) => {
+test('Mobile preserva recolhimento e apoios não encobrem o convite e o assunto', { tag: '@smoke' }, async ({ page }) => {
   for (const lang of ['pt', 'en', 'es']) for (const width of [320, 390]) {
     await page.setViewportSize({ width, height: 1000 });
     await page.goto(`/${lang === 'pt' ? '' : `${lang}/`}manual-de-bordo.html`);
