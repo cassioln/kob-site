@@ -2,10 +2,10 @@ import { CHAPTERS, LIVE_VIDEO_ID, LIVE_DURATION } from './manual-de-bordo-live-d
 import { normalizeSearch, matchChapter, highlightParts, excerpt } from './manual-de-bordo-live-search.js?v=20261005-topic-player';
 
 import { topicAt, topicProgress, seekInTopic } from './manual-de-bordo-live-timeline.js?v=20261005-topic-player';
-import { initLiveGuideHelp } from './manual-de-bordo-live-help.js?v=20261005-topic-player';
-import { initLiveMarkers } from './manual-de-bordo-live-markers.js?v=20261005-lower-third';
+import { initLiveGuideHelp } from './manual-de-bordo-live-help.js?v=20261005-mobile-live';
+import { initLiveMarkers } from './manual-de-bordo-live-markers.js?v=20261005-mobile-live';
 import { initLiveControlMarquee } from './manual-de-bordo-live-marquee.js?v=20261005-ui-final';
-import { initLiveTopicTransition } from './manual-de-bordo-live-topic.js?v=20261005-purple-live';
+import { initLiveTopicTransition } from './manual-de-bordo-live-topic.js?v=20261005-mobile-live';
 
 const lang = document.documentElement.lang.slice(0, 2);
 const copy = {
@@ -13,19 +13,22 @@ const copy = {
     topics: 'Assuntos', close: 'Recolher assuntos',
     selected: 'Selecionado', playing: 'Em reprodução', transcript: 'Trecho da transcrição fornecida', updated: 'Regra atualizada', faq: 'Mais detalhes', detailHint: 'Passe o mouse, toque ou use o teclado para ver mais detalhes',
     videoTitle: 'Live de embarque · Kriativos On Board 2026', apiError: 'Não foi possível sincronizar os assuntos. O vídeo ainda pode ser assistido aqui ou pelo link no YouTube.', previousTopic: 'Assunto anterior', nextTopic: 'Próximo assunto', play: 'Reproduzir', pause: 'Pausar', progress: 'Progresso do assunto', remaining: 'Restante', closeGuide: 'Fechar orientação',
-    videoError: 'O YouTube não conseguiu reproduzir este vídeo. Tente novamente ou abra o trecho no YouTube.', fullscreenError: 'Não foi possível ampliar. Você pode abrir o vídeo no YouTube.', expand: 'Ampliar vídeo', exit: 'Sair da tela cheia'
+    videoError: 'O YouTube não conseguiu reproduzir este vídeo. Tente novamente ou abra o trecho no YouTube.', fullscreenError: 'Não foi possível ampliar. Você pode abrir o vídeo no YouTube.', expand: 'Ampliar vídeo', exit: 'Sair da tela cheia',
+    previousShort: 'Anterior', nextShort: 'Próximo', fullLive: 'Live completa', searchHint: 'Buscar na live'
   },
   en: {
     topics: 'Topics', close: 'Collapse topics',
     selected: 'Selected', playing: 'Playing', transcript: 'Excerpt of the supplied Portuguese transcript', updated: 'Updated rule', faq: 'More details', detailHint: 'Hover, tap or use the keyboard for more details',
     videoTitle: 'Boarding live recording · Kriativos On Board 2026', apiError: 'Topic synchronisation is unavailable. You can still watch here or open the video on YouTube.', previousTopic: 'Previous topic', nextTopic: 'Next topic', play: 'Play', pause: 'Pause', progress: 'Topic progress', remaining: 'Remaining', closeGuide: 'Close guidance',
-    videoError: 'YouTube could not play this video. Try again or open this topic on YouTube.', fullscreenError: 'Full screen is unavailable. You can open the video on YouTube.', expand: 'Expand video', exit: 'Exit full screen'
+    videoError: 'YouTube could not play this video. Try again or open this topic on YouTube.', fullscreenError: 'Full screen is unavailable. You can open the video on YouTube.', expand: 'Expand video', exit: 'Exit full screen',
+    previousShort: 'Previous', nextShort: 'Next', fullLive: 'Full recording', searchHint: 'Search the recording'
   },
   es: {
     topics: 'Temas', close: 'Recoger temas',
     selected: 'Seleccionado', playing: 'En reproducción', transcript: 'Fragmento de la transcripción proporcionada en portugués', updated: 'Regla actualizada', faq: 'Más detalles', detailHint: 'Pasa el cursor, toca o usa el teclado para ver más detalles',
     videoTitle: 'Charla de embarque · Kriativos On Board 2026', apiError: 'No se pudieron sincronizar los temas. Puedes seguir viendo aquí o abrir el vídeo en YouTube.', previousTopic: 'Tema anterior', nextTopic: 'Siguiente tema', play: 'Reproducir', pause: 'Pausar', progress: 'Progreso del tema', remaining: 'Restante', closeGuide: 'Cerrar orientación',
-    videoError: 'YouTube no pudo reproducir el vídeo. Inténtalo de nuevo o abre este tema en YouTube.', fullscreenError: 'No se pudo ampliar. Puedes abrir el vídeo en YouTube.', expand: 'Ampliar vídeo', exit: 'Salir de pantalla completa'
+    videoError: 'YouTube no pudo reproducir el vídeo. Inténtalo de nuevo o abre este tema en YouTube.', fullscreenError: 'No se pudo ampliar. Puedes abrir el vídeo en YouTube.', expand: 'Ampliar vídeo', exit: 'Salir de pantalla completa',
+    previousShort: 'Anterior', nextShort: 'Siguiente', fullLive: 'Charla completa', searchHint: 'Busca en la charla'
   }
 }[lang] || null;
 const cinema = document.getElementById('heroLiveCinema');
@@ -63,6 +66,7 @@ function loadYouTubeAPI() {
 function initLive() {
   const byId = id => document.getElementById(id);
   const desktop = matchMedia('(min-width: 769px)');
+  const mobile = matchMedia('(max-width: 768px)');
   const note = byId('liveChapterNote');
   const noticeGroup = document.createElement('div');
   noticeGroup.id = 'liveChapterNotice';
@@ -87,10 +91,11 @@ function initLive() {
       lowerThird.hidden = topic.hidden;
       if (controls.offsetHeight) video.style.setProperty('--live-controls-offset', `${controls.offsetHeight + 12}px`);
     } else {
+      // Mobile keeps the title on the video; the notice, dock and topics button stack below it.
       if (controls.parentElement !== cinema) cinema.insertBefore(controls, byId('heroLiveChaptersCol'));
-      if (topic.parentElement !== controls) controls.prepend(topic);
-      if (noticeGroup.parentElement !== cinema.parentElement) cinema.before(noticeGroup);
-      lowerThird.hidden = true;
+      if (topic.parentElement !== lowerThird) lowerThird.prepend(topic);
+      if (noticeGroup.previousElementSibling !== video) video.after(noticeGroup);
+      lowerThird.hidden = topic.hidden;
     }
     const h = document.querySelector('.guide-header')?.offsetHeight;
     if (h) document.documentElement.style.setProperty('--guide-header-height', `${h}px`);
@@ -158,6 +163,27 @@ function initLive() {
     track: byId('liveTotalTrack'), chapters: CHAPTERS, lang, label: copy.topics,
     onSelect: chapter => { select(chapter, false); playAt(chapter.seconds); }
   });
+  const drawer = byId('heroLiveChaptersCol');
+
+  // Mobile-only affordances, hidden by CSS on desktop.
+  previousChapter.dataset.dir = copy.previousShort;
+  nextChapter.dataset.dir = copy.nextShort;
+  totalProgress.closest('.live-total-timeline').dataset.label = copy.fullLive;
+  const tabCount = document.createElement('span');
+  tabCount.className = 'live-drawer__tab-count';
+  tabCount.setAttribute('aria-hidden', 'true');
+  tabCount.textContent = String(CHAPTERS.length);
+  const tabHint = document.createElement('span');
+  tabHint.className = 'live-drawer__tab-hint';
+  tabHint.setAttribute('aria-hidden', 'true');
+  tabHint.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>';
+  tabHint.append(copy.searchHint);
+  toggle.querySelector('.live-drawer__arrow').before(tabCount, tabHint);
+  const sheetGrab = document.createElement('div');
+  sheetGrab.className = 'live-drawer__grab';
+  sheetGrab.setAttribute('aria-hidden', 'true');
+  sheetGrab.append(document.createElement('span'));
+  panel.prepend(sheetGrab);
 
   function highlighted(element, text, query) {
     const fragment = document.createDocumentFragment();
@@ -212,7 +238,9 @@ function initLive() {
     button.addEventListener('click', () => {
       select(chapter, false);
       playAt(chapter.seconds);
-      setPanel(false);
+      // The half-height sheet leaves the video in view, so browsing can continue.
+      if (mobile.matches) { search.blur(); setSheet('half'); }
+      else setPanel(false);
     });
     row.append(button, snippet, notice);
     list.append(row);
@@ -251,19 +279,32 @@ function initLive() {
   search.addEventListener('input', filter);
   clear.addEventListener('click', () => { search.value = ''; filter(); search.focus(); });
 
+  function setSheet(size) {
+    drawer.dataset.sheet = size;
+  }
   function setPanel(open, returnFocus = true) {
     cinema.classList.toggle('is-collapsed', !open);
     panel.inert = !open;
     panel.setAttribute('aria-hidden', String(!open));
     toggle.setAttribute('aria-expanded', String(open));
     toggle.setAttribute('aria-label', open ? copy.close : copy.topics);
-    if (matchMedia('(max-width: 768px)').matches) {
+    if (mobile.matches) {
       document.body.classList.toggle('has-live-drawer-open', open);
     }
     if (open) {
       updateDimensions();
-      if (matchMedia('(max-width: 768px)').matches) cinema.scrollIntoView({ block: 'start', behavior: 'instant' });
-      search.focus({ preventScroll: true });
+      if (mobile.matches) {
+        setSheet('half');
+        cinema.scrollIntoView({ block: 'start', behavior: 'instant' });
+        // Half height starts under the video, keeping at least 45% of the screen for the list.
+        const below = innerHeight - wrapper.getBoundingClientRect().bottom - 8;
+        drawer.style.setProperty('--live-sheet-half', `${Math.round(Math.max(innerHeight * .45, below))}px`);
+        // Focusing the search would raise the keyboard over the sheet.
+        byId('heroLiveChaptersCloseBtn').focus({ preventScroll: true });
+        // Scroll only the list: the sheet is still sliding in, so scrollIntoView could move the page.
+        const currentRow = list.querySelector('[aria-current="true"], [data-selected]')?.closest('li');
+        if (currentRow) list.scrollTop = currentRow.offsetTop - list.offsetTop - (list.clientHeight - currentRow.offsetHeight) / 2;
+      } else search.focus({ preventScroll: true });
     } else {
       document.body.classList.remove('has-live-drawer-open');
       if (returnFocus) toggle.focus({ preventScroll: true });
@@ -271,8 +312,8 @@ function initLive() {
   }
   toggle.addEventListener('click', () => setPanel(toggle.getAttribute('aria-expanded') !== 'true'));
   byId('heroLiveChaptersCloseBtn').addEventListener('click', () => setPanel(false));
-  byId('heroLiveChaptersCol').addEventListener('click', event => {
-    if (event.target === byId('heroLiveChaptersCol')) setPanel(false);
+  drawer.addEventListener('click', event => {
+    if (event.target === drawer) setPanel(false);
   });
   document.addEventListener('keydown', event => {
     if (event.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
@@ -281,8 +322,40 @@ function initLive() {
     }
   });
   document.addEventListener('pointerdown', event => {
-    if (toggle.getAttribute('aria-expanded') === 'true' && !byId('heroLiveChaptersCol').contains(event.target) && !byId('liveGuidePopover').contains(event.target)) setPanel(false, false);
+    if (toggle.getAttribute('aria-expanded') !== 'true') return;
+    if ([drawer, byId('liveGuidePopover'), byId('liveGuideBackdrop')].some(region => region.contains(event.target))) return;
+    // On mobile the video and its notice stay usable above the sheet.
+    if (mobile.matches && (wrapper.contains(event.target) || noticeGroup.contains(event.target))) return;
+    setPanel(false, false);
   });
+  search.addEventListener('focus', () => { if (mobile.matches) setSheet('full'); });
+
+  // Drag the sheet's handle: up opens full height; down returns to half, then closes.
+  let dragStart = null;
+  for (const handle of [sheetGrab, panel.querySelector('.live-drawer__header')]) {
+    handle.addEventListener('pointerdown', event => {
+      if (!mobile.matches || event.target.closest('button')) return;
+      dragStart = event.clientY;
+      handle.setPointerCapture(event.pointerId);
+      drawer.classList.add('is-dragging');
+    });
+    handle.addEventListener('pointermove', event => {
+      if (dragStart !== null) drawer.style.setProperty('--live-sheet-drag', `${Math.max(-140, event.clientY - dragStart)}px`);
+    });
+    const endDrag = event => {
+      if (dragStart === null) return;
+      const delta = event.clientY - dragStart;
+      dragStart = null;
+      drawer.classList.remove('is-dragging');
+      drawer.style.removeProperty('--live-sheet-drag');
+      if (event.type === 'pointercancel') return;
+      if (delta < -50) setSheet('full');
+      else if (delta > 70 && drawer.dataset.sheet === 'full') { search.blur(); setSheet('half'); }
+      else if (delta > 70) setPanel(false);
+    };
+    handle.addEventListener('pointerup', endDrag);
+    handle.addEventListener('pointercancel', endDrag);
+  }
 
   function select(chapter, isPlaying) {
     const changed = selected?.id !== chapter.id;
@@ -290,7 +363,7 @@ function initLive() {
     selected = chapter;
     if (isPlaying) current = chapter;
     topicTransition.update(chapter.id, chapter.titles[lang], () => updateNotice(chapter));
-    lowerThird.hidden = !desktop.matches;
+    lowerThird.hidden = false;
     updateTopicButtons();
     updateProgress(chapter.seconds);
     external.href = `https://www.youtube.com/watch?v=${LIVE_VIDEO_ID}&t=${chapter.seconds}s`;

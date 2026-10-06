@@ -13,6 +13,9 @@ export function initLiveMarkers({ track, chapters, lang, label, onSelect }) {
   tooltip.append(time, title);
   let duration = 1;
   let shownIndex = -1;
+  let scrubPointer = null;
+  let hideTimer;
+  let ignoreClickUntil = 0;
   const buttons = chapters.map((chapter, index) => {
     const button = document.createElement('button');
     button.type = 'button';
@@ -36,6 +39,7 @@ export function initLiveMarkers({ track, chapters, lang, label, onSelect }) {
     shownIndex = -1;
   }
   function showTooltip(index) {
+    clearTimeout(hideTimer);
     if (index === shownIndex && !tooltip.hidden) return;
     hideTooltip();
     shownIndex = index;
@@ -60,11 +64,37 @@ export function initLiveMarkers({ track, chapters, lang, label, onSelect }) {
     buttons.forEach((button, i) => { button.tabIndex = i === index ? 0 : -1; });
     buttons[index].focus({ preventScroll: true });
   }
-  group.addEventListener('pointermove', event => {
-    if (event.target.closest('.live-total-marker')) showTooltip(nearestIndex(event));
+  // Touch has no hover: press and slide to preview a topic, lift to jump to it.
+  group.addEventListener('pointerdown', event => {
+    if (event.pointerType === 'mouse') return;
+    scrubPointer = event.pointerId;
+    group.setPointerCapture(event.pointerId);
+    track.classList.add('is-scrubbing');
+    showTooltip(nearestIndex(event));
   });
-  group.addEventListener('pointerleave', () => {
-    if (!group.contains(document.activeElement)) hideTooltip();
+  group.addEventListener('pointermove', event => {
+    if (event.pointerId === scrubPointer || event.target.closest('.live-total-marker')) showTooltip(nearestIndex(event));
+  });
+  group.addEventListener('pointerup', event => {
+    if (event.pointerId !== scrubPointer) return;
+    const index = nearestIndex(event);
+    endScrub();
+    ignoreClickUntil = performance.now() + 500;
+    buttons.forEach((button, i) => { button.tabIndex = i === index ? 0 : -1; });
+    onSelect(chapters[index]);
+    hideTimer = setTimeout(hideTooltip, 900);
+  });
+  group.addEventListener('pointercancel', event => {
+    if (event.pointerId !== scrubPointer) return;
+    endScrub();
+    hideTooltip();
+  });
+  function endScrub() {
+    scrubPointer = null;
+    track.classList.remove('is-scrubbing');
+  }
+  group.addEventListener('pointerleave', event => {
+    if (event.pointerType === 'mouse' && !group.contains(document.activeElement)) hideTooltip();
   });
   group.addEventListener('focusin', event => {
     if (event.target.matches('.live-total-marker')) showTooltip(Number(event.target.dataset.markerIndex));
@@ -73,6 +103,7 @@ export function initLiveMarkers({ track, chapters, lang, label, onSelect }) {
     if (!group.contains(event.relatedTarget)) hideTooltip();
   });
   group.addEventListener('click', event => {
+    if (performance.now() < ignoreClickUntil) return;
     const button = event.target.closest('.live-total-marker');
     if (!button) return;
     const index = event.detail === 0 ? Number(button.dataset.markerIndex) : nearestIndex(event);

@@ -1,6 +1,6 @@
 /** Rehearse the next title against playback time, before its topic starts. */
 export function initLiveTopicTransition(element, getPlayback) {
-  const desktop = matchMedia('(min-width: 769px)');
+  const breakpoint = matchMedia('(min-width: 769px)');
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
   let current;
   let pending;
@@ -34,7 +34,7 @@ export function initLiveTopicTransition(element, getPlayback) {
   }
 
   function anticipate(next, onBoundary) {
-    if (pending?.key === next.key || !desktop.matches || reducedMotion.matches || document.hidden) return;
+    if (pending?.key === next.key || reducedMotion.matches || document.hidden) return;
     cancel();
     pending = next;
     function followPlayback() {
@@ -62,7 +62,7 @@ export function initLiveTopicTransition(element, getPlayback) {
     frame = requestAnimationFrame(followPlayback);
   }
 
-  desktop.addEventListener('change', cancel);
+  breakpoint.addEventListener('change', cancel);
   reducedMotion.addEventListener('change', cancel);
   document.addEventListener('visibilitychange', () => { if (document.hidden) cancel(); });
   return { update, anticipate, cancel };

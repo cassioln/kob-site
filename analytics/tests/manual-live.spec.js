@@ -18,7 +18,9 @@ async function mockPlayer(page) {
 }
 async function openTopics(page) {
   await page.locator('#heroLiveToggleChaptersBtn').click();
-  await expect(page.locator('#liveSearchInput')).toBeFocused();
+  // Mobile moves focus into the sheet without raising the keyboard.
+  const mobile = await page.evaluate(() => matchMedia('(max-width: 768px)').matches);
+  await expect(page.locator(mobile ? '#heroLiveChaptersCloseBtn' : '#liveSearchInput')).toBeFocused();
 }
 async function readyPlayer(page) {
   await expect.poll(() => page.evaluate(() => window.__liveMock.instances.length)).toBeGreaterThan(0);
@@ -146,7 +148,7 @@ test('Controles personalizados substituem os controles do YouTube e navegam entr
   expect(await page.evaluate(() => window.__liveMock.seconds)).toBe(833);
 });
 
-test('No mobile os controles ficam fora do vídeo e substituem o status textual', async ({ page }) => {
+test('No mobile o assunto fica sobre o vídeo e controles e Assuntos logo abaixo', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/manual-de-bordo.html');
   await page.locator('#loadLivePlayerBtn').click();
@@ -157,9 +159,17 @@ test('No mobile os controles ficam fora do vídeo e substituem o status textual'
   const controlsBox = await page.locator('#liveCustomControls').boundingBox();
   expect(controlsBox.y).toBeGreaterThanOrEqual(videoBox.y + videoBox.height);
   const tabBox = await page.locator('#heroLiveToggleChaptersBtn').boundingBox();
-  expect(tabBox.y + tabBox.height).toBeLessThanOrEqual(videoBox.y + videoBox.height + 1);
+  expect(tabBox.y).toBeGreaterThanOrEqual(controlsBox.y + controlsBox.height - 1);
   await expect(page.locator('.live-toolbar .live-privacy-note')).toBeVisible();
-  await expect(page.locator('#liveCustomTopic')).toContainText('Boas-vindas');
+  const topic = page.locator('#liveCustomTopic');
+  await expect(topic).toContainText('Boas-vindas');
+  expect(await topic.evaluate(el => el.parentElement.id)).toBe('liveLowerThird');
+  const topicBox = await topic.boundingBox();
+  expect(topicBox.y + topicBox.height).toBeLessThanOrEqual(videoBox.y + videoBox.height);
+  // Without hover, the neighbouring topics are named on the buttons themselves.
+  await expect(page.locator('#livePreviousChapterBtn')).toHaveAttribute('data-dir', 'Anterior');
+  await expect(page.locator('#liveNextChapterBtn .live-control-label')).toContainText('Royal Trip');
+  await expect(page.locator('#liveNextChapterBtn .live-control-label > span')).toHaveCSS('opacity', '1');
 });
 
 for (const [lang, term, title, label] of [['en', 'luggage', 'Luggage', 'Portuguese transcript'], ['es', 'equipaje', 'Equipaje', 'portugués']]) {
@@ -186,9 +196,15 @@ for (const width of [320, 390, 768, 1440]) {
     const videoBefore = await page.locator('#livePlayerWrapper').boundingBox();
     const tabBefore = await page.locator('#heroLiveToggleChaptersBtn').boundingBox();
     const drawerBefore = await page.locator('#heroLiveChaptersCol').boundingBox();
-    if (width > 768) expect(drawerBefore.height).toBeCloseTo(videoBefore.height, 0);
-    expect(tabBefore.height).toBeGreaterThanOrEqual(176);
-    expect(tabBefore.x + tabBefore.width).toBeCloseTo(videoBefore.x + videoBefore.width, 0);
+    if (width > 768) {
+      expect(drawerBefore.height).toBeCloseTo(videoBefore.height, 0);
+      expect(tabBefore.height).toBeGreaterThanOrEqual(176);
+      expect(tabBefore.x + tabBefore.width).toBeCloseTo(videoBefore.x + videoBefore.width, 0);
+    } else {
+      // Mobile: a full-width button under the video instead of a tab over it.
+      expect(tabBefore.y).toBeGreaterThanOrEqual(videoBefore.y + videoBefore.height);
+      expect(tabBefore.width).toBeCloseTo(videoBefore.width, 0);
+    }
     await openTopics(page);
     expect(['matrix(1, 0, 0, 1, 0, 0)', 'none']).toContain(await page.locator('.live-drawer__slide').evaluate(e => getComputedStyle(e).transform));
     const videoAfter = await page.locator('#livePlayerWrapper').boundingBox();
@@ -197,21 +213,17 @@ for (const width of [320, 390, 768, 1440]) {
     const panel = await page.locator('#heroLiveChaptersPanel').boundingBox();
     if (width <= 768) {
       await expect(page.locator('#heroLiveChaptersPanel')).toBeVisible();
-      expect(await page.evaluate(() => getComputedStyle(document.getElementById('heroLiveChaptersCol')).position)).toBe('fixed');
-      await expect(page.locator('#heroLiveToggleChaptersBtn')).toBeVisible();
+      expect(await page.evaluate(() => getComputedStyle(document.getElementById('heroLiveChaptersPanel')).position)).toBe('fixed');
       expect(await page.evaluate(() => getComputedStyle(document.getElementById('liveChaptersList')).overflowY)).toBe('auto');
-      expect(Number(await page.evaluate(() => getComputedStyle(document.getElementById('heroLiveCinema')).zIndex))).toBeGreaterThanOrEqual(1000);
-      expect(Number(await page.evaluate(() => getComputedStyle(document.getElementById('heroLiveToggleChaptersBtn')).zIndex))).toBeGreaterThanOrEqual(20);
-      const mobileDrawer = await page.locator('#heroLiveChaptersCol').boundingBox();
-      const mobilePanel = await page.locator('#heroLiveChaptersPanel').boundingBox();
-      const mobileTab = await page.locator('#heroLiveToggleChaptersBtn').boundingBox();
+      const cinemaZ = Number(await page.evaluate(() => getComputedStyle(document.getElementById('heroLiveCinema')).zIndex));
+      expect(cinemaZ).toBeGreaterThanOrEqual(1000);
+      // Bottom sheet anchored to the screen's bottom edge, leaving the video in view.
+      expect(panel.y + panel.height).toBeCloseTo(900, 0);
+      expect(panel.y).toBeGreaterThanOrEqual(videoAfter.y + videoAfter.height);
+      expect(panel.x).toBeGreaterThanOrEqual(0);
+      expect(panel.x + panel.width).toBeLessThanOrEqual(width);
       const checklistToggle = await page.locator('#checklistSidebarToggle').boundingBox();
-      expect(mobilePanel.x).toBeGreaterThan(0);
-      expect(mobileDrawer.x).toBe(0);
-      expect(mobilePanel.x + mobilePanel.width).toBeCloseTo(width, 0);
-      expect(mobileTab.x + mobileTab.width).toBeCloseTo(mobilePanel.x, 0);
-      expect(mobileTab.x).toBeGreaterThanOrEqual(0);
-      expect(await page.evaluate(() => Number(getComputedStyle(document.getElementById('checklistSidebarToggle')).zIndex))).toBeLessThan(Number(await page.locator('#heroLiveChaptersCol').evaluate(el => getComputedStyle(el).zIndex)));
+      expect(await page.evaluate(() => Number(getComputedStyle(document.getElementById('checklistSidebarToggle')).zIndex))).toBeLessThan(cinemaZ);
       expect(checklistToggle).not.toBeNull();
       expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
       await page.keyboard.press('Escape');
@@ -386,7 +398,7 @@ test('Desktop: controles dentro do player, assunto acima deles e botões que exp
   // Resizing repositions the same nodes and keeps the same video instance.
   await page.setViewportSize({width:390,height:844});
   expect(await page.locator('#liveCustomControls').evaluate(el=>el.parentElement.id)).toBe('heroLiveCinema');
-  expect(await page.locator('#liveCustomTopic').evaluate(el=>el.parentElement.id)).toBe('liveCustomControls');
+  expect(await page.locator('#liveCustomTopic').evaluate(el=>el.parentElement.id)).toBe('liveLowerThird');
   expect(await page.evaluate(()=>window.__liveMock.instances.length)).toBe(1);
 });
 
@@ -444,12 +456,17 @@ test.describe('Aviso por toque',()=>{
     await openTopics(page);
     await page.locator('[data-seconds="4456"]').click();
     await readyPlayer(page);
+    // Choosing a topic keeps the sheet open; close it to reach the notice under the video.
+    await expect(page.locator('#heroLiveToggleChaptersBtn')).toHaveAttribute('aria-expanded','true');
+    await page.locator('#heroLiveChaptersCloseBtn').tap();
     const trigger=page.locator('#liveChapterNoteAction [data-live-faq]');
     await trigger.tap();
     await expect(page.locator('#liveGuidePopover')).toContainText('23 kg');
+    await expect(page.locator('#liveGuideBackdrop')).toBeVisible();
     const box=await page.locator('#liveGuidePopover').boundingBox();
     expect(box.x).toBeGreaterThanOrEqual(0);
     expect(box.x+box.width).toBeLessThanOrEqual(390);
+    expect(box.y+box.height).toBeCloseTo(844,0);
     await page.locator('.live-guide-popover__close').tap();
     await expect(page.locator('#liveGuidePopover')).toBeHidden();
     expect(await page.evaluate(()=>window.__liveMock.calls.some(call=>call[0]==='pause'))).toBe(false);
@@ -481,7 +498,9 @@ test('Linha total é discreta, não interativa e acompanha a duração real sem 
   await expect(page.locator('#liveTotalRemaining')).toHaveText('−00:00');
   await expect(total).toHaveAttribute('aria-valuetext',/Restante: 00:00/);
   await page.setViewportSize({width:390,height:844});
-  await expect(total).toBeHidden();
+  await expect(total).toBeVisible();
+  await expect(page.locator('.live-total-timeline')).toHaveAttribute('data-label','Live completa');
+  expect(await page.locator('.live-total-markers').evaluate(el=>getComputedStyle(el).pointerEvents)).toBe('auto');
   expect(await page.locator('#liveNextChapterBtn .live-control-icon').evaluate(el=>getComputedStyle(el).order)).toBe('0');
 });
 
@@ -558,9 +577,10 @@ test('Movimento reduzido, resize e fullscreen preservam os mesmos elementos e es
   expect(await page.locator('#liveLowerThird').evaluate(el=>parseFloat(getComputedStyle(el).transitionDuration))).toBeLessThanOrEqual(.001);
   await expect(page.locator('#liveChapterNotice')).toHaveCSS('animation-name','none');
   await page.setViewportSize({width:390,height:844});
-  await expect(page.locator('#liveLowerThird')).toBeHidden();
-  expect(await page.locator('#liveChapterNote').evaluate(el=>el.parentElement.parentElement.id)).toBe('live');
-  expect((await page.locator('#liveChapterNote').boundingBox()).y).toBeLessThan((await page.locator('#livePlayerWrapper').boundingBox()).y);
+  await expect(page.locator('#liveLowerThird')).toBeVisible();
+  expect(await page.locator('#liveChapterNote').evaluate(el=>el.parentElement.parentElement.id)).toBe('heroLiveCinema');
+  const videoBox=await page.locator('#livePlayerWrapper').boundingBox();
+  expect((await page.locator('#liveChapterNote').boundingBox()).y).toBeGreaterThanOrEqual(videoBox.y+videoBox.height);
   await page.setViewportSize({width:850,height:1000});
   expect(await page.locator('#liveChapterNote').evaluate(el=>el.parentElement.parentElement.id)).toBe('liveLowerThird');
   await expect(page.locator('#liveLowerThird')).toBeVisible();
@@ -601,7 +621,7 @@ for(const [lang,path,title] of [
   expect(await page.evaluate(()=>window.__liveMock.seconds)).toBe(4456);
   expect(await page.evaluate(()=>window.__liveMock.calls.some(call=>call[0]==='pause'))).toBe(false);
   expect(await page.evaluate(()=>window.__liveMock.instances.length)).toBe(1);
-  await page.setViewportSize({width:390,height:844});await expect(markers.first()).toBeHidden();
+  await page.setViewportSize({width:390,height:844});await expect(markers.first()).toBeVisible();
  });
 }
 
@@ -762,7 +782,7 @@ test('Escolher outro assunto cancela a antecipação e mostra título e regra im
   await expect(title).toHaveText('Bagagem');
 });
 
-test('Pausa, redução de movimento e mobile cancelam a antecipação sem mostrar assunto futuro', async ({ page }) => {
+test('Pausa, redução de movimento e troca de layout cancelam a antecipação sem mostrar assunto futuro', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto('/manual-de-bordo.html');
@@ -822,4 +842,33 @@ test('Scrub para trás e redução da velocidade restauram o título dentro da j
   await expect(title).toContainText('Documentos');
   await expect(title).not.toHaveAttribute('aria-busy');
   await expect(title).not.toHaveAttribute('data-topic-phase');
+});
+
+test.describe('Mobile com as funções do desktop', () => {
+  test.use({ hasTouch: true, isMobile: true });
+  test('Assunto antecipa no vídeo, lista em bottom sheet e linha total por toque', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.goto('/manual-de-bordo.html');
+    await openTopics(page);
+    const sheet = page.locator('#heroLiveChaptersPanel');
+    const half = await sheet.boundingBox();
+    const video = await page.locator('#livePlayerWrapper').boundingBox();
+    expect(half.y).toBeGreaterThanOrEqual(video.y + video.height);
+    await page.locator('[data-seconds="1250"]').click();
+    await readyPlayer(page);
+    await expect(page.locator('#heroLiveToggleChaptersBtn')).toHaveAttribute('aria-expanded', 'true');
+    await page.locator('#liveSearchInput').focus();
+    await expect(page.locator('#heroLiveChaptersCol')).toHaveAttribute('data-sheet', 'full');
+    await page.locator('#heroLiveChaptersCloseBtn').tap();
+    await expect(sheet).toBeHidden();
+    // The title swap anticipates the next topic, as on desktop.
+    await page.evaluate(() => { window.__liveMock.seconds = 1342.5; });
+    await expect(page.locator('#liveCustomTopic')).toHaveAttribute('aria-busy', 'true');
+    // A tap on the whole-live timeline jumps to the nearest topic, once.
+    const markers = await page.locator('.live-total-markers').boundingBox();
+    await page.touchscreen.tap(markers.x + markers.width * 1852 / 4806, markers.y + markers.height / 2);
+    await expect.poll(() => page.evaluate(() => window.__liveMock.seconds)).toBe(1852);
+    expect(await page.evaluate(() => window.__liveMock.calls.filter(call => call[0] === 'seek' && call[1] === 1852).length)).toBe(1);
+  });
 });

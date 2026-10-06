@@ -13,7 +13,12 @@ export function initLiveGuideHelp(labels) {
   const body = document.createElement('div');
   body.className = 'live-guide-popover__body';
   pop.append(close, body);
-  document.body.append(pop);
+  // Mobile shows the popover as a bottom sheet; the backdrop absorbs the dismissing tap.
+  const backdrop = document.createElement('div');
+  backdrop.id = 'liveGuideBackdrop';
+  backdrop.className = 'live-guide-backdrop';
+  backdrop.hidden = true;
+  document.body.append(backdrop, pop);
   let trigger, pinned = false, timer, pointerType, suppressFocus = false;
 
   function hide(returnFocus = false) {
@@ -23,6 +28,7 @@ export function initLiveGuideHelp(labels) {
     trigger = undefined;
     pinned = false;
     pop.hidden = true;
+    backdrop.hidden = true;
     if (returnFocus) {
       suppressFocus = true;
       previous?.focus({ preventScroll: true });
@@ -63,6 +69,7 @@ export function initLiveGuideHelp(labels) {
       body.replaceChildren(heading, content);
     }
     pop.hidden = false;
+    backdrop.hidden = false;
     button.setAttribute('aria-expanded', 'true');
     button.setAttribute('aria-controls', pop.id);
     place();
