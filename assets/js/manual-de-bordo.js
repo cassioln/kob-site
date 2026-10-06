@@ -234,6 +234,26 @@
       }
     });
 
+    // Alternar check ao clicar em qualquer área do card (checklist-item / checklist-sidebar-item)
+    checklistRoot.addEventListener('click', function (e) {
+      if (e.target.closest('input, button, a, label, .checklist-item__na-toggle, .checklist-sidebar-item__na, .checklist-help-trigger')) {
+        return;
+      }
+      var item = e.target.closest('.checklist-item');
+      if (!item) return;
+
+      var checkbox = item.querySelector('.checklist-item__checkbox');
+      if (!checkbox || checkbox.disabled) return;
+
+      checkbox.checked = !checkbox.checked;
+      if (checkbox.checked) {
+        item.classList.add('is-checked');
+      } else {
+        item.classList.remove('is-checked');
+      }
+      checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+
     function saveAndRefresh() {
       var stateToSave = {};
       var totalApplicable = 0;
@@ -406,25 +426,126 @@
     window.addEventListener('hashchange', openFromHash);
     openFromHash();
 
-    // Filtragem de grupos dentro da Sidebar
-    sidebarNavItems.forEach(function (navBtn) {
-      navBtn.addEventListener('click', function () {
-        sidebarNavItems.forEach(function (btn) { btn.classList.remove('is-active'); });
-        navBtn.classList.add('is-active');
+    // Navegação direta por grupo, Scrollspy e Centralização Touch na Sidebar
+    var sidebarNav = sidebarAside.querySelector('.checklist-sidebar__nav');
+    var sidebarBody = sidebarAside.querySelector('.checklist-sidebar__body');
+    var sidebarGroups = Array.prototype.slice.call(sidebarList.querySelectorAll('.checklist-group'));
+    var sidebarToggles = Array.prototype.slice.call(sidebarList.querySelectorAll('.checklist-group__toggle'));
+    var navSlideFrame = null;
 
-        document.dispatchEvent(new Event('checklist:close'));
-        sidebarNavItems.forEach(function (button) { button.setAttribute('aria-pressed', String(button === navBtn)); });
-        var filterGroup = navBtn.getAttribute('data-sidebar-group') || 'all';
-        var sidebarItems = sidebarList.querySelectorAll('.checklist-group');
-
-        sidebarItems.forEach(function (sItem) {
-          var itemGroup = sItem.getAttribute('data-group-id');
-          if (filterGroup === 'all' || itemGroup === filterGroup) {
-            sItem.hidden = false;
-          } else {
-            sItem.hidden = true;
-          }
+    function keepActiveSidebarTabVisible(tab) {
+      if (!sidebarNav || !tab) return;
+      if (navSlideFrame) cancelAnimationFrame(navSlideFrame);
+      navSlideFrame = requestAnimationFrame(function () {
+        navSlideFrame = null;
+        var navRect = sidebarNav.getBoundingClientRect();
+        var tabRect = tab.getBoundingClientRect();
+        var edge = 10;
+        if (tabRect.left >= navRect.left + edge && tabRect.right <= navRect.right - edge) return;
+        var centered = sidebarNav.scrollLeft + tabRect.left - navRect.left - ((navRect.width - tabRect.width) / 2);
+        var max = Math.max(0, sidebarNav.scrollWidth - sidebarNav.clientWidth);
+        sidebarNav.scrollTo({
+          left: Math.max(0, Math.min(centered, max)),
+          behavior: 'smooth'
         });
+      });
+    }
+
+    function setActiveSidebarGroup(groupId) {
+      var activeBtn = null;
+      sidebarNavItems.forEach(function (btn) {
+        var bGroup = btn.getAttribute('data-sidebar-group');
+        var active = (bGroup === String(groupId));
+        btn.classList.toggle('is-active', active);
+        btn.setAttribute('aria-pressed', String(active));
+        btn.setAttribute('aria-selected', String(active));
+        if (active) activeBtn = btn;
+      });
+      if (activeBtn) keepActiveSidebarTabVisible(activeBtn);
+    }
+
+    // Clique nas abas: expande se colapsado e rola suavemente até o grupo
+    sidebarNavItems.forEach(function (navBtn) {
+      navBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        var targetGroupId = navBtn.getAttribute('data-sidebar-group') || '1';
+        var targetGroup = sidebarList.querySelector('.checklist-group[data-group-id="' + targetGroupId + '"]');
+        if (!targetGroup) return;
+
+        // Se o grupo estiver colapsado, expande automaticamente
+        if (targetGroup.classList.contains('is-collapsed')) {
+          targetGroup.classList.remove('is-collapsed');
+          var toggle = targetGroup.querySelector('.checklist-group__toggle');
+          if (toggle) {
+            toggle.setAttribute('aria-expanded', 'true');
+            var groupTitle = (targetGroup.querySelector('.checklist-group__title') || {}).textContent || '';
+            var expandLabel = isEn ? 'Collapse ' + groupTitle + ' group' : isEs ? 'Plegar grupo ' + groupTitle : 'Recolher grupo ' + groupTitle;
+            toggle.setAttribute('aria-label', expandLabel);
+            toggle.setAttribute('title', expandLabel);
+          }
+        }
+
+        setActiveSidebarGroup(targetGroupId);
+
+        if (sidebarBody) {
+          var bodyRect = sidebarBody.getBoundingClientRect();
+          var groupRect = targetGroup.getBoundingClientRect();
+          var targetTop = sidebarBody.scrollTop + (groupRect.top - bodyRect.top) - 10;
+          sidebarBody.scrollTo({
+            top: Math.max(0, targetTop),
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+
+    // Scrollspy dentro da Sidebar
+    var sidebarScrollSpyFrame = null;
+    if (sidebarBody && sidebarGroups.length) {
+      sidebarBody.addEventListener('scroll', function () {
+        if (sidebarScrollSpyFrame) return;
+        sidebarScrollSpyFrame = requestAnimationFrame(function () {
+          sidebarScrollSpyFrame = null;
+          var bodyRect = sidebarBody.getBoundingClientRect();
+          var currentGroupId = '1';
+          var bestDistance = Infinity;
+
+          sidebarGroups.forEach(function (group) {
+            var rect = group.getBoundingClientRect();
+            var diff = (rect.top - bodyRect.top);
+            if (diff <= 60 && Math.abs(diff) < bestDistance) {
+              bestDistance = Math.abs(diff);
+              currentGroupId = group.getAttribute('data-group-id') || '1';
+            }
+          });
+
+          setActiveSidebarGroup(currentGroupId);
+        });
+      }, { passive: true });
+    }
+
+    // Botões de recolher / expandir grupo no cabeçalho
+    sidebarToggles.forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var group = btn.closest('.checklist-group');
+        if (!group) return;
+
+        var isCollapsed = group.classList.toggle('is-collapsed');
+        btn.setAttribute('aria-expanded', String(!isCollapsed));
+
+        var titleEl = group.querySelector('.checklist-group__title');
+        var groupTitle = titleEl ? titleEl.textContent.trim() : '';
+
+        var label = '';
+        if (isCollapsed) {
+          label = isEn ? 'Expand ' + groupTitle + ' group' : isEs ? 'Desplegar grupo ' + groupTitle : 'Expandir grupo ' + groupTitle;
+        } else {
+          label = isEn ? 'Collapse ' + groupTitle + ' group' : isEs ? 'Plegar grupo ' + groupTitle : 'Recolher grupo ' + groupTitle;
+        }
+        btn.setAttribute('aria-label', label);
+        btn.setAttribute('title', label);
       });
     });
 
@@ -1202,20 +1323,19 @@
   // ATIVAÇÃO DE LINKS DE NAVEGAÇÃO AO ROLAR (INTERSECTION OBSERVER)
   // --------------------------------------------------------------------------
   function initNavSpy() {
-    var navLinks = document.querySelectorAll('.guide-nav-bar__link, #drawer nav a');
+    var navLinks = document.querySelectorAll('.guide-header__nav-link, .guide-header__nav a, .guide-nav-bar__link, #drawer nav a');
     if (!navLinks.length) return;
 
     var targets = [];
     navLinks.forEach(function (link) {
       var href = link.getAttribute('href');
-      if (href && href.startsWith('#')) {
+      if (href && href.startsWith('#') && href !== '#checklist') {
         var el = document.querySelector(href);
         if (el && targets.indexOf(el) === -1) targets.push(el);
       }
     });
-    if (!targets.length) return;
 
-    if ('IntersectionObserver' in window) {
+    if ('IntersectionObserver' in window && targets.length) {
       var observer = new IntersectionObserver(
         function (entries) {
           entries.forEach(function (entry) {
@@ -1225,19 +1345,39 @@
                 var href = link.getAttribute('href');
                 if (href === '#' + id) {
                   link.classList.add('is-active');
-                } else {
+                  link.setAttribute('aria-current', 'page');
+                } else if (href && href.startsWith('#') && href !== '#checklist') {
                   link.classList.remove('is-active');
+                  link.removeAttribute('aria-current');
                 }
               });
             }
           });
         },
-        { rootMargin: '-20% 0px -70% 0px', threshold: 0 }
+        { rootMargin: '-15% 0px -65% 0px', threshold: 0 }
       );
 
       targets.forEach(function (target) {
         observer.observe(target);
       });
+    }
+
+    // Monitorar abertura e fechamento da sidebar do checklist para sincronizar aba do header
+    var checklistAside = document.getElementById('checklistSidebar');
+    if (checklistAside) {
+      var checklistLinks = document.querySelectorAll('.guide-header__nav a[href="#checklist"], .guide-header__nav [data-open-checklist]');
+      var checkObserver = new MutationObserver(function () {
+        var isOpen = checklistAside.classList.contains('is-open');
+        checklistLinks.forEach(function (link) {
+          link.classList.toggle('is-active', isOpen);
+          if (isOpen) {
+            link.setAttribute('aria-current', 'page');
+          } else {
+            link.removeAttribute('aria-current');
+          }
+        });
+      });
+      checkObserver.observe(checklistAside, { attributes: true, attributeFilter: ['class'] });
     }
   }
 

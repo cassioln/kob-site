@@ -46,7 +46,7 @@
   <link rel="preload" href="/assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
 
   <link rel="stylesheet" href="/assets/css/main.css?v=20261005-ui-final">
-  <link rel="stylesheet" href="/assets/css/manual-de-bordo.css?v=20261006-button-hover-fix">
+  <link rel="stylesheet" href="/assets/css/manual-de-bordo.css?v=20261006-notice-4s">
   <link rel="stylesheet" href="/assets/css/cookie-consent.css?v=20260820-fix-contrast">
 
   <script defer src="/assets/js/cookie-consent.js?v=20260713-5"></script>
@@ -2069,24 +2069,27 @@
       equipo y las instrucciones de tu reserva.
     </div>
 
-    <div class="checklist-sidebar__nav" role="group" aria-label="Filtrar grupos en la barra lateral">
-      <button type="button" class="checklist-sidebar__nav-item is-active" aria-pressed="true"
-        data-sidebar-group="all">Todos</button>
-      <button type="button" class="checklist-sidebar__nav-item" aria-pressed="false"
-        data-sidebar-group="1">Docs</button>
-      <button type="button" class="checklist-sidebar__nav-item" aria-pressed="false"
-        data-sidebar-group="2">Maletas</button>
-      <button type="button" class="checklist-sidebar__nav-item" aria-pressed="false"
-        data-sidebar-group="3">Trayecto</button>
-      <button type="button" class="checklist-sidebar__nav-item" aria-pressed="false" data-sidebar-group="4">Juegos y
-        actividades</button>
+    <div class="checklist-sidebar__nav" role="tablist" aria-label="Filtrar grupos en la barra lateral">
+      <button type="button" class="checklist-sidebar__nav-item is-active" role="tab" aria-selected="true"
+        aria-pressed="true" data-sidebar-group="1">Docs</button>
+      <button type="button" class="checklist-sidebar__nav-item" role="tab" aria-selected="false"
+        aria-pressed="false" data-sidebar-group="2">Maletas</button>
+      <button type="button" class="checklist-sidebar__nav-item" role="tab" aria-selected="false"
+        aria-pressed="false" data-sidebar-group="3">Trayecto</button>
+      <button type="button" class="checklist-sidebar__nav-item" role="tab" aria-selected="false"
+        aria-pressed="false" data-sidebar-group="4">Juegos y Actividades</button>
     </div>
 
     <div class="checklist-sidebar__body" id="checklistSidebarList" aria-label="Elementos del checklist">
       <div id="checklistContainer">
-        <div class="checklist-group" data-group-id="1">
-          <h3 class="checklist-group__title">1. Documentos y Reserva</h3>
-          <ul class="checklist-list">
+        <div class="checklist-group" data-group-id="1" id="checklist-group-1">
+          <div class="checklist-group__head">
+            <h3 class="checklist-group__title">1. Documentos y Reserva</h3>
+            <button type="button" class="checklist-group__toggle" aria-expanded="true" aria-controls="checklist-list-1" aria-label="Plegar grupo Documentos y Reserva" title="Plegar grupo Documentos y Reserva">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+          </div>
+          <ul class="checklist-list" id="checklist-list-1">
             <li class="checklist-item checklist-sidebar-item" data-checklist-id="reserva-dados"
               data-sidebar-item-id="reserva-dados" data-checklist-type="essential">
               <input type="checkbox" id="chk-reserva-dados"
@@ -2258,9 +2261,14 @@
         </div>
 
         <!-- GRUPO 2: EQUIPAJE -->
-        <div class="checklist-group" data-group-id="2">
-          <h3 class="checklist-group__title">2. Equipaje y Artículos</h3>
-          <ul class="checklist-list">
+        <div class="checklist-group" data-group-id="2" id="checklist-group-2">
+          <div class="checklist-group__head">
+            <h3 class="checklist-group__title">2. Equipaje y Artículos</h3>
+            <button type="button" class="checklist-group__toggle" aria-expanded="true" aria-controls="checklist-list-2" aria-label="Plegar grupo Equipaje y Artículos" title="Plegar grupo Equipaje y Artículos">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+          </div>
+          <ul class="checklist-list" id="checklist-list-2">
             <li class="checklist-item checklist-sidebar-item" data-checklist-id="bagagem-limites"
               data-sidebar-item-id="bagagem-limites" data-checklist-type="essential">
               <input type="checkbox" id="chk-bagagem-limites"
@@ -2361,9 +2369,14 @@
         </div>
 
         <!-- GRUPO 3: TRAYECTO Y CUENTA A BORDO -->
-        <div class="checklist-group" data-group-id="3">
-          <h3 class="checklist-group__title">3. Traslado y Cuenta a Bordo</h3>
-          <ul class="checklist-list">
+        <div class="checklist-group" data-group-id="3" id="checklist-group-3">
+          <div class="checklist-group__head">
+            <h3 class="checklist-group__title">3. Traslado y Cuenta a Bordo</h3>
+            <button type="button" class="checklist-group__toggle" aria-expanded="true" aria-controls="checklist-list-3" aria-label="Plegar grupo Traslado y Cuenta a Bordo" title="Plegar grupo Traslado y Cuenta a Bordo">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+          </div>
+          <ul class="checklist-list" id="checklist-list-3">
             <li class="checklist-item checklist-sidebar-item" data-checklist-id="trajeto-porto"
               data-sidebar-item-id="trajeto-porto" data-checklist-type="essential">
               <input type="checkbox" id="chk-trajeto-porto"
@@ -2468,9 +2481,14 @@
         </div>
 
         <!-- GRUPO 4: JUEGOS Y COMUNIDAD -->
-        <div class="checklist-group" data-group-id="4">
-          <h3 class="checklist-group__title">4. Juegos y Convivencia</h3>
-          <ul class="checklist-list">
+        <div class="checklist-group" data-group-id="4" id="checklist-group-4">
+          <div class="checklist-group__head">
+            <h3 class="checklist-group__title">4. Juegos y Convivencia</h3>
+            <button type="button" class="checklist-group__toggle" aria-expanded="true" aria-controls="checklist-list-4" aria-label="Plegar grupo Juegos y Convivencia" title="Plegar grupo Juegos y Convivencia">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+          </div>
+          <ul class="checklist-list" id="checklist-list-4">
             <li class="checklist-item checklist-sidebar-item" data-checklist-id="guru" data-sidebar-item-id="guru"
               data-checklist-type="recommended">
               <input type="checkbox" id="chk-guru" class="checklist-item__checkbox checklist-sidebar-item__checkbox"

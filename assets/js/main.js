@@ -148,6 +148,41 @@ document.documentElement.classList.add('js');
     }, { threshold: 0 }).observe(navioEl);
   }
 
+  // Scrollspy para os links da navegação principal (.nav__links a)
+  var mainNavLinks = nav ? Array.prototype.slice.call(nav.querySelectorAll('.nav__links a')) : [];
+  var mainTargets = [];
+  mainNavLinks.forEach(function (link) {
+    var href = link.getAttribute('href');
+    if (href && href.startsWith('#')) {
+      var el = document.querySelector(href);
+      if (el && mainTargets.indexOf(el) === -1) mainTargets.push(el);
+    }
+  });
+
+  if (mainTargets.length && 'IntersectionObserver' in window) {
+    var mainNavObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          var id = entry.target.getAttribute('id');
+          mainNavLinks.forEach(function (link) {
+            var href = link.getAttribute('href');
+            var matches = (href === '#' + id);
+            link.classList.toggle('is-active', matches);
+            if (matches) {
+              link.setAttribute('aria-current', 'true');
+            } else if (href && href.startsWith('#')) {
+              link.removeAttribute('aria-current');
+            }
+          });
+        }
+      });
+    }, { rootMargin: '-20% 0px -65% 0px', threshold: 0 });
+
+    mainTargets.forEach(function (t) {
+      mainNavObserver.observe(t);
+    });
+  }
+
   // Drawer mobile
   var drawer = document.getElementById('drawer');
   var toggle = document.getElementById('navToggle');

@@ -42,12 +42,17 @@
   .faq__nav-item,
   .faq-category-btn,
   .guide-header__home-link,
+  .guide-header__nav-link,
   .guide-menu-desktop,
   .guide-menu-mobile,
+  .checklist-sidebar__nav-item,
+  .checklist-group__toggle,
+  .checklist-share__button,
+  [data-checklist-export],
   .skip-link,
   .guide-badge,
   .badge
-)) {
+)):not(.guide-header__nav a):not(.checklist-share__controls a) {
   color: #17648a;
   text-decoration: underline;
   text-underline-offset: 3px;
@@ -66,16 +71,21 @@
   .faq__nav-item,
   .faq-category-btn,
   .guide-header__home-link,
+  .guide-header__nav-link,
   .guide-menu-desktop,
   .guide-menu-mobile,
+  .checklist-sidebar__nav-item,
+  .checklist-group__toggle,
+  .checklist-share__button,
+  [data-checklist-export],
   .skip-link,
   .guide-badge,
   .badge
-)):hover {
+)):not(.guide-header__nav a):not(.checklist-share__controls a):hover {
   color: #0369a1;
 }
 
-/* Remoção definitiva de sublinhado em todos os links que são botões, abas ou possuem bordas */
+/* Remoção definitiva de sublinhado em todos os links que são botões, abas, navegação ou possuem bordas */
 .guide-page a:is(
   .timeline-tab,
   .btn,
@@ -88,12 +98,22 @@
   .faq__nav-item,
   .faq-category-btn,
   .guide-header__home-link,
+  .guide-header__nav-link,
   .guide-menu-desktop,
   .guide-menu-mobile,
+  .checklist-sidebar__nav-item,
+  .checklist-group__toggle,
+  .checklist-share__button,
+  [data-checklist-export],
   .skip-link,
   .guide-badge,
   .badge
 ),
+.guide-page .guide-header__nav a,
+.guide-header__nav a,
+.guide-header__nav .guide-header__nav-link,
+.guide-page .checklist-share__controls a,
+.checklist-share__controls a,
 .guide-page a:is(
   .timeline-tab,
   .btn,
@@ -106,13 +126,21 @@
   .faq__nav-item,
   .faq-category-btn,
   .guide-header__home-link,
+  .guide-header__nav-link,
   .guide-menu-desktop,
   .guide-menu-mobile,
+  .checklist-sidebar__nav-item,
+  .checklist-group__toggle,
+  .checklist-share__button,
+  [data-checklist-export],
   .skip-link,
   .guide-badge,
   .badge
-) * {
+) *,
+.guide-header__nav a *,
+.checklist-share__controls a * {
   text-decoration: none !important;
+  text-decoration-line: none !important;
 }
 
 .guide-page a:is(
@@ -127,17 +155,27 @@
   .faq__nav-item,
   .faq-category-btn,
   .guide-header__home-link,
+  .guide-header__nav-link,
   .guide-menu-desktop,
   .guide-menu-mobile,
+  .checklist-sidebar__nav-item,
+  .checklist-group__toggle,
+  .checklist-share__button,
+  [data-checklist-export],
   .skip-link,
   .guide-badge,
   .badge
-):is(:hover, :focus, :focus-visible, :active, :visited) {
+):is(:hover, :focus, :focus-visible, :active, :visited),
+.guide-page .guide-header__nav a:is(:hover, :focus, :focus-visible, :active, :visited),
+.guide-header__nav a:is(:hover, :focus, :focus-visible, :active, :visited),
+.guide-page .checklist-share__controls a:is(:hover, :focus, :focus-visible, :active, :visited),
+.checklist-share__controls a:is(:hover, :focus, :focus-visible, :active, :visited) {
   text-decoration: none !important;
+  text-decoration-line: none !important;
 }
 
-.guide-page a:not(.timeline-tab):focus-visible,
-.guide-page button:not(.timeline-tab):focus-visible,
+.guide-page a:not(:is(.timeline-tab, .guide-header__nav-link, .checklist-sidebar__nav-item, .btn-guide)):focus-visible,
+.guide-page button:not(:is(.timeline-tab, .guide-header__nav-link, .checklist-sidebar__nav-item, .btn-guide, .checklist-group__toggle)):focus-visible,
 .guide-page input:focus-visible,
 .guide-page select:focus-visible,
 .guide-page textarea:focus-visible,
@@ -1653,6 +1691,21 @@
     transition: opacity 160ms ease;
   }
 
+  /* As on mobile, the rule notice joins the lower third once 4s of its topic have played. */
+  .hero-live-player:not(.is-notice-due) .live-lower-third .live-chapter-notice {
+    display: none !important;
+  }
+
+  .hero-live-player:not(.is-notice-due) .live-lower-third .live-custom-controls__topic {
+    border-radius: 12px;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-live-player.is-notice-due .live-lower-third .live-chapter-notice:not([hidden]) {
+      animation: live-notice-in 260ms cubic-bezier(.16, 1, .3, 1);
+    }
+  }
+
   .live-lower-third .live-chapter-note {
     max-width: 75ch;
     color: #082f57;
@@ -2718,13 +2771,65 @@
 }
 
 .checklist-group {
-  margin: 16px 0 20px;
+  margin: 16px 0 24px;
+  scroll-margin-top: 56px;
+}
+
+.checklist-group__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(4, 29, 58, 0.08);
 }
 
 .checklist-group__title {
-  margin: 0 0 8px;
+  margin: 0;
+  color: #16324c;
+  font: 700 0.88rem/1.4 var(--font-body);
+  letter-spacing: -0.01em;
+}
+
+.checklist-group__toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--r-pill, 9999px);
+  border: 1px solid rgba(4, 29, 58, 0.12);
+  background: rgba(4, 29, 58, 0.03);
   color: #526779;
-  font: 700 .78rem/1.5 var(--font-body);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  flex-shrink: 0;
+  text-decoration: none !important;
+  padding: 0;
+}
+
+.checklist-group__toggle:hover {
+  background: rgba(113, 32, 108, 0.08);
+  color: var(--kriativa-purple, #71206c);
+  border-color: rgba(113, 32, 108, 0.32);
+}
+
+.checklist-group__toggle:focus-visible {
+  outline: 2px solid var(--kriativa-purple, #71206c);
+  outline-offset: 2px;
+}
+
+.checklist-group__toggle svg {
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.checklist-group.is-collapsed .checklist-group__toggle svg {
+  transform: rotate(180deg);
+}
+
+.checklist-group.is-collapsed .checklist-list {
+  display: none !important;
 }
 
 .checklist-list {
@@ -2958,36 +3063,68 @@
 }
 
 .checklist-sidebar__nav {
+  position: sticky;
+  top: 0;
+  z-index: 20;
   display: flex;
-  gap: 4px;
-  padding: 8px 20px 12px;
-  background: #fff;
-  border-bottom: 1px solid #dce5ed;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.96);
+  border-bottom: 1px solid rgba(4, 29, 58, 0.08);
+  box-shadow: 0 4px 14px -2px rgba(4, 29, 58, 0.08), 0 2px 4px rgba(4, 29, 58, 0.04);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   flex-shrink: 0;
   overflow-x: auto;
-  scrollbar-width: thin;
-  scrollbar-color: #8da7bc transparent;
+  scrollbar-width: none;
+}
+
+.checklist-sidebar__nav::-webkit-scrollbar {
+  display: none;
 }
 
 .checklist-sidebar__nav-item {
-  padding: 8px 10px;
-  border: 0;
-  border-radius: 6px;
-  background: transparent;
-  color: #28536f;
-  font: 600 .78rem/1.5 var(--font-body);
-  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  min-height: 34px;
+  border-radius: var(--r-pill, 9999px);
+  background: rgba(4, 29, 58, 0.04);
+  border: 1px solid rgba(4, 29, 58, 0.12);
+  color: var(--ocean-navy, #041d3a) !important;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-decoration: none !important;
   white-space: nowrap;
+  flex: 0 0 auto;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .checklist-sidebar__nav-item:hover {
-  color: #16324c;
-  background: #e8eef3;
+  background: rgba(113, 32, 108, 0.08) !important;
+  color: var(--kriativa-purple, #71206c) !important;
+  border-color: rgba(113, 32, 108, 0.32) !important;
+  text-decoration: none !important;
 }
 
-.checklist-sidebar__nav-item.is-active {
-  color: #fff;
-  background: #71206c;
+.checklist-sidebar__nav-item.is-active,
+.checklist-sidebar__nav-item[aria-pressed="true"] {
+  background: var(--kriativa-purple, #71206c) !important;
+  color: #ffffff !important;
+  border-color: var(--kriativa-purple, #71206c) !important;
+  box-shadow: 0 3px 10px rgba(113, 32, 108, 0.3);
+  text-decoration: none !important;
+}
+
+.checklist-sidebar__nav-item:focus-visible {
+  outline: 2px solid var(--kriativa-purple, #71206c) !important;
+  outline-offset: 2px;
+  text-decoration: none !important;
 }
 
 .checklist-sidebar__body {
@@ -3003,12 +3140,24 @@
 .checklist-sidebar-item {
   display: flex;
   gap: 12px;
-  padding: 16px 4px;
+  padding: 16px 8px;
   border-bottom: 1px solid #dce5ed;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 0.15s ease, border-color 0.15s ease;
+  user-select: none;
+}
+
+.checklist-sidebar-item:hover {
+  background: #f1f5f9;
 }
 
 .checklist-sidebar-item.is-checked {
   background: #eef7f1;
+}
+
+.checklist-sidebar-item.is-checked:hover {
+  background: #e2f1e7;
 }
 
 .checklist-sidebar-item.is-checked .checklist-sidebar-item__text {
@@ -3018,6 +3167,10 @@
 
 .checklist-sidebar-item.is-not-applicable {
   background: #edf1f4;
+}
+
+.checklist-sidebar-item.is-not-applicable:hover {
+  background: #e2e8f0;
 }
 
 .checklist-sidebar-item__checkbox {
@@ -3078,6 +3231,7 @@
   font-size: .75rem;
   line-height: 1.6;
   color: #526779;
+  cursor: pointer;
 }
 
 .checklist-sidebar-item__na input {
@@ -3096,7 +3250,7 @@
   border: 0;
   border-radius: 4px;
   padding: 6px;
-  text-decoration: none;
+  text-decoration: none !important;
   cursor: help;
 }
 
@@ -3126,25 +3280,45 @@
   gap: 8px;
 }
 
-.guide-page .checklist-share__button {
+.guide-page .checklist-share__button,
+.checklist-share__button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 7px;
   padding: 10px 13px;
-  color: #16324c;
-  background: #f1f5f9;
-  border: 1px solid #c3d3e2;
+  color: #16324c !important;
+  background: #f1f5f9 !important;
+  border: 1px solid #c3d3e2 !important;
   border-radius: 6px;
   font: 600 .8rem/1.5 var(--font-body);
-  text-decoration: none;
+  text-decoration: none !important;
+  text-decoration-line: none !important;
   cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.guide-page .checklist-share__button:is(:hover, :focus-visible) {
-  color: #fff;
-  background: #71206c;
-  border-color: #71206c;
+.guide-page .checklist-share__button *,
+.checklist-share__button * {
+  text-decoration: none !important;
+  text-decoration-line: none !important;
+  color: inherit !important;
+}
+
+.guide-page .checklist-share__button:is(:hover, :focus-visible),
+.checklist-share__button:is(:hover, :focus-visible) {
+  color: #ffffff !important;
+  background: var(--kriativa-purple, #71206c) !important;
+  border-color: var(--kriativa-purple, #71206c) !important;
+  text-decoration: none !important;
+  text-decoration-line: none !important;
+  box-shadow: 0 4px 14px rgba(113, 32, 108, 0.28);
+  transform: translateY(-1px);
+}
+
+.guide-page .checklist-share__button:active,
+.checklist-share__button:active {
+  transform: translateY(0);
 }
 
 .checklist-sidebar .checklist-share__controls {
@@ -3153,7 +3327,8 @@
   gap: 6px;
 }
 
-.guide-page .checklist-sidebar .checklist-share__button {
+.guide-page .checklist-sidebar .checklist-share__button,
+.checklist-sidebar .checklist-share__button {
   flex-direction: column;
   font-size: .69rem;
   padding: 9px 3px;
@@ -5124,9 +5299,12 @@
   padding: 0 8px;
 }
 
+.guide-header__nav a,
+.guide-page .guide-header__nav a,
 .guide-page .guide-header__nav-link {
-  color: var(--ocean-navy, #041d3a);
-  text-decoration: none;
+  color: var(--ocean-navy, #041d3a) !important;
+  text-decoration: none !important;
+  text-decoration-line: none !important;
   font-family: var(--font-body);
   font-size: 0.85rem;
   font-weight: 600;
@@ -5137,15 +5315,50 @@
   white-space: nowrap;
 }
 
-.guide-page .guide-header__nav-link:hover,
-.guide-page .guide-header__nav-link:focus-visible {
-  color: #082f57;
-  background: rgba(8, 47, 87, 0.08);
-  text-decoration: none;
+.guide-header__nav a *,
+.guide-page .guide-header__nav a *,
+.guide-page .guide-header__nav-link * {
+  text-decoration: none !important;
+  text-decoration-line: none !important;
 }
 
+.guide-header__nav a:hover,
+.guide-page .guide-header__nav a:hover,
+.guide-page .guide-header__nav-link:hover {
+  color: var(--kriativa-purple, #71206c) !important;
+  background: rgba(113, 32, 108, 0.08) !important;
+  text-decoration: none !important;
+  text-decoration-line: none !important;
+}
+
+.guide-header__nav a.is-active,
+.guide-header__nav a[aria-current="true"],
+.guide-header__nav a[aria-current="page"],
+.guide-page .guide-header__nav-link.is-active,
+.guide-page .guide-header__nav-link[aria-current="true"],
+.guide-page .guide-header__nav-link[aria-current="page"] {
+  color: #ffffff !important;
+  background: var(--kriativa-purple, #71206c) !important;
+  box-shadow: 0 2px 10px rgba(113, 32, 108, 0.35);
+  text-decoration: none !important;
+  text-decoration-line: none !important;
+}
+
+.guide-header__nav a:focus-visible,
+.guide-page .guide-header__nav a:focus-visible,
+.guide-page .guide-header__nav-link:focus-visible {
+  outline: 2px solid var(--kriativa-purple, #71206c) !important;
+  outline-offset: 2px;
+  text-decoration: none !important;
+  text-decoration-line: none !important;
+}
+
+.guide-header__nav a:active,
+.guide-page .guide-header__nav a:active,
 .guide-page .guide-header__nav-link:active {
   transform: translateY(1px);
+  text-decoration: none !important;
+  text-decoration-line: none !important;
 }
 
 .guide-header .nav__toggle {

@@ -931,3 +931,23 @@ test('No mobile o aviso flutua sobre o vídeo após 4s e recolhe para um selo no
   await expect(pill).toBeHidden();
   await expect(page.locator('.live-chapter-notice__collapse')).toBeFocused();
 });
+
+test('No desktop o aviso entra na faixa inferior só após 4s do assunto', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto('/manual-de-bordo.html');
+  await openTopics(page);
+  await page.locator('[data-seconds="1250"]').click();
+  await readyPlayer(page);
+  const notice = page.locator('#liveChapterNotice');
+  await expect(page.locator('#liveCustomTopic')).toBeVisible();
+  await expect(notice).toBeHidden();
+  await page.evaluate(() => { window.__liveMock.seconds = 1255; });
+  await expect(notice).toBeVisible();
+  expect(await notice.evaluate(el => el.parentElement.id)).toBe('liveLowerThird');
+  // Each new topic waits its own 4s.
+  await openTopics(page);
+  await page.locator('[data-seconds="4456"]').click();
+  await expect(notice).toBeHidden();
+  await page.evaluate(() => { window.__liveMock.seconds = 4461; });
+  await expect(notice).toBeVisible();
+});

@@ -15,7 +15,8 @@ test('Sidebar mostra os textos reais, filtra grupos e sincroniza os estados apli
  await expect(first).toContainText('Conferi os dados e os passageiros');
  await expect(page.locator('.checklist-sidebar-item__jump')).toHaveCount(0);
  await page.locator('[data-sidebar-group="2"].checklist-sidebar__nav-item').click();
- await expect(page.locator('.checklist-sidebar-item:visible')).toHaveCount(6);
+ await expect(page.locator('[data-sidebar-group="2"].checklist-sidebar__nav-item')).toHaveClass(/is-active/);
+	await expect(page.locator('[data-group-id="2"] .checklist-sidebar-item')).toHaveCount(6);
  await page.locator('[data-sidebar-group="1"].checklist-sidebar__nav-item').click();
  const minor=page.locator('[data-sidebar-item-id="menor-documentos"]');
  await minor.locator('.checklist-sidebar-item__na-checkbox').check();
