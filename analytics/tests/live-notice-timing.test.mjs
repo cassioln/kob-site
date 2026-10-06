@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { CHAPTERS, GROUP_INVITE_CUES, GROUP_INVITE_DURATION, LIVE_DURATION } from '../../assets/js/manual-de-bordo-live-data.js';
 import { isNoticeDue, isGroupInviteDue, topicBounds } from '../../assets/js/manual-de-bordo-live-timeline.js';
+import { SUPPORT_NOTICES, SUPPORT_DURATION, supportAt } from '../../assets/js/manual-de-bordo-live-support.js';
 
 test('Every update has a mapped utterance inside its own topic', () => {
   const notices = CHAPTERS.filter(topic => topic.notice);
@@ -52,4 +53,40 @@ test('Nearby closing invitations overlap into one continuous display', () => {
   for (let position = 4747.639; position < 4781.400; position += .1) assert.equal(isGroupInviteDue(position), true);
   assert.equal(isGroupInviteDue(4781.400), false);
   assert.equal(isGroupInviteDue(4786.239), true);
+});
+
+test('Only the nine approved support proposals are included, with localized actions', () => {
+  assert.deepEqual(SUPPORT_NOTICES.map(item => item.id), ['support-01', 'support-02', 'support-03', 'support-05', 'support-08', 'support-09', 'support-10', 'support-15', 'support-18']);
+  for (const item of SUPPORT_NOTICES) {
+    for (const lang of ['pt', 'en', 'es']) assert.ok(item.texts[lang], `${item.id}: ${lang}`);
+    assert.ok(Boolean(item.action.href) !== Boolean(item.action.faqId), item.id);
+    if (item.action.href) {
+      assert.equal(new URL(item.action.href).protocol, 'https:');
+      for (const lang of ['pt', 'en', 'es']) assert.ok(item.action.labels[lang], `${item.id}: action ${lang}`);
+    }
+  }
+  assert.equal(SUPPORT_NOTICES.find(item => item.id === 'support-02').texts.pt, 'Consulte o estacionamento do Concais e confirme disponibilidade, tarifa e acesso antes de sair.');
+  assert.equal(SUPPORT_NOTICES.find(item => item.id === 'support-03').texts.pt, 'Instale agora o BG Guru!: no site do Board Game Guru você encontra os links para Android e iOS.');
+  const msc = SUPPORT_NOTICES.find(item => item.id === 'support-18');
+  assert.equal(msc.texts.pt, 'Veja mais detalhes e link de download no site da MSC');
+  assert.equal(msc.action.href, 'https://www.msccruzeiros.com.br/a-bordo/internet-e-aplicativos/msc-for-me');
+  assert.equal(msc.action.labels.pt, 'MSC for Me');
+});
+
+test('Support follows each approved utterance with an exclusive end and reversible seeking', () => {
+  assert.equal(SUPPORT_DURATION, 12);
+  for (const item of SUPPORT_NOTICES) {
+    for (const start of item.cueSeconds) {
+      assert.ok(start >= 0 && start < LIVE_DURATION);
+      assert.notEqual(supportAt(start - .001)?.id, item.id);
+      assert.equal(supportAt(start)?.id, item.id);
+      assert.equal(supportAt(start + 11.999)?.id, item.id);
+      assert.notEqual(supportAt(start + 12)?.id, item.id);
+      assert.equal(supportAt(start + 1)?.id, item.id);
+      assert.notEqual(supportAt(start - 1)?.id, item.id);
+    }
+  }
+  for (const time of [NaN, Infinity, -1, 1034.839, 1291.600, 1358.400, 2124.839, 2166.079, 2444.599, 3008.559, 3162.760, 3985.920, 4523.280]) {
+    assert.equal(supportAt(time), null, String(time));
+  }
 });

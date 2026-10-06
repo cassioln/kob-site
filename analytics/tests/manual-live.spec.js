@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { CHAPTERS, GROUP_INVITE_URL } from '../../assets/js/manual-de-bordo-live-data.js';
+import { SUPPORT_NOTICES } from '../../assets/js/manual-de-bordo-live-support.js';
 
 async function mockPlayer(page) {
   await page.route(/https:\/\/.*youtube(?:-nocookie)?\.com\/.*/, route => route.fulfill({ contentType: 'text/html', body: '<html><body>Mock video</body></html>' }));
@@ -1032,8 +1033,8 @@ for (const width of [390, 1440]) {
       await pauseAtLiveTime(page, topic.noticeSeconds);
       await expect(notice).toBeVisible();
       await expect(note).toContainText(topic.notice.pt);
-      await expect(note.locator('.live-notice-label')).toHaveText('ATUALIZAÇÃO');
-      await expect(note.locator('svg[aria-hidden="true"]')).toHaveCount(1);
+      await expect(note.locator('.live-notice-update .live-notice-label')).toHaveText('ATUALIZAÇÃO');
+      await expect(note.locator('.live-notice-update svg[aria-hidden="true"]')).toHaveCount(1);
       await pauseAtLiveTime(page, topic.noticeSeconds - 1);
       await expect(notice).toBeHidden();
     }
@@ -1075,12 +1076,25 @@ for (const [path, label, inviteCopy] of [
     await expect(invite).toHaveAttribute('target', '_blank');
     await expect(invite).toHaveAttribute('rel', 'noopener noreferrer');
     await expect(invite.locator('svg[aria-hidden="true"]')).toHaveCount(1);
+    const checkInviteStyle = async () => {
+      const styles = await invite.evaluate(el => {
+        const invite = getComputedStyle(el), topic = getComputedStyle(document.getElementById('liveCustomTopic'));
+        return { font: invite.fontFamily, topicFont: topic.fontFamily, size: parseFloat(invite.fontSize), topicSize: parseFloat(topic.fontSize) };
+      });
+      expect(styles.font).toBe(styles.topicFont);
+      expect(styles.size).toBeLessThan(styles.topicSize);
+      await expect(invite).toHaveCSS('color', 'rgb(255, 255, 255)');
+      await expect(invite).toHaveCSS('background-color', 'rgb(8, 123, 65)');
+      await expect(invite.locator('svg')).toHaveCSS('color', 'rgb(255, 255, 255)');
+    };
+    await checkInviteStyle();
     await expect.poll(async () => {
       const box = await invite.boundingBox(), video = await page.locator('#livePlayerWrapper').boundingBox();
       return Math.abs(box.x - video.x - 22) < 2 && Math.abs(box.y - video.y - 18) < 2;
     }).toBe(true);
     await page.setViewportSize({ width: 390, height: 1000 });
     await expect.poll(() => invite.evaluate(el => el.nextElementSibling?.id)).toBe('liveCustomTopic');
+    await checkInviteStyle();
     await expect.poll(async () => {
       const box = await invite.boundingBox(), topic = await page.locator('#liveCustomTopic').boundingBox();
       return box.y + box.height <= topic.y - 5;
@@ -1126,4 +1140,149 @@ test('Convite continua estável entre menções próximas e abre o grupo apenas 
   await expect(page.locator('#livePlayPauseBtn')).toBeFocused();
   await pauseAtLiveTime(page, 4750);
   await expect(invite).toBeVisible();
+});
+
+for (const width of [390, 1440]) {
+  test(`Os nove apoios aprovados seguem suas falas e preservam atualizações (${width}px)`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/manual-de-bordo.html');
+    await page.locator('#loadLivePlayerBtn').click();
+    await readyPlayer(page);
+    const support = page.locator('.live-notice-support');
+    for (const approved of SUPPORT_NOTICES) for (const start of approved.cueSeconds) {
+      await pauseAtLiveTime(page, start - .001);
+      await expect(support).toHaveCount(0);
+      await pauseAtLiveTime(page, start);
+      await expect(support).toBeVisible();
+      await expect(support).toHaveAttribute('data-support-id', approved.id);
+      await expect(support).toContainText(approved.texts.pt);
+      await expect(support.locator('.live-notice-label')).toHaveText('APOIO DA LIVE');
+      if (approved.action.href) await expect(page.locator('.live-support-link')).toHaveAttribute('href', approved.action.href);
+      else await expect(page.locator(`#liveChapterNoteAction [data-live-faq="${approved.action.faqId}"]`)).toBeVisible();
+      await pauseAtLiveTime(page, start + 12);
+      await expect(support).toHaveCount(0);
+      await pauseAtLiveTime(page, start + 1);
+      await expect(support).toBeVisible();
+      await pauseAtLiveTime(page, start - 1);
+      await expect(support).toHaveCount(0);
+    }
+    await pauseAtLiveTime(page, 1742);
+    await expect(page.locator('#liveChapterNotice')).toHaveAttribute('data-notice-kind', 'mixed');
+    await expect(page.locator('.live-notice-update')).toContainText('Rotas e tempos citados são estimativas');
+    await expect(page.locator('#liveChapterNoteAction [data-live-faq="faq-o13"]')).toBeVisible();
+    await pauseAtLiveTime(page, 1754);
+    await expect(page.locator('.live-notice-update')).toBeVisible();
+    await expect(page.locator('.live-support-link')).toHaveCount(0);
+    for (const rejected of [1034.839, 1291.600, 1358.400, 2124.839, 2166.079, 2444.599, 3008.559, 3162.760, 3985.920, 4523.280]) {
+      await pauseAtLiveTime(page, rejected);
+      await expect(support).toHaveCount(0);
+    }
+  });
+}
+
+for (const [lang, path, category] of [
+  ['pt', '/manual-de-bordo.html', 'APOIO DA LIVE'],
+  ['en', '/en/manual-de-bordo.html', 'LIVE HELP'],
+  ['es', '/es/manual-de-bordo.html', 'AYUDA EN LA CHARLA']
+]) {
+  test(`Textos aprovados e destinos dos apoios em ${lang}`, async ({ page }) => {
+    await page.goto(path);
+    await page.locator('#loadLivePlayerBtn').click();
+    await readyPlayer(page);
+    for (const id of ['support-02', 'support-03', 'support-18']) {
+      const approved = SUPPORT_NOTICES.find(item => item.id === id);
+      await pauseAtLiveTime(page, approved.cueSeconds[0] + 1);
+      await expect(page.locator('.live-notice-support')).toContainText(approved.texts[lang]);
+      await expect(page.locator('.live-notice-label--support')).toHaveText(category);
+      const link = page.locator('.live-support-link');
+      await expect(link).toHaveText(approved.action.labels[lang]);
+      await expect(link).toHaveAttribute('href', approved.action.href);
+      await expect(link).toHaveAttribute('target', '_blank');
+      await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+      expect(await link.getAttribute('aria-label')).toContain(approved.action.labels[lang]);
+    }
+  });
+}
+
+test('Apoio externo não carrega a operadora antes do clique e devolve foco ao expirar', async ({ page, context }) => {
+  const requests = [];
+  page.on('request', request => { if (request.url().includes('viacaocometa.com.br')) requests.push(request.url()); });
+  await page.goto('/manual-de-bordo.html');
+  await page.locator('#loadLivePlayerBtn').click();
+  await readyPlayer(page);
+  await pauseAtLiveTime(page, 1742);
+  const link = page.locator('.live-support-link');
+  expect(requests).toEqual([]);
+  const original = page.url();
+  await context.route('https://www.viacaocometa.com.br/**', route => route.fulfill({ body: 'Destino Cometa simulado' }));
+  const opened = page.waitForEvent('popup');
+  await link.click();
+  const popup = await opened;
+  await expect(popup).toHaveURL('https://www.viacaocometa.com.br/transfer');
+  expect(page.url()).toBe(original);
+  await popup.close();
+  await link.focus();
+  await pauseAtLiveTime(page, 1754);
+  await expect(page.locator('#livePlayPauseBtn')).toBeFocused();
+});
+
+test('Apoio interno usa o popover e mantém o vídeo e a URL', async ({ page }) => {
+  await page.goto('/manual-de-bordo.html');
+  await page.locator('#loadLivePlayerBtn').click();
+  await readyPlayer(page);
+  const original = page.url();
+  await pauseAtLiveTime(page, 1089);
+  await page.locator('#liveChapterNoteAction [data-live-faq="faq-o24"]').hover();
+  await expect(page.locator('#liveGuidePopover')).toContainText('Encounter');
+  await pauseAtLiveTime(page, 1101);
+  await expect(page.locator('#liveGuidePopover')).toBeHidden();
+  await pauseAtLiveTime(page, 1763);
+  // The existing update and the support refer to the same FAQ: one control.
+  await expect(page.locator('#liveChapterNoteAction [data-live-faq="faq-o13"]')).toHaveCount(1);
+  await page.locator('#liveChapterNoteAction [data-live-faq="faq-o13"]').hover();
+  await expect(page.locator('#liveGuidePopover')).toContainText('Rodoviária de Santos');
+  expect(page.url()).toBe(original);
+  await expect(page.locator('#livePlayerContainer iframe')).toHaveCount(1);
+});
+
+test('Mobile preserva recolhimento e apoios não encobrem o convite e o assunto', async ({ page }) => {
+  for (const lang of ['pt', 'en', 'es']) for (const width of [320, 390]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.goto(`/${lang === 'pt' ? '' : `${lang}/`}manual-de-bordo.html`);
+    await page.locator('#loadLivePlayerBtn').click();
+    await readyPlayer(page);
+    await pauseAtLiveTime(page, 1674);
+    await expect(page.locator('#liveGroupInvite')).toBeVisible();
+    await expect(page.locator('.live-notice-support')).toBeVisible();
+    await expect.poll(async () => {
+      const actions = await page.locator('#liveChapterNoteAction').boundingBox();
+      const invite = await page.locator('#liveGroupInvite').boundingBox();
+      return invite.y - actions.y - actions.height;
+    }).toBeGreaterThanOrEqual(6);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
+  await page.setViewportSize({ width: 320, height: 1000 });
+  await page.goto('/manual-de-bordo.html');
+  await page.locator('#loadLivePlayerBtn').click();
+  await readyPlayer(page);
+  await pauseAtLiveTime(page, 1674);
+  await expect(page.locator('#liveGroupInvite')).toBeVisible();
+  const actions = page.locator('#liveChapterNoteAction');
+  await expect(actions.locator('.live-support-link')).toBeVisible();
+  await expect.poll(async () => {
+    const a = await actions.boundingBox(), invite = await page.locator('#liveGroupInvite').boundingBox();
+    return a.y + a.height < invite.y;
+  }).toBe(true);
+  await page.locator('.live-chapter-notice__collapse').click();
+  await expect(page.locator('.live-notice-pill span')).toHaveText('Atualização · Apoio');
+  await pauseAtLiveTime(page, 1779);
+  await expect(page.locator('.live-notice-pill span')).toHaveText('Apoio');
+  await page.locator('.live-notice-pill').click();
+  await expect(page.locator('.live-notice-support')).toBeVisible();
+  await expect(page.locator('.live-chapter-notice__collapse')).toBeFocused();
+  await page.locator('.live-chapter-notice__collapse').click();
+  await pauseAtLiveTime(page, 1791);
+  await expect(page.locator('.live-notice-pill')).toBeHidden();
+  await expect(page.locator('#livePlayPauseBtn')).toBeFocused();
 });

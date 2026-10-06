@@ -1,11 +1,11 @@
-# Apoios da live — propostas para aprovação individual
+# Apoios da live — seleção aprovada e aplicação
 
 Data: 6 de outubro de 2026.
-Estado: **mapeamento concluído; os 31 apoios abaixo aguardam aprovação. Nenhum foi aplicado ao player.**
+Estado: **seleção recebida do mantenedor em 06/10/2026: nove apoios aprovados e 22 dispensados. Nove apoios aplicados e validados na branch `code-ia/live-notice-transcript-timing`.**
 
 ## Escopo e fontes
 
-Esta categoria oferece uma ação ou uma explicação enquanto o assunto é mencionado: consultar um serviço, abrir uma orientação do manual ou saber a quem pedir ajuda. O nome provisório é **APOIO DA LIVE**, com ícone de informação. Ela é diferente das correções identificadas como **ATUALIZAÇÃO**.
+Esta categoria oferece uma ação ou uma explicação enquanto o assunto é mencionado: consultar um serviço, abrir uma orientação do manual ou saber a quem pedir ajuda. A categoria aplicada é **APOIO DA LIVE**, com ícone de informação. Ela é diferente das correções identificadas como **ATUALIZAÇÃO**.
 
 Foi revista a transcrição anexada da [live de embarque](https://www.youtube.com/watch?v=AtIvlc62KgI), comparada às legendas automáticas originais `pt-orig` e ao conteúdo atual do manual. Os horários abaixo indicam o início da legenda que contém a fala de referência, não uma medição acústica exata. Na aplicação, devem ser conferidos no player. Foram mapeadas também as repetições úteis; agradecimentos, brincadeiras e menções sem ação para o passageiro não geram avisos.
 
@@ -19,12 +19,12 @@ Destinos externos conferidos em 06/10/2026:
 
 Os IDs `faq-oNN` abaixo foram conferidos no HTML atual. “Mais detalhes” significa abrir o conteúdo no popover do vídeo, preservando a reprodução. Os novos textos só entram após aprovação; quando pedirem um passo a passo mais completo do que o FAQ atual, essa ampliação também faz parte da proposta.
 
-## Regras propostas para aplicação posterior
+## Regras aplicadas
 
-- Aprovar uma proposta por vez, começando pela Cometa. Cada aprovação abrange texto, destino e os momentos explicitamente listados naquele item. Não considera os demais itens aprovados.
+- A aprovação foi concluída pelo mantenedor em lote em 06/10/2026. Aplicar apenas 01, 02, 03, 05, 08, 09, 10, 15 e 18, incluindo os textos e o destino corrigidos na resposta.
 - Não esconder uma correção vigente para mostrar um apoio. Se os dois coincidirem, incorporar a ação complementar ao aviso ou ao popover existente, evitando dois blocos sobrepostos. Casos desse tipo estão identificados abaixo.
 - Oferecer só uma ação principal por entrada. Links externos abrem em nova aba por clique; orientações internas abrem no popover. Não navegar ou enviar mensagens automaticamente.
-- Entrada e saída discretas; duração a definir depois da aprovação, conforme o trecho, sem deixar todos os apoios presos até o fim do assunto. Busca, avanço, retorno e pausa devem respeitar o relógio real do vídeo.
+- Entrada e saída discretas; janela de 12 segundos de vídeo por fala aprovada, sem prender o apoio até o fim do assunto. Busca, avanço, retorno e pausa devem respeitar o relógio real do vídeo.
 - Preservar acesso por teclado, toque e redução de movimento. Traduzir o conteúdo aprovado para EN e ES sem alterar nomes próprios, URLs ou condições.
 - Regras oficiais da MSC prevalecem sobre informações divergentes da gravação. Não transformar preços, horários previstos, disponibilidade ou serviços citados em garantias.
 
@@ -38,31 +38,31 @@ Os IDs `faq-oNN` abaixo foram conferidos no HTML atual. “Mais detalhes” sign
 
 **Tratamento:** complemento à orientação de aeroportos (`faq-o13`). O aviso de atualização sobre estimativas de trajeto deve continuar disponível. Não anunciar ônibus direto de Congonhas nem tempos fixos de viagem sem confirmação da operadora.
 
-**Decisão:** aguardando aprovação — primeiro item da sequência.
+**Decisão:** aprovado pelo mantenedor em 06/10/2026; aplicado e validado.
 
 ## 02 — Estacionamento do Concais
 
 **Entrada:** 00:29:38.440 — indicação do site para reservar estacionamento.
 
-**Texto sugerido:** “Vai de carro? Consulte o estacionamento do Concais e confirme disponibilidade, tarifa e acesso antes de sair.”
+**Texto sugerido:** “Consulte o estacionamento do Concais e confirme disponibilidade, tarifa e acesso antes de sair.”
 
 **Ação:** “Consultar estacionamento” → [concais.com.br/estacionamento](https://www.concais.com.br/estacionamento).
 
 **Tratamento:** usar a página específica, em vez da home citada na fala. Não repetir a comparação de segurança feita na gravação nem indicar compra concluída pelo simples acesso.
 
-**Decisão:** aguardando aprovação.
+**Decisão:** aprovado pelo mantenedor em 06/10/2026; aplicado e validado.
 
 ## 03 — Baixar o Board Game Guru
 
 **Entradas:** 01:03:43.119 — convite para baixar; 01:06:04.119 — demonstração do download para Android/iOS; 01:10:21.199 — reforço final.
 
-**Texto sugerido:** “Prepare seu app de jogos: no site do Board Game Guru você encontra os links para Android e iOS.”
+**Texto sugerido:** “Instale agora o BG Guru!: no site do Board Game Guru você encontra os links para Android e iOS.”
 
 **Ação:** “Baixar o Guru” → [boardgameguru.app](https://boardgameguru.app/).
 
 **Tratamento:** agrupar repetições. Este apoio é para instalação; o registro “Eu vou” é a proposta 24. Não confundir instalação, confirmação no evento e check-in da MSC.
 
-**Decisão:** aguardando aprovação.
+**Decisão:** aprovado pelo mantenedor em 06/10/2026; aplicado e validado.
 
 ## 04 — Liberar a cabine no desembarque
 
@@ -74,7 +74,7 @@ Os IDs `faq-oNN` abaixo foram conferidos no HTML atual. “Mais detalhes” sign
 
 **Tratamento:** não garantir permanência até 10h. A fala de retorno do ônibus pode abrir também a orientação do fretado, sem trocar horário de transporte por horário de cabine.
 
-**Decisão:** aguardando aprovação.
+**Decisão:** dispensado pelo mantenedor em 06/10/2026; não aplicar este novo apoio.
 
 ## 05 — Apoio dos monitores da Encounter
 
@@ -86,7 +86,7 @@ Os IDs `faq-oNN` abaixo foram conferidos no HTML atual. “Mais detalhes” sign
 
 **Tratamento:** sem prometer monitor exclusivo ou atendimento imediato. A fala pede paciência com a disponibilidade da equipe.
 
-**Decisão:** aguardando aprovação.
+**Decisão:** aprovado pelo mantenedor em 06/10/2026; aplicado e validado.
 
 ## 06 — Documento e CNH digital
 
@@ -98,7 +98,7 @@ Os IDs `faq-oNN` abaixo foram conferidos no HTML atual. “Mais detalhes” sign
 
 **Tratamento:** antes da correção sobre menores, sem substituir essa correção. O popover inclui documento com foto reconhecível e regra do RG; a repetição não precisa exibir um segundo aviso colado ao primeiro.
 
-**Decisão:** aguardando aprovação.
+**Decisão:** dispensado pelo mantenedor em 06/10/2026; não aplicar este novo apoio.
 
 ## 07 — Solicitar vouchers e etiquetas no privado
 
@@ -110,7 +110,7 @@ Os IDs `faq-oNN` abaixo foram conferidos no HTML atual. “Mais detalhes” sign
 
 **Tratamento:** não sugerir liberação imediata ou envio automático. O convite ao grupo já entra nesta passagem; coordenar as duas ações para evitar concorrência. O popover `faq-o02` conserva conferência e impressão dos PDFs.
 
-**Decisão:** aguardando aprovação.
+**Decisão:** dispensado pelo mantenedor em 06/10/2026; não aplicar este novo apoio.
 
 ## 08 — Mochila para o primeiro dia
 
@@ -122,7 +122,7 @@ Os IDs `faq-oNN` abaixo foram conferidos no HTML atual. “Mais detalhes” sign
 
 **Tratamento:** complemento de organização da mala; não estimar prazo garantido para entrega de bagagem ou liberação da cabine.
 
-**Decisão:** aguardando aprovação.
+**Decisão:** aprovado pelo mantenedor em 06/10/2026; aplicado e validado.
 
 ## 09 — Consultar a página do fretado oficial
 
@@ -134,7 +134,7 @@ Os IDs `faq-oNN` abaixo foram conferidos no HTML atual. “Mais detalhes” sign
 
 **Tratamento:** acrescentar uma ação à atualização já existente, sem duplicar o bloco. Não republicar a flexibilização provisória da live nem tratar tolerância como novo horário de saída.
 
-**Decisão:** aguardando aprovação.
+**Decisão:** aprovado pelo mantenedor em 06/10/2026; aplicado e validado.
 
 ## 10 — Da Rodoviária de Santos ao terminal
 
@@ -146,7 +146,7 @@ Os IDs `faq-oNN` abaixo foram conferidos no HTML atual. “Mais detalhes” sign
 
 **Tratamento:** não prometer dez minutos nem criar um endereço ou link de mapa não verificado. Pode ser incorporado ao popover da Cometa, se ambos forem aprovados, para evitar duas entradas próximas.
 
-**Decisão:** aguardando aprovação.
+**Decisão:** aprovado pelo mantenedor em 06/10/2026; aplicado e validado.
 
 ## 11 — Mural, abertura e alterações da programação
 
@@ -158,7 +158,7 @@ Os IDs `faq-oNN` abaixo foram conferidos no HTML atual. “Mais detalhes” sign
 
 **Tratamento:** o popover explica que sala, abertura e horários dependem de confirmação. Não fixar teatro, Crystal Lounge ou abertura às 17h/18h como compromisso confirmado. As previsões já aparecem na atualização dos kits.
 
-**Decisão:** aguardando aprovação.
+**Decisão:** dispensado pelo mantenedor em 06/10/2026; não aplicar este novo apoio.
 
 ## 12 — Preparar uma peça branca
 
@@ -170,7 +170,7 @@ Os IDs `faq-oNN` abaixo foram conferidos no HTML atual. “Mais detalhes” sign
 
 **Tratamento:** participação opcional; não fixar noite ou horário não confirmado.
 
-**Decisão:** aguardando aprovação.
+**Decisão:** dispensado pelo mantenedor em 06/10/2026; não aplicar este novo apoio.
 
 ## 13 — Roupas, calçados e agasalho
 
@@ -182,7 +182,7 @@ Os IDs `faq-oNN` abaixo foram conferidos no HTML atual. “Mais detalhes” sign
 
 **Tratamento:** concentrar as orientações em uma entrada; no popover, explicar as restrições do restaurante principal conforme a orientação de bordo. Não criar obrigação de traje de gala.
 
-**Decisão:** aguardando aprovação.
+**Decisão:** dispensado pelo mantenedor em 06/10/2026; não aplicar este novo apoio.
 
 ## 14 — Conferir o cardápio do pacote Easy
 
@@ -194,7 +194,7 @@ Os IDs `faq-oNN` abaixo foram conferidos no HTML atual. “Mais detalhes” sign
 
 **Tratamento:** ampliar o popover com a orientação de consultar o menu/QR disponível a bordo. Não criar um QR próprio, menu externo ou lista fixa de marcas. A correção sobre limites continua separada e prioritária.
 
-**Decisão:** aguardando aprovação.
+**Decisão:** dispensado pelo mantenedor em 06/10/2026; não aplicar este novo apoio.
 
 ## 15 — Consultar pacote e condições com a agência
 
@@ -206,7 +206,7 @@ Os IDs `faq-oNN` abaixo foram conferidos no HTML atual. “Mais detalhes” sign
 
 **Tratamento:** ação complementar à atualização de preços; não repetir R$600, desconto, prazo de vinte dias ou parcelamento como condição garantida.
 
-**Decisão:** aguardando aprovação.
+**Decisão:** aprovado pelo mantenedor em 06/10/2026; aplicado e validado.
 
 ## 16 — Escolher os aparelhos da internet
 
@@ -218,7 +218,7 @@ Os IDs `faq-oNN` abaixo foram conferidos no HTML atual. “Mais detalhes” sign
 
 **Tratamento:** explicar o vínculo aos dispositivos, sem repetir a descrição técnica de IP da live. Não prometer compartilhamento, substituição ou sinal de celular em Búzios.
 
-**Decisão:** aguardando aprovação.
+**Decisão:** dispensado pelo mantenedor em 06/10/2026; não aplicar este novo apoio.
 
 ## 17 — Cordão e pulseira do evento
 
@@ -230,19 +230,19 @@ Os IDs `faq-oNN` abaixo foram conferidos no HTML atual. “Mais detalhes” sign
 
 **Tratamento:** complementar o popover do kit com a utilidade dos itens. Não apresentar a pulseira KOB como substituta do Cruise Card ou documento.
 
-**Decisão:** aguardando aprovação.
+**Decisão:** dispensado pelo mantenedor em 06/10/2026; não aplicar este novo apoio.
 
 ## 18 — Acessar a reserva no MSC for Me
 
 **Entradas:** 00:47:23.680 — app e reserva; 01:01:01.880 — reforço e conferência do sobrenome no PDF.
 
-**Texto sugerido:** “Para localizar sua reserva no MSC for Me, use o número da reserva e o sobrenome conforme a confirmação enviada pela agência.”
+**Texto sugerido:** “Veja mais detalhes e link de download no site da MSC”
 
-**Ação:** “Mais detalhes” → `faq-o33`.
+**Ação:** “MSC for Me” → [site oficial MSC](https://www.msccruzeiros.com.br/a-bordo/internet-e-aplicativos/msc-for-me).
 
-**Tratamento:** ampliar o popover com o passo a passo e orientação para procurar a agência se o acesso falhar. Não pedir número de reserva ou sobrenome no site nem afirmar que o app substitui os vouchers de embarque.
+**Tratamento aprovado:** dar acesso à página oficial para detalhes/download. Não coletar número de reserva ou sobrenome no KOB; não substituir os vouchers de embarque. A alteração do mantenedor substitui a ação interna e o passo a passo originalmente propostos.
 
-**Decisão:** aguardando aprovação.
+**Decisão:** aprovado pelo mantenedor em 06/10/2026; aplicado e validado.
 
 ## 19 — Vincular o pagamento da conta de bordo
 
@@ -250,11 +250,11 @@ Os IDs `faq-oNN` abaixo foram conferidos no HTML atual. “Mais detalhes” sign
 
 **Texto sugerido:** “As compras ficam na conta do Cruise Card. Confira com a MSC como vincular o pagamento pelo app, nos totens ou na recepção.”
 
-**Ação:** “Mais detalhes” → `faq-o34`.
+**Ação:** dispensada junto com a proposta.
 
 **Tratamento:** não oferecer cadastro de cartão no site. Não garantir aceitação de Wise/Nomad, aproximação, parcelamento ou condições financeiras citadas na live.
 
-**Decisão:** aguardando aprovação.
+**Decisão:** dispensado pelo mantenedor em 06/10/2026; não aplicar este novo apoio.
 
 ## 20 — Jantar com amigos de outras cabines
 
@@ -266,7 +266,7 @@ Os IDs `faq-oNN` abaixo foram conferidos no HTML atual. “Mais detalhes” sign
 
 **Tratamento:** orientar a solicitação antecipada, sem garantir remanejamento nem afirmar impossibilidade absoluta após o primeiro jantar.
 
-**Decisão:** aguardando aprovação.
+**Decisão:** dispensado pelo mantenedor em 06/10/2026; não aplicar este novo apoio.
 
 ## 21 — Alternativas e horários das refeições
 
@@ -278,7 +278,7 @@ Os IDs `faq-oNN` abaixo foram conferidos no HTML atual. “Mais detalhes” sign
 
 **Tratamento:** não prometer funcionamento contínuo do buffet ou pizza 24 horas. O aviso sobre o turno de jantar continua responsável pela orientação de horário e tolerância.
 
-**Decisão:** aguardando aprovação.
+**Decisão:** dispensado pelo mantenedor em 06/10/2026; não aplicar este novo apoio.
 
 ## 22 — Produtos do frigobar
 
@@ -290,7 +290,7 @@ Os IDs `faq-oNN` abaixo foram conferidos no HTML atual. “Mais detalhes” sign
 
 **Tratamento:** manter apenas a informação de cobrança e uso conforme o pacote. Não reproduzir a sugestão de consumir e repor escondido para evitar cobrança.
 
-**Decisão:** aguardando aprovação.
+**Decisão:** dispensado pelo mantenedor em 06/10/2026; não aplicar este novo apoio.
 
 ## 23 — Identificação dos amigos no chat MSC
 
@@ -302,7 +302,7 @@ Os IDs `faq-oNN` abaixo foram conferidos no HTML atual. “Mais detalhes” sign
 
 **Tratamento:** complemento à atualização já existente sobre disponibilidade e idade do chat. Não indicar que o Wi-Fi interno libera WhatsApp ou internet externa gratuita.
 
-**Decisão:** aguardando aprovação.
+**Decisão:** dispensado pelo mantenedor em 06/10/2026; não aplicar este novo apoio.
 
 ## 24 — Confirmar “Eu vou” no Guru
 
@@ -314,7 +314,7 @@ Os IDs `faq-oNN` abaixo foram conferidos no HTML atual. “Mais detalhes” sign
 
 **Tratamento:** conferir a sequência demonstrada no app e mencionar a alternativa manual. Instalar o aplicativo, sozinho, não registra presença nos sorteios. Não confundir com o check-in do cruzeiro.
 
-**Decisão:** aguardando aprovação.
+**Decisão:** dispensado pelo mantenedor em 06/10/2026; não aplicar este novo apoio.
 
 ## 25 — Inscrição manual nos sorteios
 
@@ -326,7 +326,7 @@ Os IDs `faq-oNN` abaixo foram conferidos no HTML atual. “Mais detalhes” sign
 
 **Tratamento:** mostrar como alternativa real; não excluir quem não instalou o app nem prometer prêmio, inscrição automática ou regras de sorteio ainda não divulgadas.
 
-**Decisão:** aguardando aprovação.
+**Decisão:** dispensado pelo mantenedor em 06/10/2026; não aplicar este novo apoio.
 
 ## 26 — Acervo e quem ensina cada jogo
 
@@ -338,7 +338,7 @@ Os IDs `faq-oNN` abaixo foram conferidos no HTML atual. “Mais detalhes” sign
 
 **Tratamento:** ampliar o popover com a navegação demonstrada. A lista pode receber atualizações; não garantir que todo título tenha um monitor imediatamente disponível.
 
-**Decisão:** aguardando aprovação.
+**Decisão:** dispensado pelo mantenedor em 06/10/2026; não aplicar este novo apoio.
 
 ## 27 — Favoritar os jogos de interesse
 
@@ -350,7 +350,7 @@ Os IDs `faq-oNN` abaixo foram conferidos no HTML atual. “Mais detalhes” sign
 
 **Tratamento:** favorito não reserva mesa nem horário. Acrescentar essa distinção ao popover.
 
-**Decisão:** aguardando aprovação.
+**Decisão:** dispensado pelo mantenedor em 06/10/2026; não aplicar este novo apoio.
 
 ## 28 — Filtrar o acervo
 
@@ -362,7 +362,7 @@ Os IDs `faq-oNN` abaixo foram conferidos no HTML atual. “Mais detalhes” sign
 
 **Tratamento:** popover com o exemplo de filtro demonstrado, sem garantir reserva ou disponibilidade de mesa. Pode ser agrupado ao apoio 26 se ambos forem aprovados.
 
-**Decisão:** aguardando aprovação.
+**Decisão:** dispensado pelo mantenedor em 06/10/2026; não aplicar este novo apoio.
 
 ## 29 — Cadastrar os jogos que vai compartilhar
 
@@ -374,7 +374,7 @@ Os IDs `faq-oNN` abaixo foram conferidos no HTML atual. “Mais detalhes” sign
 
 **Tratamento:** o popover explica a avaliação pela organização mostrada em 01:09:27.120 e a necessidade de respeitar a bagagem oficial. No reforço final, mencionar apenas que critérios de eventuais premiações serão divulgados; não garantir prêmio por volume nem criar competição não publicada.
 
-**Decisão:** aguardando aprovação.
+**Decisão:** dispensado pelo mantenedor em 06/10/2026; não aplicar este novo apoio.
 
 ## 30 — Suporte do próprio Guru
 
@@ -386,7 +386,7 @@ Os IDs `faq-oNN` abaixo foram conferidos no HTML atual. “Mais detalhes” sign
 
 **Tratamento:** ampliar a orientação do popover sem inventar contato pessoal de Bruno, link direto para suporte ou prometer prazo de resposta.
 
-**Decisão:** aguardando aprovação.
+**Decisão:** dispensado pelo mantenedor em 06/10/2026; não aplicar este novo apoio.
 
 ## 31 — Itens pessoais de higiene
 
@@ -398,7 +398,7 @@ Os IDs `faq-oNN` abaixo foram conferidos no HTML atual. “Mais detalhes” sign
 
 **Tratamento:** o popover reúne as amenidades mencionadas e recomenda conferir a categoria com a agência. Não criar garantia de equipamento ou refrigeração de medicamentos.
 
-**Decisão:** aguardando aprovação.
+**Decisão:** dispensado pelo mantenedor em 06/10/2026; não aplicar este novo apoio.
 
 ## Passagens já atendidas por atualizações
 
@@ -444,9 +444,32 @@ Os convites ao grupo já têm 17 ocorrências mapeadas no [relatório dos avisos
 
 ## Controle de aprovação
 
-Sequência inicial: **01 Cometa → 02 Concais → 03 download do Guru → 04 a 31**. Pode ser reordenada pelo mantenedor.
+Resposta recebida em 06/10/2026: **9 aprovados, 22 dispensados, 0 pendentes**.
 
-Após cada resposta, registrar aprovado, ajustado ou dispensado no item correspondente. Os aprovados poderão ser aplicados na sequência; os demais permanecem fora do player. Até esta versão do relatório, **0 aprovados, 31 pendentes**.
+Aprovados: **01, 02, 03, 05, 08, 09, 10, 15, 18**. Texto corrigido de 02/03/18 e link MSC de 18 incorporados acima.
+
+Dispensados: 04, 06, 07, 11, 12, 13, 14, 16, 17, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31. Essa dispensa se refere às novas propostas de apoio; não remove as atualizações editoriais já autorizadas.
+
+### Cobertura antes de 00:29:01
+
+Sim: a revisão cobre as falas disponíveis desde a abertura do anexo, em 00:13:53. Foram identificados desembarque (17:14), monitoria (18:08), documentos (21:31), vouchers (22:38), mochila (24:25) e fretado (26:03 e 27:53), além das atualizações já mapeadas. Desses novos apoios, o mantenedor aprovou monitoria, mochila e fretado; dispensou desembarque, documentos e vouchers.
+
+Os nove apoios correspondem a 13 entradas na gravação, incluindo as repetições aprovadas. Cada entrada dura 12 segundos do relógio do vídeo. O corpo longo do aviso pode ser rolado no mobile para preservar acesso às ações, ao convite e ao título, sem redimensionar o vídeo por estado.
 
 Fonte temporizada: `AtIvlc62KgI.pt-orig.json3`, consultada em 06/10/2026.
 SHA-256: `38df665ad6579e206e3c5474a84c53781d252f9c4eaddbe92e5340548c0b8f04`.
+
+
+## Validação da entrega
+
+- Acervo aplicado: nove apoios e 13 entradas, nas versões PT/EN/ES; nenhuma das 22 propostas dispensadas foi acrescentada.
+- Node: **7 testes passaram** em `analytics/tests/live-notice-timing.test.mjs`.
+- Player: **63 testes Playwright passaram** em `analytics/tests/manual-live.spec.js`, incluindo os 23 avisos existentes, convites, entradas e fins, busca, retorno, pausa, links, foco, popover, recolhimento, movimento reduzido e API bloqueada.
+- Inspeção visual em 320, 390, 850 e 1440 px, nos três idiomas: 60 capturas de cinco cenários, sem erros JavaScript, overflow horizontal ou sobreposição entre ações, convite e assunto. No mobile, a menor separação medida foi de 8 px; textos longos rolam por toque ou teclado.
+- Corrigido um reinício indevido do convite ao cruzar assuntos: a seleção automática agora usa o instante real do player, sem passar momentaneamente pelo início do assunto.
+- Vídeo mobile com altura mínima estável de 240 px em todos os estados. A ação de apoio é principal; detalhes da atualização permanecem como ação secundária, com FAQ idêntico deduplicado.
+- Ajuste adicional solicitado: convite WhatsApp com fundo verde `#087b41`, ícone e texto brancos, mesma fonte display do assunto em tamanho menor e hover verde `#066637`. Contraste normal 5,36:1; hover 7,09:1. Link e posicionamento preservados.
+- Horários provenientes das legendas automáticas. Os testes usam um relógio simulado da API do YouTube; confirmam a sincronização do componente, sem representar uma revisão acústica quadro a quadro da gravação.
+- SonarQube permanece desativado por solicitação do mantenedor. Achados de design já comparados com a base estão registrados em `2026-10-06-avisos-live.md`; não foram criadas novas supressões.
+
+A entrega fica na branch solicitada, sem merge ou deploy nesta etapa.

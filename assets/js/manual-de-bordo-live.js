@@ -6,6 +6,7 @@ import { initLiveGuideHelp } from './manual-de-bordo-live-help.js?v=20261005-mob
 import { initLiveMarkers } from './manual-de-bordo-live-markers.js?v=20261005-mobile-live';
 import { initLiveControlMarquee } from './manual-de-bordo-live-marquee.js?v=20261005-ui-final';
 import { initLiveTopicTransition } from './manual-de-bordo-live-topic.js?v=20261005-mobile-live';
+import { supportAt } from './manual-de-bordo-live-support.js?v=20261006-live-support';
 
 const lang = document.documentElement.lang.slice(0, 2);
 const copy = {
@@ -16,7 +17,8 @@ const copy = {
     videoError: 'O YouTube não conseguiu reproduzir este vídeo. Tente novamente ou abra o trecho no YouTube.', fullscreenError: 'Não foi possível ampliar. Você pode abrir o vídeo no YouTube.', expand: 'Ampliar vídeo', exit: 'Sair da tela cheia',
     previousShort: 'Anterior', nextShort: 'Próximo', fullLive: 'Live completa', searchHint: 'Buscar na live', loading: 'Carregando vídeo…',
     noticePill: 'Atualização', showNotice: 'Mostrar atualização', collapseNotice: 'Recolher aviso',
-    groupInvite: 'Clique aqui para entrar no grupo', groupInviteLabel: 'Entrar no grupo oficial do WhatsApp (abre em nova aba)'
+    groupInvite: 'Clique aqui para entrar no grupo', groupInviteLabel: 'Entrar no grupo oficial do WhatsApp (abre em nova aba)',
+    support: 'APOIO DA LIVE', supportPill: 'Apoio', showSupport: 'Mostrar apoio da live', opensNewTab: 'abre em nova aba'
   },
   en: {
     topics: 'Topics', close: 'Collapse topics',
@@ -25,7 +27,8 @@ const copy = {
     videoError: 'YouTube could not play this video. Try again or open this topic on YouTube.', fullscreenError: 'Full screen is unavailable. You can open the video on YouTube.', expand: 'Expand video', exit: 'Exit full screen',
     previousShort: 'Previous', nextShort: 'Next', fullLive: 'Full recording', searchHint: 'Search the recording', loading: 'Loading video…',
     noticePill: 'Update', showNotice: 'Show update', collapseNotice: 'Collapse notice',
-    groupInvite: 'Click here to join the group', groupInviteLabel: 'Join the official WhatsApp group (opens in a new tab)'
+    groupInvite: 'Click here to join the group', groupInviteLabel: 'Join the official WhatsApp group (opens in a new tab)',
+    support: 'LIVE HELP', supportPill: 'Help', showSupport: 'Show recording help', opensNewTab: 'opens in a new tab'
   },
   es: {
     topics: 'Temas', close: 'Recoger temas',
@@ -34,7 +37,8 @@ const copy = {
     videoError: 'YouTube no pudo reproducir el vídeo. Inténtalo de nuevo o abre este tema en YouTube.', fullscreenError: 'No se pudo ampliar. Puedes abrir el vídeo en YouTube.', expand: 'Ampliar vídeo', exit: 'Salir de pantalla completa',
     previousShort: 'Anterior', nextShort: 'Siguiente', fullLive: 'Charla completa', searchHint: 'Busca en la charla', loading: 'Cargando vídeo…',
     noticePill: 'Actualización', showNotice: 'Mostrar actualización', collapseNotice: 'Recoger aviso',
-    groupInvite: 'Haz clic aquí para entrar al grupo', groupInviteLabel: 'Entrar al grupo oficial de WhatsApp (se abre en una pestaña nueva)'
+    groupInvite: 'Haz clic aquí para entrar al grupo', groupInviteLabel: 'Entrar al grupo oficial de WhatsApp (se abre en una pestaña nueva)',
+    support: 'AYUDA EN LA CHARLA', supportPill: 'Ayuda', showSupport: 'Mostrar ayuda de la charla', opensNewTab: 'se abre en una pestaña nueva'
   }
 }[lang] || null;
 const cinema = document.getElementById('heroLiveCinema');
@@ -106,6 +110,13 @@ function initLive() {
       if (invite && invite.parentElement !== lowerThird) lowerThird.insertBefore(invite, topic);
       lowerThird.hidden = topic.hidden;
     }
+    if (mobile.matches && !noticeGroup.hidden) {
+      // Keep the title, invitation and actions reachable; scroll only long notice text.
+      const bodyRoom = video.getBoundingClientRect().height - lowerThird.getBoundingClientRect().height - noteAction.getBoundingClientRect().height - 46;
+      note.style.setProperty('--live-note-body-max-height', `${Math.max(32, bodyRoom)}px`);
+    } else note.style.removeProperty('--live-note-body-max-height');
+    if (mobile.matches && noticeGroup.dataset.noticeKind !== 'update' && note.scrollHeight > note.clientHeight) note.tabIndex = 0;
+    else note.removeAttribute('tabindex');
     const h = document.querySelector('.guide-header')?.offsetHeight;
     if (h) document.documentElement.style.setProperty('--guide-header-height', `${h}px`);
     if (window.innerWidth > 768) {
@@ -122,6 +133,8 @@ function initLive() {
     const dimensionsObserver = new ResizeObserver(updateDimensions);
     if (wrap) dimensionsObserver.observe(wrap);
     dimensionsObserver.observe(byId('liveCustomControls'));
+    dimensionsObserver.observe(byId('liveLowerThird'));
+    dimensionsObserver.observe(noteAction);
   }
   byId('loadLivePlayerBtn').disabled = false;
   byId('heroLiveToggleChaptersBtn').disabled = false;
@@ -251,16 +264,23 @@ function initLive() {
   wrapper.append(noticePill);
   let noticeCollapsed = false;
   let activeNoticeId = null;
+  let noticeRenderKey;
   let lastPlaybackSeconds = 0;
   function syncNotice() {
     // Without an API clock, keep the update available in search and the guide only.
     const due = ready && !apiFailed && isNoticeDue(selected, lastPlaybackSeconds);
+    const support = ready && !apiFailed ? supportAt(lastPlaybackSeconds) : null;
+    const visibleNotice = due || support;
     const inviteDue = ready && !apiFailed && isGroupInviteDue(lastPlaybackSeconds);
+    const inviteChanged = groupInvite.hidden === Boolean(inviteDue);
     if (!inviteDue && document.activeElement === groupInvite) playPause.focus({ preventScroll: true });
     groupInvite.hidden = !inviteDue;
-    const nextNoticeId = due ? selected.id : null;
+    const nextNoticeId = visibleNotice ? `${due ? selected.id : ''}:${support?.id || ''}` : null;
     if (activeNoticeId !== nextNoticeId) {
-      if (activeNoticeId) guideHelp.hide();
+      if (activeNoticeId) {
+        if (byId('liveGuidePopover')?.contains(document.activeElement)) playPause.focus({ preventScroll: true });
+        guideHelp.hide();
+      }
       if (nextNoticeId && noticeCollapsed) {
         noticePill.classList.remove('is-new');
         void noticePill.offsetWidth;
@@ -268,21 +288,32 @@ function initLive() {
       }
       activeNoticeId = nextNoticeId;
     }
-    noticeGroup.hidden = !due;
-    wrapper.classList.toggle('is-notice-due', Boolean(due));
+    const renderKey = `${selected?.id || ''}:${Boolean(due)}:${support?.id || ''}`;
+    const renderChanged = noticeRenderKey !== renderKey;
+    if (renderChanged) {
+      if (noticeGroup.contains(document.activeElement) && document.activeElement !== noticeCollapse) playPause.focus({ preventScroll: true });
+      renderNotice(selected, due, support);
+      noticeRenderKey = renderKey;
+    }
+    noticeGroup.hidden = !visibleNotice;
+    if (!visibleNotice && document.activeElement === noticePill) playPause.focus({ preventScroll: true });
+    wrapper.classList.toggle('is-notice-due', Boolean(visibleNotice));
     wrapper.classList.toggle('is-notice-collapsed', noticeCollapsed);
-    noticePill.hidden = !(mobile.matches && noticeCollapsed && due && !noticeGroup.hidden);
+    noticePill.hidden = !(mobile.matches && noticeCollapsed && visibleNotice);
     noticeCollapse.setAttribute('aria-expanded', String(!noticeCollapsed));
     noticePill.setAttribute('aria-expanded', String(!noticeCollapsed));
+    if (renderChanged || inviteChanged) updateDimensions();
   }
   noticeCollapse.addEventListener('click', () => {
     noticeCollapsed = true;
     syncNotice();
+    updateDimensions();
     noticePill.focus({ preventScroll: true });
   });
   noticePill.addEventListener('click', () => {
     noticeCollapsed = false;
     syncNotice();
+    updateDimensions();
     noticeCollapse.focus({ preventScroll: true });
   });
   mobile.addEventListener('change', syncNotice);
@@ -305,12 +336,60 @@ function initLive() {
     element.replaceChildren(fragment);
   }
 
-  function noticeLabel() {
+  function noticeLabel(kind = 'update') {
     const label = document.createElement('strong');
-    label.className = 'live-notice-label';
-    label.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4M12 17h.01"/></svg>';
-    label.append(copy.updated);
+    label.className = `live-notice-label${kind === 'support' ? ' live-notice-label--support' : ''}`;
+    const paths = kind === 'support' ? '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7h.01"/>' : '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4M12 17h.01"/>';
+    label.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
+    label.append(kind === 'support' ? copy.support : copy.updated);
     return label;
+  }
+
+  function renderNotice(chapter, updateDue, support) {
+    const content = document.createDocumentFragment();
+    const actions = [];
+    if (chapter?.notice) {
+      const update = document.createElement('div');
+      update.className = 'live-notice-update';
+      update.hidden = !updateDue;
+      update.append(noticeLabel(), ' ', chapter.notice[lang]);
+      content.append(update);
+    }
+    if (support) {
+      const help = document.createElement('div');
+      help.className = 'live-notice-support';
+      help.dataset.supportId = support.id;
+      help.append(noticeLabel('support'), ' ', support.texts[lang]);
+      content.append(help);
+      if (support.action.href) {
+        const link = document.createElement('a');
+        link.className = 'live-guide-trigger live-support-link';
+        link.href = support.action.href;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.setAttribute('aria-label', `${support.action.labels[lang]} (${copy.opensNewTab})`);
+        link.append(support.action.labels[lang]);
+        link.insertAdjacentHTML('beforeend', '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10"/></svg>');
+        actions.push(link);
+      } else actions.push(guideLink(support.action));
+    }
+    if (updateDue && chapter.faqId && chapter.faqId !== support?.action.faqId) {
+      const details = guideLink(chapter);
+      if (support) details.classList.add('live-guide-trigger--secondary');
+      actions.push(details);
+    }
+    note.replaceChildren(content);
+    note.hidden = !(chapter?.notice || support);
+    noteAction.replaceChildren(...actions);
+    noteAction.hidden = !actions.length;
+    noticeGroup.dataset.noticeKind = support ? (updateDue ? 'mixed' : 'support') : 'update';
+    noticePill.querySelector('span').textContent = support ? (updateDue ? `${copy.noticePill} · ${copy.supportPill}` : copy.supportPill) : copy.noticePill;
+    const icon = noticeLabel(support && !updateDue ? 'support' : 'update').firstElementChild;
+    icon.classList.add('live-notice-pill__icon');
+    icon.setAttribute('width', '14');
+    icon.setAttribute('height', '14');
+    noticePill.firstElementChild.replaceWith(icon);
+    noticePill.setAttribute('aria-label', support && !updateDue ? copy.showSupport : copy.showNotice);
   }
 
   function guideLink(chapter) {
@@ -470,7 +549,7 @@ function initLive() {
     handle.addEventListener('pointercancel', endDrag);
   }
 
-  function select(chapter, isPlaying) {
+  function select(chapter, isPlaying, seconds = chapter.seconds) {
     const changed = selected?.id !== chapter.id;
     if (changed) guideHelp.hide();
     selected = chapter;
@@ -478,7 +557,7 @@ function initLive() {
     topicTransition.update(chapter.id, chapter.titles[lang], () => updateNotice(chapter));
     lowerThird.hidden = false;
     updateTopicButtons();
-    updateProgress(chapter.seconds);
+    updateProgress(seconds);
     external.href = `https://www.youtube.com/watch?v=${LIVE_VIDEO_ID}&t=${chapter.seconds}s`;
     for (const row of rows) {
       row.button.toggleAttribute('data-selected', row.chapter.id === chapter.id);
@@ -488,13 +567,6 @@ function initLive() {
   }
 
   function updateNotice(chapter) {
-    note.hidden = !chapter.notice;
-    noteAction.hidden = !(chapter.notice && chapter.faqId);
-    noteAction.replaceChildren();
-    if (chapter.notice) {
-      note.replaceChildren(noticeLabel(), ' ', document.createTextNode(chapter.notice[lang]));
-      if (chapter.faqId) noteAction.replaceChildren(guideLink(chapter));
-    }
     syncNotice();
   }
 
@@ -545,14 +617,14 @@ function initLive() {
     if (!ready || !player?.getCurrentTime) return;
     const seconds = player.getCurrentTime();
     const chapter = topicAt(seconds);
-    if (chapter !== current) { select(chapter, playing); current = chapter; }
+    if (chapter !== current) { select(chapter, playing, seconds); current = chapter; }
     updateProgress(seconds);
     const next = CHAPTERS[CHAPTERS.indexOf(chapter) + 1];
     const rate = Number(player?.getPlaybackRate?.() || 1);
     if (playing && next && (next.seconds - seconds) / rate <= 4) {
       topicTransition.anticipate({ key: next.id, title: next.titles[lang], seconds: next.seconds }, () => {
         const actual = topicAt(player.getCurrentTime());
-        select(actual, playing);
+        select(actual, playing, player.getCurrentTime());
         current = actual;
       });
     }
