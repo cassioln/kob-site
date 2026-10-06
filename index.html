@@ -420,7 +420,6 @@
         height="1796">
     </a>
     <nav class="nav__links" aria-label="Navegação principal">
-      <a class="nav__link--fold1" href="#evento">O evento</a>
       <a href="#navio">O navio</a>
       <a class="nav__link--fold1" href="#incluso">O que inclui</a>
       <a href="#itinerario">Itinerário</a>
@@ -458,10 +457,9 @@
         <span class="lang-switch__sep" aria-hidden="true">|</span>
         <a href="/es/" class="lang-switch__btn" hreflang="es" title="Español">ES</a>
       </div>
-      <a class="btn btn--primary" data-analytics-channel="whatsapp" data-analytics-cta-id="nav_reserve"
+      <a class="btn btn--primary" data-analytics-cta-id="nav_reserve"
         data-analytics-placement="header" data-analytics-intent="reservation"
-        href="https://api.whatsapp.com/send?phone=5513981580498&amp;text=Ol%C3%A1%2C%20Royal%20Trip%21%20Quero%20garantir%20minha%20vaga%20no%20Kriativos%20On%20Board%202026%20e%20fechar%20a%20reserva%20da%20minha%20cabine.%20Podem%20me%20ajudar%3F"
-        target="_blank" rel="noopener">Garantir minha vaga</a>
+        href="#valores">Garantir minha vaga</a>
       <button type="button" class="nav__toggle" id="navToggle" aria-label="Abrir menu" aria-expanded="false"
         aria-controls="drawer">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
@@ -2793,11 +2791,10 @@
                 </details>
                 <details>
                   <summary>O que não posso embarcar?</summary>
-                  <div>A MSC proíbe armas, substâncias ilícitas, materiais inflamáveis, bebidas e aparelhos de aquecimento
-                    como ferro de passar roupa. Alimentos frescos não são permitidos, sendo admitida a exceção de secos
-                    industrializados e embalados ou comida para bebês (lacrada). Secadores de cabelo e chapinhas são
-                    permitidos (as cabines já oferecem secador). Drones podem ser transportados guardados na cabine, mas
-                    seu uso a bordo é estritamente proibido.</div>
+                  <div>Não é permitido drone, comida, bebida, ferro de passar, chapinha e secador de
+                    cabelo (as cabines
+                    já têm
+                    secador). Comida para bebês é permitida, desde que lacrada.</div>
                 </details>
                 <details>
                   <summary>Qual festa teremos no navio?</summary>
@@ -3069,7 +3066,7 @@
 
         <nav class="footer__col" aria-labelledby="footer-plan-title">
           <h3 id="footer-plan-title">Planeje sua viagem</h3>
-          <a href="/manualdebordo">Manual de Bordo (Guia Oficial)</a>
+          <a href="/manualdebordo">Manual de Bordo</a>
           <a data-analytics-channel="whatsapp" data-analytics-cta-id="footer_support" data-analytics-placement="footer"
             data-analytics-intent="reservation_support"
             href="https://api.whatsapp.com/send?phone=5513981580498&amp;text=Ol%C3%A1%2C%20Royal%20Trip%21%20Estou%20planejando%20minha%20viagem%20para%20o%20Kriativos%20On%20Board%202026%20e%20gostaria%20de%20orienta%C3%A7%C3%A3o%20sobre%20reserva%2C%20valores%20e%20embarque."
@@ -3088,18 +3085,22 @@
       </div>
 
       <div class="footer__bottom">
-        <div class="footer__legal">
-          <span>© 2026 Kriativos On Board. Todos os direitos reservados.</span>
-          <span>Agência parceira: Royal Trip · CNPJ 16.957.402/0001-19</span>
+        <div class="footer__bottom-main">
           <div class="footer__privacy-controls">
             <a class="footer__cookie-policy" href="/politica-de-privacidade.html">Política de privacidade</a>
             <a class="footer__cookie-policy" href="/politica-de-cookies.html">Política de cookies</a>
             <button class="footer__cookie-preferences" type="button" data-cookie-preferences>Revisar preferências de
               cookies</button>
           </div>
+          <div class="ksio-powered-line">
+            Powered by <a href="https://ksio.dev" target="_blank" rel="noopener noreferrer">ksio.dev</a>
+          </div>
         </div>
-        <div class="ksio-powered-line">
-          Powered by <a href="https://ksio.dev" target="_blank" rel="noopener noreferrer">ksio.dev</a>
+
+        <div class="footer__legal">
+          <span>© 2026 Kriativos On Board. Todos os direitos reservados.</span>
+          <span class="footer__legal-sep" aria-hidden="true">·</span>
+          <span>Agência parceira: Royal Trip · CNPJ 16.957.402/0001-19</span>
         </div>
       </div>
     </div>

@@ -234,6 +234,26 @@
       }
     });
 
+    // Alternar check ao clicar em qualquer área do card (checklist-item / checklist-sidebar-item)
+    checklistRoot.addEventListener('click', function (e) {
+      if (e.target.closest('input, button, a, label, .checklist-item__na-toggle, .checklist-sidebar-item__na, .checklist-help-trigger')) {
+        return;
+      }
+      var item = e.target.closest('.checklist-item');
+      if (!item) return;
+
+      var checkbox = item.querySelector('.checklist-item__checkbox');
+      if (!checkbox || checkbox.disabled) return;
+
+      checkbox.checked = !checkbox.checked;
+      if (checkbox.checked) {
+        item.classList.add('is-checked');
+      } else {
+        item.classList.remove('is-checked');
+      }
+      checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+
     function saveAndRefresh() {
       var stateToSave = {};
       var totalApplicable = 0;
@@ -406,25 +426,126 @@
     window.addEventListener('hashchange', openFromHash);
     openFromHash();
 
-    // Filtragem de grupos dentro da Sidebar
-    sidebarNavItems.forEach(function (navBtn) {
-      navBtn.addEventListener('click', function () {
-        sidebarNavItems.forEach(function (btn) { btn.classList.remove('is-active'); });
-        navBtn.classList.add('is-active');
+    // Navegação direta por grupo, Scrollspy e Centralização Touch na Sidebar
+    var sidebarNav = sidebarAside.querySelector('.checklist-sidebar__nav');
+    var sidebarBody = sidebarAside.querySelector('.checklist-sidebar__body');
+    var sidebarGroups = Array.prototype.slice.call(sidebarList.querySelectorAll('.checklist-group'));
+    var sidebarToggles = Array.prototype.slice.call(sidebarList.querySelectorAll('.checklist-group__toggle'));
+    var navSlideFrame = null;
 
-        document.dispatchEvent(new Event('checklist:close'));
-        sidebarNavItems.forEach(function (button) { button.setAttribute('aria-pressed', String(button === navBtn)); });
-        var filterGroup = navBtn.getAttribute('data-sidebar-group') || 'all';
-        var sidebarItems = sidebarList.querySelectorAll('.checklist-group');
-
-        sidebarItems.forEach(function (sItem) {
-          var itemGroup = sItem.getAttribute('data-group-id');
-          if (filterGroup === 'all' || itemGroup === filterGroup) {
-            sItem.hidden = false;
-          } else {
-            sItem.hidden = true;
-          }
+    function keepActiveSidebarTabVisible(tab) {
+      if (!sidebarNav || !tab) return;
+      if (navSlideFrame) cancelAnimationFrame(navSlideFrame);
+      navSlideFrame = requestAnimationFrame(function () {
+        navSlideFrame = null;
+        var navRect = sidebarNav.getBoundingClientRect();
+        var tabRect = tab.getBoundingClientRect();
+        var edge = 10;
+        if (tabRect.left >= navRect.left + edge && tabRect.right <= navRect.right - edge) return;
+        var centered = sidebarNav.scrollLeft + tabRect.left - navRect.left - ((navRect.width - tabRect.width) / 2);
+        var max = Math.max(0, sidebarNav.scrollWidth - sidebarNav.clientWidth);
+        sidebarNav.scrollTo({
+          left: Math.max(0, Math.min(centered, max)),
+          behavior: 'smooth'
         });
+      });
+    }
+
+    function setActiveSidebarGroup(groupId) {
+      var activeBtn = null;
+      sidebarNavItems.forEach(function (btn) {
+        var bGroup = btn.getAttribute('data-sidebar-group');
+        var active = (bGroup === String(groupId));
+        btn.classList.toggle('is-active', active);
+        btn.setAttribute('aria-pressed', String(active));
+        btn.setAttribute('aria-selected', String(active));
+        if (active) activeBtn = btn;
+      });
+      if (activeBtn) keepActiveSidebarTabVisible(activeBtn);
+    }
+
+    // Clique nas abas: expande se colapsado e rola suavemente até o grupo
+    sidebarNavItems.forEach(function (navBtn) {
+      navBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        var targetGroupId = navBtn.getAttribute('data-sidebar-group') || '1';
+        var targetGroup = sidebarList.querySelector('.checklist-group[data-group-id="' + targetGroupId + '"]');
+        if (!targetGroup) return;
+
+        // Se o grupo estiver colapsado, expande automaticamente
+        if (targetGroup.classList.contains('is-collapsed')) {
+          targetGroup.classList.remove('is-collapsed');
+          var toggle = targetGroup.querySelector('.checklist-group__toggle');
+          if (toggle) {
+            toggle.setAttribute('aria-expanded', 'true');
+            var groupTitle = (targetGroup.querySelector('.checklist-group__title') || {}).textContent || '';
+            var expandLabel = isEn ? 'Collapse ' + groupTitle + ' group' : isEs ? 'Plegar grupo ' + groupTitle : 'Recolher grupo ' + groupTitle;
+            toggle.setAttribute('aria-label', expandLabel);
+            toggle.setAttribute('title', expandLabel);
+          }
+        }
+
+        setActiveSidebarGroup(targetGroupId);
+
+        if (sidebarBody) {
+          var bodyRect = sidebarBody.getBoundingClientRect();
+          var groupRect = targetGroup.getBoundingClientRect();
+          var targetTop = sidebarBody.scrollTop + (groupRect.top - bodyRect.top) - 10;
+          sidebarBody.scrollTo({
+            top: Math.max(0, targetTop),
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+
+    // Scrollspy dentro da Sidebar
+    var sidebarScrollSpyFrame = null;
+    if (sidebarBody && sidebarGroups.length) {
+      sidebarBody.addEventListener('scroll', function () {
+        if (sidebarScrollSpyFrame) return;
+        sidebarScrollSpyFrame = requestAnimationFrame(function () {
+          sidebarScrollSpyFrame = null;
+          var bodyRect = sidebarBody.getBoundingClientRect();
+          var currentGroupId = '1';
+          var bestDistance = Infinity;
+
+          sidebarGroups.forEach(function (group) {
+            var rect = group.getBoundingClientRect();
+            var diff = (rect.top - bodyRect.top);
+            if (diff <= 60 && Math.abs(diff) < bestDistance) {
+              bestDistance = Math.abs(diff);
+              currentGroupId = group.getAttribute('data-group-id') || '1';
+            }
+          });
+
+          setActiveSidebarGroup(currentGroupId);
+        });
+      }, { passive: true });
+    }
+
+    // Botões de recolher / expandir grupo no cabeçalho
+    sidebarToggles.forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var group = btn.closest('.checklist-group');
+        if (!group) return;
+
+        var isCollapsed = group.classList.toggle('is-collapsed');
+        btn.setAttribute('aria-expanded', String(!isCollapsed));
+
+        var titleEl = group.querySelector('.checklist-group__title');
+        var groupTitle = titleEl ? titleEl.textContent.trim() : '';
+
+        var label = '';
+        if (isCollapsed) {
+          label = isEn ? 'Expand ' + groupTitle + ' group' : isEs ? 'Desplegar grupo ' + groupTitle : 'Expandir grupo ' + groupTitle;
+        } else {
+          label = isEn ? 'Collapse ' + groupTitle + ' group' : isEs ? 'Plegar grupo ' + groupTitle : 'Recolher grupo ' + groupTitle;
+        }
+        btn.setAttribute('aria-label', label);
+        btn.setAttribute('title', label);
       });
     });
 
@@ -459,52 +580,166 @@
   }
 
   // --------------------------------------------------------------------------
-  // FAQ DETALHADO (#20) — BUSCA & CATEGORIAS
+  // Sincronização da altura do Header para posicionamento sticky perfeito
+  // --------------------------------------------------------------------------
+  function syncGuideHeaderHeight() {
+    var header = document.querySelector('header.guide-header');
+    if (header) {
+      var h = header.offsetHeight;
+      if (h) document.documentElement.style.setProperty('--guide-header-height', h + 'px');
+    }
+  }
+
+  // --------------------------------------------------------------------------
+  // FAQ DETALHADO (#20) — BUSCA & SCROLLSPY DE CATEGORIAS
   // --------------------------------------------------------------------------
   function initFAQ() {
     var searchInput = document.getElementById('faqSearchInput');
     var clearBtn = document.getElementById('faqClearBtn');
-    var categoryBtns = document.querySelectorAll('.faq-category-btn');
-    var faqItems = document.querySelectorAll('.faq-item');
+    var categoryLinks = Array.prototype.slice.call(document.querySelectorAll('#duvidas .faq-category-btn, #duvidas [data-faq-nav]'));
+    var faqItems = document.querySelectorAll('#duvidas .faq-item');
     var emptyState = document.getElementById('faqEmptyState');
     var resultsCounter = document.getElementById('faqResultsCount');
     var faqContainer = document.querySelector('#duvidas .faq');
+    var faqNav = document.querySelector('#duvidas .faq__nav');
+    var panels = Array.prototype.slice.call(document.querySelectorAll('#duvidas .faq__panel'));
 
     if (!faqItems.length) return;
 
-    var currentCategory = 'all';
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var mobileNav = window.matchMedia('(max-width: 900px)');
+    var navSlideFrame = null;
 
-    // Atualiza contadores dinamicamente em cada botão de categoria
-    categoryBtns.forEach(function (btn) {
-      var cat = btn.getAttribute('data-category');
-      var countEl = btn.querySelector('.faq__nav-count');
-      if (countEl) {
-        if (cat === 'all') {
-          countEl.textContent = faqItems.length.toString();
-        } else {
-          var count = 0;
-          faqItems.forEach(function (item) {
-            if (item.getAttribute('data-category') === cat) count++;
-          });
-          countEl.textContent = count.toString();
-        }
+    // Atualiza contadores dinamicamente em cada link de categoria
+    categoryLinks.forEach(function (link) {
+      var cat = link.getAttribute('data-category');
+      var countEl = link.querySelector('.faq__nav-count');
+      if (countEl && cat) {
+        var count = 0;
+        faqItems.forEach(function (item) {
+          if (item.getAttribute('data-category') === cat) count++;
+        });
+        countEl.textContent = count.toString();
       }
     });
 
-    function setFaqProgress(index) {
-      if (!faqContainer || categoryBtns.length <= 1) return;
-      var ratio = index / (categoryBtns.length - 1);
-      faqContainer.style.setProperty('--faq-progress', (ratio * 100) + '%');
+    function keepActiveVisible(link) {
+      if (!faqNav || !link || !mobileNav.matches) return;
+      if (navSlideFrame) cancelAnimationFrame(navSlideFrame);
+      navSlideFrame = requestAnimationFrame(function () {
+        navSlideFrame = null;
+        var navRect = faqNav.getBoundingClientRect();
+        var linkRect = link.getBoundingClientRect();
+        var edge = 12;
+        if (linkRect.left >= navRect.left + edge && linkRect.right <= navRect.right - edge) return;
+        var centered = faqNav.scrollLeft + linkRect.left - navRect.left - ((navRect.width - linkRect.width) / 2);
+        var max = Math.max(0, faqNav.scrollWidth - faqNav.clientWidth);
+        faqNav.scrollTo({
+          left: Math.max(0, Math.min(centered, max)),
+          behavior: reduce ? 'auto' : 'smooth'
+        });
+      });
     }
+
+    function setActiveCategory(catId) {
+      var activeLink = null;
+      categoryLinks.forEach(function (link, index) {
+        var linkCat = link.getAttribute('data-category');
+        var linkHref = link.getAttribute('href');
+        var active = (linkCat === catId || linkHref === '#' + catId || linkHref === '#faq-' + catId);
+        link.classList.toggle('is-active', active);
+        if (active) {
+          activeLink = link;
+          link.setAttribute('aria-current', 'true');
+          if (faqContainer && categoryLinks.length > 1) {
+            var ratio = index / (categoryLinks.length - 1);
+            faqContainer.style.setProperty('--faq-progress', (ratio * 100) + '%');
+          }
+        } else {
+          link.removeAttribute('aria-current');
+        }
+      });
+      if (activeLink) {
+        keepActiveVisible(activeLink);
+      }
+    }
+
+    // Scrollspy via IntersectionObserver sincronizado com as categorias
+    if ('IntersectionObserver' in window && panels.length) {
+      var spy = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            var cat = entry.target.getAttribute('data-category') || entry.target.id.replace(/^faq-/, '');
+            setActiveCategory(cat);
+          }
+        });
+      }, {
+        rootMargin: '-30% 0px -55% 0px',
+        threshold: 0
+      });
+      panels.forEach(function (panel) {
+        spy.observe(panel);
+      });
+    }
+
+    // Clique com âncora suave nos links da barra de categorias
+    categoryLinks.forEach(function (link) {
+      link.addEventListener('click', function (e) {
+        var targetHref = link.getAttribute('href');
+        var targetEl = targetHref ? document.querySelector(targetHref) : null;
+        if (!targetEl) return;
+        e.preventDefault();
+
+        // Se o painel de destino estiver recolhido, expande automaticamente
+        if (targetEl.classList.contains('is-collapsed')) {
+          targetEl.classList.remove('is-collapsed');
+          var toggle = targetEl.querySelector('.faq__panel-toggle');
+          if (toggle) toggle.setAttribute('aria-expanded', 'true');
+        }
+
+        var cat = link.getAttribute('data-category') || targetEl.id.replace(/^faq-/, '');
+        setActiveCategory(cat);
+        targetEl.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+
+        if (window.history && window.history.replaceState) {
+          window.history.replaceState(null, '', targetHref);
+        }
+      });
+    });
+
+    // Botões de recolher / expandir seção inteira (.faq__panel-toggle)
+    function togglePanel(toggle) {
+      if (!toggle) return;
+      var panel = toggle.closest('.faq__panel');
+      if (!panel) return;
+      var isCollapsed = panel.classList.toggle('is-collapsed');
+      toggle.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true');
+
+      var currentLabel = toggle.getAttribute('aria-label') || '';
+      var currentTitle = toggle.getAttribute('title') || '';
+      if (isCollapsed) {
+        toggle.setAttribute('aria-label', currentLabel.replace(/Recolher/i, 'Expandir').replace(/Collapse/i, 'Expand').replace(/Plegar/i, 'Desplegar'));
+        toggle.setAttribute('title', currentTitle.replace(/Recolher/i, 'Expandir').replace(/Collapse/i, 'Expand').replace(/Plegar/i, 'Desplegar'));
+      } else {
+        toggle.setAttribute('aria-label', currentLabel.replace(/Expandir/i, 'Recolher').replace(/Expand/i, 'Collapse').replace(/Desplegar/i, 'Plegar'));
+        toggle.setAttribute('title', currentTitle.replace(/Expandir/i, 'Recolher').replace(/Expand/i, 'Collapse').replace(/Desplegar/i, 'Plegar'));
+      }
+    }
+
+    var panelToggles = document.querySelectorAll('#duvidas .faq__panel-toggle');
+    panelToggles.forEach(function (toggle) {
+      toggle.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        togglePanel(toggle);
+      });
+    });
 
     function filterFAQ() {
       var query = searchInput ? normalizeText(searchInput.value) : '';
       var visibleCount = 0;
 
       faqItems.forEach(function (item) {
-        var itemCategory = item.getAttribute('data-category') || '';
-        var matchesCategory = (currentCategory === 'all' || itemCategory === currentCategory);
-
         var titleEl = item.querySelector('.faq-item__summary-title');
         var textEl = item.querySelector('.faq-item__content');
         var id = item.getAttribute('id') || '';
@@ -514,15 +749,46 @@
 
         var matchesQuery = !query || normalizedContent.indexOf(query) !== -1;
 
-        if (matchesCategory && matchesQuery) {
+        if (matchesQuery) {
           item.style.display = '';
           visibleCount++;
-          // Se o usuário fez uma busca com 3+ caracteres, abre os itens para leitura facilitada
           if (query.length >= 3) {
             item.setAttribute('open', '');
           }
         } else {
           item.style.display = 'none';
+        }
+      });
+
+      panels.forEach(function (panel) {
+        var itemsInPanel = panel.querySelectorAll('.faq-item');
+        var hasVisibleItems = false;
+        itemsInPanel.forEach(function (item) {
+          if (item.style.display !== 'none') {
+            hasVisibleItems = true;
+          }
+        });
+        if (hasVisibleItems) {
+          panel.style.display = '';
+          // Quando houver pesquisa ativa, reabre a seção para mostrar o resultado encontrado
+          if (query) {
+            panel.classList.remove('is-collapsed');
+            var toggle = panel.querySelector('.faq__panel-toggle');
+            if (toggle) toggle.setAttribute('aria-expanded', 'true');
+          }
+        } else {
+          panel.style.display = 'none';
+        }
+      });
+
+      // Oculta links do menu de seções sem itens durante a pesquisa
+      categoryLinks.forEach(function (link) {
+        var href = link.getAttribute('href');
+        var targetPanel = href ? document.querySelector(href) : null;
+        if (targetPanel && query) {
+          link.style.display = targetPanel.style.display === 'none' ? 'none' : '';
+        } else {
+          link.style.display = '';
         }
       });
 
@@ -533,23 +799,6 @@
           emptyState.classList.remove('is-visible');
         }
       }
-
-      var panels = document.querySelectorAll('#duvidas .faq__panel');
-      panels.forEach(function (panel) {
-        var panelCat = panel.getAttribute('data-category');
-        var itemsInPanel = panel.querySelectorAll('.faq-item');
-        var hasVisibleItems = false;
-        itemsInPanel.forEach(function (item) {
-          if (item.style.display !== 'none') {
-            hasVisibleItems = true;
-          }
-        });
-        if (hasVisibleItems && (currentCategory === 'all' || currentCategory === panelCat)) {
-          panel.style.display = '';
-        } else {
-          panel.style.display = 'none';
-        }
-      });
 
       if (resultsCounter) {
         resultsCounter.textContent = visibleCount.toString();
@@ -590,42 +839,34 @@
           searchInput.value = '';
         }
         updateClearBtnVisibility();
-        currentCategory = 'all';
-        categoryBtns.forEach(function (btn) {
-          if (btn.getAttribute('data-category') === 'all') {
-            btn.classList.add('is-active');
-          } else {
-            btn.classList.remove('is-active');
-          }
-        });
-        setFaqProgress(0);
         filterFAQ();
         if (searchInput) searchInput.focus();
       });
     }
-
-    categoryBtns.forEach(function (btn, index) {
-      btn.addEventListener('click', function () {
-        categoryBtns.forEach(function (b) { b.classList.remove('is-active'); });
-        btn.classList.add('is-active');
-        currentCategory = btn.getAttribute('data-category') || 'all';
-        setFaqProgress(index);
-        filterFAQ();
-      });
-    });
 
     // Abrir âncora direta (ex: #faq-o12)
     function checkHashTarget() {
       var hash = window.location.hash;
       if (hash && hash.startsWith('#faq-')) {
         var targetEl = document.querySelector(hash);
-        if (targetEl && targetEl.tagName.toLowerCase() === 'details') {
-          targetEl.setAttribute('open', '');
-          setTimeout(function () {
-            targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            var summary = targetEl.querySelector('summary');
-            if (summary) summary.focus();
-          }, 200);
+        if (targetEl) {
+          if (targetEl.tagName.toLowerCase() === 'details') {
+            var parentPanel = targetEl.closest('.faq__panel');
+            if (parentPanel && parentPanel.classList.contains('is-collapsed')) {
+              parentPanel.classList.remove('is-collapsed');
+              var toggle = parentPanel.querySelector('.faq__panel-toggle');
+              if (toggle) toggle.setAttribute('aria-expanded', 'true');
+            }
+            targetEl.setAttribute('open', '');
+            setTimeout(function () {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              var summary = targetEl.querySelector('summary');
+              if (summary) summary.focus();
+            }, 200);
+          } else if (targetEl.classList.contains('faq__panel')) {
+            var cat = targetEl.getAttribute('data-category') || targetEl.id.replace(/^faq-/, '');
+            setActiveCategory(cat);
+          }
         }
       }
     }
@@ -811,30 +1052,234 @@
   }
 
   // --------------------------------------------------------------------------
-  // ABAS DO CRONOGRAMA (#19 UX OPTIMIZATION)
+  // CRONOGRAMA (#19) — NAVEGAÇÃO POR FASES, SCROLLSPY & RECOLHIMENTO
   // --------------------------------------------------------------------------
   function initTimelineTabs() {
-    var tabs = document.querySelectorAll('.timeline-tab');
-    var steps = document.querySelectorAll('.timeline-step');
-    if (!tabs.length || !steps.length) return;
+    var tabsNav = document.querySelector('#cronograma .timeline-tabs');
+    var tabs = Array.prototype.slice.call(document.querySelectorAll('#cronograma .timeline-tab, #cronograma [data-timeline-nav]'));
+    var groups = Array.prototype.slice.call(document.querySelectorAll('#cronograma .timeline-group'));
+    var toggles = Array.prototype.slice.call(document.querySelectorAll('#cronograma .timeline-group__toggle'));
 
-    tabs.forEach(function (tab) {
-      tab.addEventListener('click', function () {
-        tabs.forEach(function (t) {
-          t.classList.remove('is-active');
-          t.setAttribute('aria-selected', 'false');
+    if (!tabs.length || !groups.length) return;
+
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var mobileNav = window.matchMedia('(max-width: 900px)');
+    var tabSlideFrame = null;
+
+    function keepActiveTabVisible(tab) {
+      if (!tabsNav || !tab || !mobileNav.matches) return;
+      if (tabSlideFrame) cancelAnimationFrame(tabSlideFrame);
+      tabSlideFrame = requestAnimationFrame(function () {
+        tabSlideFrame = null;
+        var navRect = tabsNav.getBoundingClientRect();
+        var tabRect = tab.getBoundingClientRect();
+        var edge = 12;
+        if (tabRect.left >= navRect.left + edge && tabRect.right <= navRect.right - edge) return;
+        var centered = tabsNav.scrollLeft + tabRect.left - navRect.left - ((navRect.width - tabRect.width) / 2);
+        var max = Math.max(0, tabsNav.scrollWidth - tabsNav.clientWidth);
+        tabsNav.scrollTo({
+          left: Math.max(0, Math.min(centered, max)),
+          behavior: reduce ? 'auto' : 'smooth'
         });
-        tab.classList.add('is-active');
-        tab.setAttribute('aria-selected', 'true');
+      });
+    }
 
-        var targetPhase = tab.getAttribute('data-phase');
-        steps.forEach(function (step) {
-          if (targetPhase === 'all' || step.getAttribute('data-timeline-phase') === targetPhase) {
-            step.classList.remove('is-hidden');
-          } else {
-            step.classList.add('is-hidden');
+    function setActiveTimelinePhase(phaseId) {
+      var activeTab = null;
+      tabs.forEach(function (tab) {
+        var tabPhase = tab.getAttribute('data-phase');
+        var tabHref = tab.getAttribute('href');
+        var active = (tabPhase === phaseId || tabHref === '#' + phaseId || tabHref === '#cronograma-' + phaseId);
+        tab.classList.toggle('is-active', active);
+        if (active) {
+          activeTab = tab;
+          tab.setAttribute('aria-current', 'true');
+        } else {
+          tab.removeAttribute('aria-current');
+        }
+      });
+      if (activeTab) {
+        keepActiveTabVisible(activeTab);
+      }
+    }
+
+    // Scrollspy via IntersectionObserver sincronizado com as fases
+    if ('IntersectionObserver' in window && groups.length) {
+      var spy = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            var phase = entry.target.getAttribute('data-phase') || entry.target.id.replace(/^cronograma-/, '');
+            setActiveTimelinePhase(phase);
           }
         });
+      }, {
+        rootMargin: '-30% 0px -55% 0px',
+        threshold: 0
+      });
+      groups.forEach(function (group) {
+        spy.observe(group);
+      });
+    }
+
+    // Clique com âncora suave nos links da barra de etapas
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function (e) {
+        var targetHref = tab.getAttribute('href');
+        var targetEl = targetHref ? document.querySelector(targetHref) : null;
+        if (!targetEl) return;
+        e.preventDefault();
+
+        // Se o grupo de destino estiver recolhido, expande automaticamente
+        if (targetEl.classList.contains('is-collapsed')) {
+          targetEl.classList.remove('is-collapsed');
+          var toggle = targetEl.querySelector('.timeline-group__toggle');
+          if (toggle) toggle.setAttribute('aria-expanded', 'true');
+        }
+
+        var phase = tab.getAttribute('data-phase') || targetEl.id.replace(/^cronograma-/, '');
+        setActiveTimelinePhase(phase);
+        targetEl.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+
+        if (window.history && window.history.replaceState) {
+          window.history.replaceState(null, '', targetHref);
+        }
+      });
+    });
+
+    // Botões de recolher / expandir etapa inteira (.timeline-group__toggle)
+    function toggleTimelineGroup(toggle) {
+      if (!toggle) return;
+      var group = toggle.closest('.timeline-group');
+      if (!group) return;
+      var isCollapsed = group.classList.toggle('is-collapsed');
+      toggle.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true');
+
+      var currentLabel = toggle.getAttribute('aria-label') || '';
+      var currentTitle = toggle.getAttribute('title') || '';
+      if (isCollapsed) {
+        toggle.setAttribute('aria-label', currentLabel.replace(/Recolher/i, 'Expandir').replace(/Collapse/i, 'Expand').replace(/Plegar/i, 'Desplegar'));
+        toggle.setAttribute('title', currentTitle.replace(/Recolher/i, 'Expandir').replace(/Collapse/i, 'Expand').replace(/Plegar/i, 'Desplegar'));
+      } else {
+        toggle.setAttribute('aria-label', currentLabel.replace(/Expandir/i, 'Recolher').replace(/Expand/i, 'Collapse').replace(/Desplegar/i, 'Plegar'));
+        toggle.setAttribute('title', currentTitle.replace(/Expandir/i, 'Recolher').replace(/Expand/i, 'Collapse').replace(/Desplegar/i, 'Plegar'));
+      }
+    }
+
+    toggles.forEach(function (toggle) {
+      toggle.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleTimelineGroup(toggle);
+      });
+    });
+  }
+
+  // --------------------------------------------------------------------------
+  // ANIMAÇÃO DE PROGRESSO DA TIMELINE AO LONGO DO SCROLL (.timeline-step::before)
+  // --------------------------------------------------------------------------
+  function initTimelineScrollProgress() {
+    var timeline = document.querySelector('#cronograma .timeline');
+    var steps = Array.prototype.slice.call(document.querySelectorAll('#cronograma .timeline-step'));
+    if (!timeline || !steps.length) return;
+
+    var ticking = false;
+
+    function updateStepsProgress() {
+      ticking = false;
+      // Linha focal de leitura: 52% da janela (onde o olho do leitor foca ao rolar)
+      var triggerPoint = window.innerHeight * 0.52;
+      var currentStep = null;
+      var passedSteps = [];
+
+      for (var i = 0; i < steps.length; i++) {
+        var step = steps[i];
+        // Se a seção/fase pai estiver recolhida ou oculta, pula
+        if (step.offsetParent === null) continue;
+
+        var rect = step.getBoundingClientRect();
+        // O topo do card já alcançou ou passou da linha focal de leitura?
+        if (rect.top <= triggerPoint) {
+          passedSteps.push(step);
+          if (rect.bottom > triggerPoint * 0.35) {
+            currentStep = step;
+          }
+        }
+      }
+
+      // Se nenhum passou da linha ainda, mas o cronograma já começou a entrar na tela,
+      // ativa o primeiro card visível para guiar a largada
+      if (passedSteps.length === 0) {
+        var firstVisible = null;
+        for (var j = 0; j < steps.length; j++) {
+          if (steps[j].offsetParent !== null) {
+            firstVisible = steps[j];
+            break;
+          }
+        }
+        if (firstVisible) {
+          var fRect = firstVisible.getBoundingClientRect();
+          if (fRect.top < window.innerHeight * 0.82 && fRect.bottom > 0) {
+            passedSteps.push(firstVisible);
+            currentStep = firstVisible;
+          }
+        }
+      } else if (!currentStep && passedSteps.length > 0) {
+        currentStep = passedSteps[passedSteps.length - 1];
+      }
+
+      // Atualiza classes nos cards
+      for (var k = 0; k < steps.length; k++) {
+        var s = steps[k];
+        var isPassed = passedSteps.indexOf(s) !== -1;
+        var isCurrent = (s === currentStep);
+
+        s.classList.toggle('is-reached', isPassed);
+        s.classList.toggle('is-current', isCurrent);
+      }
+
+      // Atualiza progresso da linha animada (--timeline-progress)
+      var track = timeline.querySelector('.timeline__track');
+      if (track) {
+        if (currentStep) {
+          var trackRect = track.getBoundingClientRect();
+          var stepRect = currentStep.getBoundingClientRect();
+          // Ponto de ancoragem: centro exato do marcador ::before (top: 24px + raio 6px = 30px)
+          var markerCenterY = stepRect.top + 30;
+          var progressPx = markerCenterY - trackRect.top;
+          var ratio = Math.max(0, Math.min(1, progressPx / trackRect.height));
+          timeline.style.setProperty('--timeline-progress', (ratio * 100).toFixed(2) + '%');
+        } else if (passedSteps.length === 0) {
+          timeline.style.setProperty('--timeline-progress', '0%');
+        }
+      }
+    }
+
+    function onScroll() {
+      if (!ticking) {
+        ticking = true;
+        window.requestAnimationFrame(updateStepsProgress);
+      }
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+
+    // Atualiza imediatamente na inicialização
+    updateStepsProgress();
+
+    // Também recalcula quando o usuário expande/recolhe etapas
+    var toggles = document.querySelectorAll('#cronograma .timeline-group__toggle');
+    toggles.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        setTimeout(updateStepsProgress, 60);
+      });
+    });
+
+    // E quando clica nas abas de fase
+    var tabs = document.querySelectorAll('#cronograma .timeline-tab');
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        setTimeout(updateStepsProgress, 250);
       });
     });
   }
@@ -846,9 +1291,17 @@
     var expandBtn = document.querySelector('[data-faq-action="expand-all"]');
     var collapseBtn = document.querySelector('[data-faq-action="collapse-all"]');
     var faqItems = document.querySelectorAll('#duvidas details.faq-item');
+    var panels = document.querySelectorAll('#duvidas .faq__panel');
+    var panelToggles = document.querySelectorAll('#duvidas .faq__panel-toggle');
 
     if (expandBtn) {
       expandBtn.addEventListener('click', function () {
+        panels.forEach(function (panel) {
+          panel.classList.remove('is-collapsed');
+        });
+        panelToggles.forEach(function (toggle) {
+          toggle.setAttribute('aria-expanded', 'true');
+        });
         faqItems.forEach(function (item) {
           if (item.style.display !== 'none') {
             item.open = true;
@@ -870,20 +1323,19 @@
   // ATIVAÇÃO DE LINKS DE NAVEGAÇÃO AO ROLAR (INTERSECTION OBSERVER)
   // --------------------------------------------------------------------------
   function initNavSpy() {
-    var navLinks = document.querySelectorAll('.guide-nav-bar__link, #drawer nav a');
+    var navLinks = document.querySelectorAll('.guide-header__nav-link, .guide-header__nav a, .guide-nav-bar__link, #drawer nav a');
     if (!navLinks.length) return;
 
     var targets = [];
     navLinks.forEach(function (link) {
       var href = link.getAttribute('href');
-      if (href && href.startsWith('#')) {
+      if (href && href.startsWith('#') && href !== '#checklist') {
         var el = document.querySelector(href);
         if (el && targets.indexOf(el) === -1) targets.push(el);
       }
     });
-    if (!targets.length) return;
 
-    if ('IntersectionObserver' in window) {
+    if ('IntersectionObserver' in window && targets.length) {
       var observer = new IntersectionObserver(
         function (entries) {
           entries.forEach(function (entry) {
@@ -893,19 +1345,39 @@
                 var href = link.getAttribute('href');
                 if (href === '#' + id) {
                   link.classList.add('is-active');
-                } else {
+                  link.setAttribute('aria-current', 'page');
+                } else if (href && href.startsWith('#') && href !== '#checklist') {
                   link.classList.remove('is-active');
+                  link.removeAttribute('aria-current');
                 }
               });
             }
           });
         },
-        { rootMargin: '-20% 0px -70% 0px', threshold: 0 }
+        { rootMargin: '-15% 0px -65% 0px', threshold: 0 }
       );
 
       targets.forEach(function (target) {
         observer.observe(target);
       });
+    }
+
+    // Monitorar abertura e fechamento da sidebar do checklist para sincronizar aba do header
+    var checklistAside = document.getElementById('checklistSidebar');
+    if (checklistAside) {
+      var checklistLinks = document.querySelectorAll('.guide-header__nav a[href="#checklist"], .guide-header__nav [data-open-checklist]');
+      var checkObserver = new MutationObserver(function () {
+        var isOpen = checklistAside.classList.contains('is-open');
+        checklistLinks.forEach(function (link) {
+          link.classList.toggle('is-active', isOpen);
+          if (isOpen) {
+            link.setAttribute('aria-current', 'page');
+          } else {
+            link.removeAttribute('aria-current');
+          }
+        });
+      });
+      checkObserver.observe(checklistAside, { attributes: true, attributeFilter: ['class'] });
     }
   }
 
@@ -970,9 +1442,12 @@
   // INICIALIZAÇÃO GERAL
   // --------------------------------------------------------------------------
   document.addEventListener('DOMContentLoaded', function () {
+    syncGuideHeaderHeight();
+    window.addEventListener('resize', syncGuideHeaderHeight);
     initCountdown();
     initChecklist();
     initTimelineTabs();
+    initTimelineScrollProgress();
     initFAQ();
     initFAQTools();
     initSupportModal();

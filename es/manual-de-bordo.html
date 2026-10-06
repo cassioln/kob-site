@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <script>document.documentElement.classList.replace('no-js', 'js');</script>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Manual de a Bordo KOB 2026: Guía Oficial de Preparación y Navegación | Kriativos On Board</title>
+  <title>Manual de a Bordo KOB 2026: Todo lo que necesitas saber antes de embarcar | Kriativos On Board</title>
   <meta name="description"
     content="Manual de a Bordo oficial de Kriativos On Board 2026 en el MSC Musica. Consulta checklist de documentos, equipaje, transporte, cronograma, ludoteca y directrices de viaje.">
   <meta name="robots" content="index, follow">
@@ -24,14 +24,14 @@
   <meta property="og:locale:alternate" content="en_US">
   <meta property="og:site_name" content="Manual de a Bordo — Kriativos On Board 2026">
   <meta property="og:title"
-    content="Manual de a Bordo KOB 2026: Guía Oficial de Preparación y Navegación | Kriativos On Board">
+    content="Manual de a Bordo KOB 2026: Todo lo que necesitas saber antes de embarcar | Kriativos On Board">
   <meta property="og:description"
     content="Manual de a Bordo oficial de Kriativos On Board 2026 en el MSC Musica. Consulta checklist de documentos, equipaje, transporte, cronograma, ludoteca y directrices de viaje.">
   <meta property="og:url" content="https://kriativosonboard.com.br/es/manualdebordo">
   <meta property="og:image" content="https://kriativosonboard.com.br/assets/images/brand/og-home.jpg">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title"
-    content="Manual de a Bordo KOB 2026: Guía Oficial de Preparación y Navegación | Kriativos On Board">
+    content="Manual de a Bordo KOB 2026: Todo lo que necesitas saber antes de embarcar | Kriativos On Board">
   <meta name="twitter:description"
     content="Manual de a Bordo oficial de Kriativos On Board 2026 en el MSC Musica. Consulta checklist de documentos, equipaje, transporte, cronograma, ludoteca y directrices de viaje.">
   <meta name="twitter:image" content="https://kriativosonboard.com.br/assets/images/brand/og-home.jpg">
@@ -46,11 +46,11 @@
   <link rel="preload" href="/assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
 
   <link rel="stylesheet" href="/assets/css/main.css?v=20261005-ui-final">
-  <link rel="stylesheet" href="/assets/css/manual-de-bordo.css?v=20261006-live-tab-gap">
+  <link rel="stylesheet" href="/assets/css/manual-de-bordo.css?v=20261006-footer-identity">
   <link rel="stylesheet" href="/assets/css/cookie-consent.css?v=20260820-fix-contrast">
 
   <script defer src="/assets/js/cookie-consent.js?v=20260713-5"></script>
-  <script defer src="/assets/js/manual-de-bordo.js?v=20261005-header-nav"></script>
+  <script defer src="/assets/js/manual-de-bordo.js?v=20261006-timeline-animation"></script>
 
   <script type="module" src="/assets/js/manual-de-bordo-live.js?v=20261006-live-loading"></script>
   <script type="module" src="/assets/js/manual-de-bordo-checklist.js?v=20261005-topic-player"></script>
@@ -63,8 +63,8 @@
           "@type": "WebPage",
           "@id": "https://kriativosonboard.com.br/es/manualdebordo",
           "url": "https://kriativosonboard.com.br/es/manualdebordo",
-          "name": "Manual de a Bordo KOB 2026: Guía Oficial de Preparación y Navegación | Kriativos On Board",
-          "description": "Guía oficial de preparación y navegación para los pasajeros confirmados del crucero de juegos de mesa Kriativos On Board 2026 en el MSC Musica.",
+          "name": "Manual de a Bordo KOB 2026: Todo lo que necesitas saber antes de embarcar | Kriativos On Board",
+          "description": "Todo lo que necesitas saber antes de embarcar para los pasajeros confirmados del crucero de juegos de mesa Kriativos On Board 2026 en el MSC Musica.",
           "inLanguage": "es"
         },
         {
@@ -104,7 +104,7 @@
       </div>
       <nav class="guide-header__nav" aria-label="Navegación del Manual de a Bordo">
         <a href="#live" class="guide-header__nav-link">Charla</a>
-        <a href="#checklist" data-open-checklist class="guide-header__nav-link">Preparación</a>
+        <a href="#checklist" data-open-checklist class="guide-header__nav-link">Checklist</a>
         <a href="#cronograma" class="guide-header__nav-link">Cronograma</a>
         <a href="https://kriativosonboard.com.br/es/onibus.html" target="_blank" rel="noopener noreferrer" class="guide-header__nav-link">Autobús</a>
         <a href="#jogos" class="guide-header__nav-link">Juegos</a>
@@ -155,7 +155,7 @@
     <nav aria-label="Navegación del Manual de a Bordo">
       <a class="guide-menu-desktop" href="https://kriativosonboard.com.br/es/">Sitio oficial del evento</a>
       <a href="#live">Grabación de la charla de embarque</a>
-      <a href="#checklist" data-open-checklist>Preparación</a>
+      <a href="#checklist" data-open-checklist>Checklist</a>
       <a href="#cronograma">Cronograma</a>
       <a class="guide-menu-mobile" href="#transporte">Transporte</a>
       <a class="guide-menu-desktop" href="https://kriativosonboard.com.br/es/onibus.html">Autobús Oficial</a>
@@ -432,192 +432,242 @@
           </p>
         </header>
 
-        <!-- Pestañas de Fase del Cronograma (Reducción del Scroll) -->
-        <div class="timeline-tabs" role="tablist" aria-label="Filtrar etapas del cronograma">
-          <button type="button" class="timeline-tab is-active" role="tab" aria-selected="true" data-phase="all">
-            Todas las etapas <span class="timeline-tab__count">15</span>
-          </button>
-          <button type="button" class="timeline-tab" role="tab" aria-selected="false" data-phase="antes">
+        <!-- Navegación de Fases del Cronograma con Enlaces y Scrollspy -->
+        <nav class="timeline-tabs" aria-label="Etapas del cronograma">
+          <a class="timeline-tab is-active" href="#cronograma-antes" data-phase="antes" data-timeline-nav="" aria-current="true">
             Antes de salir <span class="timeline-tab__count">4</span>
-          </button>
-          <button type="button" class="timeline-tab" role="tab" aria-selected="false" data-phase="embarque">
+          </a>
+          <a class="timeline-tab" href="#cronograma-embarque" data-phase="embarque" data-timeline-nav="">
             Viernes 20/11 · Embarque <span class="timeline-tab__count">5</span>
-          </button>
-          <button type="button" class="timeline-tab" role="tab" aria-selected="false" data-phase="bordo">
+          </a>
+          <a class="timeline-tab" href="#cronograma-bordo" data-phase="bordo" data-timeline-nav="">
             A bordo y Fiestas <span class="timeline-tab__count">3</span>
-          </button>
-          <button type="button" class="timeline-tab" role="tab" aria-selected="false" data-phase="desembarque">
+          </a>
+          <a class="timeline-tab" href="#cronograma-desembarque" data-phase="desembarque" data-timeline-nav="">
             Desembarque y Regreso <span class="timeline-tab__count">3</span>
-          </button>
-        </div>
+          </a>
+        </nav>
 
-        <div class="timeline">
-          <article class="timeline-step" data-timeline-phase="antes">
-            <header class="timeline-step__header">
-              <span class="timeline-step__time">Ahora</span>
-              <span class="timeline-step__status timeline-step__status--action">Acción requerida</span>
-            </header>
-            <p class="timeline-step__text">
-              <strong>Verifica tu reserva:</strong> Confirma los datos de todos los pasajeros de la cabina con Royal
-              Trip. Incluye a tus acompañantes en los avisos oficiales y organiza tu traslado a Santos.
-            </p>
-          </article>
+        <div class="timeline" style="--timeline-progress: 0%">
+          <span class="timeline__track" aria-hidden="true"><i></i></span>
+          <!-- Fase 1: Antes de salir -->
+          <div class="timeline-group" id="cronograma-antes" data-phase="antes">
+            <div class="timeline-group__head">
+              <h3 class="timeline-group__title">Antes de salir</h3>
+              <button type="button" class="timeline-group__toggle" aria-expanded="true" aria-controls="timeline-steps-antes" aria-label="Plegar sección Antes de salir" title="Plegar sección Antes de salir">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="18 15 12 9 6 15"></polyline>
+                </svg>
+              </button>
+            </div>
+            <div class="timeline-group__steps" id="timeline-steps-antes">
+              <article class="timeline-step" data-timeline-phase="antes">
+                <header class="timeline-step__header">
+                  <span class="timeline-step__time">Ahora</span>
+                  <span class="timeline-step__status timeline-step__status--action">Acción requerida</span>
+                </header>
+                <p class="timeline-step__text">
+                  <strong>Verifica tu reserva:</strong> Confirma los datos de todos los pasajeros de la cabina con Royal
+                  Trip. Incluye a tus acompañantes en los avisos oficiales y organiza tu traslado a Santos.
+                </p>
+              </article>
 
-          <article class="timeline-step" data-timeline-phase="antes">
-            <header class="timeline-step__header">
-              <span class="timeline-step__time">Ahora</span>
-              <span class="timeline-step__status timeline-step__status--action">Acción recomendada</span>
-            </header>
-            <p class="timeline-step__text">
-              <strong>Prepara tus juegos:</strong> Abre Kriativos On Board en Board Game Guru, presiona ‘Voy a ir’,
-              marca
-              los títulos que deseas jugar y registra los juegos que compartirás.
-            </p>
-          </article>
+              <article class="timeline-step" data-timeline-phase="antes">
+                <header class="timeline-step__header">
+                  <span class="timeline-step__time">Ahora</span>
+                  <span class="timeline-step__status timeline-step__status--action">Acción recomendada</span>
+                </header>
+                <p class="timeline-step__text">
+                  <strong>Prepara tus juegos:</strong> Abre Kriativos On Board en Board Game Guru, presiona ‘Voy a ir’,
+                  marca
+                  los títulos que deseas jugar y registra los juegos que compartirás.
+                </p>
+              </article>
 
-          <article class="timeline-step" data-timeline-phase="antes">
-            <header class="timeline-step__header">
-              <span class="timeline-step__time">Quando la agencia avise en el grupo</span>
-              <span class="timeline-step__status timeline-step__status--action">Acción requerida</span>
-            </header>
-            <p class="timeline-step__text">
-              <strong>Solicita tus vouchers:</strong> El titular de la cabina debe escribir a Júnior/Royal Trip por
-              privado para recibir vouchers y etiquetas en PDF. Revisa los datos e imprime los documentos.
-            </p>
-          </article>
+              <article class="timeline-step" data-timeline-phase="antes">
+                <header class="timeline-step__header">
+                  <span class="timeline-step__time">Quando la agencia avise en el grupo</span>
+                  <span class="timeline-step__status timeline-step__status--action">Acción requerida</span>
+                </header>
+                <p class="timeline-step__text">
+                  <strong>Solicita tus vouchers:</strong> El titular de la cabina debe escribir a Júnior/Royal Trip por
+                  privado para recibir vouchers y etiquetas en PDF. Revisa los datos e imprime los documentos.
+                </p>
+              </article>
 
-          <article class="timeline-step" data-timeline-phase="antes">
-            <header class="timeline-step__header">
-              <span class="timeline-step__time">Antes de salir de casa</span>
-              <span class="timeline-step__status timeline-step__status--action">Acción requerida</span>
-            </header>
-            <p class="timeline-step__text">
-              <strong>Revisión final:</strong> Comprueba documentos, etiquetas en maletas, equipaje de mano e
-              instrucciones de tu chárter si contrataste transporte.
-            </p>
-          </article>
+              <article class="timeline-step" data-timeline-phase="antes">
+                <header class="timeline-step__header">
+                  <span class="timeline-step__time">Antes de salir de casa</span>
+                  <span class="timeline-step__status timeline-step__status--action">Acción requerida</span>
+                </header>
+                <p class="timeline-step__text">
+                  <strong>Revisión final:</strong> Comprueba documentos, etiquetas en maletas, equipaje de mano e
+                  instrucciones de tu chárter si contrataste transporte.
+                </p>
+              </article>
+            </div>
+          </div>
 
-          <article class="timeline-step" data-timeline-phase="embarque">
-            <header class="timeline-step__header">
-              <span class="timeline-step__time">Viernes, 20/11 — Chárter KOB</span>
-              <span class="timeline-step__status timeline-step__status--estimate">Horarios confirmados</span>
-            </header>
-            <p class="timeline-step__text">
-              <strong>Salida desde São Paulo:</strong> Autobús 1: encuentro 06:00, salida 06:30. Autobús 2: encuentro
-              06:40, salida 07:20. Ubicación: Rua Tagipuru, altura del nº 552, Barra Funda, São Paulo.
-            </p>
-          </article>
+          <!-- Fase 2: Viernes 20/11 · Embarque -->
+          <div class="timeline-group" id="cronograma-embarque" data-phase="embarque">
+            <div class="timeline-group__head">
+              <h3 class="timeline-group__title">Viernes 20/11 · Embarque</h3>
+              <button type="button" class="timeline-group__toggle" aria-expanded="true" aria-controls="timeline-steps-embarque" aria-label="Plegar sección Viernes 20/11 · Embarque" title="Plegar sección Viernes 20/11 · Embarque">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="18 15 12 9 6 15"></polyline>
+                </svg>
+              </button>
+            </div>
+            <div class="timeline-group__steps" id="timeline-steps-embarque">
+              <article class="timeline-step" data-timeline-phase="embarque">
+                <header class="timeline-step__header">
+                  <span class="timeline-step__time">Viernes, 20/11 — Chárter KOB</span>
+                  <span class="timeline-step__status timeline-step__status--estimate">Horarios confirmados</span>
+                </header>
+                <p class="timeline-step__text">
+                  <strong>Salida desde São Paulo:</strong> Autobús 1: encuentro 06:00, salida 06:30. Autobús 2: encuentro
+                  06:40, salida 07:20. Ubicación: Rua Tagipuru, altura del nº 552, Barra Funda, São Paulo.
+                </p>
+              </article>
 
-          <article class="timeline-step" data-timeline-phase="embarque">
-            <header class="timeline-step__header">
-              <span class="timeline-step__time">Viernes, 20/11 — Llegada a Concais</span>
-              <span class="timeline-step__status timeline-step__status--msc">Norma MSC</span>
-            </header>
-            <p class="timeline-step__text">
-              <strong>Terminal de Santos:</strong> Respeta la ventana de llegada indicada en tu voucher. Entrega las
-              maletas etiquetadas y mantén contigo los documentos y artículos de valor.
-            </p>
-          </article>
+              <article class="timeline-step" data-timeline-phase="embarque">
+                <header class="timeline-step__header">
+                  <span class="timeline-step__time">Viernes, 20/11 — Llegada a Concais</span>
+                  <span class="timeline-step__status timeline-step__status--msc">Norma MSC</span>
+                </header>
+                <p class="timeline-step__text">
+                  <strong>Terminal de Santos:</strong> Respeta la ventana de llegada indicada en tu voucher. Entrega las
+                  maletas etiquetadas y mantén contigo los documentos y artículos de valor.
+                </p>
+              </article>
 
-          <article class="timeline-step" data-timeline-phase="embarque">
-            <header class="timeline-step__header">
-              <span class="timeline-step__time">Al entrar al barco</span>
-              <span class="timeline-step__status timeline-step__status--estimate">Estimado</span>
-            </header>
-            <p class="timeline-step__text">
-              <strong>Buffet y camarotes:</strong> Puedes almorzar en el buffet mientras preparan las cabinas. La
-              liberación se estima hacia las 13:00/14:00 según anuncios oficiales de MSC a bordo.
-            </p>
-          </article>
+              <article class="timeline-step" data-timeline-phase="embarque">
+                <header class="timeline-step__header">
+                  <span class="timeline-step__time">Al entrar al barco</span>
+                  <span class="timeline-step__status timeline-step__status--estimate">Estimado</span>
+                </header>
+                <p class="timeline-step__text">
+                  <strong>Buffet y camarotes:</strong> Puedes almorzar en el buffet mientras preparan las cabinas. La
+                  liberación se estima hacia las 13:00/14:00 según anuncios oficiales de MSC a bordo.
+                </p>
+              </article>
 
-          <article class="timeline-step" data-timeline-phase="embarque">
-            <header class="timeline-step__header">
-              <span class="timeline-step__time">Viernes por la tarde — Bienvenida KOB</span>
-              <span class="timeline-step__status timeline-step__status--estimate">Previsto KOB</span>
-            </header>
-            <p class="timeline-step__text">
-              <strong>Entrega de kits:</strong> Retiro de kits previsto a las 16:00/16:30 en Crystal Lounge. Confirma el
-              salón y el horario en el grupo y consulta el mural de actividades.
-            </p>
-          </article>
+              <article class="timeline-step" data-timeline-phase="embarque">
+                <header class="timeline-step__header">
+                  <span class="timeline-step__time">Viernes por la tarde — Bienvenida KOB</span>
+                  <span class="timeline-step__status timeline-step__status--estimate">Previsto KOB</span>
+                </header>
+                <p class="timeline-step__text">
+                  <strong>Entrega de kits:</strong> Retiro de kits previsto a las 16:00/16:30 en Crystal Lounge. Confirma el
+                  salón y el horario en el grupo y consulta el mural de actividades.
+                </p>
+              </article>
 
-          <article class="timeline-step" data-timeline-phase="embarque">
-            <header class="timeline-step__header">
-              <span class="timeline-step__time">Primera noche — Seguridad y Cena</span>
-              <span class="timeline-step__status timeline-step__status--msc">Simulacro Obligatorio</span>
-            </header>
-            <p class="timeline-step__text">
-              <strong>Simulacro y cena:</strong> Cumple el simulacro obligatorio de seguridad. Revisa en tu Cruise Card
-              tu turno de cena; si deseas unificar mesa con amigos, consulta con el maître.
-            </p>
-          </article>
+              <article class="timeline-step" data-timeline-phase="embarque">
+                <header class="timeline-step__header">
+                  <span class="timeline-step__time">Primera noche — Seguridad y Cena</span>
+                  <span class="timeline-step__status timeline-step__status--msc">Simulacro Obligatorio</span>
+                </header>
+                <p class="timeline-step__text">
+                  <strong>Simulacro y cena:</strong> Cumple el simulacro obligatorio de seguridad. Revisa en tu Cruise Card
+                  tu turno de cena; si deseas unificar mesa con amigos, consulta con el maître.
+                </p>
+              </article>
+            </div>
+          </div>
 
-          <article class="timeline-step" data-timeline-phase="bordo">
-            <header class="timeline-step__header">
-              <span class="timeline-step__time">Durante el crucero</span>
-              <span class="timeline-step__status timeline-step__status--msc">A bordo</span>
-            </header>
-            <p class="timeline-step__text">
-              <strong>Juegos y navegación:</strong> Revisa a diario el mural de partidas y el boletín del barco.
-              Disfruta
-              de las mesas en los horarios abiertos y confirma los horarios de la escala en Búzios.
-            </p>
-          </article>
+          <!-- Fase 3: A bordo y Fiestas -->
+          <div class="timeline-group" id="cronograma-bordo" data-phase="bordo">
+            <div class="timeline-group__head">
+              <h3 class="timeline-group__title">A bordo y Fiestas</h3>
+              <button type="button" class="timeline-group__toggle" aria-expanded="true" aria-controls="timeline-steps-bordo" aria-label="Plegar sección A bordo y Fiestas" title="Plegar sección A bordo y Fiestas">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="18 15 12 9 6 15"></polyline>
+                </svg>
+              </button>
+            </div>
+            <div class="timeline-group__steps" id="timeline-steps-bordo">
+              <article class="timeline-step" data-timeline-phase="bordo">
+                <header class="timeline-step__header">
+                  <span class="timeline-step__time">Durante el crucero</span>
+                  <span class="timeline-step__status timeline-step__status--msc">A bordo</span>
+                </header>
+                <p class="timeline-step__text">
+                  <strong>Juegos y navegación:</strong> Revisa a diario el mural de partidas y el boletín del barco.
+                  Disfruta
+                  de las mesas en los horarios abiertos y confirma los horarios de la escala en Búzios.
+                </p>
+              </article>
 
-          <article class="timeline-step" data-timeline-phase="bordo">
-            <header class="timeline-step__header">
-              <span class="timeline-step__time">Domingo, 22/11 — Devolución e Inventario</span>
-              <span class="timeline-step__status timeline-step__status--action">Acción requerida</span>
-            </header>
-            <p class="timeline-step__text">
-              <strong>Cierre de ludoteca:</strong> Devuelve los juegos prestados antes del horario límite anunciado para
-              permitir el inventario general antes del atraque.
-            </p>
-          </article>
+              <article class="timeline-step" data-timeline-phase="bordo">
+                <header class="timeline-step__header">
+                  <span class="timeline-step__time">Domingo, 22/11 — Devolución e Inventario</span>
+                  <span class="timeline-step__status timeline-step__status--action">Acción requerida</span>
+                </header>
+                <p class="timeline-step__text">
+                  <strong>Cierre de ludoteca:</strong> Devuelve los juegos prestados antes del horario límite anunciado para
+                  permitir el inventario general antes del atraque.
+                </p>
+              </article>
 
-          <article class="timeline-step" data-timeline-phase="bordo">
-            <header class="timeline-step__header">
-              <span class="timeline-step__time">Domingo por la noche — Fiesta de despedida</span>
-              <span class="timeline-step__status timeline-step__status--estimate">Tema anunciado</span>
-            </header>
-            <p class="timeline-step__text">
-              <strong>Tema Años 80:</strong> Vestimenta retro, neón y accesorios ochentosos. Consulta el lugar y el
-              formato en los avisos del grupo.
-            </p>
-          </article>
+              <article class="timeline-step" data-timeline-phase="bordo">
+                <header class="timeline-step__header">
+                  <span class="timeline-step__time">Domingo por la noche — Fiesta de despedida</span>
+                  <span class="timeline-step__status timeline-step__status--estimate">Tema anunciado</span>
+                </header>
+                <p class="timeline-step__text">
+                  <strong>Tema Años 80:</strong> Vestimenta retro, neón y accesorios ochentosos. Consulta el lugar y el
+                  formato en los avisos del grupo.
+                </p>
+              </article>
+            </div>
+          </div>
 
-          <article class="timeline-step" data-timeline-phase="desembarque">
-            <header class="timeline-step__header">
-              <span class="timeline-step__time">Preparación del desembarque</span>
-              <span class="timeline-step__status timeline-step__status--msc">Norma MSC</span>
-            </header>
-            <p class="timeline-step__text">
-              <strong>Equipaje despachado:</strong> Sigue las etiquetas de desembarque de MSC para dejar tus maletas en
-              la puerta de la cabina la última noche. Conserva muda para la mañana.
-            </p>
-          </article>
+          <!-- Fase 4: Desembarque y Regreso -->
+          <div class="timeline-group" id="cronograma-desembarque" data-phase="desembarque">
+            <div class="timeline-group__head">
+              <h3 class="timeline-group__title">Desembarque y Regreso</h3>
+              <button type="button" class="timeline-group__toggle" aria-expanded="true" aria-controls="timeline-steps-desembarque" aria-label="Plegar sección Desembarque y Regreso" title="Plegar sección Desembarque y Regreso">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="18 15 12 9 6 15"></polyline>
+                </svg>
+              </button>
+            </div>
+            <div class="timeline-group__steps" id="timeline-steps-desembarque">
+              <article class="timeline-step" data-timeline-phase="desembarque">
+                <header class="timeline-step__header">
+                  <span class="timeline-step__time">Preparación del desembarque</span>
+                  <span class="timeline-step__status timeline-step__status--msc">Norma MSC</span>
+                </header>
+                <p class="timeline-step__text">
+                  <strong>Equipaje despachado:</strong> Sigue las etiquetas de desembarque de MSC para dejar tus maletas en
+                  la puerta de la cabina la última noche. Conserva muda para la mañana.
+                </p>
+              </article>
 
-          <article class="timeline-step" data-timeline-phase="desembarque">
-            <header class="timeline-step__header">
-              <span class="timeline-step__time">Lunes, 23/11 — Desalojo de cabinas</span>
-              <span class="timeline-step__status timeline-step__status--msc">Norma MSC</span>
-            </header>
-            <p class="timeline-step__text">
-              <strong>Salida temprana:</strong> Desocupa la cabina a la hora indicada por MSC a bordo. La mención en la
-              transmisión en vivo (~10:00) es aproximada y no sustituye los avisos de megafonía.
-            </p>
-          </article>
+              <article class="timeline-step" data-timeline-phase="desembarque">
+                <header class="timeline-step__header">
+                  <span class="timeline-step__time">Lunes, 23/11 — Desalojo de cabinas</span>
+                  <span class="timeline-step__status timeline-step__status--msc">Norma MSC</span>
+                </header>
+                <p class="timeline-step__text">
+                  <strong>Salida temprana:</strong> Desocupa la cabina a la hora indicada por MSC a bordo. La mención en la
+                  transmisión en vivo (~10:00) es aproximada y no sustituye los avisos de megafonía.
+                </p>
+              </article>
 
-          <article class="timeline-step" data-timeline-phase="desembarque">
-            <header class="timeline-step__header">
-              <span class="timeline-step__time">Lunes, 23/11 — Regreso del chárter</span>
-              <span class="timeline-step__status timeline-step__status--estimate">Salida est. 10:30</span>
-            </header>
-            <p class="timeline-step__text">
-              <strong>Retorno a São Paulo:</strong> La salida del chárter desde el Puerto de Santos está prevista para
-              las 10:30. Confirma el punto de encuentro con el equipo de transporte.
-            </p>
-          </article>
+              <article class="timeline-step" data-timeline-phase="desembarque">
+                <header class="timeline-step__header">
+                  <span class="timeline-step__time">Lunes, 23/11 — Regreso del chárter</span>
+                  <span class="timeline-step__status timeline-step__status--estimate">Salida est. 10:30</span>
+                </header>
+                <p class="timeline-step__text">
+                  <strong>Retorno a São Paulo:</strong> La salida del chárter desde el Puerto de Santos está prevista para
+                  las 10:30. Confirma el punto de encuentro con el equipo de transporte.
+                </p>
+              </article>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -769,24 +819,21 @@
           <nav class="faq__nav" aria-label="Categorías del FAQ">
             <span class="faq__nav-eyebrow">Ruta de consulta</span>
             <span class="faq__nav-track" aria-hidden="true"><i></i></span>
-            <button type="button" class="faq-category-btn faq__nav-item is-active" data-category="all">
-              Todas <span class="faq__nav-count">42</span>
-            </button>
-            <button type="button" class="faq-category-btn faq__nav-item" data-category="preparacao">
+            <a class="faq-category-btn faq__nav-item is-active" href="#faq-preparacao" data-category="preparacao" data-faq-nav="" aria-current="true">
               Preparación <span class="faq__nav-count">11</span>
-            </button>
-            <button type="button" class="faq-category-btn faq__nav-item" data-category="chegada">
+            </a>
+            <a class="faq-category-btn faq__nav-item" href="#faq-chegada" data-category="chegada" data-faq-nav="">
               Llegada <span class="faq__nav-count">5</span>
-            </button>
-            <button type="button" class="faq-category-btn faq__nav-item" data-category="jogos">
+            </a>
+            <a class="faq-category-btn faq__nav-item" href="#faq-jogos" data-category="jogos" data-faq-nav="">
               Juegos y actividades <span class="faq__nav-count">8</span>
-            </button>
-            <button type="button" class="faq-category-btn faq__nav-item" data-category="vida-a-bordo">
+            </a>
+            <a class="faq-category-btn faq__nav-item" href="#faq-vida-a-bordo" data-category="vida-a-bordo" data-faq-nav="">
               Durante el crucero <span class="faq__nav-count">15</span>
-            </button>
-            <button type="button" class="faq-category-btn faq__nav-item" data-category="desembarque">
+            </a>
+            <a class="faq-category-btn faq__nav-item" href="#faq-desembarque" data-category="desembarque" data-faq-nav="">
               Desembarque <span class="faq__nav-count">3</span>
-            </button>
+            </a>
 
             <div class="faq-tools" aria-label="Herramientas del FAQ">
               <button type="button" class="faq-tool-btn" data-faq-action="expand-all">Expandir todas</button>
@@ -802,8 +849,13 @@
             <div class="faq__panel" id="faq-preparacao" data-category="preparacao">
               <div class="faq__panel-head">
                 <h3>Preparación</h3>
+                <button type="button" class="faq__panel-toggle" aria-expanded="true" aria-controls="faq-list-preparacao" aria-label="Contraer sección Preparación" title="Contraer sección Preparación">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="18 15 12 9 6 15"></polyline>
+                  </svg>
+                </button>
               </div>
-              <div class="faq-list">
+              <div class="faq-list" id="faq-list-preparacao">
               <details class="faq-item" id="faq-o01" data-category="preparacao">
             <summary class="faq-item__summary">
               <span class="faq-item__summary-title">¿Cómo verifico mi ventana de llegada a la terminal y el día de la
@@ -1063,8 +1115,13 @@
             <div class="faq__panel" id="faq-chegada" data-category="chegada">
               <div class="faq__panel-head">
                 <h3>Llegada</h3>
+                <button type="button" class="faq__panel-toggle" aria-expanded="true" aria-controls="faq-list-chegada" aria-label="Contraer sección Llegada" title="Contraer sección Llegada">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="18 15 12 9 6 15"></polyline>
+                  </svg>
+                </button>
               </div>
-              <div class="faq-list">
+              <div class="faq-list" id="faq-list-chegada">
               <details class="faq-item" id="faq-o12" data-category="chegada">
             <summary class="faq-item__summary">
               <span class="faq-item__summary-title">¿Cómo funciona el autobús chárter oficial de KOB?</span>
@@ -1183,8 +1240,13 @@
             <div class="faq__panel" id="faq-jogos" data-category="jogos">
               <div class="faq__panel-head">
                 <h3>Juegos y actividades</h3>
+                <button type="button" class="faq__panel-toggle" aria-expanded="true" aria-controls="faq-list-jogos" aria-label="Contraer sección Juegos y actividades" title="Contraer sección Juegos y actividades">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="18 15 12 9 6 15"></polyline>
+                  </svg>
+                </button>
               </div>
-              <div class="faq-list">
+              <div class="faq-list" id="faq-list-jogos">
               <details class="faq-item" id="faq-o17" data-category="jogos">
             <summary class="faq-item__summary">
               <span class="faq-item__summary-title">¿Dónde y cuándo retiro mi kit? ¿Qué incluye?</span>
@@ -1343,8 +1405,13 @@
             <div class="faq__panel" id="faq-vida-a-bordo" data-category="vida-a-bordo">
               <div class="faq__panel-head">
                 <h3>Durante el crucero</h3>
+                <button type="button" class="faq__panel-toggle" aria-expanded="true" aria-controls="faq-list-vida-a-bordo" aria-label="Contraer sección Durante el crucero" title="Contraer sección Durante el crucero">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="18 15 12 9 6 15"></polyline>
+                  </svg>
+                </button>
               </div>
-              <div class="faq-list">
+              <div class="faq-list" id="faq-list-vida-a-bordo">
               <details class="faq-item" id="faq-o25" data-category="vida-a-bordo">
             <summary class="faq-item__summary">
               <span class="faq-item__summary-title">¿Qué vestimenta llevar? ¿Se requiere traje de gala?</span>
@@ -1676,8 +1743,13 @@
             <div class="faq__panel" id="faq-desembarque" data-category="desembarque">
               <div class="faq__panel-head">
                 <h3>Desembarque</h3>
+                <button type="button" class="faq__panel-toggle" aria-expanded="true" aria-controls="faq-list-desembarque" aria-label="Contraer sección Desembarque" title="Contraer sección Desembarque">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="18 15 12 9 6 15"></polyline>
+                  </svg>
+                </button>
               </div>
-              <div class="faq-list">
+              <div class="faq-list" id="faq-list-desembarque">
               <details class="faq-item" id="faq-o39" data-category="desembarque">
             <summary class="faq-item__summary">
               <span class="faq-item__summary-title">¿Hasta qué hora puedo permanecer en la cabina el lunes?</span>
@@ -1890,33 +1962,69 @@
     </div>
   </aside>
 
-  <footer class="guide-footer">
-    <div class="guide-container guide-footer__inner">
-      <div class="guide-footer__top">
-        <a href="/es/" class="guide-footer__brand" aria-label="Kriativos On Board — Inicio">
-          <img src="/assets/images/brand/kriativos-on-board-logo.webp" alt="Kriativos On Board" width="2930"
-            height="1796">
-        </a>
-        <nav class="guide-footer__nav" aria-label="Enlaces del pie de página">
+  <footer class="footer guide-footer" aria-labelledby="footer-guide-nav-title">
+    <div class="footer__horizon" aria-hidden="true">
+      <svg viewBox="0 0 1440 180" preserveAspectRatio="none">
+        <path class="footer__route-shadow" pathLength="1"
+          d="M-20 112C190 42 382 154 570 92S907 27 1094 86s244 36 376-12"></path>
+        <path class="footer__route-line" pathLength="1" d="M-20 112C190 42 382 154 570 92S907 27 1094 86s244 36 376-12">
+        </path>
+        <circle class="footer__route-marker footer__route-marker--cyan" cx="570" cy="92" r="6"></circle>
+        <circle class="footer__route-marker footer__route-marker--magenta" cx="1094" cy="86" r="6"></circle>
+      </svg>
+    </div>
+
+    <div class="container footer__inner">
+      <div class="footer__deck">
+        <div class="footer__brand">
+          <a href="/es/" aria-label="Kriativos On Board — Inicio">
+            <img src="/assets/images/brand/kriativos-on-board-logo.webp" alt="Kriativos On Board" width="2930"
+              height="1796">
+          </a>
+          <p>Prepárate para embarcar con nosotros</p>
+          <span class="footer__voyage-code">Santos · Búzios · 20–23 nov 2026</span>
+        </div>
+
+        <nav class="footer__col" aria-labelledby="footer-guide-nav-title">
+          <h3 id="footer-guide-nav-title">Navegación de la Guía</h3>
           <a href="/es/">Volver al inicio</a>
           <a href="#live">Transmisión de embarque</a>
-          <a href="/politica-de-privacidade.html">Política de privacidad</a>
-          <a href="/termos-de-transporte.html">Términos de transporte</a>
+          <a href="#checklist">Checklist de preparación</a>
+          <a href="#cronograma">Cronograma del viaje</a>
+          <a href="#jogos">Ludoteca y Juegos</a>
+        </nav>
+
+        <nav class="footer__col" aria-labelledby="footer-guide-support-title">
+          <h3 id="footer-guide-support-title">Soporte y Viaje</h3>
           <a href="https://api.whatsapp.com/send?phone=5513981580498" target="_blank"
-            rel="noopener noreferrer">Contactar
-            a Royal Trip</a>
+            rel="noopener noreferrer">Contactar a Royal Trip</a>
+          <a href="https://busao.kriativosonboard.com.br/es/">Autobús chárter</a>
+          <a href="/termos-de-transporte.html">Términos de transporte</a>
+          <a href="#faq">Preguntas frecuentes</a>
         </nav>
       </div>
 
-      <div class="guide-footer__bottom">
-        <div>
-          © 2026 Kriativos On Board · MSC Musica 20 al 23 de noviembre de 2026.
+      <div class="footer__bottom">
+        <div class="footer__bottom-main">
+          <div class="footer__privacy-controls">
+            <a class="footer__cookie-policy" href="/politica-de-privacidade.html">Política de privacidad</a>
+            <a class="footer__cookie-policy" href="/politica-de-cookies.html">Política de cookies</a>
+            <a class="footer__cookie-policy" href="/termos-de-transporte.html">Términos de transporte</a>
+            <button class="footer__cookie-preferences" type="button" data-cookie-preferences>Revisar preferencias de
+              cookies</button>
+          </div>
+          <div class="footer__bottom-actions">
+            <div class="ksio-powered-line">
+              Powered by <a href="https://ksio.dev" target="_blank" rel="noopener noreferrer">ksio.dev</a>
+            </div>
+          </div>
         </div>
-        <nav class="lang-switch" aria-label="Seleccionar idioma">
-          <a href="/manual-de-bordo.html" class="lang-switch__item" hreflang="pt-BR" lang="pt-BR">PT</a>
-          <a href="/en/manual-de-bordo.html" class="lang-switch__item" hreflang="en" lang="en">EN</a>
-          <span class="lang-switch__item is-active" aria-current="page">ES</span>
-        </nav>
+
+        <div class="footer__legal">
+          <span>© 2026 Kriativos On Board. Todos los derechos reservados. · MSC Musica 20 al 23 de noviembre de 2026.</span>
+          <span class="footer__legal-sep" aria-hidden="true">·</span>
+          <span>Agencia aliada: Royal Trip · CNPJ 16.957.402/0001-19</span>
+        </div>
       </div>
     </div>
   </footer>
@@ -1997,24 +2105,27 @@
       equipo y las instrucciones de tu reserva.
     </div>
 
-    <div class="checklist-sidebar__nav" role="group" aria-label="Filtrar grupos en la barra lateral">
-      <button type="button" class="checklist-sidebar__nav-item is-active" aria-pressed="true"
-        data-sidebar-group="all">Todos</button>
-      <button type="button" class="checklist-sidebar__nav-item" aria-pressed="false"
-        data-sidebar-group="1">Docs</button>
-      <button type="button" class="checklist-sidebar__nav-item" aria-pressed="false"
-        data-sidebar-group="2">Maletas</button>
-      <button type="button" class="checklist-sidebar__nav-item" aria-pressed="false"
-        data-sidebar-group="3">Trayecto</button>
-      <button type="button" class="checklist-sidebar__nav-item" aria-pressed="false" data-sidebar-group="4">Juegos y
-        actividades</button>
+    <div class="checklist-sidebar__nav" role="tablist" aria-label="Filtrar grupos en la barra lateral">
+      <button type="button" class="checklist-sidebar__nav-item is-active" role="tab" aria-selected="true"
+        aria-pressed="true" data-sidebar-group="1">Docs</button>
+      <button type="button" class="checklist-sidebar__nav-item" role="tab" aria-selected="false"
+        aria-pressed="false" data-sidebar-group="2">Maletas</button>
+      <button type="button" class="checklist-sidebar__nav-item" role="tab" aria-selected="false"
+        aria-pressed="false" data-sidebar-group="3">Trayecto</button>
+      <button type="button" class="checklist-sidebar__nav-item" role="tab" aria-selected="false"
+        aria-pressed="false" data-sidebar-group="4">Juegos y Actividades</button>
     </div>
 
     <div class="checklist-sidebar__body" id="checklistSidebarList" aria-label="Elementos del checklist">
       <div id="checklistContainer">
-        <div class="checklist-group" data-group-id="1">
-          <h3 class="checklist-group__title">1. Documentos y Reserva</h3>
-          <ul class="checklist-list">
+        <div class="checklist-group" data-group-id="1" id="checklist-group-1">
+          <div class="checklist-group__head">
+            <h3 class="checklist-group__title">1. Documentos y Reserva</h3>
+            <button type="button" class="checklist-group__toggle" aria-expanded="true" aria-controls="checklist-list-1" aria-label="Plegar grupo Documentos y Reserva" title="Plegar grupo Documentos y Reserva">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+          </div>
+          <ul class="checklist-list" id="checklist-list-1">
             <li class="checklist-item checklist-sidebar-item" data-checklist-id="reserva-dados"
               data-sidebar-item-id="reserva-dados" data-checklist-type="essential">
               <input type="checkbox" id="chk-reserva-dados"
@@ -2186,9 +2297,14 @@
         </div>
 
         <!-- GRUPO 2: EQUIPAJE -->
-        <div class="checklist-group" data-group-id="2">
-          <h3 class="checklist-group__title">2. Equipaje y Artículos</h3>
-          <ul class="checklist-list">
+        <div class="checklist-group" data-group-id="2" id="checklist-group-2">
+          <div class="checklist-group__head">
+            <h3 class="checklist-group__title">2. Equipaje y Artículos</h3>
+            <button type="button" class="checklist-group__toggle" aria-expanded="true" aria-controls="checklist-list-2" aria-label="Plegar grupo Equipaje y Artículos" title="Plegar grupo Equipaje y Artículos">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+          </div>
+          <ul class="checklist-list" id="checklist-list-2">
             <li class="checklist-item checklist-sidebar-item" data-checklist-id="bagagem-limites"
               data-sidebar-item-id="bagagem-limites" data-checklist-type="essential">
               <input type="checkbox" id="chk-bagagem-limites"
@@ -2289,9 +2405,14 @@
         </div>
 
         <!-- GRUPO 3: TRAYECTO Y CUENTA A BORDO -->
-        <div class="checklist-group" data-group-id="3">
-          <h3 class="checklist-group__title">3. Traslado y Cuenta a Bordo</h3>
-          <ul class="checklist-list">
+        <div class="checklist-group" data-group-id="3" id="checklist-group-3">
+          <div class="checklist-group__head">
+            <h3 class="checklist-group__title">3. Traslado y Cuenta a Bordo</h3>
+            <button type="button" class="checklist-group__toggle" aria-expanded="true" aria-controls="checklist-list-3" aria-label="Plegar grupo Traslado y Cuenta a Bordo" title="Plegar grupo Traslado y Cuenta a Bordo">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+          </div>
+          <ul class="checklist-list" id="checklist-list-3">
             <li class="checklist-item checklist-sidebar-item" data-checklist-id="trajeto-porto"
               data-sidebar-item-id="trajeto-porto" data-checklist-type="essential">
               <input type="checkbox" id="chk-trajeto-porto"
@@ -2396,9 +2517,14 @@
         </div>
 
         <!-- GRUPO 4: JUEGOS Y COMUNIDAD -->
-        <div class="checklist-group" data-group-id="4">
-          <h3 class="checklist-group__title">4. Juegos y Convivencia</h3>
-          <ul class="checklist-list">
+        <div class="checklist-group" data-group-id="4" id="checklist-group-4">
+          <div class="checklist-group__head">
+            <h3 class="checklist-group__title">4. Juegos y Convivencia</h3>
+            <button type="button" class="checklist-group__toggle" aria-expanded="true" aria-controls="checklist-list-4" aria-label="Plegar grupo Juegos y Convivencia" title="Plegar grupo Juegos y Convivencia">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+          </div>
+          <ul class="checklist-list" id="checklist-list-4">
             <li class="checklist-item checklist-sidebar-item" data-checklist-id="guru" data-sidebar-item-id="guru"
               data-checklist-type="recommended">
               <input type="checkbox" id="chk-guru" class="checklist-item__checkbox checklist-sidebar-item__checkbox"

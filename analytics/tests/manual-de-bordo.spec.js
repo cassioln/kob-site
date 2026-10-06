@@ -44,12 +44,12 @@ test.describe('Página Manual de Bordo (embarcados) — Portal do Passageiro Con
     // Jogos: Lounge e blocos do guia
     await expect(page.locator('.game-block')).toHaveCount(5);
 
-    // FAQ: 42 perguntas (O01 a O42) e 6 botões de categoria
+    // FAQ: 42 perguntas (O01 a O42) e 5 links/botões de categoria
     const faqItems = page.locator('#duvidas details.faq-item');
     await expect(faqItems).toHaveCount(42);
 
     const faqCategoryTabs = page.locator('.faq-category-btn');
-    await expect(faqCategoryTabs).toHaveCount(6);
+    await expect(faqCategoryTabs).toHaveCount(5);
 
     // Live: 41 assuntos
     const liveChapters = page.locator('.live-chapter-item');
@@ -188,16 +188,21 @@ test.describe('Página Manual de Bordo (embarcados) — Portal do Passageiro Con
     await page.locator('#faqClearBtn').click();
     await expect(resultsCount).toHaveText('42');
 
-    // Filtro de categoria (ex.: Chegada)
+    // Navegação de categoria (ex.: Chegada) via âncora e ativação
     const arrivalBtn = page.locator('.faq-category-btn[data-category="chegada"]');
     await arrivalBtn.click();
     await expect(arrivalBtn).toHaveClass(/is-active/);
+    await expect(page.locator('#faq-chegada')).toBeVisible();
 
-    // Itens visíveis devem ser da categoria chegada
-    const visibleItems = page.locator('#duvidas details.faq-item:not([style*="display: none"])');
-    const count = await visibleItems.count();
-    expect(count).toBeGreaterThan(0);
-    expect(count).toBeLessThan(42);
+    // Toggle de recolher/expandir a seção inteira
+    const prepToggle = page.locator('#faq-preparacao .faq__panel-toggle');
+    await expect(prepToggle).toHaveAttribute('aria-expanded', 'true');
+    await prepToggle.click();
+    await expect(page.locator('#faq-preparacao')).toHaveClass(/is-collapsed/);
+    await expect(prepToggle).toHaveAttribute('aria-expanded', 'false');
+    await prepToggle.click();
+    await expect(page.locator('#faq-preparacao')).not.toHaveClass(/is-collapsed/);
+    await expect(prepToggle).toHaveAttribute('aria-expanded', 'true');
   });
 
   test('Live: busca de capítulos e controle da fachada do player', async ({ page }) => {

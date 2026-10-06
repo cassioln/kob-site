@@ -507,31 +507,49 @@
 .footer__privacy-controls {
   display: flex;
   flex-wrap: wrap;
-  gap: 2px 16px;
   align-items: center;
+  gap: 18px clamp(18px, 2.4vw, 42px);
+  margin-top: 8px;
 }
 
+.footer__privacy-controls a,
+.footer__privacy-controls button,
 .footer__cookie-preferences,
 .footer__cookie-policy {
   display: inline-flex;
-  min-height: 44px;
-  padding: 8px 0;
   align-items: center;
   border: 0;
-  color: color-mix(in srgb, #ffffff 68%, var(--consent-cyan));
   background: transparent;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
   font: inherit;
-  font-weight: 600;
-  line-height: 1.35;
-  text-decoration: underline;
-  text-decoration-color: color-mix(in srgb, var(--consent-cyan) 54%, transparent);
-  text-underline-offset: 4px;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: inherit;
+  text-decoration: none;
+  text-transform: uppercase;
+  color: rgba(233, 242, 251, 0.8);
+  transition: color 180ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  min-height: auto;
 }
 
+.footer__privacy-controls a:hover,
+.footer__privacy-controls button:hover,
 .footer__cookie-preferences:hover,
 .footer__cookie-policy:hover {
   color: #ffffff;
-  text-decoration-color: var(--consent-cyan);
+  text-decoration: none;
+}
+
+.footer__privacy-controls a:focus-visible,
+.footer__privacy-controls button:focus-visible,
+.footer__cookie-preferences:focus-visible,
+.footer__cookie-policy:focus-visible {
+  outline: 2px solid #29c3f5;
+  outline-offset: 5px;
 }
 
 @media (min-width: 760px) {
