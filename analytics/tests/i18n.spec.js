@@ -514,7 +514,7 @@ for (const [lang, path] of [['pt', '/'], ['en', '/en/'], ['es', '/es/']]) {
         const manual = drawer.locator('.drawer__actions .header-manual-link');
         const reserve = drawer.locator('[data-analytics-cta-id="drawer_reserve"]');
         await expect(manual).toBeVisible();
-        await expect(manual).toHaveAttribute('href', `https://kriativosonboard.com.br${lang === 'pt' ? '' : '/' + lang}/manualdebordo`);
+        await expect(manual).toHaveAttribute('href', `https://manualdebordo.kriativosonboard.com.br${lang === 'pt' ? '' : '/' + lang}/`);
         const m = await manual.boundingBox(), r = await reserve.boundingBox();
         expect(m.width).toBeCloseTo(r.width, 2); expect(m.height).toBe(64); expect(r.height).toBe(64);
         expect(await manual.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);

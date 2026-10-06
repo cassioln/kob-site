@@ -63,25 +63,38 @@ RewriteRule ^$ painel-onibus.html [L]
 RewriteCond %{HTTP_HOST} ^painel\.kriativosonboard\.com\.br$ [NC]
 RewriteRule ^index\.html$ painel-onibus.html [L]
 
-# ---- Subdominio manualdebordo.kriativos.com.br (e manualdebordo.kriativosonboard.com.br) ----
-# Acesso adicional no dominio principal; manter os mesmos assets e idiomas.
-RewriteRule ^manualdebordo/?$ manual-de-bordo.html [L]
-RewriteRule ^en/manualdebordo/?$ en/manual-de-bordo.html [L]
-RewriteRule ^es/manualdebordo/?$ es/manual-de-bordo.html [L]
+# ---- Subdominio oficial manualdebordo.kriativosonboard.com.br ----
+# Como no Busao, os enderecos antigos do dominio principal levam ao subdominio.
+RewriteCond %{HTTP_HOST} ^(www\.)?kriativosonboard\.com\.br$ [NC]
+RewriteRule ^(?:manualdebordo/?|manual-de-bordo\.html|embarcados\.html)$ https://manualdebordo.kriativosonboard.com.br/ [R=301,L]
+RewriteCond %{HTTP_HOST} ^(www\.)?kriativosonboard\.com\.br$ [NC]
+RewriteRule ^en/(?:manualdebordo/?|manual-de-bordo\.html|embarcados\.html)$ https://manualdebordo.kriativosonboard.com.br/en/ [R=301,L]
+RewriteCond %{HTTP_HOST} ^(www\.)?kriativosonboard\.com\.br$ [NC]
+RewriteRule ^es/(?:manualdebordo/?|manual-de-bordo\.html|embarcados\.html)$ https://manualdebordo.kriativosonboard.com.br/es/ [R=301,L]
 
-# Redireciona /embarcados.html para /manual-de-bordo.html
-RewriteRule ^embarcados\.html$ /manual-de-bordo.html [R=301,L]
-RewriteRule ^en/embarcados\.html$ /en/manual-de-bordo.html [R=301,L]
-RewriteRule ^es/embarcados\.html$ /es/manual-de-bordo.html [R=301,L]
+# Alias historico: conserva caminho e query antes da normalizacao no host oficial.
+RewriteCond %{HTTP_HOST} ^manualdebordo\.kriativos\.com\.br$ [NC]
+RewriteRule ^ https://manualdebordo.kriativosonboard.com.br%{REQUEST_URI} [R=301,L]
+
+# THE_REQUEST distingue uma URL digitada do rewrite interno, evitando loops.
+RewriteCond %{HTTP_HOST} ^manualdebordo\.kriativosonboard\.com\.br$ [NC]
+RewriteCond %{THE_REQUEST} \s/+(?:manualdebordo/?|manual-de-bordo\.html|embarcados\.html|index\.html)(?:[?\s]) [NC]
+RewriteRule ^(?:manualdebordo/?|manual-de-bordo\.html|embarcados\.html|index\.html)$ https://manualdebordo.kriativosonboard.com.br/ [R=301,L]
+RewriteCond %{HTTP_HOST} ^manualdebordo\.kriativosonboard\.com\.br$ [NC]
+RewriteCond %{THE_REQUEST} \s/+en/(?:manualdebordo/?|manual-de-bordo\.html|embarcados\.html|index\.html)(?:[?\s]) [NC]
+RewriteRule ^en/(?:manualdebordo/?|manual-de-bordo\.html|embarcados\.html|index\.html)$ https://manualdebordo.kriativosonboard.com.br/en/ [R=301,L]
+RewriteCond %{HTTP_HOST} ^manualdebordo\.kriativosonboard\.com\.br$ [NC]
+RewriteCond %{THE_REQUEST} \s/+es/(?:manualdebordo/?|manual-de-bordo\.html|embarcados\.html|index\.html)(?:[?\s]) [NC]
+RewriteRule ^es/(?:manualdebordo/?|manual-de-bordo\.html|embarcados\.html|index\.html)$ https://manualdebordo.kriativosonboard.com.br/es/ [R=301,L]
 
 # Serve manual-de-bordo.html na raiz e subdiretórios de idioma do subdomínio
-RewriteCond %{HTTP_HOST} ^manualdebordo\.(kriativos|kriativosonboard)\.com\.br$ [NC]
+RewriteCond %{HTTP_HOST} ^manualdebordo\.kriativosonboard\.com\.br$ [NC]
 RewriteRule ^$ manual-de-bordo.html [L]
-RewriteCond %{HTTP_HOST} ^manualdebordo\.(kriativos|kriativosonboard)\.com\.br$ [NC]
+RewriteCond %{HTTP_HOST} ^manualdebordo\.kriativosonboard\.com\.br$ [NC]
 RewriteRule ^index\.html$ manual-de-bordo.html [L]
-RewriteCond %{HTTP_HOST} ^manualdebordo\.(kriativos|kriativosonboard)\.com\.br$ [NC]
+RewriteCond %{HTTP_HOST} ^manualdebordo\.kriativosonboard\.com\.br$ [NC]
 RewriteRule ^en/?$ en/manual-de-bordo.html [L]
-RewriteCond %{HTTP_HOST} ^manualdebordo\.(kriativos|kriativosonboard)\.com\.br$ [NC]
+RewriteCond %{HTTP_HOST} ^manualdebordo\.kriativosonboard\.com\.br$ [NC]
 RewriteRule ^es/?$ es/manual-de-bordo.html [L]
 
 # ---- API do onibus fretado ----

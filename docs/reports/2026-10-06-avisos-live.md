@@ -81,7 +81,7 @@ SHA-256 da fonte temporizada: `38df665ad6579e206e3c5474a84c53781d252f9c4eaddbe92
 - Capturas em 320, 390, 850 e 1440 px nas três línguas: sem erros de JavaScript ou transbordamento horizontal; convite e aviso cabem juntos. Em telas até 380 px, o vídeo reserva altura estável de 240 px para evitar sobreposição.
 - `git diff --check`: aprovado.
 
-Implementação na branch `code-ia/live-notice-transcript-timing`; sem merge ou deploy desta branch. Após a seleção do mantenedor, nove apoios foram aplicados; a revisão editorial e a validação posteriores estão no [relatório de apoios](2026-10-06-apoio-live-propostas.md).
+Implementação na branch `code-ia/live-notice-transcript-timing`. O mantenedor autorizou posteriormente sua publicação na main, com resolução dos conflitos, padronização do subdomínio oficial e carrossel de Jogos. A publicação segue o PR e os checks obrigatórios do projeto. Após a seleção do mantenedor, nove apoios foram aplicados; a revisão editorial e a validação posteriores estão no [relatório de apoios](2026-10-06-apoio-live-propostas.md).
 
 SonarQube desativado somente neste projeto, conforme solicitação do mantenedor: instrução local em `AGENTS.md`, MCP local desabilitado e exceção de caminho no hook global. Verificado `enabled: false` no projeto e `enabled: true` fora dele; outros projetos conservam a integração.
 

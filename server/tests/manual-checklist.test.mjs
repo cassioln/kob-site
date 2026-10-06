@@ -2,7 +2,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {formatChecklist,printableChecklist} from '../../assets/js/manual-de-bordo-checklist.js';
 import {manualLanguagePath} from '../../assets/js/manual-de-bordo-routing.js';
-const data={url:'https://kriativosonboard.com.br/manualdebordo',progress:'1 de 2 conferidos',groups:[{title:'Documentos',items:[{title:'Conferir reserva',checked:true},{title:'Imprimir voucher',checked:false},{title:'Autorizar menor',na:true}]}]};
+const data={url:'https://manualdebordo.kriativosonboard.com.br/',progress:'1 de 2 conferidos',groups:[{title:'Documentos',items:[{title:'Conferir reserva',checked:true},{title:'Imprimir voucher',checked:false},{title:'Autorizar menor',na:true}]}]};
 test('Formatos de texto mantêm todos os estados e diferem por canal',()=>{
  const copy=formatChecklist(data,'copy'); const email=formatChecklist(data,'email'); const wa=formatChecklist(data,'whatsapp');
  assert.match(copy,/\[x\] Conferir reserva/); assert.match(copy,/\[ \] Imprimir/); assert.match(copy,/\[—\] Autorizar/);
@@ -16,7 +16,8 @@ test('HTML de impressão escapa texto e mantém estados',()=>{
  assert.match(html,/&lt;script&gt;/);assert.match(html,/&lt;img/);assert.doesNotMatch(html,/<img/);assert.match(html,/class="box checked"/);
 });
 test('Idiomas respeitam domínio principal, subdomínio e preview em arquivo',()=>{
- assert.equal(manualLanguagePath('en','/manualdebordo','kriativosonboard.com.br'),'/en/manualdebordo');
+ assert.equal(manualLanguagePath('en','/manualdebordo','kriativosonboard.com.br'),'https://manualdebordo.kriativosonboard.com.br/en/');
  assert.equal(manualLanguagePath('pt','/es/','manualdebordo.kriativosonboard.com.br'),'/');
+ assert.equal(manualLanguagePath('es','/es/','manualdebordo.kriativos.com.br'),'https://manualdebordo.kriativosonboard.com.br/es/');
  assert.equal(manualLanguagePath('es','/manual-de-bordo.html','127.0.0.1'),'/es/manual-de-bordo.html');
 });

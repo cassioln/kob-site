@@ -471,7 +471,7 @@ SHA-256: `38df665ad6579e206e3c5474a84c53781d252f9c4eaddbe92e5340548c0b8f04`.
 - Horários provenientes das legendas automáticas. Os testes usam um relógio simulado da API do YouTube; confirmam a sincronização do componente, sem representar uma revisão acústica quadro a quadro da gravação.
 - SonarQube permanece desativado por solicitação do mantenedor. Achados de design já comparados com a base estão registrados em `2026-10-06-avisos-live.md`; não foram criadas novas supressões.
 
-A entrega fica na branch solicitada, sem merge ou deploy nesta etapa.
+O mantenedor autorizou posteriormente a publicação desta entrega na main. A integração preserva os apoios aprovados e segue os checks obrigatórios e o deploy automático do projeto.
 
 ## Ajuste editorial posterior em 06/10/2026
 

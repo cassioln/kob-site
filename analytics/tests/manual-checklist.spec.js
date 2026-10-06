@@ -73,7 +73,7 @@ test('Copiar, email e WhatsApp usam marcas atuais, todos os itens e formatos pr�
  await footer.locator('[data-checklist-export="copy"]').click();
  const copied=await page.evaluate(()=>window.__copied);
  expect(copied).toContain('[x] Conferi os dados'); expect(copied).toContain('[ ]'); expect(copied).toContain('[—]');
- expect(copied).toContain('https://kriativosonboard.com.br/manualdebordo#checklist');
+ expect(copied).toContain('https://manualdebordo.kriativosonboard.com.br/#checklist');
  const mail=new URL(await footer.locator('[data-checklist-export="email"]').getAttribute('href'));
  expect(mail.protocol).toBe('mailto:'); expect(mail.searchParams.get('body')).toContain('Olá,'); expect(mail.searchParams.get('body')).toContain('• Não se aplica —');
  const wa=new URL(await footer.locator('[data-checklist-export="whatsapp"]').getAttribute('href'));
