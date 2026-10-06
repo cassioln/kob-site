@@ -535,6 +535,8 @@
 }
 
 .hero-live-cinema {
+  /* Shared by the topics tab and the lower third, which must stay clear of it. */
+  --live-tab-width: 52px;
   position: relative;
   isolation: isolate;
 }
@@ -847,12 +849,13 @@
     transform: translateY(0);
   }
 
+  /* Ends before the collapsed topics tab so "More details" never slides under it. */
   .hero-live-player>.live-lower-third {
     display: block;
     position: absolute;
-    inset: auto 14px 18px;
-    width: calc(100% - 28px);
-    max-width: calc(100% - 28px);
+    inset: auto 22px 18px;
+    width: calc(100% - 44px - var(--live-tab-width));
+    max-width: calc(100% - 44px - var(--live-tab-width));
     z-index: 2;
     isolation: isolate;
     pointer-events: none;
@@ -1138,7 +1141,6 @@
 }
 
 .live-drawer {
-  --live-tab-width: 52px;
   position: absolute;
   top: 0;
   right: 0;

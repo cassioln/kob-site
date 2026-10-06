@@ -493,12 +493,19 @@ for (const [lang, path] of [['pt', '/'], ['en', '/en/'], ['es', '/es/']]) {
         const styles = await toggle.evaluate(el => {
           const s = getComputedStyle(el); return { radius: s.borderRadius, border: s.borderWidth };
         });
+        // Seletor em pílula: mesma altura, raio e borda do menu, logo à sua esquerda.
+        // Mede os dois no mesmo quadro, pois o header pode ainda estar deslizando.
+        const [pill, menu] = await page.evaluate(() => ['.nav__right .lang-switch--mobile', '#navToggle']
+          .map(selector => document.querySelector(selector).getBoundingClientRect().toJSON()));
+        expect(pill.height).toBeCloseTo(menu.height, 1); expect(pill.y).toBeCloseTo(menu.y, 1);
+        expect(pill.x).toBeGreaterThanOrEqual(0); expect(pill.x + pill.width).toBeLessThanOrEqual(menu.x);
+        await expect(languages).toHaveCSS('border-radius', styles.radius);
+        await expect(languages).toHaveCSS('border-width', styles.border);
+        // Cada idioma mantém o alvo de toque mínimo (WCAG 2.5.8, 24×24).
         for (const button of await languages.locator('a').all()) {
           const box = await button.boundingBox();
-          expect(box.width).toBeCloseTo(44, 3); expect(box.height).toBeCloseTo(44, 3);
-          expect(box.x).toBeGreaterThanOrEqual(0); expect(box.x + box.width).toBeLessThanOrEqual(width);
-          await expect(button).toHaveCSS('border-radius', styles.radius);
-          await expect(button).toHaveCSS('border-width', styles.border);
+          expect(box.width).toBeGreaterThanOrEqual(24); expect(box.height).toBeGreaterThanOrEqual(24);
+          expect(box.x).toBeGreaterThanOrEqual(pill.x); expect(box.x + box.width).toBeLessThanOrEqual(pill.x + pill.width);
         }
         await toggle.click();
         const drawer = page.locator('#drawer');
