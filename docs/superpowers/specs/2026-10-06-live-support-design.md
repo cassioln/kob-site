@@ -4,8 +4,11 @@ Aprovação do mantenedor em 06/10/2026: propostas 01, 02, 03, 05, 08, 09,
 10, 15 e 18 do relatório de mapeamento. As outras 22 foram dispensadas.
 Os textos de 02/03/18 e o destino de 18 seguem a correção expressa na resposta.
 
-Usar o componente existente `liveChapterNotice`, com categoria `APOIO DA
-LIVE` (PT), `LIVE HELP` (EN), `AYUDA EN LA CHARLA` (ES) e SVG de informação.
+Usar o componente existente `liveChapterNotice`, com o texto do apoio sem
+rótulo de categoria. Na revisão solicitada pelo mantenedor em 06/10/2026,
+somente as chamadas de Cometa, download do Guru e monitoria Encounter têm
+prefixo em `<strong>`, localizado em PT/EN/ES, com cor e tamanho herdados
+do corpo do aviso. As demais mensagens permanecem em texto simples.
 Cada fala mapeada inicia uma janela de 12 segundos do vídeo. Pausa preserva
 a janela; retorno/avanço reavaliam o instante. Sem relógio da API, ocultar
 apoios temporizados, como já ocorre com atualizações e convite ao grupo.
@@ -14,8 +17,10 @@ Se houver uma atualização vigente, conservar seu texto e acesso ao FAQ e
 acrescentar o apoio no mesmo bloco. O apoio tem a ação principal; o FAQ da
 atualização permanece como ação secundária. Se ambos apontarem ao mesmo
 FAQ, exibir um único botão. Um apoio vencido desaparece e deixa a atualização
-vigente visível. As escolhas do mantenedor sobre novos apoios não removem
-correções anteriores.
+vigente visível. Por solicitação expressa do mantenedor após a primeira
+entrega, foi removida a atualização de rotas/tempos e partida na Barra Funda
+de `chapter-1702`; o assunto, a transcrição e o FAQ permanecem. Restam 22
+atualizações, sem alterar os nove apoios e os 17 convites ao grupo.
 
 Links externos abrem em nova aba somente por clique, com `noopener noreferrer`
 e nome acessível informando a abertura. Encounter, mochila e deslocamento

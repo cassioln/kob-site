@@ -144,12 +144,6 @@ export const CHAPTERS = [
     },
     "keywords": "aeroporto GRU CGH VCP guarulhos congonhas viracopos campinas cometa rodoviária avião taxi uber transfer airport aeropuertos aeropuerto bus station",
     "transcript": "Aeroportos:\n- Campinas (Viracopos): Fica a ~3 horas de Santos de carro. Não é recomendado.\n- Congonhas: Fica a ~40 minutos a 1 hora de Santos, porém possui poucos horários de ônibus direto para Santos e é difícil sincronizar com voos.\n- Guarulhos (GRU): É a melhor opção para quem vem de fora. Fica a ~1h40 de Santos, mas possui fluxo contínuo de ônibus da Viação Cometa direto para Santos e até direto para o Porto.\n- Quem desembarcar na Rodoviária de Santos está a apenas 10 minutos de Uber/táxi até o Terminal Concais.",
-    "noticeSeconds": 1716.240,
-    "notice": {
-      "pt": "Rotas e tempos citados são estimativas; o fretado KOB parte da Barra Funda.",
-      "en": "Routes and travel times are estimates; the KOB charter departs from Barra Funda.",
-      "es": "Las rutas y los tiempos son estimaciones; el autobús KOB sale de Barra Funda."
-    },
     "faqId": "faq-o13"
   },
   {

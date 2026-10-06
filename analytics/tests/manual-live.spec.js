@@ -1019,7 +1019,7 @@ async function pauseAtLiveTime(page, seconds) {
 }
 
 for (const width of [390, 1440]) {
-  test(`Os 23 avisos obedecem às falas mapeadas, inclusive ao voltar (${width}px)`, async ({ page }) => {
+  test(`Os 22 avisos obedecem às falas mapeadas, inclusive ao voltar (${width}px)`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/manual-de-bordo.html');
@@ -1156,8 +1156,10 @@ for (const width of [390, 1440]) {
       await pauseAtLiveTime(page, start);
       await expect(support).toBeVisible();
       await expect(support).toHaveAttribute('data-support-id', approved.id);
-      await expect(support).toContainText(approved.texts.pt);
-      await expect(support.locator('.live-notice-label')).toHaveText('APOIO DA LIVE');
+      await expect(support).toHaveText(approved.texts.pt);
+      await expect(support.locator('.live-notice-label')).toHaveCount(0);
+      if (approved.emphasis) await expect(support.locator('strong')).toHaveText(approved.emphasis.pt);
+      else await expect(support.locator('strong')).toHaveCount(0);
       if (approved.action.href) await expect(page.locator('.live-support-link')).toHaveAttribute('href', approved.action.href);
       else await expect(page.locator(`#liveChapterNoteAction [data-live-faq="${approved.action.faqId}"]`)).toBeVisible();
       await pauseAtLiveTime(page, start + 12);
@@ -1167,12 +1169,18 @@ for (const width of [390, 1440]) {
       await pauseAtLiveTime(page, start - 1);
       await expect(support).toHaveCount(0);
     }
-    await pauseAtLiveTime(page, 1742);
+    await pauseAtLiveTime(page, 1674);
     await expect(page.locator('#liveChapterNotice')).toHaveAttribute('data-notice-kind', 'mixed');
-    await expect(page.locator('.live-notice-update')).toContainText('Rotas e tempos citados são estimativas');
-    await expect(page.locator('#liveChapterNoteAction [data-live-faq="faq-o13"]')).toBeVisible();
+    await expect(page.locator('.live-notice-update')).toContainText('Os horários do fretado já estão no guia.');
+    await expect(page.locator('#liveChapterNoteAction [data-live-faq="faq-o12"]')).toBeVisible();
+    await pauseAtLiveTime(page, 1717);
+    await expect(page.locator('#liveChapterNotice')).toBeHidden();
+    await pauseAtLiveTime(page, 1742);
+    await expect(page.locator('#liveChapterNotice')).toHaveAttribute('data-notice-kind', 'support');
+    await expect(page.locator('.live-notice-update')).toHaveCount(0);
+    await expect(page.locator('#liveChapterNoteAction [data-live-faq="faq-o13"]')).toHaveCount(0);
     await pauseAtLiveTime(page, 1754);
-    await expect(page.locator('.live-notice-update')).toBeVisible();
+    await expect(page.locator('#liveChapterNotice')).toBeHidden();
     await expect(page.locator('.live-support-link')).toHaveCount(0);
     for (const rejected of [1034.839, 1291.600, 1358.400, 2124.839, 2166.079, 2444.599, 3008.559, 3162.760, 3985.920, 4523.280]) {
       await pauseAtLiveTime(page, rejected);
@@ -1181,20 +1189,31 @@ for (const width of [390, 1440]) {
   });
 }
 
-for (const [lang, path, category] of [
-  ['pt', '/manual-de-bordo.html', 'APOIO DA LIVE'],
-  ['en', '/en/manual-de-bordo.html', 'LIVE HELP'],
-  ['es', '/es/manual-de-bordo.html', 'AYUDA EN LA CHARLA']
+for (const [lang, path] of [
+  ['pt', '/manual-de-bordo.html'],
+  ['en', '/en/manual-de-bordo.html'],
+  ['es', '/es/manual-de-bordo.html']
 ]) {
   test(`Textos aprovados e destinos dos apoios em ${lang}`, async ({ page }) => {
     await page.goto(path);
     await page.locator('#loadLivePlayerBtn').click();
     await readyPlayer(page);
-    for (const id of ['support-02', 'support-03', 'support-18']) {
+    for (const id of ['support-01', 'support-02', 'support-03', 'support-18']) {
       const approved = SUPPORT_NOTICES.find(item => item.id === id);
       await pauseAtLiveTime(page, approved.cueSeconds[0] + 1);
-      await expect(page.locator('.live-notice-support')).toContainText(approved.texts[lang]);
-      await expect(page.locator('.live-notice-label--support')).toHaveText(category);
+      const support = page.locator('.live-notice-support');
+      await expect(support).toHaveText(approved.texts[lang]);
+      await expect(support.locator('.live-notice-label')).toHaveCount(0);
+      if (approved.emphasis) {
+        await expect(support.locator('strong')).toHaveText(approved.emphasis[lang]);
+        const styles = await support.evaluate(el => {
+          const body = getComputedStyle(el), bold = getComputedStyle(el.querySelector('strong'));
+          return { bodyColor: body.color, boldColor: bold.color, bodySize: body.fontSize, boldSize: bold.fontSize, boldWeight: bold.fontWeight };
+        });
+        expect(styles.boldColor).toBe(styles.bodyColor);
+        expect(styles.boldSize).toBe(styles.bodySize);
+        expect(Number(styles.boldWeight)).toBeGreaterThanOrEqual(700);
+      } else await expect(support.locator('strong')).toHaveCount(0);
       const link = page.locator('.live-support-link');
       await expect(link).toHaveText(approved.action.labels[lang]);
       await expect(link).toHaveAttribute('href', approved.action.href);

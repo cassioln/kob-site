@@ -15,7 +15,6 @@ O aviso entra no instante da fala de referência e sua vigência termina na fron
 | Documentos e autorização para menores | 00:20:50.000 | 00:21:58.440 | 00:22:25.000 | Menores desacompanhados dos pais e autorização |
 | Chegada ao porto e senha de embarque | 00:25:02.000 | 00:25:25.080 | 00:25:35.000 | Orientação para desconsiderar o horário do voucher |
 | Fretado e confirmação do seu ônibus | 00:25:35.000 | 00:26:03.080 | 00:28:22.000 | Flexibilização do horário do segundo ônibus |
-| Aeroportos e chegada a Santos | 00:28:22.000 | 00:28:36.240 | 00:29:25.000 | Estimativa de três horas desde Campinas |
 | Cruise Card, cartões e gastos a bordo | 00:30:52.000 | 00:31:00.159 | 00:32:43.000 | Aceitação de cartões internacionais |
 | Buffet e liberação das cabines | 00:32:43.000 | 00:32:57.279 | 00:34:01.000 | Cabines ainda fechadas e liberação a partir das 13h |
 | Encontro, kits e mural de programação | 00:34:01.000 | 00:34:03.200 | 00:36:01.000 | Sala Cristal inicialmente prevista |
@@ -37,6 +36,12 @@ O aviso entra no instante da fala de referência e sua vigência termina na fron
 | Itens permitidos e proibidos na mala | 01:14:41.000 | 01:14:42.239 | 01:15:09.000 | Proibição anunciada de ferro e chapinha |
 
 Rótulo visual: SVG de atenção decorativo + **ATUALIZAÇÃO** (PT), **UPDATE** (EN), **ACTUALIZACIÓN** (ES), também nos resultados de busca. O aviso recolhido do mobile mantém sua preferência entre assuntos. A antecipação da legenda do próximo assunto não antecipa seu aviso.
+
+Revisão posterior em 06/10/2026: o mantenedor solicitou remover a atualização
+“Rotas e tempos citados são estimativas; o fretado KOB parte da Barra Funda.”
+do assunto Aeroportos e chegada a Santos. Ela foi removida em PT/EN/ES;
+restam 22 atualizações vigentes. O assunto, a transcrição e o FAQ foram
+preservados, com os apoios de Cometa e deslocamento da rodoviária.
 
 ## Convite ao grupo do WhatsApp
 
@@ -69,14 +74,14 @@ Exclusões deliberadas: WhatsApp como atendimento privado do Júnior (15:14), ap
 Arquivo de legenda consultado: `AtIvlc62KgI.pt-orig.json3`.
 SHA-256 da fonte temporizada: `38df665ad6579e206e3c5474a84c53781d252f9c4eaddbe92e5340548c0b8f04`.
 
-## Validação e estado da entrega
+## Validação da entrega inicial
 
 - Cinco testes Node de limites temporais, retorno/avanço e menções excluídas: aprovados.
 - 55 testes Playwright da live, incluindo os 23 avisos em desktop/mobile, PT/EN/ES, falha da API, foco, redução de movimento e convite por clique: aprovados. A API foi simulada para avaliar os instantes determinísticos; isso não confirma alinhamento acústico perfeito nem testa a disponibilidade do grupo no WhatsApp.
 - Capturas em 320, 390, 850 e 1440 px nas três línguas: sem erros de JavaScript ou transbordamento horizontal; convite e aviso cabem juntos. Em telas até 380 px, o vídeo reserva altura estável de 240 px para evitar sobreposição.
 - `git diff --check`: aprovado.
 
-Implementação na branch `code-ia/live-notice-transcript-timing`; sem merge ou deploy desta branch. A nova categoria de apoio é somente um [mapeamento para aprovação individual](2026-10-06-apoio-live-propostas.md), ainda sem implementação.
+Implementação na branch `code-ia/live-notice-transcript-timing`; sem merge ou deploy desta branch. Após a seleção do mantenedor, nove apoios foram aplicados; a revisão editorial e a validação posteriores estão no [relatório de apoios](2026-10-06-apoio-live-propostas.md).
 
 SonarQube desativado somente neste projeto, conforme solicitação do mantenedor: instrução local em `AGENTS.md`, MCP local desabilitado e exceção de caminho no hook global. Verificado `enabled: false` no projeto e `enabled: true` fora dele; outros projetos conservam a integração.
 

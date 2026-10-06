@@ -1692,8 +1692,9 @@
   flex: none;
 }
 
-.live-chapter-notice .live-chapter-note .live-notice-label--support {
-  color: #07658c;
+.live-chapter-notice .live-chapter-note .live-notice-support strong {
+  color: inherit;
+  font-size: inherit;
 }
 
 .live-chapter-notice[data-notice-kind="support"] {

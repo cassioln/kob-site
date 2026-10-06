@@ -5,7 +5,7 @@ Estado: **seleção recebida do mantenedor em 06/10/2026: nove apoios aprovados 
 
 ## Escopo e fontes
 
-Esta categoria oferece uma ação ou uma explicação enquanto o assunto é mencionado: consultar um serviço, abrir uma orientação do manual ou saber a quem pedir ajuda. A categoria aplicada é **APOIO DA LIVE**, com ícone de informação. Ela é diferente das correções identificadas como **ATUALIZAÇÃO**.
+Esta categoria oferece uma ação ou uma explicação enquanto o assunto é mencionado: consultar um serviço, abrir uma orientação do manual ou saber a quem pedir ajuda. Os apoios exibem apenas o texto, sem rótulo de categoria; chamadas estratégicas podem usar negrito. As correções editoriais continuam identificadas como **ATUALIZAÇÃO**.
 
 Foi revista a transcrição anexada da [live de embarque](https://www.youtube.com/watch?v=AtIvlc62KgI), comparada às legendas automáticas originais `pt-orig` e ao conteúdo atual do manual. Os horários abaixo indicam o início da legenda que contém a fala de referência, não uma medição acústica exata. Na aplicação, devem ser conferidos no player. Foram mapeadas também as repetições úteis; agradecimentos, brincadeiras e menções sem ação para o passageiro não geram avisos.
 
@@ -36,7 +36,7 @@ Os IDs `faq-oNN` abaixo foram conferidos no HTML atual. “Mais detalhes” sign
 
 **Ação:** “Ver transfers da Cometa” → [viacaocometa.com.br/transfer](https://www.viacaocometa.com.br/transfer).
 
-**Tratamento:** complemento à orientação de aeroportos (`faq-o13`). O aviso de atualização sobre estimativas de trajeto deve continuar disponível. Não anunciar ônibus direto de Congonhas nem tempos fixos de viagem sem confirmação da operadora.
+**Tratamento:** complemento à orientação de aeroportos (`faq-o13`), com “Vai usar a Cometa?” em negrito. O mantenedor solicitou retirar a atualização sobre estimativas de trajeto após a primeira entrega. Não anunciar ônibus direto de Congonhas nem tempos fixos de viagem sem confirmação da operadora.
 
 **Decisão:** aprovado pelo mantenedor em 06/10/2026; aplicado e validado.
 
@@ -409,7 +409,6 @@ Também foram examinadas as passagens abaixo. Elas já exibem informação edito
 | 00:21:58.440 | Autorizações de menores e modelo adequado ao caso, via Royal Trip | `faq-o04` |
 | 00:25:25.080 | Seguir o horário do voucher, corrigindo “desconsidere” | `faq-o01` |
 | 00:26:03.080 | Horários atuais do fretado e ônibus atribuído | `faq-o12` + proposta 09 |
-| 00:28:36.240 | Rotas/tempos estimados e partida KOB na Barra Funda | `faq-o13` + propostas 01 e 10 |
 | 00:31:00.159 | Meios de pagamento, aceitação e condições a confirmar | `faq-o34` |
 | 00:32:57.279 | Aguardar anúncio de liberação da cabine; buffet enquanto espera | `faq-o15` |
 | 00:34:03.200 | Sala, horário previsto, kit e confirmação oficial | `faq-o17` |
@@ -460,7 +459,7 @@ Fonte temporizada: `AtIvlc62KgI.pt-orig.json3`, consultada em 06/10/2026.
 SHA-256: `38df665ad6579e206e3c5474a84c53781d252f9c4eaddbe92e5340548c0b8f04`.
 
 
-## Validação da entrega
+## Validação da primeira entrega
 
 - Acervo aplicado: nove apoios e 13 entradas, nas versões PT/EN/ES; nenhuma das 22 propostas dispensadas foi acrescentada.
 - Node: **7 testes passaram** em `analytics/tests/live-notice-timing.test.mjs`.
@@ -473,3 +472,10 @@ SHA-256: `38df665ad6579e206e3c5474a84c53781d252f9c4eaddbe92e5340548c0b8f04`.
 - SonarQube permanece desativado por solicitação do mantenedor. Achados de design já comparados com a base estão registrados em `2026-10-06-avisos-live.md`; não foram criadas novas supressões.
 
 A entrega fica na branch solicitada, sem merge ou deploy nesta etapa.
+
+## Ajuste editorial posterior em 06/10/2026
+
+- Removida a atualização “Rotas e tempos citados são estimativas; o fretado KOB parte da Barra Funda.” em PT/EN/ES, inclusive da busca. O assunto e o FAQ de aeroportos continuam disponíveis; restam 22 atualizações.
+- Retirado o rótulo “APOIO DA LIVE” e suas traduções do corpo das nove mensagens. O selo “Apoio” recolhido no mobile mantém a identificação do conteúdo.
+- Negrito localizado somente nas chamadas de Cometa, instalação do Guru e monitoria Encounter. Textos, ações, horários e duração dos apoios preservados.
+- Validação desta revisão: 7 testes Node e 10 testes Playwright de avisos/apoios passaram. Inspeção de 18 capturas desktop/mobile em PT/EN/ES, sem erros JavaScript, transbordamento, sobreposição, rótulo residual ou mudança indevida de cor/tamanho no negrito.

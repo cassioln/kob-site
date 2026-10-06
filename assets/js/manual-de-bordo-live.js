@@ -1,12 +1,12 @@
-import { CHAPTERS, LIVE_VIDEO_ID, LIVE_DURATION, GROUP_INVITE_URL } from './manual-de-bordo-live-data.js?v=20261006-notice-timing';
+import { CHAPTERS, LIVE_VIDEO_ID, LIVE_DURATION, GROUP_INVITE_URL } from './manual-de-bordo-live-data.js?v=20261006-live-copy';
 import { normalizeSearch, matchChapter, highlightParts, excerpt } from './manual-de-bordo-live-search.js?v=20261005-topic-player';
 
-import { topicAt, topicProgress, seekInTopic, isNoticeDue, isGroupInviteDue } from './manual-de-bordo-live-timeline.js?v=20261006-notice-timing';
+import { topicAt, topicProgress, seekInTopic, isNoticeDue, isGroupInviteDue } from './manual-de-bordo-live-timeline.js?v=20261006-live-copy';
 import { initLiveGuideHelp } from './manual-de-bordo-live-help.js?v=20261005-mobile-live';
 import { initLiveMarkers } from './manual-de-bordo-live-markers.js?v=20261005-mobile-live';
 import { initLiveControlMarquee } from './manual-de-bordo-live-marquee.js?v=20261005-ui-final';
 import { initLiveTopicTransition } from './manual-de-bordo-live-topic.js?v=20261005-mobile-live';
-import { supportAt } from './manual-de-bordo-live-support.js?v=20261006-live-support';
+import { supportAt } from './manual-de-bordo-live-support.js?v=20261006-live-copy';
 
 const lang = document.documentElement.lang.slice(0, 2);
 const copy = {
@@ -18,7 +18,7 @@ const copy = {
     previousShort: 'Anterior', nextShort: 'Próximo', fullLive: 'Live completa', searchHint: 'Buscar na live', loading: 'Carregando vídeo…',
     noticePill: 'Atualização', showNotice: 'Mostrar atualização', collapseNotice: 'Recolher aviso',
     groupInvite: 'Clique aqui para entrar no grupo', groupInviteLabel: 'Entrar no grupo oficial do WhatsApp (abre em nova aba)',
-    support: 'APOIO DA LIVE', supportPill: 'Apoio', showSupport: 'Mostrar apoio da live', opensNewTab: 'abre em nova aba'
+    supportPill: 'Apoio', showSupport: 'Mostrar apoio da live', opensNewTab: 'abre em nova aba'
   },
   en: {
     topics: 'Topics', close: 'Collapse topics',
@@ -28,7 +28,7 @@ const copy = {
     previousShort: 'Previous', nextShort: 'Next', fullLive: 'Full recording', searchHint: 'Search the recording', loading: 'Loading video…',
     noticePill: 'Update', showNotice: 'Show update', collapseNotice: 'Collapse notice',
     groupInvite: 'Click here to join the group', groupInviteLabel: 'Join the official WhatsApp group (opens in a new tab)',
-    support: 'LIVE HELP', supportPill: 'Help', showSupport: 'Show recording help', opensNewTab: 'opens in a new tab'
+    supportPill: 'Help', showSupport: 'Show recording help', opensNewTab: 'opens in a new tab'
   },
   es: {
     topics: 'Temas', close: 'Recoger temas',
@@ -38,7 +38,7 @@ const copy = {
     previousShort: 'Anterior', nextShort: 'Siguiente', fullLive: 'Charla completa', searchHint: 'Busca en la charla', loading: 'Cargando vídeo…',
     noticePill: 'Actualización', showNotice: 'Mostrar actualización', collapseNotice: 'Recoger aviso',
     groupInvite: 'Haz clic aquí para entrar al grupo', groupInviteLabel: 'Entrar al grupo oficial de WhatsApp (se abre en una pestaña nueva)',
-    support: 'AYUDA EN LA CHARLA', supportPill: 'Ayuda', showSupport: 'Mostrar ayuda de la charla', opensNewTab: 'se abre en una pestaña nueva'
+    supportPill: 'Ayuda', showSupport: 'Mostrar ayuda de la charla', opensNewTab: 'se abre en una pestaña nueva'
   }
 }[lang] || null;
 const cinema = document.getElementById('heroLiveCinema');
@@ -341,7 +341,7 @@ function initLive() {
     label.className = `live-notice-label${kind === 'support' ? ' live-notice-label--support' : ''}`;
     const paths = kind === 'support' ? '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7h.01"/>' : '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4M12 17h.01"/>';
     label.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
-    label.append(kind === 'support' ? copy.support : copy.updated);
+    if (kind === 'update') label.append(copy.updated);
     return label;
   }
 
@@ -359,7 +359,13 @@ function initLive() {
       const help = document.createElement('div');
       help.className = 'live-notice-support';
       help.dataset.supportId = support.id;
-      help.append(noticeLabel('support'), ' ', support.texts[lang]);
+      const text = support.texts[lang];
+      const emphasis = support.emphasis?.[lang];
+      if (emphasis && text.startsWith(emphasis)) {
+        const strong = document.createElement('strong');
+        strong.textContent = emphasis;
+        help.append(strong, text.slice(emphasis.length));
+      } else help.textContent = text;
       content.append(help);
       if (support.action.href) {
         const link = document.createElement('a');

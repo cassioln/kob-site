@@ -16,7 +16,7 @@ num único aviso, sem substituir o texto vigente ou recriar controles por tick.
 - IDs aprovados: 01, 02, 03, 05, 08, 09, 10, 15, 18. Nenhum outro apoio.
 - Duração: 12 segundos de vídeo por fala, com todos os momentos aprovados.
 - Link MSC for Me exatamente como fornecido; demais destinos do relatório.
-- Preservar 23 atualizações e 17 convites já autorizados.
+- Preservar 17 convites e as atualizações autorizadas; a revisão editorial posterior retirou uma das 23, restando 22.
 - Sem dependências novas, merge ou deploy nesta entrega.
 
 ## 1. Acervo e tempo
@@ -65,3 +65,23 @@ Arquivos: `analytics/tests/manual-live.spec.js`,
   histórico e conferir `git diff --check`; commitar a entrega validada.
 
 **Resultado:** 7 testes Node e 63 testes do player passaram; inspeção visual concluída nos quatro tamanhos e três idiomas. Relatório atualizado; alterações preparadas para commit na branch solicitada.
+
+## Ajuste editorial solicitado após a entrega
+
+- [x] Em `manual-de-bordo-live-data.js`, remover `notice` e `noticeSeconds`
+  de `chapter-1702`, preservando assunto, transcrição e FAQ. Restam 22
+  atualizações. Usar a mesma nova versão desse módulo no controlador e na
+  timeline.
+- [x] Em `manual-de-bordo-live-support.js`, registrar `emphasis` PT/EN/ES
+  apenas nas chamadas de Cometa, download do Guru e monitoria Encounter.
+  Manter `texts` completos e intactos. No renderer, criar `<strong>` com
+  `textContent` para o prefixo, sem inserir HTML do acervo.
+- [x] Remover o rótulo visível de apoio, conservando os selos recolhidos e
+  nomes acessíveis. Fazer o negrito herdar cor e tamanho do texto do aviso.
+- [x] Atualizar assertions: atualização de aeroportos ausente, 22 avisos,
+  apoios sem rótulo, texto completo preservado e destaque localizado.
+  Rodar Node e testes do player relacionados aos avisos/apoios; conferir
+  capturas desktop/mobile em PT/EN/ES e `git diff --check`.
+- [x] Atualizar relatório/spec, cache dos três HTMLs e salvar na mesma branch.
+
+**Validação da revisão editorial:** 7 testes Node e 10 testes do player relacionados passaram. Dezoito capturas desktop/mobile em PT/EN/ES sem overflow, sobreposição ou perda de legibilidade.

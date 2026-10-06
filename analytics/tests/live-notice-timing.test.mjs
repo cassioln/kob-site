@@ -6,7 +6,11 @@ import { SUPPORT_NOTICES, SUPPORT_DURATION, supportAt } from '../../assets/js/ma
 
 test('Every update has a mapped utterance inside its own topic', () => {
   const notices = CHAPTERS.filter(topic => topic.notice);
-  assert.equal(notices.length, 23);
+  assert.equal(notices.length, 22);
+  const airports = CHAPTERS.find(topic => topic.id === 'chapter-1702');
+  assert.equal(airports.notice, undefined);
+  assert.equal(airports.noticeSeconds, undefined);
+  assert.equal(isNoticeDue(airports, 1717), false);
   for (const topic of notices) {
     const { start, end } = topicBounds(topic);
     assert.ok(Number.isFinite(topic.noticeSeconds), topic.id);
@@ -58,7 +62,10 @@ test('Nearby closing invitations overlap into one continuous display', () => {
 test('Only the nine approved support proposals are included, with localized actions', () => {
   assert.deepEqual(SUPPORT_NOTICES.map(item => item.id), ['support-01', 'support-02', 'support-03', 'support-05', 'support-08', 'support-09', 'support-10', 'support-15', 'support-18']);
   for (const item of SUPPORT_NOTICES) {
-    for (const lang of ['pt', 'en', 'es']) assert.ok(item.texts[lang], `${item.id}: ${lang}`);
+    for (const lang of ['pt', 'en', 'es']) {
+      assert.ok(item.texts[lang], `${item.id}: ${lang}`);
+      if (item.emphasis) assert.ok(item.emphasis[lang] && item.texts[lang].startsWith(item.emphasis[lang]), `${item.id}: emphasis ${lang}`);
+    }
     assert.ok(Boolean(item.action.href) !== Boolean(item.action.faqId), item.id);
     if (item.action.href) {
       assert.equal(new URL(item.action.href).protocol, 'https:');

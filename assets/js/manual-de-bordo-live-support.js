@@ -4,6 +4,7 @@ export const SUPPORT_DURATION = 12;
 export const SUPPORT_NOTICES = [
   {
     id: 'support-01', cueSeconds: [1741.760],
+    emphasis: { pt: 'Vai usar a Cometa?', en: 'Travelling with Cometa?', es: '¿Viajas con Cometa?' },
     texts: {
       pt: 'Vai usar a Cometa? Consulte os transfers e confira rota, data, horários e ponto de chegada.',
       en: 'Travelling with Cometa? Check the transfers, route, date, departure times and arrival point.',
@@ -28,6 +29,7 @@ export const SUPPORT_NOTICES = [
   },
   {
     id: 'support-03', cueSeconds: [3823.119, 3964.119, 4221.199],
+    emphasis: { pt: 'Instale agora o BG Guru!:', en: 'Install BG Guru now!', es: '¡Instala BG Guru ahora!' },
     texts: {
       pt: 'Instale agora o BG Guru!: no site do Board Game Guru você encontra os links para Android e iOS.',
       en: 'Install BG Guru now! The Board Game Guru website has the download links for Android and iOS.',
@@ -40,6 +42,7 @@ export const SUPPORT_NOTICES = [
   },
   {
     id: 'support-05', cueSeconds: [1088.280],
+    emphasis: { pt: 'Quer aprender um jogo ou encontrar uma mesa?', en: 'Want to learn a game or find a table?', es: '¿Quieres aprender un juego o encontrar una mesa?' },
     texts: {
       pt: 'Quer aprender um jogo ou encontrar uma mesa? Procure a monitoria da Encounter.',
       en: 'Want to learn a game or find a table? Ask the Encounter game facilitators.',
