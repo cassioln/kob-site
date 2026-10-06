@@ -8509,20 +8509,82 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
 
 .footer__bottom {
   display: flex;
-  gap: 24px;
-  align-items: flex-end;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 16px;
   padding-top: var(--sp-md);
   border-top: 1px solid color-mix(in oklab, var(--foam-white) 13%, transparent);
 }
 
+.footer__bottom-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.footer__privacy-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 18px clamp(18px, 2.4vw, 42px);
+}
+
+.footer__privacy-controls a,
+.footer__privacy-controls button,
+.footer__cookie-preferences,
+.footer__cookie-policy {
+  display: inline-flex;
+  align-items: center;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  font: inherit;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: inherit;
+  text-decoration: none;
+  text-transform: uppercase;
+  color: rgba(233, 242, 251, 0.8);
+  transition: color 180ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  min-height: auto;
+}
+
+.footer__privacy-controls a:hover,
+.footer__privacy-controls button:hover,
+.footer__cookie-preferences:hover,
+.footer__cookie-policy:hover {
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.footer__privacy-controls a:focus-visible,
+.footer__privacy-controls button:focus-visible,
+.footer__cookie-preferences:focus-visible,
+.footer__cookie-policy:focus-visible {
+  outline: 2px solid #29c3f5;
+  outline-offset: 5px;
+}
+
 .footer__legal {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
   color: color-mix(in oklab, var(--foam-white) 55%, var(--ocean-cyan));
-  font-size: 0.78rem;
-  line-height: 1.45;
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.footer__legal-sep {
+  opacity: 0.4;
+  user-select: none;
 }
 
 .ksio-powered-line {
@@ -8648,12 +8710,31 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
   }
 
   .footer__bottom {
+    gap: 18px;
+  }
+
+  .footer__bottom-main {
     flex-direction: column;
     align-items: flex-start;
+    gap: 16px;
+  }
+
+  .footer__privacy-controls {
+    gap: 12px 18px;
   }
 
   .ksio-powered-line {
     text-align: left;
+  }
+
+  .footer__legal {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .footer__legal-sep {
+    display: none;
   }
 }
 

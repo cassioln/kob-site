@@ -62,7 +62,8 @@ function initChecklistTools() {
       control.innerHTML=`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icons[action]}</svg><span>${w[action]}</span>`;
       controls.append(control);
     }
-    const heading=document.createElement('p'); heading.className='checklist-share__heading'; heading.textContent=w.share;
+    const shareIcon = '<svg class="ico_share checklist-share__icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>';
+    const heading=document.createElement('p'); heading.className='checklist-share__heading'; heading.innerHTML=`${shareIcon}<span>${w.share}</span>`;
     const status=document.createElement('p'); status.className='checklist-share__status'; status.setAttribute('role','status');
     root.append(heading,controls,status);
     controls.addEventListener('click', async event => {

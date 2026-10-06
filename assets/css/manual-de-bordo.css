@@ -3335,10 +3335,19 @@
 }
 
 .checklist-share__heading {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   margin: 0 0 8px;
   font-size: .75rem;
   font-weight: 700;
   line-height: 1.5;
+  color: #526779;
+}
+
+.checklist-share__heading svg,
+.checklist-share__heading .ico_share {
+  flex-shrink: 0;
   color: #526779;
 }
 
