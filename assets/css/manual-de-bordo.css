@@ -3896,7 +3896,7 @@
   border-bottom: 2px solid var(--ink-strong, #041d3a);
 }
 
-.faq__panel-toggle {
+#duvidas .faq__panel-toggle {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -3912,26 +3912,32 @@
   transition: all var(--dur-fast, 0.2s) ease;
 }
 
-.faq__panel-toggle:hover,
-.faq__panel-toggle:focus-visible {
+#duvidas .faq__panel-toggle:hover,
+#duvidas .faq__panel-toggle:focus-visible {
   background: var(--ocean-navy, #041d3a);
   color: #ffffff;
   border-color: var(--ocean-navy, #041d3a);
   outline: none;
 }
 
-.faq__panel-toggle svg {
+#duvidas .faq__panel-toggle svg {
   width: 18px;
   height: 18px;
   transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
 }
 
-.faq__panel-toggle[aria-expanded="false"] svg {
+#duvidas .faq__panel-toggle[aria-expanded="false"] svg {
   transform: rotate(180deg);
 }
 
-.faq__panel.is-collapsed .faq-list {
-  display: none;
+#duvidas .faq__panel.is-collapsed .faq-list {
+  display: none !important;
+}
+
+#duvidas .faq__panel.is-collapsed .faq__panel-head {
+  margin-bottom: 0;
+  border-bottom-color: rgba(4, 29, 58, 0.16);
 }
 
 #duvidas .faq__panel h3,

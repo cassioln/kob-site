@@ -587,14 +587,30 @@
     });
 
     // Botões de recolher / expandir seção inteira (.faq__panel-toggle)
+    function togglePanel(toggle) {
+      if (!toggle) return;
+      var panel = toggle.closest('.faq__panel');
+      if (!panel) return;
+      var isCollapsed = panel.classList.toggle('is-collapsed');
+      toggle.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true');
+
+      var currentLabel = toggle.getAttribute('aria-label') || '';
+      var currentTitle = toggle.getAttribute('title') || '';
+      if (isCollapsed) {
+        toggle.setAttribute('aria-label', currentLabel.replace(/Recolher/i, 'Expandir').replace(/Collapse/i, 'Expand').replace(/Plegar/i, 'Desplegar'));
+        toggle.setAttribute('title', currentTitle.replace(/Recolher/i, 'Expandir').replace(/Collapse/i, 'Expand').replace(/Plegar/i, 'Desplegar'));
+      } else {
+        toggle.setAttribute('aria-label', currentLabel.replace(/Expandir/i, 'Recolher').replace(/Expand/i, 'Collapse').replace(/Desplegar/i, 'Plegar'));
+        toggle.setAttribute('title', currentTitle.replace(/Expandir/i, 'Recolher').replace(/Expand/i, 'Collapse').replace(/Desplegar/i, 'Plegar'));
+      }
+    }
+
     var panelToggles = document.querySelectorAll('#duvidas .faq__panel-toggle');
     panelToggles.forEach(function (toggle) {
       toggle.addEventListener('click', function (e) {
+        e.preventDefault();
         e.stopPropagation();
-        var panel = toggle.closest('.faq__panel');
-        if (!panel) return;
-        var isCollapsed = panel.classList.toggle('is-collapsed');
-        toggle.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true');
+        togglePanel(toggle);
       });
     });
 
