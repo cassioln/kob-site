@@ -170,6 +170,15 @@ test('No mobile o assunto fica sobre o vídeo e controles e Assuntos logo abaixo
   await expect(page.locator('#livePreviousChapterBtn')).toHaveAttribute('data-dir', 'Anterior');
   await expect(page.locator('#liveNextChapterBtn .live-control-label')).toContainText('Royal Trip');
   await expect(page.locator('#liveNextChapterBtn .live-control-label > span')).toHaveCSS('opacity', '1');
+  // Same height as play/pause, one line, and long names scroll on their own (no hover on touch).
+  const playBox = await page.locator('#livePlayPauseBtn').boundingBox();
+  for (const id of ['#livePreviousChapterBtn', '#liveNextChapterBtn']) {
+    expect((await page.locator(id).boundingBox()).height).toBeCloseTo(playBox.height, 0);
+  }
+  const nextLabel = page.locator('#liveNextChapterBtn .live-control-label');
+  await expect(nextLabel).toHaveClass(/is-overflowing/);
+  await expect(nextLabel.locator('span')).toHaveCSS('white-space', 'nowrap');
+  await expect(nextLabel.locator('span')).toHaveCSS('animation-name', 'live-label-marquee');
 });
 
 for (const [lang, term, title, label] of [['en', 'luggage', 'Luggage', 'Portuguese transcript'], ['es', 'equipaje', 'Equipaje', 'portugués']]) {
@@ -872,3 +881,19 @@ test.describe('Mobile com as funções do desktop', () => {
     expect(await page.evaluate(() => window.__liveMock.calls.filter(call => call[0] === 'seek' && call[1] === 1852).length)).toBe(1);
   });
 });
+
+for (const width of [390, 1440]) {
+  test(`A capa com carregamento cobre o vídeo até ele começar a tocar (${width}px)`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/manual-de-bordo.html');
+    await page.locator('#loadLivePlayerBtn').click();
+    const loading = page.locator('.live-loading');
+    await expect(loading).toBeVisible();
+    await expect(loading).toHaveText('Carregando vídeo…');
+    await expect(page.locator('#livePlayerFacade')).toBeVisible();
+    await expect(page.locator('#loadLivePlayerBtn')).toBeHidden();
+    await readyPlayer(page);
+    await expect(page.locator('#livePlayerFacade')).toBeHidden();
+    await expect(loading).toBeHidden();
+  });
+}

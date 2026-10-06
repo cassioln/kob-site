@@ -620,6 +620,50 @@
   font-size: 1.15rem;
 }
 
+/* Loading: the cover stays over the embed (dimmed, with a spinner) until the video plays. */
+.hero-live-player:is(.is-loading, .is-revealing) .live-facade {
+  z-index: 1;
+}
+
+.hero-live-player.is-revealing .live-facade {
+  opacity: 0;
+  transition: opacity 280ms ease;
+}
+
+.hero-live-player:is(.is-loading, .is-revealing) .live-play-button {
+  display: none;
+}
+
+.live-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: rgba(4, 29, 58, .55);
+  color: #fff;
+  font: 600 .88rem/1.4 var(--font-body);
+  text-shadow: 0 1px 3px rgba(0, 10, 25, .5);
+}
+
+.live-loading__spinner {
+  width: 38px;
+  height: 38px;
+  border: 3px solid rgba(255, 255, 255, .28);
+  border-top-color: var(--sunset-gold, #ffc20e);
+  border-radius: 50%;
+  animation: live-spin .8s linear infinite;
+}
+
+@keyframes live-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .live-player-container {
   position: absolute;
   inset: 0;
@@ -1837,6 +1881,17 @@
     display: none;
   }
 
+  .live-loading {
+    gap: 8px;
+    padding-bottom: 44px;
+    font-size: .8rem;
+  }
+
+  .live-loading__spinner {
+    width: 30px;
+    height: 30px;
+  }
+
   .live-lower-third .live-custom-controls__topic {
     display: -webkit-box;
     width: fit-content;
@@ -1972,14 +2027,16 @@
     min-width: 0;
   }
 
+  /* Same height as play/pause; the topic name stays on one line. */
   .live-custom-controls .live-custom-controls__nav {
     grid-template-columns: auto minmax(0, 1fr);
     grid-template-areas: "icon dir" "label label";
-    align-content: start;
+    align-content: center;
     justify-content: stretch;
     gap: 3px 2px;
-    min-height: 60px;
-    padding: 8px 9px;
+    height: 56px;
+    min-height: 0;
+    padding: 0 10px;
     border-radius: 8px;
     color: #fff;
     background: rgba(255, 255, 255, .1);
@@ -2010,15 +2067,19 @@
 
   .live-custom-controls__nav .live-control-label {
     grid-area: label;
+    justify-self: stretch;
     max-width: none;
   }
 
-  /* Titles are short enough to show in full; clamping would cut them without an ellipsis. */
   .live-custom-controls__nav .live-control-label>span {
-    width: auto;
-    white-space: normal;
+    width: max-content;
+    white-space: nowrap;
     opacity: 1;
     font: 600 .72rem/1.35 var(--font-body);
+  }
+
+  .live-custom-controls #liveNextChapterBtn .live-control-label>span {
+    margin-left: auto;
   }
 
   .live-custom-controls #liveNextChapterBtn {
@@ -2343,6 +2404,18 @@
 
   .guide-header__home-link .short-text {
     display: none;
+  }
+}
+
+/* Mobile has no hover: names that don't fit scroll on their own, as the desktop marquee does on hover. */
+@media (max-width: 768px) and (prefers-reduced-motion: no-preference) {
+  .live-custom-controls__nav .live-control-label.is-overflowing {
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 6px, #000 calc(100% - 6px), transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 6px, #000 calc(100% - 6px), transparent);
+  }
+
+  .live-custom-controls__nav:not(:disabled) .live-control-label.is-overflowing>span {
+    animation: live-label-marquee var(--live-label-duration, 8s) linear infinite alternate;
   }
 }
 

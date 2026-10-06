@@ -14,21 +14,21 @@ const copy = {
     selected: 'Selecionado', playing: 'Em reprodução', transcript: 'Trecho da transcrição fornecida', updated: 'Regra atualizada', faq: 'Mais detalhes', detailHint: 'Passe o mouse, toque ou use o teclado para ver mais detalhes',
     videoTitle: 'Live de embarque · Kriativos On Board 2026', apiError: 'Não foi possível sincronizar os assuntos. O vídeo ainda pode ser assistido aqui ou pelo link no YouTube.', previousTopic: 'Assunto anterior', nextTopic: 'Próximo assunto', play: 'Reproduzir', pause: 'Pausar', progress: 'Progresso do assunto', remaining: 'Restante', closeGuide: 'Fechar orientação',
     videoError: 'O YouTube não conseguiu reproduzir este vídeo. Tente novamente ou abra o trecho no YouTube.', fullscreenError: 'Não foi possível ampliar. Você pode abrir o vídeo no YouTube.', expand: 'Ampliar vídeo', exit: 'Sair da tela cheia',
-    previousShort: 'Anterior', nextShort: 'Próximo', fullLive: 'Live completa', searchHint: 'Buscar na live'
+    previousShort: 'Anterior', nextShort: 'Próximo', fullLive: 'Live completa', searchHint: 'Buscar na live', loading: 'Carregando vídeo…'
   },
   en: {
     topics: 'Topics', close: 'Collapse topics',
     selected: 'Selected', playing: 'Playing', transcript: 'Excerpt of the supplied Portuguese transcript', updated: 'Updated rule', faq: 'More details', detailHint: 'Hover, tap or use the keyboard for more details',
     videoTitle: 'Boarding live recording · Kriativos On Board 2026', apiError: 'Topic synchronisation is unavailable. You can still watch here or open the video on YouTube.', previousTopic: 'Previous topic', nextTopic: 'Next topic', play: 'Play', pause: 'Pause', progress: 'Topic progress', remaining: 'Remaining', closeGuide: 'Close guidance',
     videoError: 'YouTube could not play this video. Try again or open this topic on YouTube.', fullscreenError: 'Full screen is unavailable. You can open the video on YouTube.', expand: 'Expand video', exit: 'Exit full screen',
-    previousShort: 'Previous', nextShort: 'Next', fullLive: 'Full recording', searchHint: 'Search the recording'
+    previousShort: 'Previous', nextShort: 'Next', fullLive: 'Full recording', searchHint: 'Search the recording', loading: 'Loading video…'
   },
   es: {
     topics: 'Temas', close: 'Recoger temas',
     selected: 'Seleccionado', playing: 'En reproducción', transcript: 'Fragmento de la transcripción proporcionada en portugués', updated: 'Regla actualizada', faq: 'Más detalles', detailHint: 'Pasa el cursor, toca o usa el teclado para ver más detalles',
     videoTitle: 'Charla de embarque · Kriativos On Board 2026', apiError: 'No se pudieron sincronizar los temas. Puedes seguir viendo aquí o abrir el vídeo en YouTube.', previousTopic: 'Tema anterior', nextTopic: 'Siguiente tema', play: 'Reproducir', pause: 'Pausar', progress: 'Progreso del tema', remaining: 'Restante', closeGuide: 'Cerrar orientación',
     videoError: 'YouTube no pudo reproducir el vídeo. Inténtalo de nuevo o abre este tema en YouTube.', fullscreenError: 'No se pudo ampliar. Puedes abrir el vídeo en YouTube.', expand: 'Ampliar vídeo', exit: 'Salir de pantalla completa',
-    previousShort: 'Anterior', nextShort: 'Siguiente', fullLive: 'Charla completa', searchHint: 'Busca en la charla'
+    previousShort: 'Anterior', nextShort: 'Siguiente', fullLive: 'Charla completa', searchHint: 'Busca en la charla', loading: 'Cargando vídeo…'
   }
 }[lang] || null;
 const cinema = document.getElementById('heroLiveCinema');
@@ -179,6 +179,35 @@ function initLive() {
   tabHint.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>';
   tabHint.append(copy.searchHint);
   toggle.querySelector('.live-drawer__arrow').before(tabCount, tabHint);
+  // The cover stays over the embed until the video plays, so it never shows as a black box.
+  const loading = document.createElement('div');
+  loading.className = 'live-loading';
+  loading.setAttribute('role', 'status');
+  loading.hidden = true;
+  loading.innerHTML = '<span class="live-loading__spinner" aria-hidden="true"></span>';
+  loading.append(copy.loading);
+  facade.append(loading);
+  let loadingTimer;
+  function showLoading() {
+    clearTimeout(loadingTimer);
+    facade.hidden = false;
+    loading.hidden = false;
+    wrapper.classList.remove('is-revealing');
+    wrapper.classList.add('is-loading');
+    // Safety net when the player never reports ready (slow network, blocked embed).
+    loadingTimer = setTimeout(revealVideo, 15000);
+  }
+  function revealVideo() {
+    clearTimeout(loadingTimer);
+    if (!wrapper.classList.contains('is-loading')) return;
+    loading.hidden = true;
+    wrapper.classList.replace('is-loading', 'is-revealing');
+    setTimeout(() => {
+      if (!wrapper.classList.contains('is-revealing')) return;
+      wrapper.classList.remove('is-revealing');
+      facade.hidden = true;
+    }, 300);
+  }
   const sheetGrab = document.createElement('div');
   sheetGrab.className = 'live-drawer__grab';
   sheetGrab.setAttribute('aria-hidden', 'true');
@@ -538,6 +567,9 @@ function initLive() {
             updateProgress(pendingSeconds);
             player.seekTo(pendingSeconds, true);
             player.playVideo();
+            // If autoplay is blocked the video never starts: show the player and its controls anyway.
+            clearTimeout(loadingTimer);
+            loadingTimer = setTimeout(revealVideo, 4000);
             updatePlayPauseUI(true);
             revealControls();
             syncTimer();
@@ -546,6 +578,7 @@ function initLive() {
             if (myGeneration !== generation) return;
             playing = event.data === 1;
             if (playing) {
+              revealVideo();
               try {
                 if (typeof player.unloadModule === 'function') player.unloadModule('captions');
                 if (typeof player.setOption === 'function') player.setOption('captions', 'track', {});
@@ -563,6 +596,7 @@ function initLive() {
             updatePlayPauseUI(false);
             if (selected) select(selected, false);
             syncTimer();
+            revealVideo();
             showError(copy.videoError);
           }
         }
@@ -570,6 +604,7 @@ function initLive() {
     } catch {
       if (myGeneration !== generation) return;
       apiFailed = true;
+      revealVideo();
       showError(copy.apiError);
       // Keep the same timed iframe usable when the API itself is blocked.
       wrapper.classList.add('has-api-error');
@@ -597,7 +632,7 @@ function initLive() {
     iframe.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
     iframe.allowFullscreen = true;
     iframe.referrerPolicy = 'strict-origin-when-cross-origin';
-    facade.hidden = true;
+    showLoading();
     container.hidden = false;
     container.append(iframe);
     fullscreen.hidden = !wrapper.requestFullscreen;
