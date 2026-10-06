@@ -79,3 +79,21 @@ SHA-256 da fonte temporizada: `38df665ad6579e206e3c5474a84c53781d252f9c4eaddbe92
 Implementação na branch `code-ia/live-notice-transcript-timing`; sem merge ou deploy desta branch. A nova categoria de apoio é somente um [mapeamento para aprovação individual](2026-10-06-apoio-live-propostas.md), ainda sem implementação.
 
 SonarQube desativado somente neste projeto, conforme solicitação do mantenedor: instrução local em `AGENTS.md`, MCP local desabilitado e exceção de caminho no hook global. Verificado `enabled: false` no projeto e `enabled: true` fora dele; outros projetos conservam a integração.
+
+### Triagem do hook de design
+
+Os oito alertas do Impeccable foram comparados com a base `8e4e391`. Todos
+já estavam presentes com as mesmas declarações; não foram introduzidos pelos
+avisos temporizados ou pelo convite ao grupo:
+
+- Dois alertas de bounce no mesmo efeito da aba de assuntos.
+- Três transições de layout no manual: altura da linha de progresso, altura
+  da folha de assuntos e recuo dos links do menu.
+- Uma faixa no pseudo-elemento do popover de orientação.
+- Uma borda lateral e uma transição de largura no CSS do ônibus, arquivo
+  sem alterações nesta branch.
+
+Esses efeitos podem ser avaliados em um ajuste separado, mas não foram
+modificados neste trabalho: o hook orienta não ampliar o escopo por problemas
+preexistentes sem solicitar isso ao mantenedor. Nenhuma supressão foi criada;
+serem anteriores não os transforma em falsos positivos.
