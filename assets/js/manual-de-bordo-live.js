@@ -112,9 +112,18 @@ function initLive() {
     }
     if (mobile.matches && !noticeGroup.hidden) {
       // Keep the title, invitation and actions reachable; scroll only long notice text.
-      const bodyRoom = video.getBoundingClientRect().height - lowerThird.getBoundingClientRect().height - noteAction.getBoundingClientRect().height - 46;
+      const lowerHeight = lowerThird.getBoundingClientRect().height;
+      const actionsHeight = noteAction.getBoundingClientRect().height;
+      // Translated actions can wrap into two rows as fonts load. Reserve room for
+      // both rows and at least two lines of guidance, rather than overlapping the invite.
+      const minimumHeight = lowerHeight + actionsHeight + 46 + 32;
+      video.style.setProperty('--live-guidance-min-height', `${Math.ceil(Math.max(240, minimumHeight))}px`);
+      const bodyRoom = video.getBoundingClientRect().height - lowerHeight - actionsHeight - 46;
       note.style.setProperty('--live-note-body-max-height', `${Math.max(32, bodyRoom)}px`);
-    } else note.style.removeProperty('--live-note-body-max-height');
+    } else {
+      video.style.removeProperty('--live-guidance-min-height');
+      note.style.removeProperty('--live-note-body-max-height');
+    }
     if (mobile.matches && noticeGroup.dataset.noticeKind !== 'update' && note.scrollHeight > note.clientHeight) note.tabIndex = 0;
     else note.removeAttribute('tabindex');
     const h = document.querySelector('.guide-header')?.offsetHeight;

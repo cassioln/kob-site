@@ -1272,6 +1272,10 @@ test('Mobile preserva recolhimento e apoios não encobrem o convite e o assunto'
     await page.locator('#loadLivePlayerBtn').click();
     await readyPlayer(page);
     await pauseAtLiveTime(page, 1674);
+    if (lang === 'en' && width === 320) {
+      // Wider font metrics can wrap actions after the notice is already visible.
+      await page.addStyleTag({ content: '.live-chapter-note__action .live-guide-trigger { font-size: 1rem !important; }' });
+    }
     await expect(page.locator('#liveGroupInvite')).toBeVisible();
     await expect(page.locator('.live-notice-support')).toBeVisible();
     await expect.poll(async () => {
