@@ -33,7 +33,22 @@ async function playIntoTopic(page, seconds) {
   await expect(page.locator('#liveChapterNotice')).toBeVisible();
 }
 
-test.beforeEach(async ({ page }) => { await page.addInitScript(()=>localStorage.setItem('cookie_consent_status','denied')); await mockPlayer(page); });
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(()=>localStorage.setItem('cookie_consent_status','denied'));
+  // Scroll instantly in tests: the site's smooth scrolling also animates focus and Playwright's
+  // own scrolling, and on a slower machine (CI) the page is still moving when a test measures
+  // or hovers something.
+  await page.addInitScript(() => {
+    const add = () => {
+      const style = document.createElement('style');
+      style.textContent = 'html { scroll-behavior: auto !important; }';
+      (document.head || document.documentElement).append(style);
+    };
+    if (document.documentElement) add();
+    else document.addEventListener('DOMContentLoaded', add, { once: true });
+  });
+  await mockPlayer(page);
+});
 
 test('Não carrega terceiros antes da ação e a última seleção aguarda onReady', async ({ page }) => {
   const requests = [];
