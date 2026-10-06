@@ -1,4 +1,4 @@
-import { CHAPTERS, LIVE_DURATION } from './manual-de-bordo-live-data.js?v=20261005-topic-player';
+import { CHAPTERS, LIVE_DURATION, GROUP_INVITE_CUES, GROUP_INVITE_DURATION } from './manual-de-bordo-live-data.js?v=20261006-notice-timing';
 
 export function topicAt(seconds) {
   return CHAPTERS.findLast(topic => topic.seconds <= Number(seconds)) || CHAPTERS[0];
@@ -10,6 +10,19 @@ export function topicBounds(topic, videoDuration = LIVE_DURATION) {
   const start = topic.seconds;
   const end = next?.seconds ?? Math.max(start + 1, Number(videoDuration) || LIVE_DURATION);
   return { start, end, duration: end - start };
+}
+
+/** An editorial update belongs to its mapped utterance, through this topic's end. */
+export function isNoticeDue(topic, seconds) {
+  if (!topic?.notice || !Number.isFinite(topic.noticeSeconds)) return false;
+  const { end } = topicBounds(topic);
+  const position = Number(seconds);
+  return position >= topic.noticeSeconds && position < end;
+}
+
+export function isGroupInviteDue(seconds) {
+  const position = Number(seconds);
+  return GROUP_INVITE_CUES.some(start => position >= start && position < start + GROUP_INVITE_DURATION);
 }
 
 export function topicProgress(topic, seconds, videoDuration) {

@@ -1,7 +1,7 @@
-import { CHAPTERS, LIVE_VIDEO_ID, LIVE_DURATION } from './manual-de-bordo-live-data.js?v=20261005-topic-player';
+import { CHAPTERS, LIVE_VIDEO_ID, LIVE_DURATION, GROUP_INVITE_URL } from './manual-de-bordo-live-data.js?v=20261006-notice-timing';
 import { normalizeSearch, matchChapter, highlightParts, excerpt } from './manual-de-bordo-live-search.js?v=20261005-topic-player';
 
-import { topicAt, topicProgress, seekInTopic } from './manual-de-bordo-live-timeline.js?v=20261005-topic-player';
+import { topicAt, topicProgress, seekInTopic, isNoticeDue, isGroupInviteDue } from './manual-de-bordo-live-timeline.js?v=20261006-notice-timing';
 import { initLiveGuideHelp } from './manual-de-bordo-live-help.js?v=20261005-mobile-live';
 import { initLiveMarkers } from './manual-de-bordo-live-markers.js?v=20261005-mobile-live';
 import { initLiveControlMarquee } from './manual-de-bordo-live-marquee.js?v=20261005-ui-final';
@@ -11,27 +11,30 @@ const lang = document.documentElement.lang.slice(0, 2);
 const copy = {
   pt: {
     topics: 'Assuntos', close: 'Recolher assuntos',
-    selected: 'Selecionado', playing: 'Em reprodução', transcript: 'Trecho da transcrição fornecida', updated: 'Regra atualizada', faq: 'Mais detalhes', detailHint: 'Passe o mouse, toque ou use o teclado para ver mais detalhes',
+    selected: 'Selecionado', playing: 'Em reprodução', transcript: 'Trecho da transcrição fornecida', updated: 'ATUALIZAÇÃO', faq: 'Mais detalhes', detailHint: 'Passe o mouse, toque ou use o teclado para ver mais detalhes',
     videoTitle: 'Live de embarque · Kriativos On Board 2026', apiError: 'Não foi possível sincronizar os assuntos. O vídeo ainda pode ser assistido aqui ou pelo link no YouTube.', previousTopic: 'Assunto anterior', nextTopic: 'Próximo assunto', play: 'Reproduzir', pause: 'Pausar', progress: 'Progresso do assunto', remaining: 'Restante', closeGuide: 'Fechar orientação',
     videoError: 'O YouTube não conseguiu reproduzir este vídeo. Tente novamente ou abra o trecho no YouTube.', fullscreenError: 'Não foi possível ampliar. Você pode abrir o vídeo no YouTube.', expand: 'Ampliar vídeo', exit: 'Sair da tela cheia',
     previousShort: 'Anterior', nextShort: 'Próximo', fullLive: 'Live completa', searchHint: 'Buscar na live', loading: 'Carregando vídeo…',
-    noticePill: 'Atualização', showNotice: 'Mostrar atualização', collapseNotice: 'Recolher aviso'
+    noticePill: 'Atualização', showNotice: 'Mostrar atualização', collapseNotice: 'Recolher aviso',
+    groupInvite: 'Clique aqui para entrar no grupo', groupInviteLabel: 'Entrar no grupo oficial do WhatsApp (abre em nova aba)'
   },
   en: {
     topics: 'Topics', close: 'Collapse topics',
-    selected: 'Selected', playing: 'Playing', transcript: 'Excerpt of the supplied Portuguese transcript', updated: 'Updated rule', faq: 'More details', detailHint: 'Hover, tap or use the keyboard for more details',
+    selected: 'Selected', playing: 'Playing', transcript: 'Excerpt of the supplied Portuguese transcript', updated: 'UPDATE', faq: 'More details', detailHint: 'Hover, tap or use the keyboard for more details',
     videoTitle: 'Boarding live recording · Kriativos On Board 2026', apiError: 'Topic synchronisation is unavailable. You can still watch here or open the video on YouTube.', previousTopic: 'Previous topic', nextTopic: 'Next topic', play: 'Play', pause: 'Pause', progress: 'Topic progress', remaining: 'Remaining', closeGuide: 'Close guidance',
     videoError: 'YouTube could not play this video. Try again or open this topic on YouTube.', fullscreenError: 'Full screen is unavailable. You can open the video on YouTube.', expand: 'Expand video', exit: 'Exit full screen',
     previousShort: 'Previous', nextShort: 'Next', fullLive: 'Full recording', searchHint: 'Search the recording', loading: 'Loading video…',
-    noticePill: 'Update', showNotice: 'Show update', collapseNotice: 'Collapse notice'
+    noticePill: 'Update', showNotice: 'Show update', collapseNotice: 'Collapse notice',
+    groupInvite: 'Click here to join the group', groupInviteLabel: 'Join the official WhatsApp group (opens in a new tab)'
   },
   es: {
     topics: 'Temas', close: 'Recoger temas',
-    selected: 'Seleccionado', playing: 'En reproducción', transcript: 'Fragmento de la transcripción proporcionada en portugués', updated: 'Regla actualizada', faq: 'Más detalles', detailHint: 'Pasa el cursor, toca o usa el teclado para ver más detalles',
+    selected: 'Seleccionado', playing: 'En reproducción', transcript: 'Fragmento de la transcripción proporcionada en portugués', updated: 'ACTUALIZACIÓN', faq: 'Más detalles', detailHint: 'Pasa el cursor, toca o usa el teclado para ver más detalles',
     videoTitle: 'Charla de embarque · Kriativos On Board 2026', apiError: 'No se pudieron sincronizar los temas. Puedes seguir viendo aquí o abrir el vídeo en YouTube.', previousTopic: 'Tema anterior', nextTopic: 'Siguiente tema', play: 'Reproducir', pause: 'Pausar', progress: 'Progreso del tema', remaining: 'Restante', closeGuide: 'Cerrar orientación',
     videoError: 'YouTube no pudo reproducir el vídeo. Inténtalo de nuevo o abre este tema en YouTube.', fullscreenError: 'No se pudo ampliar. Puedes abrir el vídeo en YouTube.', expand: 'Ampliar vídeo', exit: 'Salir de pantalla completa',
     previousShort: 'Anterior', nextShort: 'Siguiente', fullLive: 'Charla completa', searchHint: 'Busca en la charla', loading: 'Cargando vídeo…',
-    noticePill: 'Actualización', showNotice: 'Mostrar actualización', collapseNotice: 'Recoger aviso'
+    noticePill: 'Actualización', showNotice: 'Mostrar actualización', collapseNotice: 'Recoger aviso',
+    groupInvite: 'Haz clic aquí para entrar al grupo', groupInviteLabel: 'Entrar al grupo oficial de WhatsApp (se abre en una pestaña nueva)'
   }
 }[lang] || null;
 const cinema = document.getElementById('heroLiveCinema');
@@ -86,11 +89,13 @@ function initLive() {
     const topic = byId('liveCustomTopic');
     const lowerThird = byId('liveLowerThird');
     const video = byId('livePlayerWrapper');
+    const invite = byId('liveGroupInvite');
     if (desktop.matches) {
       if (controls.parentElement !== video) video.append(controls);
       if (topic.parentElement !== lowerThird) lowerThird.prepend(topic);
       if (noticeGroup.parentElement !== lowerThird) lowerThird.append(noticeGroup);
       if (lowerThird.nextElementSibling !== controls) video.insertBefore(lowerThird, controls);
+      if (invite && invite.parentElement !== video) video.append(invite);
       lowerThird.hidden = topic.hidden;
       if (controls.offsetHeight) video.style.setProperty('--live-controls-offset', `${controls.offsetHeight + 12}px`);
     } else {
@@ -98,6 +103,7 @@ function initLive() {
       if (controls.parentElement !== cinema) cinema.insertBefore(controls, byId('heroLiveChaptersCol'));
       if (topic.parentElement !== lowerThird) lowerThird.prepend(topic);
       if (noticeGroup.parentElement !== video) video.append(noticeGroup);
+      if (invite && invite.parentElement !== lowerThird) lowerThird.insertBefore(invite, topic);
       lowerThird.hidden = topic.hidden;
     }
     const h = document.querySelector('.guide-header')?.offsetHeight;
@@ -138,6 +144,20 @@ function initLive() {
     playing: playing && visible
   }));
   const lowerThird = byId('liveLowerThird');
+  const groupInvite = document.createElement('a');
+  groupInvite.id = 'liveGroupInvite';
+  groupInvite.className = 'live-group-invite';
+  groupInvite.href = GROUP_INVITE_URL;
+  groupInvite.target = '_blank';
+  groupInvite.rel = 'noopener noreferrer';
+  groupInvite.setAttribute('aria-label', copy.groupInviteLabel);
+  groupInvite.hidden = true;
+  groupInvite.innerHTML = '<svg class="live-group-invite__logo" width="28" height="28" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.65 15.02L2 22l5.1-1.34A10 10 0 1 0 12 2Z"/><path fill="#fff" d="M8.05 6.7c-.2-.44-.41-.45-.6-.46h-.51c-.18 0-.47.07-.72.34-.25.27-.95.92-.95 2.25s.97 2.62 1.1 2.8c.14.18 1.9 2.9 4.6 4.07.64.28 1.14.45 1.53.57.64.2 1.22.17 1.67.1.51-.08 1.57-.65 1.79-1.28.22-.63.22-1.17.16-1.28-.07-.11-.25-.18-.53-.32-.27-.14-1.61-.79-1.86-.88-.25-.09-.44-.14-.62.14-.18.27-.71.88-.87 1.06-.16.18-.32.2-.59.07-.27-.14-1.15-.42-2.19-1.35-.81-.72-1.36-1.61-1.52-1.88-.16-.27-.02-.42.12-.56.12-.12.27-.32.41-.48.14-.16.18-.27.27-.45.09-.18.05-.34-.02-.48-.06-.14-.6-1.48-.82-1.98Z"/></svg>';
+  const inviteText = document.createElement('span');
+  inviteText.textContent = copy.groupInvite;
+  groupInvite.append(inviteText);
+  wrapper.append(groupInvite);
+  updateDimensions();
   const playPause = byId('livePlayPauseBtn');
   const previousChapter = byId('livePreviousChapterBtn');
   const nextChapter = byId('liveNextChapterBtn');
@@ -211,7 +231,7 @@ function initLive() {
       facade.hidden = true;
     }, 300);
   }
-  // Mobile: the notice floats over the top of the video once 4s of its topic have played,
+  // Mobile: the notice floats over the video when its mapped utterance is reached,
   // and "−" folds it into an "Atualização" pill in the video's top-left corner.
   const noticeCollapse = document.createElement('button');
   noticeCollapse.type = 'button';
@@ -230,9 +250,25 @@ function initLive() {
   noticePill.querySelector('span').textContent = copy.noticePill;
   wrapper.append(noticePill);
   let noticeCollapsed = false;
-  let noticeDueFor = null;
+  let activeNoticeId = null;
+  let lastPlaybackSeconds = 0;
   function syncNotice() {
-    const due = apiFailed || (selected && noticeDueFor === selected.id);
+    // Without an API clock, keep the update available in search and the guide only.
+    const due = ready && !apiFailed && isNoticeDue(selected, lastPlaybackSeconds);
+    const inviteDue = ready && !apiFailed && isGroupInviteDue(lastPlaybackSeconds);
+    if (!inviteDue && document.activeElement === groupInvite) playPause.focus({ preventScroll: true });
+    groupInvite.hidden = !inviteDue;
+    const nextNoticeId = due ? selected.id : null;
+    if (activeNoticeId !== nextNoticeId) {
+      if (activeNoticeId) guideHelp.hide();
+      if (nextNoticeId && noticeCollapsed) {
+        noticePill.classList.remove('is-new');
+        void noticePill.offsetWidth;
+        noticePill.classList.add('is-new');
+      }
+      activeNoticeId = nextNoticeId;
+    }
+    noticeGroup.hidden = !due;
     wrapper.classList.toggle('is-notice-due', Boolean(due));
     wrapper.classList.toggle('is-notice-collapsed', noticeCollapsed);
     noticePill.hidden = !(mobile.matches && noticeCollapsed && due && !noticeGroup.hidden);
@@ -267,6 +303,14 @@ function initLive() {
       } else fragment.append(document.createTextNode(part.text));
     }
     element.replaceChildren(fragment);
+  }
+
+  function noticeLabel() {
+    const label = document.createElement('strong');
+    label.className = 'live-notice-label';
+    label.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4M12 17h.01"/></svg>';
+    label.append(copy.updated);
+    return label;
   }
 
   function guideLink(chapter) {
@@ -336,11 +380,9 @@ function initLive() {
       }
       notice.hidden = !(hasQuery && chapter.notice);
       if (!notice.hidden) {
-        const strong = document.createElement('strong');
-        strong.textContent = `${copy.updated}: `;
         const body = document.createElement('span');
         highlighted(body, chapter.notice[lang], query);
-        notice.replaceChildren(strong, body);
+        notice.replaceChildren(noticeLabel(), ' ', body);
         if (chapter.faqId) notice.append(' ', guideLink(chapter));
       }
     }
@@ -446,21 +488,12 @@ function initLive() {
   }
 
   function updateNotice(chapter) {
-    noticeGroup.hidden = !chapter.notice;
     note.hidden = !chapter.notice;
     noteAction.hidden = !(chapter.notice && chapter.faqId);
     noteAction.replaceChildren();
     if (chapter.notice) {
-      const strong = document.createElement('strong');
-      strong.textContent = `${copy.updated}: `;
-      note.replaceChildren(strong, document.createTextNode(chapter.notice[lang]));
+      note.replaceChildren(noticeLabel(), ' ', document.createTextNode(chapter.notice[lang]));
       if (chapter.faqId) noteAction.replaceChildren(guideLink(chapter));
-      // A collapsed notice stays folded, but the pill nods when a new rule arrives.
-      if (noticeCollapsed) {
-        noticePill.classList.remove('is-new');
-        void noticePill.offsetWidth;
-        noticePill.classList.add('is-new');
-      }
     }
     syncNotice();
   }
@@ -505,11 +538,8 @@ function initLive() {
     totalElapsed.textContent = formatTime(fullElapsed);
     totalRemaining.textContent = `−${formatTime(remaining)}`;
     totalProgress.setAttribute('aria-valuetext', `${formatTime(fullElapsed)} / ${formatTime(fullDuration)} · ${copy.remaining}: ${formatTime(remaining)}`);
-    // Once 4s of the topic have played, its notice may cover the top of the mobile video.
-    if (noticeDueFor !== selected.id && Number(seconds) - selected.seconds >= 4) {
-      noticeDueFor = selected.id;
-      syncNotice();
-    }
+    lastPlaybackSeconds = Number(seconds);
+    syncNotice();
   }
   function tick() {
     if (!ready || !player?.getCurrentTime) return;
@@ -532,7 +562,7 @@ function initLive() {
     timer = undefined;
     if (ready && playing && visible && !document.hidden) {
       tick();
-      timer = setInterval(tick, 1000);
+      timer = setInterval(tick, 250);
     } else topicTransition.cancel();
   }
   function formatTime(seconds) {
