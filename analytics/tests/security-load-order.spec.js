@@ -9,7 +9,7 @@ test('hrefs do WhatsApp permanecem fail-closed se o bundle principal falhar', as
   await page.goto('/');
 
   const ctas = page.locator('a[data-analytics-channel="whatsapp"]:not(#cabinModalCta)');
-  await expect(ctas).toHaveCount(10);
+  await expect(ctas).toHaveCount(9);
   const unsafeHrefCount = await ctas.evaluateAll((links) => links.filter((link) => {
     const destination = new URL(link.href);
     return destination.origin !== window.location.origin

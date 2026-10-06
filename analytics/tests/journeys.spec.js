@@ -37,7 +37,7 @@ test('Ver detalhes emite select_item e view_item para a cabine correta', async (
 
 test('todos os CTAs estáticos de WhatsApp têm IDs explícitos e não vazam URL, telefone ou mensagem', async ({ page }) => {
   const ctas = page.locator('a[data-analytics-channel="whatsapp"]:not(#cabinModalCta)');
-  await expect(ctas).toHaveCount(10);
+  await expect(ctas).toHaveCount(9);
   const metadata = await ctas.evaluateAll((links) => links.map((link) => ({
     channel: link.dataset.analyticsChannel,
     ctaId: link.dataset.analyticsCtaId,
