@@ -468,7 +468,10 @@ test.describe('Aviso por toque',()=>{
     // Choosing a topic keeps the sheet open; close it to reach the notice under the video.
     await expect(page.locator('#heroLiveToggleChaptersBtn')).toHaveAttribute('aria-expanded','true');
     await page.locator('#heroLiveChaptersCloseBtn').tap();
+    // The notice floats over the video once 4s of the topic have played.
+    await page.evaluate(()=>{ window.__liveMock.seconds=4461; });
     const trigger=page.locator('#liveChapterNoteAction [data-live-faq]');
+    await expect(trigger).toBeVisible();
     await trigger.tap();
     await expect(page.locator('#liveGuidePopover')).toContainText('23 kg');
     await expect(page.locator('#liveGuideBackdrop')).toBeVisible();
@@ -587,9 +590,7 @@ test('Movimento reduzido, resize e fullscreen preservam os mesmos elementos e es
   await expect(page.locator('#liveChapterNotice')).toHaveCSS('animation-name','none');
   await page.setViewportSize({width:390,height:844});
   await expect(page.locator('#liveLowerThird')).toBeVisible();
-  expect(await page.locator('#liveChapterNote').evaluate(el=>el.parentElement.parentElement.id)).toBe('heroLiveCinema');
-  const videoBox=await page.locator('#livePlayerWrapper').boundingBox();
-  expect((await page.locator('#liveChapterNote').boundingBox()).y).toBeGreaterThanOrEqual(videoBox.y+videoBox.height);
+  expect(await page.locator('#liveChapterNote').evaluate(el=>el.parentElement.parentElement.id)).toBe('livePlayerWrapper');
   await page.setViewportSize({width:850,height:1000});
   expect(await page.locator('#liveChapterNote').evaluate(el=>el.parentElement.parentElement.id)).toBe('liveLowerThird');
   await expect(page.locator('#liveLowerThird')).toBeVisible();
@@ -897,3 +898,36 @@ for (const width of [390, 1440]) {
     await expect(loading).toBeHidden();
   });
 }
+
+test('No mobile o aviso flutua sobre o vídeo após 4s e recolhe para um selo no canto superior esquerdo', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/manual-de-bordo.html');
+  await openTopics(page);
+  await page.locator('[data-seconds="1250"]').click();
+  await readyPlayer(page);
+  await page.locator('#heroLiveChaptersCloseBtn').click();
+  const notice = page.locator('#liveChapterNotice');
+  await expect(notice).toBeHidden();
+  await page.evaluate(() => { window.__liveMock.seconds = 1255; });
+  await expect(notice).toBeVisible();
+  const video = await page.locator('#livePlayerWrapper').boundingBox();
+  const box = await notice.boundingBox();
+  expect(box.y).toBeGreaterThanOrEqual(video.y);
+  expect(box.y + box.height).toBeLessThan(video.y + video.height);
+  // Floating, it does not push the dock down.
+  const controls = await page.locator('#liveCustomControls').boundingBox();
+  expect(controls.y).toBeLessThanOrEqual(video.y + video.height + 9);
+  await page.locator('.live-chapter-notice__collapse').click();
+  await expect(notice).toBeHidden();
+  const pill = page.locator('.live-notice-pill');
+  await expect(pill).toBeVisible();
+  await expect(pill).toContainText('Atualização');
+  await expect(pill).toBeFocused();
+  const pillBox = await pill.boundingBox();
+  expect(pillBox.y).toBeLessThan(video.y + 20);
+  expect(pillBox.x).toBeLessThan(video.x + 20);
+  await pill.click();
+  await expect(notice).toBeVisible();
+  await expect(pill).toBeHidden();
+  await expect(page.locator('.live-chapter-notice__collapse')).toBeFocused();
+});
