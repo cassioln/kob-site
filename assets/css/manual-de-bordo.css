@@ -30,19 +30,114 @@
   -webkit-font-smoothing: antialiased;
 }
 
-.guide-page a {
+.guide-page a:not(:is(
+  .timeline-tab,
+  .btn,
+  .btn-guide,
+  [class*="btn-"],
+  [class*="-btn"],
+  [class*="btn_"],
+  [role="button"],
+  [role="tab"],
+  .faq__nav-item,
+  .faq-category-btn,
+  .guide-header__home-link,
+  .guide-menu-desktop,
+  .guide-menu-mobile,
+  .skip-link,
+  .guide-badge,
+  .badge
+)) {
   color: #17648a;
   text-decoration: underline;
   text-underline-offset: 3px;
   transition: color var(--dur-fast) ease, text-decoration-color var(--dur-fast) ease;
 }
 
-.guide-page a:hover {
+.guide-page a:not(:is(
+  .timeline-tab,
+  .btn,
+  .btn-guide,
+  [class*="btn-"],
+  [class*="-btn"],
+  [class*="btn_"],
+  [role="button"],
+  [role="tab"],
+  .faq__nav-item,
+  .faq-category-btn,
+  .guide-header__home-link,
+  .guide-menu-desktop,
+  .guide-menu-mobile,
+  .skip-link,
+  .guide-badge,
+  .badge
+)):hover {
   color: #0369a1;
 }
 
-.guide-page a:focus-visible,
-.guide-page button:focus-visible,
+/* Remoção definitiva de sublinhado em todos os links que são botões, abas ou possuem bordas */
+.guide-page a:is(
+  .timeline-tab,
+  .btn,
+  .btn-guide,
+  [class*="btn-"],
+  [class*="-btn"],
+  [class*="btn_"],
+  [role="button"],
+  [role="tab"],
+  .faq__nav-item,
+  .faq-category-btn,
+  .guide-header__home-link,
+  .guide-menu-desktop,
+  .guide-menu-mobile,
+  .skip-link,
+  .guide-badge,
+  .badge
+),
+.guide-page a:is(
+  .timeline-tab,
+  .btn,
+  .btn-guide,
+  [class*="btn-"],
+  [class*="-btn"],
+  [class*="btn_"],
+  [role="button"],
+  [role="tab"],
+  .faq__nav-item,
+  .faq-category-btn,
+  .guide-header__home-link,
+  .guide-menu-desktop,
+  .guide-menu-mobile,
+  .skip-link,
+  .guide-badge,
+  .badge
+) * {
+  text-decoration: none !important;
+}
+
+.guide-page a:is(
+  .timeline-tab,
+  .btn,
+  .btn-guide,
+  [class*="btn-"],
+  [class*="-btn"],
+  [class*="btn_"],
+  [role="button"],
+  [role="tab"],
+  .faq__nav-item,
+  .faq-category-btn,
+  .guide-header__home-link,
+  .guide-menu-desktop,
+  .guide-menu-mobile,
+  .skip-link,
+  .guide-badge,
+  .badge
+):is(:hover, :focus, :focus-visible, :active, :visited) {
+  text-decoration: none !important;
+}
+
+.guide-page a:not(.timeline-tab):focus-visible,
+.guide-page button:not(.timeline-tab):focus-visible,
 .guide-page input:focus-visible,
 .guide-page select:focus-visible,
 .guide-page textarea:focus-visible,
@@ -3310,6 +3405,7 @@
   display: none;
 }
 
+.guide-page a.timeline-tab,
 .timeline-tab {
   display: inline-flex;
   align-items: center;
@@ -3318,31 +3414,52 @@
   min-height: 42px;
   border-radius: var(--r-pill, 9999px);
   background: rgba(4, 29, 58, 0.04);
-  border: 1px solid rgba(4, 29, 58, 0.08);
-  color: var(--ocean-navy, #041d3a);
+  border: 1px solid rgba(4, 29, 58, 0.12);
+  color: var(--ocean-navy, #041d3a) !important;
   font-family: inherit;
   font-size: 0.85rem;
   font-weight: 600;
   letter-spacing: -0.01em;
-  text-decoration: none;
+  text-decoration: none !important;
   white-space: nowrap;
   flex: 0 0 auto;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: background 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+.guide-page a.timeline-tab:hover,
 .timeline-tab:hover {
-  background: rgba(113, 32, 108, 0.08);
-  color: var(--kriativa-purple, #71206c);
-  border-color: rgba(113, 32, 108, 0.2);
-  text-decoration: none;
+  background: rgba(113, 32, 108, 0.08) !important;
+  color: var(--kriativa-purple, #71206c) !important;
+  border-color: rgba(113, 32, 108, 0.32) !important;
+  text-decoration: none !important;
 }
 
-.timeline-tab.is-active {
-  background: var(--kriativa-purple, #71206c);
-  color: #ffffff;
-  border-color: var(--kriativa-purple, #71206c);
+.guide-page a.timeline-tab.is-active,
+.guide-page a.timeline-tab[aria-current="true"],
+.timeline-tab.is-active,
+.timeline-tab[aria-current="true"] {
+  background: var(--kriativa-purple, #71206c) !important;
+  color: #ffffff !important;
+  border-color: var(--kriativa-purple, #71206c) !important;
   box-shadow: 0 4px 14px rgba(113, 32, 108, 0.35);
+  text-decoration: none !important;
+}
+
+.guide-page a.timeline-tab.is-active:hover,
+.guide-page a.timeline-tab[aria-current="true"]:hover,
+.timeline-tab.is-active:hover,
+.timeline-tab[aria-current="true"]:hover {
+  background: #5d1959 !important;
+  color: #ffffff !important;
+  border-color: #5d1959 !important;
+  box-shadow: 0 6px 18px rgba(113, 32, 108, 0.45);
+  transform: translateY(-1px);
+  text-decoration: none !important;
 }
 
 .timeline-tab__count {
@@ -3351,13 +3468,51 @@
   padding: 2px 8px;
   border-radius: var(--r-pill, 9999px);
   background: rgba(4, 29, 58, 0.08);
-  color: inherit;
-  transition: background 0.2s ease;
+  color: var(--ocean-navy, #041d3a) !important;
+  text-decoration: none !important;
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
-.timeline-tab.is-active .timeline-tab__count {
-  background: rgba(255, 255, 255, 0.25);
-  color: #ffffff;
+.guide-page a.timeline-tab:hover .timeline-tab__count,
+.timeline-tab:hover .timeline-tab__count {
+  background: rgba(113, 32, 108, 0.14) !important;
+  color: var(--kriativa-purple, #71206c) !important;
+  text-decoration: none !important;
+}
+
+.guide-page a.timeline-tab.is-active .timeline-tab__count,
+.guide-page a.timeline-tab[aria-current="true"] .timeline-tab__count,
+.timeline-tab.is-active .timeline-tab__count,
+.timeline-tab[aria-current="true"] .timeline-tab__count {
+  background: rgba(255, 255, 255, 0.25) !important;
+  color: #ffffff !important;
+  text-decoration: none !important;
+}
+
+.guide-page a.timeline-tab.is-active:hover .timeline-tab__count,
+.guide-page a.timeline-tab[aria-current="true"]:hover .timeline-tab__count,
+.timeline-tab.is-active:hover .timeline-tab__count,
+.timeline-tab[aria-current="true"]:hover .timeline-tab__count {
+  background: rgba(255, 255, 255, 0.35) !important;
+  color: #ffffff !important;
+  text-decoration: none !important;
+}
+
+/* Foco acessível harmonioso */
+.guide-page a.timeline-tab:focus-visible,
+.timeline-tab:focus-visible {
+  outline: 2px solid var(--kriativa-purple, #71206c) !important;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 3px rgba(113, 32, 108, 0.22) !important;
+  text-decoration: none !important;
+}
+
+.guide-page a.timeline-tab.is-active:focus-visible,
+.timeline-tab.is-active:focus-visible {
+  outline: 2px solid #ffffff !important;
+  outline-offset: 2px;
+  box-shadow: 0 4px 14px rgba(113, 32, 108, 0.35), 0 0 0 4px rgba(113, 32, 108, 0.45) !important;
+  text-decoration: none !important;
 }
 
 /* Grupos de Etapas por Fase do Cronograma */
@@ -5090,7 +5245,7 @@
 .checklist-sidebar .checklist-item {
   position: relative;
   margin: 0;
-  padding: 14px 0;
+  padding: 14px 10px;
   border: 0;
   border-bottom: 1px solid #dce5ed;
   border-radius: 0;
