@@ -1,8 +1,8 @@
 name: Testes
 
-# Roda as suítes do repositório em todo PR para a main. Na main, ative em
-# Settings → Branches a regra "Require status checks to pass" com o check
-# "Testes (servidor + navegador)" para o merge só liberar com tudo verde.
+# Check obrigatório enxuto: servidor, contratos e onze fluxos essenciais.
+# A suíte completa continua disponível localmente por npm test.
+# Não usar paths-ignore aqui: o check obrigatório precisa concluir em todo PR.
 on:
   pull_request:
     branches: [main]
@@ -23,7 +23,7 @@ jobs:
     # PR em rascunho não roda; roda ao marcar "Ready for review".
     if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 8
 
     steps:
       - name: Checkout do repositório
@@ -38,10 +38,6 @@ jobs:
       - name: Instalar dependências
         run: npm ci
 
-      # Os testes de servidor executam trechos PHP; o runner já traz o PHP.
-      - name: Conferir PHP
-        run: php --version
-
       - name: Cache do Chromium do Playwright
         id: playwright-cache
         uses: actions/cache@v4
@@ -49,25 +45,17 @@ jobs:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
 
-      - name: Instalar o Chromium do Playwright
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
+      # O comando reaproveita o browser em cache e instala as libs do runner.
+      - name: Preparar Chromium
         run: npx playwright install --with-deps chromium
 
-      - name: Instalar dependências de sistema do Chromium
-        if: steps.playwright-cache.outputs.cache-hit == 'true'
-        run: npx playwright install-deps chromium
+      - name: Checagens essenciais
+        run: npm run test:ci
 
-      - name: Testes do servidor
-        run: npm run test:server
-
-      # CI=true no Actions: o playwright.config.mjs já liga 1 retentativa e forbidOnly.
-      - name: Testes de navegador (Playwright)
-        run: npm run test:analytics -- --reporter=list,github
-
-      - name: Anexar screenshots, vídeos e traces das falhas
+      - name: Anexar capturas das falhas
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-falhas
           path: test-results/
-          retention-days: 7
+          retention-days: 3

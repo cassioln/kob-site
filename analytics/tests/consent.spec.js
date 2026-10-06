@@ -31,7 +31,7 @@ test('aceite persiste e restauração é enfileirada uma vez após o GTM ser sol
   });
 });
 
-test('rejeição persiste e mantém todos os storages opcionais negados', async ({ page }) => {
+test('rejeição persiste e mantém todos os storages opcionais negados', { tag: '@smoke' }, async ({ page }) => {
   await page.locator('[data-cookie-action="deny"]').click();
   await expect(page.locator('[data-cookie-consent]')).toBeHidden();
   expect(await getControlEvents(page, 'cookie_consent_denied')).toHaveLength(1);

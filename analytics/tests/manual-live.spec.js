@@ -135,7 +135,7 @@ test('Progresso real do player atualiza o capítulo e a falha mantém alternativ
 });
 
 
-test('Controles personalizados substituem os controles do YouTube e navegam entre assuntos', async ({ page }) => {
+test('Controles personalizados substituem os controles do YouTube e navegam entre assuntos', { tag: '@smoke' }, async ({ page }) => {
   await page.goto('/manual-de-bordo.html');
   await expect(page.locator('#liveCustomControls')).toBeHidden();
   await page.locator('#loadLivePlayerBtn').click();

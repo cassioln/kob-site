@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Internacionalização e Validação de Páginas /en/ e /es/', () => {
 
-  test('Página /en/ carrega com idioma, seletor e seção FAQ íntegra', async ({ page }) => {
+  test('Página /en/ carrega com idioma, seletor e seção FAQ íntegra', { tag: '@smoke' }, async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 800 });
     await page.goto('/en/');
     await expect(page).toHaveTitle(/Kriativos On Board/i);
@@ -52,7 +52,7 @@ test.describe('Internacionalização e Validação de Páginas /en/ e /es/', () 
     await expect(bonusCardImg).toHaveAttribute('src', '/assets/images/story/cards/carta-bonus-en.webp');
   });
 
-  test('Página /es/ carrega com idioma, seletor e seção FAQ íntegra', async ({ page }) => {
+  test('Página /es/ carrega com idioma, seletor e seção FAQ íntegra', { tag: '@smoke' }, async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 800 });
     await page.goto('/es/');
     await expect(page).toHaveTitle(/Kriativos On Board/i);

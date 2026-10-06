@@ -7,7 +7,7 @@ test.beforeEach(async ({ page }) => {
 
 test.describe('Página Manual de Bordo (embarcados) — Portal do Passageiro Confirmado', () => {
 
-  test('Página /manual-de-bordo.html carrega com estrutura completa, 25 itens de checklist, 42 perguntas e 41 assuntos', async ({ page }) => {
+  test('Página /manual-de-bordo.html carrega com estrutura completa, 25 itens de checklist, 42 perguntas e 41 assuntos', { tag: '@smoke' }, async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 800 });
     await page.goto('/manual-de-bordo.html');
 
@@ -77,7 +77,7 @@ test.describe('Página Manual de Bordo (embarcados) — Portal do Passageiro Con
     expect(page.url()).toContain('/manual-de-bordo.html');
   });
 
-  test('Checklist interativo: persistência no localStorage, estados de ação e reset', async ({ page }) => {
+  test('Checklist interativo: persistência no localStorage, estados de ação e reset', { tag: '@smoke' }, async ({ page }) => {
     await page.goto('/manual-de-bordo.html');
 
     // Limpa storage prévio
