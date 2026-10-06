@@ -1115,6 +1115,22 @@
         s.classList.toggle('is-reached', isPassed);
         s.classList.toggle('is-current', isCurrent);
       }
+
+      // Atualiza progresso da linha animada (--timeline-progress)
+      var track = timeline.querySelector('.timeline__track');
+      if (track) {
+        if (currentStep) {
+          var trackRect = track.getBoundingClientRect();
+          var stepRect = currentStep.getBoundingClientRect();
+          // Ponto de ancoragem: centro exato do marcador ::before (top: 24px + raio 6px = 30px)
+          var markerCenterY = stepRect.top + 30;
+          var progressPx = markerCenterY - trackRect.top;
+          var ratio = Math.max(0, Math.min(1, progressPx / trackRect.height));
+          timeline.style.setProperty('--timeline-progress', (ratio * 100).toFixed(2) + '%');
+        } else if (passedSteps.length === 0) {
+          timeline.style.setProperty('--timeline-progress', '0%');
+        }
+      }
     }
 
     function onScroll() {
