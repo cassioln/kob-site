@@ -459,52 +459,150 @@
   }
 
   // --------------------------------------------------------------------------
-  // FAQ DETALHADO (#20) — BUSCA & CATEGORIAS
+  // Sincronização da altura do Header para posicionamento sticky perfeito
+  // --------------------------------------------------------------------------
+  function syncGuideHeaderHeight() {
+    var header = document.querySelector('header.guide-header');
+    if (header) {
+      var h = header.offsetHeight;
+      if (h) document.documentElement.style.setProperty('--guide-header-height', h + 'px');
+    }
+  }
+
+  // --------------------------------------------------------------------------
+  // FAQ DETALHADO (#20) — BUSCA & SCROLLSPY DE CATEGORIAS
   // --------------------------------------------------------------------------
   function initFAQ() {
     var searchInput = document.getElementById('faqSearchInput');
     var clearBtn = document.getElementById('faqClearBtn');
-    var categoryBtns = document.querySelectorAll('.faq-category-btn');
-    var faqItems = document.querySelectorAll('.faq-item');
+    var categoryLinks = Array.prototype.slice.call(document.querySelectorAll('#duvidas .faq-category-btn, #duvidas [data-faq-nav]'));
+    var faqItems = document.querySelectorAll('#duvidas .faq-item');
     var emptyState = document.getElementById('faqEmptyState');
     var resultsCounter = document.getElementById('faqResultsCount');
     var faqContainer = document.querySelector('#duvidas .faq');
+    var faqNav = document.querySelector('#duvidas .faq__nav');
+    var panels = Array.prototype.slice.call(document.querySelectorAll('#duvidas .faq__panel'));
 
     if (!faqItems.length) return;
 
-    var currentCategory = 'all';
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var mobileNav = window.matchMedia('(max-width: 900px)');
+    var navSlideFrame = null;
 
-    // Atualiza contadores dinamicamente em cada botão de categoria
-    categoryBtns.forEach(function (btn) {
-      var cat = btn.getAttribute('data-category');
-      var countEl = btn.querySelector('.faq__nav-count');
-      if (countEl) {
-        if (cat === 'all') {
-          countEl.textContent = faqItems.length.toString();
-        } else {
-          var count = 0;
-          faqItems.forEach(function (item) {
-            if (item.getAttribute('data-category') === cat) count++;
-          });
-          countEl.textContent = count.toString();
-        }
+    // Atualiza contadores dinamicamente em cada link de categoria
+    categoryLinks.forEach(function (link) {
+      var cat = link.getAttribute('data-category');
+      var countEl = link.querySelector('.faq__nav-count');
+      if (countEl && cat) {
+        var count = 0;
+        faqItems.forEach(function (item) {
+          if (item.getAttribute('data-category') === cat) count++;
+        });
+        countEl.textContent = count.toString();
       }
     });
 
-    function setFaqProgress(index) {
-      if (!faqContainer || categoryBtns.length <= 1) return;
-      var ratio = index / (categoryBtns.length - 1);
-      faqContainer.style.setProperty('--faq-progress', (ratio * 100) + '%');
+    function keepActiveVisible(link) {
+      if (!faqNav || !link || !mobileNav.matches) return;
+      if (navSlideFrame) cancelAnimationFrame(navSlideFrame);
+      navSlideFrame = requestAnimationFrame(function () {
+        navSlideFrame = null;
+        var navRect = faqNav.getBoundingClientRect();
+        var linkRect = link.getBoundingClientRect();
+        var edge = 12;
+        if (linkRect.left >= navRect.left + edge && linkRect.right <= navRect.right - edge) return;
+        var centered = faqNav.scrollLeft + linkRect.left - navRect.left - ((navRect.width - linkRect.width) / 2);
+        var max = Math.max(0, faqNav.scrollWidth - faqNav.clientWidth);
+        faqNav.scrollTo({
+          left: Math.max(0, Math.min(centered, max)),
+          behavior: reduce ? 'auto' : 'smooth'
+        });
+      });
     }
+
+    function setActiveCategory(catId) {
+      var activeLink = null;
+      categoryLinks.forEach(function (link, index) {
+        var linkCat = link.getAttribute('data-category');
+        var linkHref = link.getAttribute('href');
+        var active = (linkCat === catId || linkHref === '#' + catId || linkHref === '#faq-' + catId);
+        link.classList.toggle('is-active', active);
+        if (active) {
+          activeLink = link;
+          link.setAttribute('aria-current', 'true');
+          if (faqContainer && categoryLinks.length > 1) {
+            var ratio = index / (categoryLinks.length - 1);
+            faqContainer.style.setProperty('--faq-progress', (ratio * 100) + '%');
+          }
+        } else {
+          link.removeAttribute('aria-current');
+        }
+      });
+      if (activeLink) {
+        keepActiveVisible(activeLink);
+      }
+    }
+
+    // Scrollspy via IntersectionObserver sincronizado com as categorias
+    if ('IntersectionObserver' in window && panels.length) {
+      var spy = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            var cat = entry.target.getAttribute('data-category') || entry.target.id.replace(/^faq-/, '');
+            setActiveCategory(cat);
+          }
+        });
+      }, {
+        rootMargin: '-30% 0px -55% 0px',
+        threshold: 0
+      });
+      panels.forEach(function (panel) {
+        spy.observe(panel);
+      });
+    }
+
+    // Clique com âncora suave nos links da barra de categorias
+    categoryLinks.forEach(function (link) {
+      link.addEventListener('click', function (e) {
+        var targetHref = link.getAttribute('href');
+        var targetEl = targetHref ? document.querySelector(targetHref) : null;
+        if (!targetEl) return;
+        e.preventDefault();
+
+        // Se o painel de destino estiver recolhido, expande automaticamente
+        if (targetEl.classList.contains('is-collapsed')) {
+          targetEl.classList.remove('is-collapsed');
+          var toggle = targetEl.querySelector('.faq__panel-toggle');
+          if (toggle) toggle.setAttribute('aria-expanded', 'true');
+        }
+
+        var cat = link.getAttribute('data-category') || targetEl.id.replace(/^faq-/, '');
+        setActiveCategory(cat);
+        targetEl.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+
+        if (window.history && window.history.replaceState) {
+          window.history.replaceState(null, '', targetHref);
+        }
+      });
+    });
+
+    // Botões de recolher / expandir seção inteira (.faq__panel-toggle)
+    var panelToggles = document.querySelectorAll('#duvidas .faq__panel-toggle');
+    panelToggles.forEach(function (toggle) {
+      toggle.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var panel = toggle.closest('.faq__panel');
+        if (!panel) return;
+        var isCollapsed = panel.classList.toggle('is-collapsed');
+        toggle.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true');
+      });
+    });
 
     function filterFAQ() {
       var query = searchInput ? normalizeText(searchInput.value) : '';
       var visibleCount = 0;
 
       faqItems.forEach(function (item) {
-        var itemCategory = item.getAttribute('data-category') || '';
-        var matchesCategory = (currentCategory === 'all' || itemCategory === currentCategory);
-
         var titleEl = item.querySelector('.faq-item__summary-title');
         var textEl = item.querySelector('.faq-item__content');
         var id = item.getAttribute('id') || '';
@@ -514,15 +612,46 @@
 
         var matchesQuery = !query || normalizedContent.indexOf(query) !== -1;
 
-        if (matchesCategory && matchesQuery) {
+        if (matchesQuery) {
           item.style.display = '';
           visibleCount++;
-          // Se o usuário fez uma busca com 3+ caracteres, abre os itens para leitura facilitada
           if (query.length >= 3) {
             item.setAttribute('open', '');
           }
         } else {
           item.style.display = 'none';
+        }
+      });
+
+      panels.forEach(function (panel) {
+        var itemsInPanel = panel.querySelectorAll('.faq-item');
+        var hasVisibleItems = false;
+        itemsInPanel.forEach(function (item) {
+          if (item.style.display !== 'none') {
+            hasVisibleItems = true;
+          }
+        });
+        if (hasVisibleItems) {
+          panel.style.display = '';
+          // Quando houver pesquisa ativa, reabre a seção para mostrar o resultado encontrado
+          if (query) {
+            panel.classList.remove('is-collapsed');
+            var toggle = panel.querySelector('.faq__panel-toggle');
+            if (toggle) toggle.setAttribute('aria-expanded', 'true');
+          }
+        } else {
+          panel.style.display = 'none';
+        }
+      });
+
+      // Oculta links do menu de seções sem itens durante a pesquisa
+      categoryLinks.forEach(function (link) {
+        var href = link.getAttribute('href');
+        var targetPanel = href ? document.querySelector(href) : null;
+        if (targetPanel && query) {
+          link.style.display = targetPanel.style.display === 'none' ? 'none' : '';
+        } else {
+          link.style.display = '';
         }
       });
 
@@ -533,23 +662,6 @@
           emptyState.classList.remove('is-visible');
         }
       }
-
-      var panels = document.querySelectorAll('#duvidas .faq__panel');
-      panels.forEach(function (panel) {
-        var panelCat = panel.getAttribute('data-category');
-        var itemsInPanel = panel.querySelectorAll('.faq-item');
-        var hasVisibleItems = false;
-        itemsInPanel.forEach(function (item) {
-          if (item.style.display !== 'none') {
-            hasVisibleItems = true;
-          }
-        });
-        if (hasVisibleItems && (currentCategory === 'all' || currentCategory === panelCat)) {
-          panel.style.display = '';
-        } else {
-          panel.style.display = 'none';
-        }
-      });
 
       if (resultsCounter) {
         resultsCounter.textContent = visibleCount.toString();
@@ -590,42 +702,34 @@
           searchInput.value = '';
         }
         updateClearBtnVisibility();
-        currentCategory = 'all';
-        categoryBtns.forEach(function (btn) {
-          if (btn.getAttribute('data-category') === 'all') {
-            btn.classList.add('is-active');
-          } else {
-            btn.classList.remove('is-active');
-          }
-        });
-        setFaqProgress(0);
         filterFAQ();
         if (searchInput) searchInput.focus();
       });
     }
-
-    categoryBtns.forEach(function (btn, index) {
-      btn.addEventListener('click', function () {
-        categoryBtns.forEach(function (b) { b.classList.remove('is-active'); });
-        btn.classList.add('is-active');
-        currentCategory = btn.getAttribute('data-category') || 'all';
-        setFaqProgress(index);
-        filterFAQ();
-      });
-    });
 
     // Abrir âncora direta (ex: #faq-o12)
     function checkHashTarget() {
       var hash = window.location.hash;
       if (hash && hash.startsWith('#faq-')) {
         var targetEl = document.querySelector(hash);
-        if (targetEl && targetEl.tagName.toLowerCase() === 'details') {
-          targetEl.setAttribute('open', '');
-          setTimeout(function () {
-            targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            var summary = targetEl.querySelector('summary');
-            if (summary) summary.focus();
-          }, 200);
+        if (targetEl) {
+          if (targetEl.tagName.toLowerCase() === 'details') {
+            var parentPanel = targetEl.closest('.faq__panel');
+            if (parentPanel && parentPanel.classList.contains('is-collapsed')) {
+              parentPanel.classList.remove('is-collapsed');
+              var toggle = parentPanel.querySelector('.faq__panel-toggle');
+              if (toggle) toggle.setAttribute('aria-expanded', 'true');
+            }
+            targetEl.setAttribute('open', '');
+            setTimeout(function () {
+              targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              var summary = targetEl.querySelector('summary');
+              if (summary) summary.focus();
+            }, 200);
+          } else if (targetEl.classList.contains('faq__panel')) {
+            var cat = targetEl.getAttribute('data-category') || targetEl.id.replace(/^faq-/, '');
+            setActiveCategory(cat);
+          }
         }
       }
     }
@@ -846,9 +950,17 @@
     var expandBtn = document.querySelector('[data-faq-action="expand-all"]');
     var collapseBtn = document.querySelector('[data-faq-action="collapse-all"]');
     var faqItems = document.querySelectorAll('#duvidas details.faq-item');
+    var panels = document.querySelectorAll('#duvidas .faq__panel');
+    var panelToggles = document.querySelectorAll('#duvidas .faq__panel-toggle');
 
     if (expandBtn) {
       expandBtn.addEventListener('click', function () {
+        panels.forEach(function (panel) {
+          panel.classList.remove('is-collapsed');
+        });
+        panelToggles.forEach(function (toggle) {
+          toggle.setAttribute('aria-expanded', 'true');
+        });
         faqItems.forEach(function (item) {
           if (item.style.display !== 'none') {
             item.open = true;
@@ -970,6 +1082,8 @@
   // INICIALIZAÇÃO GERAL
   // --------------------------------------------------------------------------
   document.addEventListener('DOMContentLoaded', function () {
+    syncGuideHeaderHeight();
+    window.addEventListener('resize', syncGuideHeaderHeight);
     initCountdown();
     initChecklist();
     initTimelineTabs();

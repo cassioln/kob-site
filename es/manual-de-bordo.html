@@ -769,24 +769,21 @@
           <nav class="faq__nav" aria-label="Categorías del FAQ">
             <span class="faq__nav-eyebrow">Ruta de consulta</span>
             <span class="faq__nav-track" aria-hidden="true"><i></i></span>
-            <button type="button" class="faq-category-btn faq__nav-item is-active" data-category="all">
-              Todas <span class="faq__nav-count">42</span>
-            </button>
-            <button type="button" class="faq-category-btn faq__nav-item" data-category="preparacao">
+            <a class="faq-category-btn faq__nav-item is-active" href="#faq-preparacao" data-category="preparacao" data-faq-nav="" aria-current="true">
               Preparación <span class="faq__nav-count">11</span>
-            </button>
-            <button type="button" class="faq-category-btn faq__nav-item" data-category="chegada">
+            </a>
+            <a class="faq-category-btn faq__nav-item" href="#faq-chegada" data-category="chegada" data-faq-nav="">
               Llegada <span class="faq__nav-count">5</span>
-            </button>
-            <button type="button" class="faq-category-btn faq__nav-item" data-category="jogos">
+            </a>
+            <a class="faq-category-btn faq__nav-item" href="#faq-jogos" data-category="jogos" data-faq-nav="">
               Juegos y actividades <span class="faq__nav-count">8</span>
-            </button>
-            <button type="button" class="faq-category-btn faq__nav-item" data-category="vida-a-bordo">
+            </a>
+            <a class="faq-category-btn faq__nav-item" href="#faq-vida-a-bordo" data-category="vida-a-bordo" data-faq-nav="">
               Durante el crucero <span class="faq__nav-count">15</span>
-            </button>
-            <button type="button" class="faq-category-btn faq__nav-item" data-category="desembarque">
+            </a>
+            <a class="faq-category-btn faq__nav-item" href="#faq-desembarque" data-category="desembarque" data-faq-nav="">
               Desembarque <span class="faq__nav-count">3</span>
-            </button>
+            </a>
 
             <div class="faq-tools" aria-label="Herramientas del FAQ">
               <button type="button" class="faq-tool-btn" data-faq-action="expand-all">Expandir todas</button>
@@ -802,8 +799,13 @@
             <div class="faq__panel" id="faq-preparacao" data-category="preparacao">
               <div class="faq__panel-head">
                 <h3>Preparación</h3>
+                <button type="button" class="faq__panel-toggle" aria-expanded="true" aria-controls="faq-list-preparacao" aria-label="Contraer sección Preparación" title="Contraer sección Preparación">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="18 15 12 9 6 15"></polyline>
+                  </svg>
+                </button>
               </div>
-              <div class="faq-list">
+              <div class="faq-list" id="faq-list-preparacao">
               <details class="faq-item" id="faq-o01" data-category="preparacao">
             <summary class="faq-item__summary">
               <span class="faq-item__summary-title">¿Cómo verifico mi ventana de llegada a la terminal y el día de la
@@ -1063,8 +1065,13 @@
             <div class="faq__panel" id="faq-chegada" data-category="chegada">
               <div class="faq__panel-head">
                 <h3>Llegada</h3>
+                <button type="button" class="faq__panel-toggle" aria-expanded="true" aria-controls="faq-list-chegada" aria-label="Contraer sección Llegada" title="Contraer sección Llegada">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="18 15 12 9 6 15"></polyline>
+                  </svg>
+                </button>
               </div>
-              <div class="faq-list">
+              <div class="faq-list" id="faq-list-chegada">
               <details class="faq-item" id="faq-o12" data-category="chegada">
             <summary class="faq-item__summary">
               <span class="faq-item__summary-title">¿Cómo funciona el autobús chárter oficial de KOB?</span>
@@ -1183,8 +1190,13 @@
             <div class="faq__panel" id="faq-jogos" data-category="jogos">
               <div class="faq__panel-head">
                 <h3>Juegos y actividades</h3>
+                <button type="button" class="faq__panel-toggle" aria-expanded="true" aria-controls="faq-list-jogos" aria-label="Contraer sección Juegos y actividades" title="Contraer sección Juegos y actividades">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="18 15 12 9 6 15"></polyline>
+                  </svg>
+                </button>
               </div>
-              <div class="faq-list">
+              <div class="faq-list" id="faq-list-jogos">
               <details class="faq-item" id="faq-o17" data-category="jogos">
             <summary class="faq-item__summary">
               <span class="faq-item__summary-title">¿Dónde y cuándo retiro mi kit? ¿Qué incluye?</span>
@@ -1343,8 +1355,13 @@
             <div class="faq__panel" id="faq-vida-a-bordo" data-category="vida-a-bordo">
               <div class="faq__panel-head">
                 <h3>Durante el crucero</h3>
+                <button type="button" class="faq__panel-toggle" aria-expanded="true" aria-controls="faq-list-vida-a-bordo" aria-label="Contraer sección Durante el crucero" title="Contraer sección Durante el crucero">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="18 15 12 9 6 15"></polyline>
+                  </svg>
+                </button>
               </div>
-              <div class="faq-list">
+              <div class="faq-list" id="faq-list-vida-a-bordo">
               <details class="faq-item" id="faq-o25" data-category="vida-a-bordo">
             <summary class="faq-item__summary">
               <span class="faq-item__summary-title">¿Qué vestimenta llevar? ¿Se requiere traje de gala?</span>
@@ -1676,8 +1693,13 @@
             <div class="faq__panel" id="faq-desembarque" data-category="desembarque">
               <div class="faq__panel-head">
                 <h3>Desembarque</h3>
+                <button type="button" class="faq__panel-toggle" aria-expanded="true" aria-controls="faq-list-desembarque" aria-label="Contraer sección Desembarque" title="Contraer sección Desembarque">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="18 15 12 9 6 15"></polyline>
+                  </svg>
+                </button>
               </div>
-              <div class="faq-list">
+              <div class="faq-list" id="faq-list-desembarque">
               <details class="faq-item" id="faq-o39" data-category="desembarque">
             <summary class="faq-item__summary">
               <span class="faq-item__summary-title">¿Hasta qué hora puedo permanecer en la cabina el lunes?</span>

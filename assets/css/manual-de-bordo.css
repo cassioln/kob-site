@@ -3739,7 +3739,7 @@
 
 #duvidas .faq__nav {
   position: sticky;
-  top: 112px;
+  top: calc(var(--guide-header-height, 57px) + 24px);
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -3781,6 +3781,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  text-decoration: none;
   min-height: 50px;
   padding: 12px 14px;
   border: 0;
@@ -3882,15 +3883,55 @@
 }
 
 #duvidas .faq__panel {
-  scroll-margin-top: 130px;
+  scroll-margin-top: calc(var(--guide-header-height, 57px) + 72px);
 }
 
 #duvidas .faq__panel-head {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
   margin-bottom: 20px;
   padding-bottom: 14px;
   border-bottom: 2px solid var(--ink-strong, #041d3a);
+}
+
+.faq__panel-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid rgba(13, 34, 66, 0.16);
+  border-radius: 8px;
+  background: #ffffff;
+  color: var(--ocean-navy, #041d3a);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all var(--dur-fast, 0.2s) ease;
+}
+
+.faq__panel-toggle:hover,
+.faq__panel-toggle:focus-visible {
+  background: var(--ocean-navy, #041d3a);
+  color: #ffffff;
+  border-color: var(--ocean-navy, #041d3a);
+  outline: none;
+}
+
+.faq__panel-toggle svg {
+  width: 18px;
+  height: 18px;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.faq__panel-toggle[aria-expanded="false"] svg {
+  transform: rotate(180deg);
+}
+
+.faq__panel.is-collapsed .faq-list {
+  display: none;
 }
 
 #duvidas .faq__panel h3,
@@ -4040,16 +4081,18 @@
 
   #duvidas .faq__nav {
     position: sticky;
-    top: 106px;
-    z-index: 3;
+    top: var(--guide-header-height, 57px);
+    z-index: 100;
     flex-flow: row nowrap;
     margin-inline: -16px;
-    padding: 12px 16px;
+    padding: 10px 16px;
     overflow-x: auto;
-    border-block: 1px solid var(--line-mid, #e2e8f0);
-    background: rgba(248, 250, 252, 0.96);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    border-top: none;
+    border-bottom: 1px solid rgba(13, 34, 66, 0.1);
+    background: rgba(255, 255, 255, 0.98);
+    box-shadow: 0 4px 16px -2px rgba(4, 29, 58, 0.12), 0 2px 4px rgba(4, 29, 58, 0.06);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     scrollbar-width: none;
   }
 

@@ -769,24 +769,21 @@
           <nav class="faq__nav" aria-label="FAQ categories">
             <span class="faq__nav-eyebrow">Consultation route</span>
             <span class="faq__nav-track" aria-hidden="true"><i></i></span>
-            <button type="button" class="faq-category-btn faq__nav-item is-active" data-category="all">
-              All <span class="faq__nav-count">42</span>
-            </button>
-            <button type="button" class="faq-category-btn faq__nav-item" data-category="preparacao">
+            <a class="faq-category-btn faq__nav-item is-active" href="#faq-preparacao" data-category="preparacao" data-faq-nav="" aria-current="true">
               Preparation <span class="faq__nav-count">11</span>
-            </button>
-            <button type="button" class="faq-category-btn faq__nav-item" data-category="chegada">
+            </a>
+            <a class="faq-category-btn faq__nav-item" href="#faq-chegada" data-category="chegada" data-faq-nav="">
               Arrival <span class="faq__nav-count">5</span>
-            </button>
-            <button type="button" class="faq-category-btn faq__nav-item" data-category="jogos">
-              Games & activities <span class="faq__nav-count">8</span>
-            </button>
-            <button type="button" class="faq-category-btn faq__nav-item" data-category="vida-a-bordo">
+            </a>
+            <a class="faq-category-btn faq__nav-item" href="#faq-jogos" data-category="jogos" data-faq-nav="">
+              Games &amp; activities <span class="faq__nav-count">8</span>
+            </a>
+            <a class="faq-category-btn faq__nav-item" href="#faq-vida-a-bordo" data-category="vida-a-bordo" data-faq-nav="">
               During the cruise <span class="faq__nav-count">15</span>
-            </button>
-            <button type="button" class="faq-category-btn faq__nav-item" data-category="desembarque">
+            </a>
+            <a class="faq-category-btn faq__nav-item" href="#faq-desembarque" data-category="desembarque" data-faq-nav="">
               Disembarkation <span class="faq__nav-count">3</span>
-            </button>
+            </a>
 
             <div class="faq-tools" aria-label="FAQ view controls">
               <button type="button" class="faq-tool-btn" data-faq-action="expand-all">Expand all</button>
@@ -802,8 +799,13 @@
             <div class="faq__panel" id="faq-preparacao" data-category="preparacao">
               <div class="faq__panel-head">
                 <h3>Preparation</h3>
+                <button type="button" class="faq__panel-toggle" aria-expanded="true" aria-controls="faq-list-preparacao" aria-label="Collapse Preparation section" title="Collapse Preparation section">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="18 15 12 9 6 15"></polyline>
+                  </svg>
+                </button>
               </div>
-              <div class="faq-list">
+              <div class="faq-list" id="faq-list-preparacao">
               <details class="faq-item" id="faq-o01" data-category="preparacao">
             <summary class="faq-item__summary">
               <span class="faq-item__summary-title">How do I check my terminal arrival window and port of call
@@ -1062,8 +1064,13 @@
             <div class="faq__panel" id="faq-chegada" data-category="chegada">
               <div class="faq__panel-head">
                 <h3>Arrival</h3>
+                <button type="button" class="faq__panel-toggle" aria-expanded="true" aria-controls="faq-list-chegada" aria-label="Collapse Arrival section" title="Collapse Arrival section">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="18 15 12 9 6 15"></polyline>
+                  </svg>
+                </button>
               </div>
-              <div class="faq-list">
+              <div class="faq-list" id="faq-list-chegada">
               <details class="faq-item" id="faq-o12" data-category="chegada">
             <summary class="faq-item__summary">
               <span class="faq-item__summary-title">How does the official KOB bus charter work?</span>
@@ -1181,9 +1188,14 @@
 
             <div class="faq__panel" id="faq-jogos" data-category="jogos">
               <div class="faq__panel-head">
-                <h3>Games & activities</h3>
+                <h3>Games &amp; activities</h3>
+                <button type="button" class="faq__panel-toggle" aria-expanded="true" aria-controls="faq-list-jogos" aria-label="Collapse Games & activities section" title="Collapse Games & activities section">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="18 15 12 9 6 15"></polyline>
+                  </svg>
+                </button>
               </div>
-              <div class="faq-list">
+              <div class="faq-list" id="faq-list-jogos">
               <details class="faq-item" id="faq-o17" data-category="jogos">
             <summary class="faq-item__summary">
               <span class="faq-item__summary-title">Where and when do I pick up my welcome kit? What does it
@@ -1341,8 +1353,13 @@
             <div class="faq__panel" id="faq-vida-a-bordo" data-category="vida-a-bordo">
               <div class="faq__panel-head">
                 <h3>During the cruise</h3>
+                <button type="button" class="faq__panel-toggle" aria-expanded="true" aria-controls="faq-list-vida-a-bordo" aria-label="Collapse During the cruise section" title="Collapse During the cruise section">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="18 15 12 9 6 15"></polyline>
+                  </svg>
+                </button>
               </div>
-              <div class="faq-list">
+              <div class="faq-list" id="faq-list-vida-a-bordo">
               <details class="faq-item" id="faq-o25" data-category="vida-a-bordo">
             <summary class="faq-item__summary">
               <span class="faq-item__summary-title">What should I wear? Is formal gala attire required?</span>
@@ -1675,8 +1692,13 @@
             <div class="faq__panel" id="faq-desembarque" data-category="desembarque">
               <div class="faq__panel-head">
                 <h3>Disembarkation</h3>
+                <button type="button" class="faq__panel-toggle" aria-expanded="true" aria-controls="faq-list-desembarque" aria-label="Collapse Disembarkation section" title="Collapse Disembarkation section">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="18 15 12 9 6 15"></polyline>
+                  </svg>
+                </button>
               </div>
-              <div class="faq-list">
+              <div class="faq-list" id="faq-list-desembarque">
               <details class="faq-item" id="faq-o39" data-category="desembarque">
             <summary class="faq-item__summary">
               <span class="faq-item__summary-title">What time must I vacate my cabin on Monday morning?</span>
