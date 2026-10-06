@@ -84,11 +84,11 @@
 
   <!-- Estilos Globais e Específicos -->
   <link rel="stylesheet" href="/assets/css/main.css?v=20261005-ui-final">
-  <link rel="stylesheet" href="/assets/css/manual-de-bordo.css?v=20261006-faq-toggle">
+  <link rel="stylesheet" href="/assets/css/manual-de-bordo.css?v=20261006-timeline-animation">
   <link rel="stylesheet" href="/assets/css/cookie-consent.css?v=20260820-fix-contrast">
 
   <script defer src="/assets/js/cookie-consent.js?v=20260713-5"></script>
-  <script defer src="/assets/js/manual-de-bordo.js?v=20261006-faq-toggle"></script>
+  <script defer src="/assets/js/manual-de-bordo.js?v=20261006-timeline-animation"></script>
 
   <script type="module" src="/assets/js/manual-de-bordo-live.js?v=20261006-live-loading"></script>
 
@@ -499,193 +499,242 @@
           </p>
         </header>
 
-        <!-- Abas por Fase do Cronograma (Redução do Scroll) -->
-        <div class="timeline-tabs" role="tablist" aria-label="Filtrar etapas do cronograma">
-          <button type="button" class="timeline-tab is-active" role="tab" aria-selected="true" data-phase="all">
-            Todas as etapas <span class="timeline-tab__count">15</span>
-          </button>
-          <button type="button" class="timeline-tab" role="tab" aria-selected="false" data-phase="antes">
+        <!-- Abas por Fase do Cronograma com Âncoras e Scrollspy -->
+        <nav class="timeline-tabs" aria-label="Etapas do cronograma">
+          <a class="timeline-tab is-active" href="#cronograma-antes" data-phase="antes" data-timeline-nav="" aria-current="true">
             Antes da viagem <span class="timeline-tab__count">4</span>
-          </button>
-          <button type="button" class="timeline-tab" role="tab" aria-selected="false" data-phase="embarque">
+          </a>
+          <a class="timeline-tab" href="#cronograma-embarque" data-phase="embarque" data-timeline-nav="">
             Sexta 20/11 · Embarque <span class="timeline-tab__count">5</span>
-          </button>
-          <button type="button" class="timeline-tab" role="tab" aria-selected="false" data-phase="bordo">
-            A bordo & Festas <span class="timeline-tab__count">3</span>
-          </button>
-          <button type="button" class="timeline-tab" role="tab" aria-selected="false" data-phase="desembarque">
-            Desembarque & Retorno <span class="timeline-tab__count">3</span>
-          </button>
-        </div>
+          </a>
+          <a class="timeline-tab" href="#cronograma-bordo" data-phase="bordo" data-timeline-nav="">
+            A bordo &amp; Festas <span class="timeline-tab__count">3</span>
+          </a>
+          <a class="timeline-tab" href="#cronograma-desembarque" data-phase="desembarque" data-timeline-nav="">
+            Desembarque &amp; Retorno <span class="timeline-tab__count">3</span>
+          </a>
+        </nav>
 
         <div class="timeline">
-          <article class="timeline-step" data-timeline-phase="antes">
-            <header class="timeline-step__header">
-              <span class="timeline-step__time">Agora</span>
-              <span class="timeline-step__status timeline-step__status--action">Ação necessária</span>
-            </header>
-            <p class="timeline-step__text">
-              <strong>Confira sua reserva:</strong> Confira os dados de todos os passageiros da cabine com a Royal Trip.
-              Inclua os acompanhantes nos avisos oficiais e organize seu deslocamento até Santos.
-            </p>
-          </article>
+          <!-- Fase 1: Antes da viagem -->
+          <div class="timeline-group" id="cronograma-antes" data-phase="antes">
+            <div class="timeline-group__head">
+              <h3 class="timeline-group__title">Antes da viagem</h3>
+              <button type="button" class="timeline-group__toggle" aria-expanded="true" aria-controls="timeline-steps-antes" aria-label="Recolher etapa Antes da viagem" title="Recolher etapa Antes da viagem">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="18 15 12 9 6 15"></polyline>
+                </svg>
+              </button>
+            </div>
+            <div class="timeline-group__steps" id="timeline-steps-antes">
+              <article class="timeline-step" data-timeline-phase="antes">
+                <header class="timeline-step__header">
+                  <span class="timeline-step__time">Agora</span>
+                  <span class="timeline-step__status timeline-step__status--action">Ação necessária</span>
+                </header>
+                <p class="timeline-step__text">
+                  <strong>Confira sua reserva:</strong> Confira os dados de todos os passageiros da cabine com a Royal Trip.
+                  Inclua os acompanhantes nos avisos oficiais e organize seu deslocamento até Santos.
+                </p>
+              </article>
 
-          <article class="timeline-step" data-timeline-phase="antes">
-            <header class="timeline-step__header">
-              <span class="timeline-step__time">Agora</span>
-              <span class="timeline-step__status timeline-step__status--action">Ação recomendada</span>
-            </header>
-            <p class="timeline-step__text">
-              <strong>Prepare os jogos:</strong> Acesse o Kriativos On Board no Board Game Guru, marque ‘Eu vou’,
-              favorite os títulos que deseja jogar e cadastre os jogos que pretende compartilhar.
-            </p>
-          </article>
+              <article class="timeline-step" data-timeline-phase="antes">
+                <header class="timeline-step__header">
+                  <span class="timeline-step__time">Agora</span>
+                  <span class="timeline-step__status timeline-step__status--action">Ação recomendada</span>
+                </header>
+                <p class="timeline-step__text">
+                  <strong>Prepare os jogos:</strong> Acesse o Kriativos On Board no Board Game Guru, marque ‘Eu vou’,
+                  favorite os títulos que deseja jogar e cadastre os jogos que pretende compartilhar.
+                </p>
+              </article>
 
-          <article class="timeline-step" data-timeline-phase="antes">
-            <header class="timeline-step__header">
-              <span class="timeline-step__time">Quando a agência avisar no grupo</span>
-              <span class="timeline-step__status timeline-step__status--action">Ação necessária</span>
-            </header>
-            <p class="timeline-step__text">
-              <strong>Solicite os vouchers:</strong> O responsável pela cabine deve chamar Júnior/Royal Trip no privado
-              para receber os vouchers e as etiquetas. Confira os dados e imprima os documentos.
-            </p>
-          </article>
+              <article class="timeline-step" data-timeline-phase="antes">
+                <header class="timeline-step__header">
+                  <span class="timeline-step__time">Quando a agência avisar no grupo</span>
+                  <span class="timeline-step__status timeline-step__status--action">Ação necessária</span>
+                </header>
+                <p class="timeline-step__text">
+                  <strong>Solicite os vouchers:</strong> O responsável pela cabine deve chamar Júnior/Royal Trip no privado
+                  para receber os vouchers e as etiquetas. Confira os dados e imprima os documentos.
+                </p>
+              </article>
 
-          <article class="timeline-step" data-timeline-phase="antes">
-            <header class="timeline-step__header">
-              <span class="timeline-step__time">Antes de sair de casa</span>
-              <span class="timeline-step__status timeline-step__status--action">Ação necessária</span>
-            </header>
-            <p class="timeline-step__text">
-              <strong>Conferência final:</strong> Confira documentos, etiquetas, bagagem de mão, trajeto e instruções da
-              reserva. Se contratou o fretado, confirme seu veículo e horário.
-            </p>
-          </article>
+              <article class="timeline-step" data-timeline-phase="antes">
+                <header class="timeline-step__header">
+                  <span class="timeline-step__time">Antes de sair de casa</span>
+                  <span class="timeline-step__status timeline-step__status--action">Ação necessária</span>
+                </header>
+                <p class="timeline-step__text">
+                  <strong>Conferência final:</strong> Confira documentos, etiquetas, bagagem de mão, trajeto e instruções da
+                  reserva. Se contratou o fretado, confirme seu veículo e horário.
+                </p>
+              </article>
+            </div>
+          </div>
 
-          <article class="timeline-step" data-timeline-phase="embarque">
-            <header class="timeline-step__header">
-              <span class="timeline-step__time">Sexta, 20/11 — Fretado KOB</span>
-              <span class="timeline-step__status timeline-step__status--estimate">Horários definidos</span>
-            </header>
-            <p class="timeline-step__text">
-              <strong>Saída de São Paulo (Barra Funda):</strong> Ônibus 1: encontro às 06h00 e saída às 06h30. Ônibus 2:
-              encontro às 06h40 e saída às 07h20. Ponto: Rua Tagipuru, altura do nº 552, Barra Funda, São Paulo. Use o
-              horário do ônibus atribuído à sua reserva.
-            </p>
-          </article>
+          <!-- Fase 2: Sexta 20/11 · Embarque -->
+          <div class="timeline-group" id="cronograma-embarque" data-phase="embarque">
+            <div class="timeline-group__head">
+              <h3 class="timeline-group__title">Sexta 20/11 · Embarque</h3>
+              <button type="button" class="timeline-group__toggle" aria-expanded="true" aria-controls="timeline-steps-embarque" aria-label="Recolher etapa Sexta 20/11 · Embarque" title="Recolher etapa Sexta 20/11 · Embarque">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="18 15 12 9 6 15"></polyline>
+                </svg>
+              </button>
+            </div>
+            <div class="timeline-group__steps" id="timeline-steps-embarque">
+              <article class="timeline-step" data-timeline-phase="embarque">
+                <header class="timeline-step__header">
+                  <span class="timeline-step__time">Sexta, 20/11 — Fretado KOB</span>
+                  <span class="timeline-step__status timeline-step__status--estimate">Horários definidos</span>
+                </header>
+                <p class="timeline-step__text">
+                  <strong>Saída de São Paulo (Barra Funda):</strong> Ônibus 1: encontro às 06h00 e saída às 06h30. Ônibus 2:
+                  encontro às 06h40 e saída às 07h20. Ponto: Rua Tagipuru, altura do nº 552, Barra Funda, São Paulo. Use o
+                  horário do ônibus atribuído à sua reserva.
+                </p>
+              </article>
 
-          <article class="timeline-step" data-timeline-phase="embarque">
-            <header class="timeline-step__header">
-              <span class="timeline-step__time">Sexta, 20/11 — Chegada ao Concais</span>
-              <span class="timeline-step__status timeline-step__status--msc">Regra MSC / Voucher</span>
-            </header>
-            <p class="timeline-step__text">
-              <strong>Terminal de Santos:</strong> Siga a janela de chegada indicada no voucher e pela agência. Entregue
-              as malas etiquetadas no local indicado e mantenha documentos e itens essenciais com você.
-            </p>
-          </article>
+              <article class="timeline-step" data-timeline-phase="embarque">
+                <header class="timeline-step__header">
+                  <span class="timeline-step__time">Sexta, 20/11 — Chegada ao Concais</span>
+                  <span class="timeline-step__status timeline-step__status--msc">Regra MSC / Voucher</span>
+                </header>
+                <p class="timeline-step__text">
+                  <strong>Terminal de Santos:</strong> Siga a janela de chegada indicada no voucher e pela agência. Entregue
+                  as malas etiquetadas no local indicado e mantenha documentos e itens essenciais com você.
+                </p>
+              </article>
 
-          <article class="timeline-step" data-timeline-phase="embarque">
-            <header class="timeline-step__header">
-              <span class="timeline-step__time">Depois de entrar no navio</span>
-              <span class="timeline-step__status timeline-step__status--estimate">Previsão</span>
-            </header>
-            <p class="timeline-step__text">
-              <strong>Acomodação inicial:</strong> Você pode consultar as opções do buffet enquanto aguarda a liberação
-              da cabine. A liberação pode acontecer por volta de 13h/14h; aguarde o anúncio da MSC.
-            </p>
-          </article>
+              <article class="timeline-step" data-timeline-phase="embarque">
+                <header class="timeline-step__header">
+                  <span class="timeline-step__time">Depois de entrar no navio</span>
+                  <span class="timeline-step__status timeline-step__status--estimate">Previsão</span>
+                </header>
+                <p class="timeline-step__text">
+                  <strong>Acomodação inicial:</strong> Você pode consultar as opções do buffet enquanto aguarda a liberação
+                  da cabine. A liberação pode acontecer por volta de 13h/14h; aguarde o anúncio da MSC.
+                </p>
+              </article>
 
-          <article class="timeline-step" data-timeline-phase="embarque">
-            <header class="timeline-step__header">
-              <span class="timeline-step__time">Sexta à tarde — Encontro KOB</span>
-              <span class="timeline-step__status timeline-step__status--estimate">Previsão KOB</span>
-            </header>
-            <p class="timeline-step__text">
-              <strong>Retirada dos kits:</strong> A retirada dos kits está prevista para 16h/16h30, na Crystal Lounge.
-              Confirme a sala e o horário no grupo. Na entrada, procure o mural com a programação.
-            </p>
-          </article>
+              <article class="timeline-step" data-timeline-phase="embarque">
+                <header class="timeline-step__header">
+                  <span class="timeline-step__time">Sexta à tarde — Encontro KOB</span>
+                  <span class="timeline-step__status timeline-step__status--estimate">Previsão KOB</span>
+                </header>
+                <p class="timeline-step__text">
+                  <strong>Retirada dos kits:</strong> A retirada dos kits está prevista para 16h/16h30, na Crystal Lounge.
+                  Confirme a sala e o horário no grupo. Na entrada, procure o mural com a programação.
+                </p>
+              </article>
 
-          <article class="timeline-step" data-timeline-phase="embarque">
-            <header class="timeline-step__header">
-              <span class="timeline-step__time">Primeiro dia — Segurança e Jantar</span>
-              <span class="timeline-step__status timeline-step__status--msc">Regra MSC Obrigatória</span>
-            </header>
-            <p class="timeline-step__text">
-              <strong>Treinamento e refeição:</strong> Cumpra o treinamento obrigatório de segurança conforme as
-              instruções da MSC. Veja no cartão de bordo seu turno de jantar e procure o maître se deseja solicitar uma
-              mesa com amigos de outras cabines.
-            </p>
-          </article>
+              <article class="timeline-step" data-timeline-phase="embarque">
+                <header class="timeline-step__header">
+                  <span class="timeline-step__time">Primeiro dia — Segurança e Jantar</span>
+                  <span class="timeline-step__status timeline-step__status--msc">Regra MSC Obrigatória</span>
+                </header>
+                <p class="timeline-step__text">
+                  <strong>Treinamento e refeição:</strong> Cumpra o treinamento obrigatório de segurança conforme as
+                  instruções da MSC. Veja no cartão de bordo seu turno de jantar e procure o maître se deseja solicitar uma
+                  mesa com amigos de outras cabines.
+                </p>
+              </article>
+            </div>
+          </div>
 
-          <article class="timeline-step" data-timeline-phase="bordo">
-            <header class="timeline-step__header">
-              <span class="timeline-step__time">Durante o cruzeiro</span>
-              <span class="timeline-step__status timeline-step__status--msc">A bordo</span>
-            </header>
-            <p class="timeline-step__text">
-              <strong>Jogos e escala:</strong> Consulte diariamente o mural, os avisos do grupo e a programação do
-              navio. Aproveite os jogos nos horários informados e confirme a escala em Búzios no itinerário da reserva.
-            </p>
-          </article>
+          <!-- Fase 3: A bordo & Festas -->
+          <div class="timeline-group" id="cronograma-bordo" data-phase="bordo">
+            <div class="timeline-group__head">
+              <h3 class="timeline-group__title">A bordo &amp; Festas</h3>
+              <button type="button" class="timeline-group__toggle" aria-expanded="true" aria-controls="timeline-steps-bordo" aria-label="Recolher etapa A bordo &amp; Festas" title="Recolher etapa A bordo &amp; Festas">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="18 15 12 9 6 15"></polyline>
+                </svg>
+              </button>
+            </div>
+            <div class="timeline-group__steps" id="timeline-steps-bordo">
+              <article class="timeline-step" data-timeline-phase="bordo">
+                <header class="timeline-step__header">
+                  <span class="timeline-step__time">Durante o cruzeiro</span>
+                  <span class="timeline-step__status timeline-step__status--msc">A bordo</span>
+                </header>
+                <p class="timeline-step__text">
+                  <strong>Jogos e escala:</strong> Consulte diariamente o mural, os avisos do grupo e a programação do
+                  navio. Aproveite os jogos nos horários informados e confirme a escala em Búzios no itinerário da reserva.
+                </p>
+              </article>
 
-          <article class="timeline-step" data-timeline-phase="bordo">
-            <header class="timeline-step__header">
-              <span class="timeline-step__time">Domingo, 22/11 — Devolução e Inventário</span>
-              <span class="timeline-step__status timeline-step__status--action">Ação necessária</span>
-            </header>
-            <p class="timeline-step__text">
-              <strong>Acervo KOB:</strong> Devolva os jogos do acervo até o limite informado no grupo oficial. O
-              recolhimento das mesas e o inventário acontecem antes do desembarque.
-            </p>
-          </article>
+              <article class="timeline-step" data-timeline-phase="bordo">
+                <header class="timeline-step__header">
+                  <span class="timeline-step__time">Domingo, 22/11 — Devolução e Inventário</span>
+                  <span class="timeline-step__status timeline-step__status--action">Ação necessária</span>
+                </header>
+                <p class="timeline-step__text">
+                  <strong>Acervo KOB:</strong> Devolva os jogos do acervo até o limite informado no grupo oficial. O
+                  recolhimento das mesas e o inventário acontecem antes do desembarque.
+                </p>
+              </article>
 
-          <article class="timeline-step" data-timeline-phase="bordo">
-            <header class="timeline-step__header">
-              <span class="timeline-step__time">Domingo à noite — Encerramento</span>
-              <span class="timeline-step__status timeline-step__status--estimate">Tema anunciado</span>
-            </header>
-            <p class="timeline-step__text">
-              <strong>Festa temática Anos 80:</strong> O tema do encerramento é Anos 80. Leve adereços se quiser
-              participar e
-              acompanhe a confirmação de local, horário e formato da comemoração.
-            </p>
-          </article>
+              <article class="timeline-step" data-timeline-phase="bordo">
+                <header class="timeline-step__header">
+                  <span class="timeline-step__time">Domingo à noite — Encerramento</span>
+                  <span class="timeline-step__status timeline-step__status--estimate">Tema anunciado</span>
+                </header>
+                <p class="timeline-step__text">
+                  <strong>Festa temática Anos 80:</strong> O tema do encerramento é Anos 80. Leve adereços se quiser
+                  participar e
+                  acompanhe a confirmação de local, horário e formato da comemoração.
+                </p>
+              </article>
+            </div>
+          </div>
 
-          <article class="timeline-step" data-timeline-phase="desembarque">
-            <header class="timeline-step__header">
-              <span class="timeline-step__time">Preparação do desembarque</span>
-              <span class="timeline-step__status timeline-step__status--msc">Instrução MSC</span>
-            </header>
-            <p class="timeline-step__text">
-              <strong>Malas despachadas:</strong> Siga as instruções e etiquetas fornecidas pela MSC para a bagagem.
-              Separe o que usará na última noite e na manhã seguinte.
-            </p>
-          </article>
+          <!-- Fase 4: Desembarque & Retorno -->
+          <div class="timeline-group" id="cronograma-desembarque" data-phase="desembarque">
+            <div class="timeline-group__head">
+              <h3 class="timeline-group__title">Desembarque &amp; Retorno</h3>
+              <button type="button" class="timeline-group__toggle" aria-expanded="true" aria-controls="timeline-steps-desembarque" aria-label="Recolher etapa Desembarque &amp; Retorno" title="Recolher etapa Desembarque &amp; Retorno">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="18 15 12 9 6 15"></polyline>
+                </svg>
+              </button>
+            </div>
+            <div class="timeline-group__steps" id="timeline-steps-desembarque">
+              <article class="timeline-step" data-timeline-phase="desembarque">
+                <header class="timeline-step__header">
+                  <span class="timeline-step__time">Preparação do desembarque</span>
+                  <span class="timeline-step__status timeline-step__status--msc">Instrução MSC</span>
+                </header>
+                <p class="timeline-step__text">
+                  <strong>Malas despachadas:</strong> Siga as instruções e etiquetas fornecidas pela MSC para a bagagem.
+                  Separe o que usará na última noite e na manhã seguinte.
+                </p>
+              </article>
 
-          <article class="timeline-step" data-timeline-phase="desembarque">
-            <header class="timeline-step__header">
-              <span class="timeline-step__time">Segunda, 23/11 — Libere a cabine</span>
-              <span class="timeline-step__status timeline-step__status--msc">Instrução MSC</span>
-            </header>
-            <p class="timeline-step__text">
-              <strong>Desocupação de cabines:</strong> Organize-se para sair da cabine cedo, no horário informado pela
-              MSC. Esse horário é apenas uma referência e não substitui o aviso de bordo.
-            </p>
-          </article>
+              <article class="timeline-step" data-timeline-phase="desembarque">
+                <header class="timeline-step__header">
+                  <span class="timeline-step__time">Segunda, 23/11 — Libere a cabine</span>
+                  <span class="timeline-step__status timeline-step__status--msc">Instrução MSC</span>
+                </header>
+                <p class="timeline-step__text">
+                  <strong>Desocupação de cabines:</strong> Organize-se para sair da cabine cedo, no horário informado pela
+                  MSC. Esse horário é apenas uma referência e não substitui o aviso de bordo.
+                </p>
+              </article>
 
-          <article class="timeline-step" data-timeline-phase="desembarque">
-            <header class="timeline-step__header">
-              <span class="timeline-step__time">Segunda, 23/11 — Retorno do fretado</span>
-              <span class="timeline-step__status timeline-step__status--estimate">Previsão 10h30</span>
-            </header>
-            <p class="timeline-step__text">
-              <strong>Volta para SP:</strong> A saída do fretado do Porto de Santos está prevista para 10h30. Confirme o
-              ponto de encontro e as orientações com a operação do transporte.
-            </p>
-          </article>
+              <article class="timeline-step" data-timeline-phase="desembarque">
+                <header class="timeline-step__header">
+                  <span class="timeline-step__time">Segunda, 23/11 — Retorno do fretado</span>
+                  <span class="timeline-step__status timeline-step__status--estimate">Previsão 10h30</span>
+                </header>
+                <p class="timeline-step__text">
+                  <strong>Volta para SP:</strong> A saída do fretado do Porto de Santos está prevista para 10h30. Confirme o
+                  ponto de encontro e as orientações com a operação do transporte.
+                </p>
+              </article>
+            </div>
+          </div>
         </div>
       </div>
     </section>

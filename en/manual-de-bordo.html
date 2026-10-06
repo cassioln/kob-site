@@ -46,11 +46,11 @@
   <link rel="preload" href="/assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
 
   <link rel="stylesheet" href="/assets/css/main.css?v=20261005-ui-final">
-  <link rel="stylesheet" href="/assets/css/manual-de-bordo.css?v=20261006-faq-toggle">
+  <link rel="stylesheet" href="/assets/css/manual-de-bordo.css?v=20261006-timeline-animation">
   <link rel="stylesheet" href="/assets/css/cookie-consent.css?v=20260820-fix-contrast">
 
   <script defer src="/assets/js/cookie-consent.js?v=20260713-5"></script>
-  <script defer src="/assets/js/manual-de-bordo.js?v=20261006-faq-toggle"></script>
+  <script defer src="/assets/js/manual-de-bordo.js?v=20261006-timeline-animation"></script>
 
   <script type="module" src="/assets/js/manual-de-bordo-live.js?v=20261006-live-loading"></script>
   <script type="module" src="/assets/js/manual-de-bordo-checklist.js?v=20261005-topic-player"></script>
@@ -429,194 +429,243 @@
           </p>
         </header>
 
-        <!-- Timeline Phase Tabs (Scroll Reduction) -->
-        <div class="timeline-tabs" role="tablist" aria-label="Filter schedule milestones">
-          <button type="button" class="timeline-tab is-active" role="tab" aria-selected="true" data-phase="all">
-            All milestones <span class="timeline-tab__count">15</span>
-          </button>
-          <button type="button" class="timeline-tab" role="tab" aria-selected="false" data-phase="antes">
+        <!-- Schedule Phase Navigation with Anchors and Scrollspy -->
+        <nav class="timeline-tabs" aria-label="Schedule milestones">
+          <a class="timeline-tab is-active" href="#cronograma-antes" data-phase="antes" data-timeline-nav="" aria-current="true">
             Before departure <span class="timeline-tab__count">4</span>
-          </button>
-          <button type="button" class="timeline-tab" role="tab" aria-selected="false" data-phase="embarque">
+          </a>
+          <a class="timeline-tab" href="#cronograma-embarque" data-phase="embarque" data-timeline-nav="">
             Friday Nov 20 · Boarding <span class="timeline-tab__count">5</span>
-          </button>
-          <button type="button" class="timeline-tab" role="tab" aria-selected="false" data-phase="bordo">
+          </a>
+          <a class="timeline-tab" href="#cronograma-bordo" data-phase="bordo" data-timeline-nav="">
             Onboard &amp; Parties <span class="timeline-tab__count">3</span>
-          </button>
-          <button type="button" class="timeline-tab" role="tab" aria-selected="false" data-phase="desembarque">
+          </a>
+          <a class="timeline-tab" href="#cronograma-desembarque" data-phase="desembarque" data-timeline-nav="">
             Disembarkation &amp; Return <span class="timeline-tab__count">3</span>
-          </button>
-        </div>
+          </a>
+        </nav>
 
         <div class="timeline">
-          <article class="timeline-step" data-timeline-phase="antes">
-            <header class="timeline-step__header">
-              <span class="timeline-step__time">Now</span>
-              <span class="timeline-step__status timeline-step__status--action">Action Required</span>
-            </header>
-            <p class="timeline-step__text">
-              <strong>Check your booking:</strong> Verify all passenger details in your cabin with Royal Trip. Include
-              travel companions in official notifications and organize transportation to Santos.
-            </p>
-          </article>
+          <!-- Phase 1: Before departure -->
+          <div class="timeline-group" id="cronograma-antes" data-phase="antes">
+            <div class="timeline-group__head">
+              <h3 class="timeline-group__title">Before departure</h3>
+              <button type="button" class="timeline-group__toggle" aria-expanded="true" aria-controls="timeline-steps-antes" aria-label="Collapse section Before departure" title="Collapse section Before departure">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="18 15 12 9 6 15"></polyline>
+                </svg>
+              </button>
+            </div>
+            <div class="timeline-group__steps" id="timeline-steps-antes">
+              <article class="timeline-step" data-timeline-phase="antes">
+                <header class="timeline-step__header">
+                  <span class="timeline-step__time">Now</span>
+                  <span class="timeline-step__status timeline-step__status--action">Action Required</span>
+                </header>
+                <p class="timeline-step__text">
+                  <strong>Check your booking:</strong> Verify all passenger details in your cabin with Royal Trip. Include
+                  travel companions in official notifications and organize transportation to Santos.
+                </p>
+              </article>
 
-          <article class="timeline-step" data-timeline-phase="antes">
-            <header class="timeline-step__header">
-              <span class="timeline-step__time">Now</span>
-              <span class="timeline-step__status timeline-step__status--action">Recommended Action</span>
-            </header>
-            <p class="timeline-step__text">
-              <strong>Prepare your games:</strong> Open Kriativos On Board in the Board Game Guru app, click ‘I’m
-              going’,
-              favorite games you wish to play, and list titles you want to share.
-            </p>
-          </article>
+              <article class="timeline-step" data-timeline-phase="antes">
+                <header class="timeline-step__header">
+                  <span class="timeline-step__time">Now</span>
+                  <span class="timeline-step__status timeline-step__status--action">Recommended Action</span>
+                </header>
+                <p class="timeline-step__text">
+                  <strong>Prepare your games:</strong> Open Kriativos On Board in the Board Game Guru app, click ‘I’m
+                  going’,
+                  favorite games you wish to play, and list titles you want to share.
+                </p>
+              </article>
 
-          <article class="timeline-step" data-timeline-phase="antes">
-            <header class="timeline-step__header">
-              <span class="timeline-step__time">When agency announces in group</span>
-              <span class="timeline-step__status timeline-step__status--action">Action Required</span>
-            </header>
-            <p class="timeline-step__text">
-              <strong>Request vouchers:</strong> The cabin lead should message Júnior / Royal Trip privately to receive
-              boarding vouchers and luggage tags. Review details and print documents.
-            </p>
-          </article>
+              <article class="timeline-step" data-timeline-phase="antes">
+                <header class="timeline-step__header">
+                  <span class="timeline-step__time">When agency announces in group</span>
+                  <span class="timeline-step__status timeline-step__status--action">Action Required</span>
+                </header>
+                <p class="timeline-step__text">
+                  <strong>Request vouchers:</strong> The cabin lead should message Júnior / Royal Trip privately to receive
+                  boarding vouchers and luggage tags. Review details and print documents.
+                </p>
+              </article>
 
-          <article class="timeline-step" data-timeline-phase="antes">
-            <header class="timeline-step__header">
-              <span class="timeline-step__time">Before leaving home</span>
-              <span class="timeline-step__status timeline-step__status--action">Action Required</span>
-            </header>
-            <p class="timeline-step__text">
-              <strong>Final review:</strong> Check documents, luggage tags, carry-on essentials, driving route, and
-              booking instructions. If booked on bus charter, confirm meeting time.
-            </p>
-          </article>
+              <article class="timeline-step" data-timeline-phase="antes">
+                <header class="timeline-step__header">
+                  <span class="timeline-step__time">Before leaving home</span>
+                  <span class="timeline-step__status timeline-step__status--action">Action Required</span>
+                </header>
+                <p class="timeline-step__text">
+                  <strong>Final review:</strong> Check documents, luggage tags, carry-on essentials, driving route, and
+                  booking instructions. If booked on bus charter, confirm meeting time.
+                </p>
+              </article>
+            </div>
+          </div>
 
-          <article class="timeline-step" data-timeline-phase="embarque">
-            <header class="timeline-step__header">
-              <span class="timeline-step__time">Friday, Nov 20 — KOB Bus Charter</span>
-              <span class="timeline-step__status timeline-step__status--estimate">Scheduled Departure</span>
-            </header>
-            <p class="timeline-step__text">
-              <strong>São Paulo Departure:</strong> Bus 1: meeting at 06:00, departure at 06:30. Bus 2: meeting at
-              06:40, departure at 07:20. Location: Rua Tagipuru, near nº 552, Barra Funda, São Paulo.
-            </p>
-          </article>
+          <!-- Phase 2: Friday Nov 20 · Boarding -->
+          <div class="timeline-group" id="cronograma-embarque" data-phase="embarque">
+            <div class="timeline-group__head">
+              <h3 class="timeline-group__title">Friday Nov 20 · Boarding</h3>
+              <button type="button" class="timeline-group__toggle" aria-expanded="true" aria-controls="timeline-steps-embarque" aria-label="Collapse section Friday Nov 20 · Boarding" title="Collapse section Friday Nov 20 · Boarding">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="18 15 12 9 6 15"></polyline>
+                </svg>
+              </button>
+            </div>
+            <div class="timeline-group__steps" id="timeline-steps-embarque">
+              <article class="timeline-step" data-timeline-phase="embarque">
+                <header class="timeline-step__header">
+                  <span class="timeline-step__time">Friday, Nov 20 — KOB Bus Charter</span>
+                  <span class="timeline-step__status timeline-step__status--estimate">Scheduled Departure</span>
+                </header>
+                <p class="timeline-step__text">
+                  <strong>São Paulo Departure:</strong> Bus 1: meeting at 06:00, departure at 06:30. Bus 2: meeting at
+                  06:40, departure at 07:20. Location: Rua Tagipuru, near nº 552, Barra Funda, São Paulo.
+                </p>
+              </article>
 
-          <article class="timeline-step" data-timeline-phase="embarque">
-            <header class="timeline-step__header">
-              <span class="timeline-step__time">Friday, Nov 20 — Concais Terminal</span>
-              <span class="timeline-step__status timeline-step__status--msc">MSC Window</span>
-            </header>
-            <p class="timeline-step__text">
-              <strong>Santos Terminal Arrival:</strong> Follow the arrival window indicated on your voucher. Drop
-              tagged luggage at designated baggage area and keep documents and essentials with you.
-            </p>
-          </article>
+              <article class="timeline-step" data-timeline-phase="embarque">
+                <header class="timeline-step__header">
+                  <span class="timeline-step__time">Friday, Nov 20 — Concais Terminal</span>
+                  <span class="timeline-step__status timeline-step__status--msc">MSC Window</span>
+                </header>
+                <p class="timeline-step__text">
+                  <strong>Santos Terminal Arrival:</strong> Follow the arrival window indicated on your voucher. Drop
+                  tagged luggage at designated baggage area and keep documents and essentials with you.
+                </p>
+              </article>
 
-          <article class="timeline-step" data-timeline-phase="embarque">
-            <header class="timeline-step__header">
-              <span class="timeline-step__time">After boarding the ship</span>
-              <span class="timeline-step__status timeline-step__status--estimate">Estimated</span>
-            </header>
-            <p class="timeline-step__text">
-              <strong>Buffet &amp; Cabins:</strong> Visit the buffet while cabins are prepared. Cabin release is
-              estimated around 13:00/14:00; await official ship announcements.
-            </p>
-          </article>
+              <article class="timeline-step" data-timeline-phase="embarque">
+                <header class="timeline-step__header">
+                  <span class="timeline-step__time">After boarding the ship</span>
+                  <span class="timeline-step__status timeline-step__status--estimate">Estimated</span>
+                </header>
+                <p class="timeline-step__text">
+                  <strong>Buffet &amp; Cabins:</strong> Visit the buffet while cabins are prepared. Cabin release is
+                  estimated around 13:00/14:00; await official ship announcements.
+                </p>
+              </article>
 
-          <article class="timeline-step" data-timeline-phase="embarque">
-            <header class="timeline-step__header">
-              <span class="timeline-step__time">Friday afternoon — KOB Welcome</span>
-              <span class="timeline-step__status timeline-step__status--estimate">KOB Estimate</span>
-            </header>
-            <p class="timeline-step__text">
-              <strong>Kit distribution:</strong> Welcome kit pickup estimated at 16:00/16:30 at Crystal Lounge. Confirm
-              lounge and exact schedule in group chat. Check daily notice board.
-            </p>
-          </article>
+              <article class="timeline-step" data-timeline-phase="embarque">
+                <header class="timeline-step__header">
+                  <span class="timeline-step__time">Friday afternoon — KOB Welcome</span>
+                  <span class="timeline-step__status timeline-step__status--estimate">KOB Estimate</span>
+                </header>
+                <p class="timeline-step__text">
+                  <strong>Kit distribution:</strong> Welcome kit pickup estimated at 16:00/16:30 at Crystal Lounge. Confirm
+                  lounge and exact schedule in group chat. Check daily notice board.
+                </p>
+              </article>
 
-          <article class="timeline-step" data-timeline-phase="embarque">
-            <header class="timeline-step__header">
-              <span class="timeline-step__time">First evening — Safety &amp; Dinner</span>
-              <span class="timeline-step__status timeline-step__status--msc">Mandatory Drill</span>
-            </header>
-            <p class="timeline-step__text">
-              <strong>Safety drill &amp; Dining:</strong> Complete mandatory MSC safety drill. Check your dinner shift
-              on your cruise card; speak with the maître d' if requesting to combine tables with friends.
-            </p>
-          </article>
+              <article class="timeline-step" data-timeline-phase="embarque">
+                <header class="timeline-step__header">
+                  <span class="timeline-step__time">First evening — Safety &amp; Dinner</span>
+                  <span class="timeline-step__status timeline-step__status--msc">Mandatory Drill</span>
+                </header>
+                <p class="timeline-step__text">
+                  <strong>Safety drill &amp; Dining:</strong> Complete mandatory MSC safety drill. Check your dinner shift
+                  on your cruise card; speak with the maître d' if requesting to combine tables with friends.
+                </p>
+              </article>
+            </div>
+          </div>
 
-          <article class="timeline-step" data-timeline-phase="bordo">
-            <header class="timeline-step__header">
-              <span class="timeline-step__time">During the cruise</span>
-              <span class="timeline-step__status timeline-step__status--msc">On board</span>
-            </header>
-            <p class="timeline-step__text">
-              <strong>Gaming &amp; Call:</strong> Check daily schedule board and MSC program. Enjoy gaming tables during
-              active hours and check Búzios port timing on your booking itinerary.
-            </p>
-          </article>
+          <!-- Phase 3: Onboard & Parties -->
+          <div class="timeline-group" id="cronograma-bordo" data-phase="bordo">
+            <div class="timeline-group__head">
+              <h3 class="timeline-group__title">Onboard &amp; Parties</h3>
+              <button type="button" class="timeline-group__toggle" aria-expanded="true" aria-controls="timeline-steps-bordo" aria-label="Collapse section Onboard &amp; Parties" title="Collapse section Onboard &amp; Parties">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="18 15 12 9 6 15"></polyline>
+                </svg>
+              </button>
+            </div>
+            <div class="timeline-group__steps" id="timeline-steps-bordo">
+              <article class="timeline-step" data-timeline-phase="bordo">
+                <header class="timeline-step__header">
+                  <span class="timeline-step__time">During the cruise</span>
+                  <span class="timeline-step__status timeline-step__status--msc">On board</span>
+                </header>
+                <p class="timeline-step__text">
+                  <strong>Gaming &amp; Call:</strong> Check daily schedule board and MSC program. Enjoy gaming tables during
+                  active hours and check Búzios port timing on your booking itinerary.
+                </p>
+              </article>
 
-          <article class="timeline-step" data-timeline-phase="bordo">
-            <header class="timeline-step__header">
-              <span class="timeline-step__time">Sunday, Nov 22 — Game Inventory</span>
-              <span class="timeline-step__status timeline-step__status--action">Action Required</span>
-            </header>
-            <p class="timeline-step__text">
-              <strong>Game return deadline:</strong> Return all borrowed games before the deadline posted in the
-              official group
-              to allow collection and final inventory before docking.
-            </p>
-          </article>
+              <article class="timeline-step" data-timeline-phase="bordo">
+                <header class="timeline-step__header">
+                  <span class="timeline-step__time">Sunday, Nov 22 — Game Inventory</span>
+                  <span class="timeline-step__status timeline-step__status--action">Action Required</span>
+                </header>
+                <p class="timeline-step__text">
+                  <strong>Game return deadline:</strong> Return all borrowed games before the deadline posted in the
+                  official group
+                  to allow collection and final inventory before docking.
+                </p>
+              </article>
 
-          <article class="timeline-step" data-timeline-phase="bordo">
-            <header class="timeline-step__header">
-              <span class="timeline-step__time">Sunday night — Farewell Party</span>
-              <span class="timeline-step__status timeline-step__status--estimate">Announced Theme</span>
-            </header>
-            <p class="timeline-step__text">
-              <strong>80s Retro Theme:</strong> 80s attire, neon, and accessories welcome. Check daily bulletin for
-              venue confirmation and timing.
-            </p>
-          </article>
+              <article class="timeline-step" data-timeline-phase="bordo">
+                <header class="timeline-step__header">
+                  <span class="timeline-step__time">Sunday night — Farewell Party</span>
+                  <span class="timeline-step__status timeline-step__status--estimate">Announced Theme</span>
+                </header>
+                <p class="timeline-step__text">
+                  <strong>80s Retro Theme:</strong> 80s attire, neon, and accessories welcome. Check daily bulletin for
+                  venue confirmation and timing.
+                </p>
+              </article>
+            </div>
+          </div>
 
-          <article class="timeline-step" data-timeline-phase="desembarque">
-            <header class="timeline-step__header">
-              <span class="timeline-step__time">Disembarkation Prep</span>
-              <span class="timeline-step__status timeline-step__status--msc">MSC Guideline</span>
-            </header>
-            <p class="timeline-step__text">
-              <strong>Checked bags:</strong> Follow MSC color-coded tag instructions for luggage collection outside
-              cabin
-              door on the final night. Keep next morning clothes with you.
-            </p>
-          </article>
+          <!-- Phase 4: Disembarkation & Return -->
+          <div class="timeline-group" id="cronograma-desembarque" data-phase="desembarque">
+            <div class="timeline-group__head">
+              <h3 class="timeline-group__title">Disembarkation &amp; Return</h3>
+              <button type="button" class="timeline-group__toggle" aria-expanded="true" aria-controls="timeline-steps-desembarque" aria-label="Collapse section Disembarkation &amp; Return" title="Collapse section Disembarkation &amp; Return">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="18 15 12 9 6 15"></polyline>
+                </svg>
+              </button>
+            </div>
+            <div class="timeline-group__steps" id="timeline-steps-desembarque">
+              <article class="timeline-step" data-timeline-phase="desembarque">
+                <header class="timeline-step__header">
+                  <span class="timeline-step__time">Disembarkation Prep</span>
+                  <span class="timeline-step__status timeline-step__status--msc">MSC Guideline</span>
+                </header>
+                <p class="timeline-step__text">
+                  <strong>Checked bags:</strong> Follow MSC color-coded tag instructions for luggage collection outside
+                  cabin
+                  door on the final night. Keep next morning clothes with you.
+                </p>
+              </article>
 
-          <article class="timeline-step" data-timeline-phase="desembarque">
-            <header class="timeline-step__header">
-              <span class="timeline-step__time">Monday, Nov 23 — Cabin Clearance</span>
-              <span class="timeline-step__status timeline-step__status--msc">MSC Guideline</span>
-            </header>
-            <p class="timeline-step__text">
-              <strong>Early checkout:</strong> Vacate cabins early according to ship instructions. The ~10:00 time is
-              only
-              a reference and does not override onboard announcements.
-            </p>
-          </article>
+              <article class="timeline-step" data-timeline-phase="desembarque">
+                <header class="timeline-step__header">
+                  <span class="timeline-step__time">Monday, Nov 23 — Cabin Clearance</span>
+                  <span class="timeline-step__status timeline-step__status--msc">MSC Guideline</span>
+                </header>
+                <p class="timeline-step__text">
+                  <strong>Early checkout:</strong> Vacate cabins early according to ship instructions. The ~10:00 time is
+                  only
+                  a reference and does not override onboard announcements.
+                </p>
+              </article>
 
-          <article class="timeline-step" data-timeline-phase="desembarque">
-            <header class="timeline-step__header">
-              <span class="timeline-step__time">Monday, Nov 23 — Bus Return</span>
-              <span class="timeline-step__status timeline-step__status--estimate">Est. 10:30 Departure</span>
-            </header>
-            <p class="timeline-step__text">
-              <strong>Return to São Paulo:</strong> Charter departure from Port of Santos estimated at 10:30. Confirm
-              meeting location with transportation coordinators.
-            </p>
-          </article>
+              <article class="timeline-step" data-timeline-phase="desembarque">
+                <header class="timeline-step__header">
+                  <span class="timeline-step__time">Monday, Nov 23 — Bus Return</span>
+                  <span class="timeline-step__status timeline-step__status--estimate">Est. 10:30 Departure</span>
+                </header>
+                <p class="timeline-step__text">
+                  <strong>Return to São Paulo:</strong> Charter departure from Port of Santos estimated at 10:30. Confirm
+                  meeting location with transportation coordinators.
+                </p>
+              </article>
+            </div>
+          </div>
         </div>
       </div>
     </section>

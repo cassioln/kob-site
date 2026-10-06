@@ -931,30 +931,218 @@
   }
 
   // --------------------------------------------------------------------------
-  // ABAS DO CRONOGRAMA (#19 UX OPTIMIZATION)
+  // CRONOGRAMA (#19) — NAVEGAÇÃO POR FASES, SCROLLSPY & RECOLHIMENTO
   // --------------------------------------------------------------------------
   function initTimelineTabs() {
-    var tabs = document.querySelectorAll('.timeline-tab');
-    var steps = document.querySelectorAll('.timeline-step');
-    if (!tabs.length || !steps.length) return;
+    var tabsNav = document.querySelector('#cronograma .timeline-tabs');
+    var tabs = Array.prototype.slice.call(document.querySelectorAll('#cronograma .timeline-tab, #cronograma [data-timeline-nav]'));
+    var groups = Array.prototype.slice.call(document.querySelectorAll('#cronograma .timeline-group'));
+    var toggles = Array.prototype.slice.call(document.querySelectorAll('#cronograma .timeline-group__toggle'));
 
-    tabs.forEach(function (tab) {
-      tab.addEventListener('click', function () {
-        tabs.forEach(function (t) {
-          t.classList.remove('is-active');
-          t.setAttribute('aria-selected', 'false');
+    if (!tabs.length || !groups.length) return;
+
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var mobileNav = window.matchMedia('(max-width: 900px)');
+    var tabSlideFrame = null;
+
+    function keepActiveTabVisible(tab) {
+      if (!tabsNav || !tab || !mobileNav.matches) return;
+      if (tabSlideFrame) cancelAnimationFrame(tabSlideFrame);
+      tabSlideFrame = requestAnimationFrame(function () {
+        tabSlideFrame = null;
+        var navRect = tabsNav.getBoundingClientRect();
+        var tabRect = tab.getBoundingClientRect();
+        var edge = 12;
+        if (tabRect.left >= navRect.left + edge && tabRect.right <= navRect.right - edge) return;
+        var centered = tabsNav.scrollLeft + tabRect.left - navRect.left - ((navRect.width - tabRect.width) / 2);
+        var max = Math.max(0, tabsNav.scrollWidth - tabsNav.clientWidth);
+        tabsNav.scrollTo({
+          left: Math.max(0, Math.min(centered, max)),
+          behavior: reduce ? 'auto' : 'smooth'
         });
-        tab.classList.add('is-active');
-        tab.setAttribute('aria-selected', 'true');
+      });
+    }
 
-        var targetPhase = tab.getAttribute('data-phase');
-        steps.forEach(function (step) {
-          if (targetPhase === 'all' || step.getAttribute('data-timeline-phase') === targetPhase) {
-            step.classList.remove('is-hidden');
-          } else {
-            step.classList.add('is-hidden');
+    function setActiveTimelinePhase(phaseId) {
+      var activeTab = null;
+      tabs.forEach(function (tab) {
+        var tabPhase = tab.getAttribute('data-phase');
+        var tabHref = tab.getAttribute('href');
+        var active = (tabPhase === phaseId || tabHref === '#' + phaseId || tabHref === '#cronograma-' + phaseId);
+        tab.classList.toggle('is-active', active);
+        if (active) {
+          activeTab = tab;
+          tab.setAttribute('aria-current', 'true');
+        } else {
+          tab.removeAttribute('aria-current');
+        }
+      });
+      if (activeTab) {
+        keepActiveTabVisible(activeTab);
+      }
+    }
+
+    // Scrollspy via IntersectionObserver sincronizado com as fases
+    if ('IntersectionObserver' in window && groups.length) {
+      var spy = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            var phase = entry.target.getAttribute('data-phase') || entry.target.id.replace(/^cronograma-/, '');
+            setActiveTimelinePhase(phase);
           }
         });
+      }, {
+        rootMargin: '-30% 0px -55% 0px',
+        threshold: 0
+      });
+      groups.forEach(function (group) {
+        spy.observe(group);
+      });
+    }
+
+    // Clique com âncora suave nos links da barra de etapas
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function (e) {
+        var targetHref = tab.getAttribute('href');
+        var targetEl = targetHref ? document.querySelector(targetHref) : null;
+        if (!targetEl) return;
+        e.preventDefault();
+
+        // Se o grupo de destino estiver recolhido, expande automaticamente
+        if (targetEl.classList.contains('is-collapsed')) {
+          targetEl.classList.remove('is-collapsed');
+          var toggle = targetEl.querySelector('.timeline-group__toggle');
+          if (toggle) toggle.setAttribute('aria-expanded', 'true');
+        }
+
+        var phase = tab.getAttribute('data-phase') || targetEl.id.replace(/^cronograma-/, '');
+        setActiveTimelinePhase(phase);
+        targetEl.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+
+        if (window.history && window.history.replaceState) {
+          window.history.replaceState(null, '', targetHref);
+        }
+      });
+    });
+
+    // Botões de recolher / expandir etapa inteira (.timeline-group__toggle)
+    function toggleTimelineGroup(toggle) {
+      if (!toggle) return;
+      var group = toggle.closest('.timeline-group');
+      if (!group) return;
+      var isCollapsed = group.classList.toggle('is-collapsed');
+      toggle.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true');
+
+      var currentLabel = toggle.getAttribute('aria-label') || '';
+      var currentTitle = toggle.getAttribute('title') || '';
+      if (isCollapsed) {
+        toggle.setAttribute('aria-label', currentLabel.replace(/Recolher/i, 'Expandir').replace(/Collapse/i, 'Expand').replace(/Plegar/i, 'Desplegar'));
+        toggle.setAttribute('title', currentTitle.replace(/Recolher/i, 'Expandir').replace(/Collapse/i, 'Expand').replace(/Plegar/i, 'Desplegar'));
+      } else {
+        toggle.setAttribute('aria-label', currentLabel.replace(/Expandir/i, 'Recolher').replace(/Expand/i, 'Collapse').replace(/Desplegar/i, 'Plegar'));
+        toggle.setAttribute('title', currentTitle.replace(/Expandir/i, 'Recolher').replace(/Expand/i, 'Collapse').replace(/Desplegar/i, 'Plegar'));
+      }
+    }
+
+    toggles.forEach(function (toggle) {
+      toggle.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleTimelineGroup(toggle);
+      });
+    });
+  }
+
+  // --------------------------------------------------------------------------
+  // ANIMAÇÃO DE PROGRESSO DA TIMELINE AO LONGO DO SCROLL (.timeline-step::before)
+  // --------------------------------------------------------------------------
+  function initTimelineScrollProgress() {
+    var timeline = document.querySelector('#cronograma .timeline');
+    var steps = Array.prototype.slice.call(document.querySelectorAll('#cronograma .timeline-step'));
+    if (!timeline || !steps.length) return;
+
+    var ticking = false;
+
+    function updateStepsProgress() {
+      ticking = false;
+      // Linha focal de leitura: 52% da janela (onde o olho do leitor foca ao rolar)
+      var triggerPoint = window.innerHeight * 0.52;
+      var currentStep = null;
+      var passedSteps = [];
+
+      for (var i = 0; i < steps.length; i++) {
+        var step = steps[i];
+        // Se a seção/fase pai estiver recolhida ou oculta, pula
+        if (step.offsetParent === null) continue;
+
+        var rect = step.getBoundingClientRect();
+        // O topo do card já alcançou ou passou da linha focal de leitura?
+        if (rect.top <= triggerPoint) {
+          passedSteps.push(step);
+          if (rect.bottom > triggerPoint * 0.35) {
+            currentStep = step;
+          }
+        }
+      }
+
+      // Se nenhum passou da linha ainda, mas o cronograma já começou a entrar na tela,
+      // ativa o primeiro card visível para guiar a largada
+      if (passedSteps.length === 0) {
+        var firstVisible = null;
+        for (var j = 0; j < steps.length; j++) {
+          if (steps[j].offsetParent !== null) {
+            firstVisible = steps[j];
+            break;
+          }
+        }
+        if (firstVisible) {
+          var fRect = firstVisible.getBoundingClientRect();
+          if (fRect.top < window.innerHeight * 0.82 && fRect.bottom > 0) {
+            passedSteps.push(firstVisible);
+            currentStep = firstVisible;
+          }
+        }
+      } else if (!currentStep && passedSteps.length > 0) {
+        currentStep = passedSteps[passedSteps.length - 1];
+      }
+
+      // Atualiza classes nos cards
+      for (var k = 0; k < steps.length; k++) {
+        var s = steps[k];
+        var isPassed = passedSteps.indexOf(s) !== -1;
+        var isCurrent = (s === currentStep);
+
+        s.classList.toggle('is-reached', isPassed);
+        s.classList.toggle('is-current', isCurrent);
+      }
+    }
+
+    function onScroll() {
+      if (!ticking) {
+        ticking = true;
+        window.requestAnimationFrame(updateStepsProgress);
+      }
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+
+    // Atualiza imediatamente na inicialização
+    updateStepsProgress();
+
+    // Também recalcula quando o usuário expande/recolhe etapas
+    var toggles = document.querySelectorAll('#cronograma .timeline-group__toggle');
+    toggles.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        setTimeout(updateStepsProgress, 60);
+      });
+    });
+
+    // E quando clica nas abas de fase
+    var tabs = document.querySelectorAll('#cronograma .timeline-tab');
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        setTimeout(updateStepsProgress, 250);
       });
     });
   }
@@ -1103,6 +1291,7 @@
     initCountdown();
     initChecklist();
     initTimelineTabs();
+    initTimelineScrollProgress();
     initFAQ();
     initFAQTools();
     initSupportModal();
