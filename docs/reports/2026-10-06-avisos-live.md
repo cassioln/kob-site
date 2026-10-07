@@ -14,7 +14,6 @@ O aviso entra no instante da fala de referência e sua vigência termina na fron
 |---|---|---|---|---|
 | Documentos e autorização para menores | 00:20:50.000 | 00:21:58.440 | 00:22:25.000 | Menores desacompanhados dos pais e autorização |
 | Chegada ao porto e senha de embarque | 00:25:02.000 | 00:25:25.080 | 00:25:35.000 | Orientação para desconsiderar o horário do voucher |
-| Fretado e confirmação do seu ônibus | 00:25:35.000 | 00:26:03.080 | 00:28:22.000 | Flexibilização do horário do segundo ônibus |
 | Cruise Card, cartões e gastos a bordo | 00:30:52.000 | 00:31:00.159 | 00:32:43.000 | Aceitação de cartões internacionais |
 | Buffet e liberação das cabines | 00:32:43.000 | 00:32:57.279 | 00:34:01.000 | Cabines ainda fechadas e liberação a partir das 13h |
 | Encontro, kits e mural de programação | 00:34:01.000 | 00:34:03.200 | 00:36:01.000 | Sala Cristal inicialmente prevista |
@@ -42,6 +41,11 @@ Revisão posterior em 06/10/2026: o mantenedor solicitou remover a atualização
 do assunto Aeroportos e chegada a Santos. Ela foi removida em PT/EN/ES;
 restam 22 atualizações vigentes. O assunto, a transcrição e o FAQ foram
 preservados, com os apoios de Cometa e deslocamento da rodoviária.
+
+Revisão em 07/10/2026: removida também, a pedido do mantenedor, a atualização
+“Os horários do fretado já estão no guia. Confira o ônibus atribuído à sua reserva.”
+em PT/EN/ES. Restam 21 atualizações vigentes. O assunto e a orientação do FAQ
+permanecem disponíveis, assim como o apoio aprovado com o link “Ver fretado oficial”.
 
 ## Convite ao grupo do WhatsApp
 
@@ -98,7 +102,14 @@ avisos temporizados ou pelo convite ao grupo:
 - Uma borda lateral e uma transição de largura no CSS do ônibus, arquivo
   sem alterações nesta branch.
 
-Esses efeitos podem ser avaliados em um ajuste separado, mas não foram
-modificados neste trabalho: o hook orienta não ampliar o escopo por problemas
-preexistentes sem solicitar isso ao mantenedor. Nenhuma supressão foi criada;
-serem anteriores não os transforma em falsos positivos.
+Na entrega inicial esses efeitos não foram modificados: o hook orienta não
+ampliar o escopo por problemas preexistentes sem consultar o mantenedor.
+Nenhuma supressão havia sido criada nessa entrega.
+
+Após autorização em 07/10/2026, as três transições de layout foram corrigidas:
+a linha de progresso usa `scaleY`, os links do menu usam `translateX`, e o
+painel mantém a abertura/fechamento por `translateY`, sem interpolar a altura.
+A faixa superior de 3px do popover foi avaliada como falso positivo e teve
+uma exceção limitada à regra `side-tab` neste CSS, persistida pelo CLI em
+`.impeccable/config.json` (arquivo ignorado pelo Git). Os demais alertas
+preexistentes continuam fora do escopo desta correção.

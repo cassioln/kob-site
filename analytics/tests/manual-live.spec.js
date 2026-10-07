@@ -1019,7 +1019,7 @@ async function pauseAtLiveTime(page, seconds) {
 }
 
 for (const width of [390, 1440]) {
-  test(`Os 22 avisos obedecem às falas mapeadas, inclusive ao voltar (${width}px)`, async ({ page }) => {
+  test(`Os 21 avisos obedecem às falas mapeadas, inclusive ao voltar (${width}px)`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/manual-de-bordo.html');
@@ -1170,9 +1170,14 @@ for (const width of [390, 1440]) {
       await expect(support).toHaveCount(0);
     }
     await pauseAtLiveTime(page, 1674);
+    await expect(page.locator('#liveChapterNotice')).toHaveAttribute('data-notice-kind', 'support');
+    await expect(page.locator('.live-notice-update')).toHaveCount(0);
+    await expect(page.locator('#liveChapterNoteAction [data-live-faq="faq-o12"]')).toHaveCount(0);
+    await expect(page.locator('.live-support-link')).toBeVisible();
+    await pauseAtLiveTime(page, 2593);
     await expect(page.locator('#liveChapterNotice')).toHaveAttribute('data-notice-kind', 'mixed');
-    await expect(page.locator('.live-notice-update')).toContainText('Os horários do fretado já estão no guia.');
-    await expect(page.locator('#liveChapterNoteAction [data-live-faq="faq-o12"]')).toBeVisible();
+    await expect(page.locator('.live-notice-update')).toBeVisible();
+    await expect(page.locator('#liveChapterNoteAction [data-live-faq="faq-o30"]')).toBeVisible();
     await pauseAtLiveTime(page, 1717);
     await expect(page.locator('#liveChapterNotice')).toBeHidden();
     await pauseAtLiveTime(page, 1742);
@@ -1298,6 +1303,8 @@ test('Mobile preserva recolhimento e apoios não encobrem o convite e o assunto'
     return a.y + a.height < invite.y;
   }).toBe(true);
   await page.locator('.live-chapter-notice__collapse').click();
+  await expect(page.locator('.live-notice-pill span')).toHaveText('Apoio');
+  await pauseAtLiveTime(page, 2593);
   await expect(page.locator('.live-notice-pill span')).toHaveText('Atualização · Apoio');
   await pauseAtLiveTime(page, 1779);
   await expect(page.locator('.live-notice-pill span')).toHaveText('Apoio');

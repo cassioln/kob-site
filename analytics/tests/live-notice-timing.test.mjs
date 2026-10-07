@@ -6,11 +6,15 @@ import { SUPPORT_NOTICES, SUPPORT_DURATION, supportAt } from '../../assets/js/ma
 
 test('Every update has a mapped utterance inside its own topic', () => {
   const notices = CHAPTERS.filter(topic => topic.notice);
-  assert.equal(notices.length, 22);
+  assert.equal(notices.length, 21);
   const airports = CHAPTERS.find(topic => topic.id === 'chapter-1702');
   assert.equal(airports.notice, undefined);
   assert.equal(airports.noticeSeconds, undefined);
   assert.equal(isNoticeDue(airports, 1717), false);
+  const charter = CHAPTERS.find(topic => topic.id === 'chapter-1535');
+  assert.equal(charter.notice, undefined);
+  assert.equal(charter.noticeSeconds, undefined);
+  for (const seconds of [1535, 1563.080, 1674, 1701.999]) assert.equal(isNoticeDue(charter, seconds), false);
   for (const topic of notices) {
     const { start, end } = topicBounds(topic);
     assert.ok(Number.isFinite(topic.noticeSeconds), topic.id);
