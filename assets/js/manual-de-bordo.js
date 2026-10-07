@@ -390,6 +390,7 @@
         sidebarBackdrop.setAttribute('aria-hidden', 'true');
       }
       sidebarToggle.setAttribute('aria-expanded', 'false');
+      updateToggleVisibility();
       sidebarToggle.focus();
     }
 
@@ -425,6 +426,49 @@
     }
     window.addEventListener('hashchange', openFromHash);
     openFromHash();
+
+    // Controle de visibilidade do toggle: oculto quando na hero ou no footer
+    function updateToggleVisibility() {
+      if (sidebarAside && sidebarAside.classList.contains('is-open')) {
+        sidebarToggle.classList.remove('is-hidden');
+        return;
+      }
+      var hero = document.getElementById('inicio') || document.querySelector('.guide-hero-slider');
+      var footer = document.querySelector('footer.guide-footer') || document.querySelector('footer');
+      var inHero = false;
+      var inFooter = false;
+
+      if (hero) {
+        var heroRect = hero.getBoundingClientRect();
+        inHero = heroRect.bottom > 70;
+      } else {
+        inHero = (window.scrollY || window.pageYOffset || 0) < 300;
+      }
+
+      if (footer) {
+        var footerRect = footer.getBoundingClientRect();
+        inFooter = footerRect.top < window.innerHeight;
+      }
+
+      if (inHero || inFooter) {
+        sidebarToggle.classList.add('is-hidden');
+      } else {
+        sidebarToggle.classList.remove('is-hidden');
+      }
+    }
+
+    var visibilityFrame = null;
+    function onScrollOrResize() {
+      if (visibilityFrame) return;
+      visibilityFrame = requestAnimationFrame(function () {
+        visibilityFrame = null;
+        updateToggleVisibility();
+      });
+    }
+
+    window.addEventListener('scroll', onScrollOrResize, { passive: true });
+    window.addEventListener('resize', onScrollOrResize, { passive: true });
+    updateToggleVisibility();
 
     // Navegação direta por grupo, Scrollspy e Centralização Touch na Sidebar
     var sidebarNav = sidebarAside.querySelector('.checklist-sidebar__nav');

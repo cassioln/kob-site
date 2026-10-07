@@ -652,7 +652,7 @@ h4 {
   order: 4;
 }
 
-@media (min-width: 901px) {
+@media (min-width: 1321px) {
   .nav .header-manual-link {
     height: 58px;
     min-height: 58px;
@@ -842,7 +842,11 @@ h4 {
   }
 
   .nav .nav__right > .header-manual-link,
-  .nav .nav__right .lang-switch:not(.lang-switch--mobile) {
+  .nav .nav__right .lang-switch:not(.lang-switch--mobile),
+  .nav .nav__right .btn--primary,
+  .nav__right .btn--primary,
+  .nav[data-scrolled="true"] .nav__right .btn--primary,
+  .nav[data-scrolled="false"] .nav__right .btn--primary {
     display: none !important;
   }
 
@@ -990,20 +994,38 @@ h4 {
 }
 
 .drawer__actions > .header-manual-link {
-  border: 1px solid #d8c2df;
-  background: #f8f2fa;
+  border: 1px solid #083965;
+  background: #083965;
+  color: #ffffff;
   box-shadow: none;
   white-space: normal;
 }
 
 .drawer__actions > .header-manual-link:hover {
-  background: #efe3f3;
-  border-color: #b98ec7;
+  background: #052646;
+  border-color: #052646;
+  color: #ffffff;
 }
 
 .drawer__actions .header-manual-link__lines { min-width: 0; line-height: 1.3; }
-.drawer__actions .header-manual-link__sub { color: #71206c; }
-.drawer__actions .header-manual-link__title { font-size: .875rem; white-space: normal; }
+.drawer__actions .header-manual-link__sub {
+  color: #ffffff;
+  opacity: 0.9;
+}
+.drawer__actions .header-manual-link__title {
+  font-size: .875rem;
+  white-space: normal;
+  color: #ffffff;
+}
+.drawer__actions .header-manual-link__title strong {
+  color: #ffffff;
+}
+.drawer__actions .header-manual-link__icon {
+  color: #ffffff;
+}
+.drawer__actions > .header-manual-link:hover .header-manual-link__icon {
+  color: #ffffff;
+}
 
 
 .hero,
@@ -8963,8 +8985,11 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
     display: none;
   }
 
-  .nav__right .btn--primary {
-    display: none;
+  .nav .nav__right .btn--primary,
+  .nav__right .btn--primary,
+  .nav[data-scrolled="true"] .nav__right .btn--primary,
+  .nav[data-scrolled="false"] .nav__right .btn--primary {
+    display: none !important;
   }
 
   .nav__toggle {

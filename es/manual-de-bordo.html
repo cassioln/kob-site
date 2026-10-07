@@ -104,7 +104,6 @@
         </div>
       </div>
       <nav class="guide-header__nav" aria-label="Navegación del Manual de a Bordo">
-        <a href="#live" class="guide-header__nav-link">Charla</a>
         <a href="#checklist" data-open-checklist class="guide-header__nav-link">Checklist</a>
         <a href="#cronograma" class="guide-header__nav-link">Cronograma</a>
         <a href="https://kriativosonboard.com.br/es/onibus.html" target="_blank" rel="noopener noreferrer" class="guide-header__nav-link">Autobús</a>
@@ -175,15 +174,6 @@
             <h1 id="manual-welcome-title">¿Listo para embarcar,<br><span>Kriativo?</span></h1>
             <p class="manual-welcome__intro">Tu guía para llegar preparado y disfrutar cada partida. Explora la
               grabación por tema, prepara la maleta y resuelve tus dudas.</p>
-            <div class="manual-welcome__links"><a href="#checklist" data-open-checklist>Mi checklist <svg class=""
-                  width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M7 17 17 7M7 7h10v10" />
-                </svg></a><a href="#duvidas">Dudas de los pasajeros <svg class="" width="18" height="18"
-                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true">
-                  <path d="M7 17 17 7M7 7h10v10" />
-                </svg></a></div>
           </div>
           <img class="manual-welcome__mascot" src="/assets/images/manual/kriativa-welcome.png" alt="" width="480"
             height="720" fetchpriority="high">
@@ -670,45 +660,6 @@
             </div>
           </div>
         </div>
-      </div>
-    </section>
-
-    <!-- TRANSPORTE (#20) -->
-    <section class="guide-section" id="transporte" aria-labelledby="transporte-title">
-      <div class="guide-container">
-        <header class="guide-section__header">
-          <span class="guide-section__badge">Transporte y Rutas</span>
-          <h2 class="guide-section__title" id="transporte-title">Tu trayecto al puerto</h2>
-          <p class="guide-section__intro">
-            Chárter oficial KOB con salida de Barra Funda, São Paulo. Revisa el vehículo asignado a tu reserva antes de
-            salir.
-          </p>
-        </header>
-
-        <div class="transport-grid">
-          <article class="transport-card">
-            <h3 class="transport-card__title">Autobús 1 · Confirmado</h3>
-            <ul class="transport-card__details">
-              <li><strong>Punto:</strong> Rua Tagipuru, altura del nº 552, Barra Funda, São Paulo</li>
-              <li><strong>Encuentro:</strong> 06:00</li>
-              <li><strong>Salida puntual:</strong> 06:30</li>
-              <li><strong>Margen de tolerancia:</strong> 06:40</li>
-              <li><strong>Regreso (23/11):</strong> 10:30 (Puerto de Santos)</li>
-            </ul>
-          </article>
-
-          <article class="transport-card">
-            <h3 class="transport-card__title">Autobús 2 · Programado</h3>
-            <ul class="transport-card__details">
-              <li><strong>Punto:</strong> Rua Tagipuru, altura del nº 552, Barra Funda, São Paulo</li>
-              <li><strong>Encuentro:</strong> 06:40</li>
-              <li><strong>Salida puntual:</strong> 07:20</li>
-              <li><strong>Margen de tolerancia:</strong> 07:30</li>
-              <li><strong>Regreso (23/11):</strong> 10:30 (Puerto de Santos)</li>
-            </ul>
-          </article>
-        </div>
-
       </div>
     </section>
 
@@ -2067,15 +2018,19 @@
 
 
   <!-- Sidebar Retráctil del Checklist (Lateral Izquierda) -->
-  <button type="button" class="checklist-sidebar-toggle" id="checklistSidebarToggle" aria-expanded="false"
+  <button type="button" class="checklist-sidebar-toggle is-hidden" id="checklistSidebarToggle" aria-expanded="false"
     aria-controls="checklistSidebar" aria-label="Expandir Checklist de a Bordo">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+    <svg class="checklist-sidebar-toggle__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
       stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
       <polyline points="9 11 12 14 22 4"></polyline>
       <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1 2-2h11"></path>
     </svg>
     <span class="checklist-sidebar-toggle__label">Checklist</span>
     <span class="checklist-sidebar-toggle__badge" id="checklistSidebarToggleBadge">0/16</span>
+    <svg class="checklist-sidebar-toggle__arrow" width="16" height="16" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="m9 18 6-6-6-6" />
+    </svg>
   </button>
 
   <div class="checklist-sidebar-backdrop" id="checklistSidebarBackdrop" aria-hidden="true"></div>
