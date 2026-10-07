@@ -4,7 +4,7 @@ import { normalizeSearch, matchChapter, highlightParts, excerpt } from './manual
 import { topicAt, topicProgress, seekInTopic, isNoticeDue, isGroupInviteDue } from './manual-de-bordo-live-timeline.js?v=20261007-charter-notice';
 import { initLiveGuideHelp } from './manual-de-bordo-live-help.js?v=20261005-mobile-live';
 import { initLiveMarkers } from './manual-de-bordo-live-markers.js?v=20261005-mobile-live';
-import { initLiveControlMarquee } from './manual-de-bordo-live-marquee.js?v=20261005-ui-final';
+import { initLiveControlMarquee, initLiveNoticeMarquee } from './manual-de-bordo-live-marquee.js?v=20261007-mobile-notice-ticker';
 import { initLiveTopicTransition } from './manual-de-bordo-live-topic.js?v=20261005-mobile-live';
 import { supportAt } from './manual-de-bordo-live-support.js?v=20261006-live-copy';
 
@@ -91,6 +91,10 @@ function initLive() {
   noteAction.hidden = true;
   note.before(noticeGroup);
   noticeGroup.append(note, noteAction);
+  const noticeTicker = document.createElement('div');
+  noticeTicker.className = 'live-notice-ticker';
+  note.append(noticeTicker);
+  const noticeMarquee = initLiveNoticeMarquee(note, noticeTicker, noticeGroup);
   const updateDimensions = () => {
     const controls = byId('liveCustomControls');
     const topic = byId('liveCustomTopic');
@@ -119,29 +123,14 @@ function initLive() {
         video.style.setProperty('--live-group-qr-size', `${wholeModuleSize >= 98 ? wholeModuleSize : fittingSize}px`);
       }
     } else {
-      // Mobile keeps the title and the notice on the video; the dock and topics button sit below it.
+      // Mobile overlays stay compact; the controls and topics button sit below the video.
       if (controls.parentElement !== cinema) cinema.insertBefore(controls, byId('heroLiveChaptersCol'));
       if (topic.parentElement !== lowerThird) lowerThird.prepend(topic);
       if (noticeGroup.parentElement !== video) video.append(noticeGroup);
-      if (invite && invite.parentElement !== lowerThird) lowerThird.insertBefore(invite, topic);
+      if (invite && (invite.parentElement !== lowerThird || topic.nextElementSibling !== invite)) lowerThird.append(invite);
       lowerThird.hidden = topic.hidden;
     }
-    if (mobile.matches && !noticeGroup.hidden) {
-      // Keep the title, invitation and actions reachable; scroll only long notice text.
-      const lowerHeight = lowerThird.getBoundingClientRect().height;
-      const actionsHeight = noteAction.getBoundingClientRect().height;
-      // Translated actions can wrap into two rows as fonts load. Reserve room for
-      // both rows and at least two lines of guidance, rather than overlapping the invite.
-      const minimumHeight = lowerHeight + actionsHeight + 46 + 32;
-      video.style.setProperty('--live-guidance-min-height', `${Math.ceil(Math.max(240, minimumHeight))}px`);
-      const bodyRoom = video.getBoundingClientRect().height - lowerHeight - actionsHeight - 46;
-      note.style.setProperty('--live-note-body-max-height', `${Math.max(32, bodyRoom)}px`);
-    } else {
-      video.style.removeProperty('--live-guidance-min-height');
-      note.style.removeProperty('--live-note-body-max-height');
-    }
-    if (mobile.matches && noticeGroup.dataset.noticeKind !== 'update' && note.scrollHeight > note.clientHeight) note.tabIndex = 0;
-    else note.removeAttribute('tabindex');
+    noticeMarquee.refresh();
     const h = document.querySelector('.guide-header')?.offsetHeight;
     if (h) document.documentElement.style.setProperty('--guide-header-height', `${h}px`);
     if (window.innerWidth > 768) {
@@ -301,8 +290,7 @@ function initLive() {
       facade.hidden = true;
     }, 300);
   }
-  // Mobile: the notice floats over the video when its mapped utterance is reached,
-  // and "−" folds it into an "Atualização" pill in the video's top-left corner.
+  // Mobile notices use a compact ticker at the top of the video.
   const noticeCollapse = document.createElement('button');
   noticeCollapse.type = 'button';
   noticeCollapse.className = 'live-chapter-notice__collapse';
@@ -447,7 +435,7 @@ function initLive() {
       if (support) details.classList.add('live-guide-trigger--secondary');
       actions.push(details);
     }
-    note.replaceChildren(content);
+    noticeTicker.replaceChildren(content);
     note.hidden = !(chapter?.notice || support);
     noteAction.replaceChildren(...actions);
     noteAction.hidden = !actions.length;
@@ -458,6 +446,8 @@ function initLive() {
     icon.setAttribute('width', '14');
     icon.setAttribute('height', '14');
     noticePill.firstElementChild.replaceWith(icon);
+    noticeCollapse.replaceChildren(icon.cloneNode(true));
+    noticeMarquee.refresh();
     noticePill.setAttribute('aria-label', support && !updateDue ? copy.showSupport : copy.showNotice);
   }
 
@@ -466,7 +456,11 @@ function initLive() {
     button.type = 'button';
     button.className = 'live-guide-trigger';
     button.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7h.01"/></svg>';
-    button.append(document.createTextNode(copy.faq));
+    const label = document.createElement('span');
+    label.className = 'live-guide-trigger__text';
+    label.textContent = copy.faq;
+    button.append(label);
+    button.setAttribute('aria-label', copy.faq);
     button.title = copy.detailHint;
     button.dataset.liveFaq = chapter.faqId;
     button.setAttribute('aria-expanded', 'false');

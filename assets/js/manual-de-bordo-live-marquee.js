@@ -32,3 +32,36 @@ export function initLiveControlMarquee(buttons) {
   refresh();
   return { refresh };
 }
+
+/** A single accessible copy of the notice; animate only actual mobile overflow. */
+export function initLiveNoticeMarquee(viewport, text, notice) {
+  const mobile = matchMedia('(max-width: 768px)');
+  let frame;
+  let onscreen = true;
+  function syncPlayback() {
+    text.style.animationPlayState = document.hidden || !onscreen ? 'paused' : 'running';
+  }
+  function refresh() {
+    if (frame !== undefined) return;
+    frame = requestAnimationFrame(() => {
+      frame = undefined;
+      const distance = Math.max(0, text.scrollWidth - viewport.clientWidth);
+      const overflowing = mobile.matches && viewport.clientWidth > 0 && distance > 1;
+      viewport.classList.toggle('is-overflowing', overflowing);
+      viewport.style.setProperty('--live-label-travel', `${-distance}px`);
+      viewport.style.setProperty('--live-label-duration', `${Math.max(8, distance / 36 / .76)}s`);
+      if (overflowing) viewport.tabIndex = 0;
+      else viewport.removeAttribute('tabindex');
+    });
+  }
+  if ('ResizeObserver' in window) new ResizeObserver(refresh).observe(viewport);
+  else window.addEventListener('resize', refresh, { passive: true });
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(([entry]) => { onscreen = entry.isIntersecting; syncPlayback(); }).observe(notice);
+  }
+  mobile.addEventListener('change', refresh);
+  document.fonts?.ready.then(refresh);
+  document.addEventListener('visibilitychange', syncPlayback);
+  refresh();
+  return { refresh };
+}

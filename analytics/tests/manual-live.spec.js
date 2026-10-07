@@ -595,7 +595,7 @@ test('Identificação acompanha o recolhimento real dos controles e retorna suav
   await page.emulateMedia({reducedMotion:'no-preference'});
   await page.goto('/manual-de-bordo.html');
   await openTopics(page);await page.locator('[data-seconds="1535"]').click();await readyPlayer(page);
-  await playIntoTopic(page, 1564);
+  await playIntoTopic(page, 2072);
   const group=page.locator('#liveLowerThird'),controls=page.locator('#liveCustomControls');
   await page.mouse.move(0,0);
   await expect.poll(async()=>{
@@ -614,7 +614,7 @@ test('Identificação acompanha o recolhimento real dos controles e retorna suav
   await page.locator('#livePlayerWrapper').hover({position:{x:40,y:40}});
   await expect(controls).toHaveClass(/is-visible/);
   await expect.poll(()=>group.evaluate(el=>el.getBoundingClientRect().bottom-el.parentElement.getBoundingClientRect().bottom)).toBeLessThan(lowered-80);
-  await page.evaluate(() => { window.__liveMock.seconds = 1564; });
+  await page.evaluate(() => { window.__liveMock.seconds = 2072; });
   await expect(page.locator('#liveChapterNotice')).toBeVisible();
   const guide=page.locator('#liveChapterNoteAction [data-live-faq]');await guide.focus();
   await page.waitForTimeout(3400);await expect(controls).toHaveClass(/is-visible/);
@@ -716,8 +716,7 @@ for (const [lang, path, details] of [['pt','/manual-de-bordo.html','Mais detalhe
       expect(placement.top).toBeGreaterThanOrEqual(0);
     }
     await page.setViewportSize({ width: 390, height: 844 });
-    // Mobile: at the mapped utterance, the notice floats over the video and
-    // "details" hangs from its bottom-right corner.
+    // Mobile uses a compact ticker inside the top of the video.
     await expect.poll(() => page.locator('#liveChapterNotice').evaluate(el => el.parentElement.id)).toBe('livePlayerWrapper');
     // The progress clock only runs while the player is on screen, and the resize can scroll it away.
     await page.locator('#livePlayerWrapper').scrollIntoViewIfNeeded();
@@ -727,7 +726,7 @@ for (const [lang, path, details] of [['pt','/manual-de-bordo.html','Mais detalhe
       const action = document.querySelector('#liveChapterNoteAction button').getBoundingClientRect();
       const video = document.querySelector('#livePlayerWrapper').getBoundingClientRect();
       const notice = document.querySelector('#liveChapterNotice').getBoundingClientRect();
-      return notice.top >= video.top && action.top >= notice.bottom - 1 && Math.abs(action.right - notice.right) <= 1 && action.bottom <= video.bottom;
+      return notice.top >= video.top && notice.bottom < video.top + video.height / 2 && action.right <= notice.right && action.bottom <= notice.bottom;
     })).toBe(true);
     await openTopics(page);
     await page.locator('.live-chapter-item__button').first().click();
@@ -956,7 +955,7 @@ for (const width of [390, 1440]) {
   });
 }
 
-test('No mobile o aviso entra na fala de menores e recolhe para um selo no canto superior esquerdo', async ({ page }) => {
+test('No mobile o aviso usa uma faixa no topo do vídeo e pode ser recolhido', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/manual-de-bordo.html');
   await openTopics(page);
@@ -970,10 +969,10 @@ test('No mobile o aviso entra na fala de menores e recolhe para um selo no canto
   const video = await page.locator('#livePlayerWrapper').boundingBox();
   const box = await notice.boundingBox();
   expect(box.y).toBeGreaterThanOrEqual(video.y);
-  expect(box.y + box.height).toBeLessThan(video.y + video.height);
-  // Floating, it does not push the dock down.
+  expect(box.height).toBeLessThanOrEqual(52);
+  expect(box.y + box.height).toBeLessThan(video.y + video.height / 2);
   const controls = await page.locator('#liveCustomControls').boundingBox();
-  expect(controls.y).toBeLessThanOrEqual(video.y + video.height + 9);
+  expect(controls.y).toBeGreaterThanOrEqual(box.y + box.height);
   await page.locator('.live-chapter-notice__collapse').click();
   await expect(notice).toBeHidden();
   const pill = page.locator('.live-notice-pill');
@@ -983,6 +982,7 @@ test('No mobile o aviso entra na fala de menores e recolhe para um selo no canto
   // Measure the video again: Playwright may scroll the page to click "−".
   const pillBox = await pill.boundingBox();
   const videoNow = await page.locator('#livePlayerWrapper').boundingBox();
+  expect(pillBox.y).toBeGreaterThanOrEqual(videoNow.y);
   expect(pillBox.y).toBeLessThan(videoNow.y + 20);
   expect(pillBox.x).toBeLessThan(videoNow.x + 20);
   await pill.click();
@@ -1104,6 +1104,13 @@ for (const [path, label, inviteCopy, qrPrompt, qrHint, qrAction] of [
       await expect(invite.locator('.live-group-invite__logo')).toHaveCSS('color', 'rgb(255, 255, 255)');
     };
     await checkInviteStyle();
+    await pauseAtLiveTime(page, 2072);
+    await expect.poll(async () => {
+      const topicBox = await page.locator('#liveCustomTopic').boundingBox();
+      const noticeBox = await page.locator('#liveChapterNotice').boundingBox();
+      return topicBox.y + topicBox.height <= noticeBox.y;
+    }).toBe(true);
+    expect((await page.locator('#liveCustomTopic').boundingBox()).width).toBeGreaterThan(300);
     await expect.poll(async () => {
       const box = await invite.boundingBox(), video = await page.locator('#livePlayerWrapper').boundingBox();
       const topic = await page.locator('#liveLowerThird').boundingBox();
@@ -1122,13 +1129,15 @@ for (const [path, label, inviteCopy, qrPrompt, qrHint, qrAction] of [
       return Math.abs(box.x + box.width - dock.x - dock.width) <= 1 && box.y >= tab.y + tab.height + 7 && box.y + box.height < dock.y;
     }).toBe(true);
     await page.setViewportSize({ width: 390, height: 1000 });
-    await expect.poll(() => invite.evaluate(el => el.nextElementSibling?.id)).toBe('liveCustomTopic');
+    await expect.poll(() => invite.evaluate(el => el.previousElementSibling?.id)).toBe('liveCustomTopic');
     await expect(invite.locator('.live-group-invite__qr')).toBeHidden();
-    await expect(invite.locator('.live-group-invite__mobile-text')).toBeVisible();
-    await checkInviteStyle();
+    await expect(invite.locator('.live-group-invite__mobile-text')).toBeHidden();
+    await expect(invite.locator('.live-group-invite__action')).toBeVisible();
+    await expect(invite.locator('.live-group-invite__hint')).toBeHidden();
+    await expect(invite).toHaveCSS('background-color', 'rgb(8, 123, 65)');
     await expect.poll(async () => {
       const box = await invite.boundingBox(), topic = await page.locator('#liveCustomTopic').boundingBox();
-      return box.y + box.height <= topic.y - 5;
+      return box.x >= topic.x + topic.width + 7 && box.y + box.height - topic.y <= 60;
     }).toBe(true);
     await expect(invite).toHaveCSS('animation-name', 'live-group-invite-in');
     await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -1230,8 +1239,8 @@ for (const [lang, path] of [
   ['en', '/en/manual-de-bordo.html'],
   ['es', '/es/manual-de-bordo.html']
 ]) {
-  test(`Destaque do aviso acima do texto em desktop e mobile: ${lang}`, async ({ page }) => {
-    for (const width of [390, 1440]) {
+  test(`Destaque do aviso acima do texto em desktop: ${lang}`, async ({ page }) => {
+    for (const width of [1440]) {
       await page.setViewportSize({ width, height: 1000 });
       await page.goto(path);
       await page.locator('#loadLivePlayerBtn').click();
@@ -1360,7 +1369,7 @@ test('Mobile preserva recolhimento e apoios não encobrem o convite e o assunto'
   await expect(actions.locator('.live-support-link')).toBeVisible();
   await expect.poll(async () => {
     const a = await actions.boundingBox(), invite = await page.locator('#liveGroupInvite').boundingBox();
-    return a.y + a.height < invite.y;
+    return a.y + a.height <= invite.y;
   }).toBe(true);
   await page.locator('.live-chapter-notice__collapse').click();
   await expect(page.locator('.live-notice-pill span')).toHaveText('Apoio');
@@ -1376,3 +1385,46 @@ test('Mobile preserva recolhimento e apoios não encobrem o convite e o assunto'
   await expect(page.locator('.live-notice-pill')).toBeHidden();
   await expect(page.locator('#livePlayPauseBtn')).toBeFocused();
 });
+
+for (const [lang, path, details] of [
+  ['pt', '/manual-de-bordo.html', 'Mais detalhes'],
+  ['en', '/en/manual-de-bordo.html', 'More details'],
+  ['es', '/es/manual-de-bordo.html', 'Más detalles']
+]) {
+  test(`Letreiro mobile com ação fixa, movimento reduzido e texto acessível: ${lang}`, async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.setViewportSize({ width: 320, height: 900 });
+    await page.goto(path);
+    await page.locator('#loadLivePlayerBtn').click();
+    await readyPlayer(page);
+    await pauseAtLiveTime(page, 2072);
+    const notice = page.locator('#liveChapterNotice');
+    const ticker = page.locator('.live-notice-ticker');
+    const viewport = page.locator('#liveChapterNote');
+    const action = page.locator('#liveChapterNoteAction button');
+    await expect(action).toHaveText(details);
+    await expect(ticker).toHaveCSS('animation-name', 'live-label-marquee');
+    expect(await ticker.evaluate(el => parseFloat(getComputedStyle(el).animationDuration))).toBeGreaterThanOrEqual(8);
+    for (const width of [320, 390, 768]) {
+      await page.setViewportSize({ width, height: 900 });
+      await expect.poll(async () => {
+        const video = await page.locator('#livePlayerWrapper').boundingBox();
+        const strip = await notice.boundingBox();
+        const text = await viewport.boundingBox();
+        const button = await action.boundingBox();
+        const lower = await page.locator('#liveLowerThird').boundingBox();
+        return strip.height <= 52 && strip.y >= video.y && strip.y + strip.height < lower.y &&
+          text.x + text.width <= button.x && button.x + button.width <= strip.x + strip.width;
+      }).toBe(true);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    }
+    await page.setViewportSize({ width: 320, height: 900 });
+    await viewport.focus();
+    await expect(ticker).toHaveCSS('animation-play-state', 'paused');
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await expect(ticker).toHaveCSS('animation-name', 'none');
+    await expect(viewport).toHaveCSS('overflow-x', 'auto');
+    await action.click();
+    await expect(page.locator('#liveGuidePopover')).toBeVisible();
+  });
+}
