@@ -1,0 +1,131 @@
+/* Sponsor credits shared by the Manual and official charter pages. */
+.footer:has(.footer-sponsors) .footer__deck {
+  padding-bottom: 32px;
+}
+
+.footer-sponsors {
+  padding: 24px 0 32px;
+  border-top: 1px solid rgba(244, 248, 251, .15);
+}
+
+.footer-sponsors__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.footer-sponsors__title {
+  margin: 0;
+  color: #f4f8fb;
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 2vw, 1.6rem);
+  font-weight: 400;
+  line-height: 1.35;
+  text-wrap: balance;
+}
+
+.footer-sponsors__controls {
+  display: flex;
+  flex: none;
+  gap: 8px;
+}
+
+.footer-sponsors__controls[hidden] {
+  display: none;
+}
+
+.footer-sponsors__button {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid rgba(244, 248, 251, .3);
+  border-radius: 8px;
+  background: transparent;
+  color: #f4f8fb;
+  cursor: pointer;
+  transition: background 160ms ease-out;
+}
+
+.footer-sponsors__button:hover:not(:disabled) {
+  background: rgba(244, 248, 251, .12);
+}
+
+.footer-sponsors__button:disabled {
+  opacity: .35;
+  cursor: default;
+}
+
+.footer-sponsors__button:focus-visible {
+  outline: 2px solid #ffcb37;
+  outline-offset: 3px;
+}
+
+.footer-sponsors__track {
+  display: flex;
+  gap: 16px;
+  margin: 0;
+  padding: 12px;
+  overflow-x: auto;
+  list-style: none;
+  border-radius: 12px;
+  background: #fff;
+  scroll-snap-type: x proximity;
+  scroll-padding-inline: 12px;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #8da8bd #f4f8fb;
+}
+
+.footer-sponsors__item {
+  flex: 1 0 116px;
+  min-width: 116px;
+  scroll-snap-align: start;
+}
+
+.footer-sponsors__link {
+  display: grid;
+  place-items: center;
+  min-height: 72px;
+  padding: 4px;
+  border-radius: 4px;
+  transition: opacity 160ms ease-out;
+}
+
+.footer-sponsors__link:hover {
+  opacity: .75;
+}
+
+.footer-sponsors__link:focus-visible {
+  outline: 2px solid #71206c;
+  outline-offset: 2px;
+}
+
+.footer-sponsors__link img {
+  display: block;
+  width: 100%;
+  max-width: 120px;
+  height: 64px;
+  object-fit: contain;
+}
+
+@media (max-width: 480px) {
+  .footer-sponsors__head {
+    align-items: flex-end;
+    gap: 12px;
+  }
+
+  .footer-sponsors__track {
+    gap: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .footer-sponsors__button,
+  .footer-sponsors__link {
+    transition: none;
+  }
+}
