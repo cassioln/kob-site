@@ -1050,10 +1050,10 @@ for (const width of [390, 1440]) {
   });
 }
 
-for (const [path, label, inviteCopy] of [
-  ['/manual-de-bordo.html', 'ATUALIZAÇÃO', 'Clique aqui para entrar no grupo'],
-  ['/en/manual-de-bordo.html', 'UPDATE', 'Click here to join the group'],
-  ['/es/manual-de-bordo.html', 'ACTUALIZACIÓN', 'Haz clic aquí para entrar al grupo']
+for (const [path, label, inviteCopy, qrTitle, qrHint, qrAction] of [
+  ['/manual-de-bordo.html', 'ATUALIZAÇÃO', 'Clique aqui para entrar no grupo', 'Grupo oficial', 'ou clique aqui:', 'ENTRAR NO GRUPO'],
+  ['/en/manual-de-bordo.html', 'UPDATE', 'Click here to join the group', 'Official group', 'or click here:', 'JOIN THE GROUP'],
+  ['/es/manual-de-bordo.html', 'ACTUALIZACIÓN', 'Haz clic aquí para entrar al grupo', 'Grupo oficial', 'o haz clic aquí:', 'ENTRAR AL GRUPO']
 ]) {
   test(`Rótulo com atenção, convite e posicionamento em ${path}`, async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 1000 });
@@ -1076,7 +1076,13 @@ for (const [path, label, inviteCopy] of [
     await expect(invite).toHaveAttribute('href', GROUP_INVITE_URL);
     await expect(invite).toHaveAttribute('target', '_blank');
     await expect(invite).toHaveAttribute('rel', 'noopener noreferrer');
-    await expect(invite.locator('svg[aria-hidden="true"]')).toHaveCount(1);
+    await expect(invite.locator('.live-group-invite__logo')).toHaveCount(1);
+    await expect(invite.locator('.live-group-invite__title')).toHaveText(qrTitle);
+    await expect(invite.locator('.live-group-invite__title')).toHaveCSS('white-space', 'nowrap');
+    await expect(invite.locator('.live-group-invite__hint')).toHaveText(qrHint);
+    await expect(invite.locator('.live-group-invite__action')).toHaveText(qrAction);
+    await expect(invite.locator('.live-group-invite__action')).toHaveCSS('background-color', 'rgb(255, 255, 255)');
+    await expect(invite.locator('.live-group-invite__action-icon')).toHaveCSS('color', 'rgb(8, 123, 65)');
     const checkInviteStyle = async () => {
       const styles = await invite.evaluate(el => {
         const invite = getComputedStyle(el), topic = getComputedStyle(document.getElementById('liveCustomTopic'));
@@ -1086,7 +1092,7 @@ for (const [path, label, inviteCopy] of [
       expect(styles.size).toBeLessThan(styles.topicSize);
       await expect(invite).toHaveCSS('color', 'rgb(255, 255, 255)');
       await expect(invite).toHaveCSS('background-color', 'rgb(8, 123, 65)');
-      await expect(invite.locator('svg')).toHaveCSS('color', 'rgb(255, 255, 255)');
+      await expect(invite.locator('.live-group-invite__logo')).toHaveCSS('color', 'rgb(255, 255, 255)');
     };
     await checkInviteStyle();
     await expect.poll(async () => {
@@ -1100,6 +1106,12 @@ for (const [path, label, inviteCopy] of [
     await page.setViewportSize({ width: 1024, height: 1000 });
     await expect(invite.locator('.live-group-invite__qr')).toBeVisible();
     await expect(invite.locator('.live-group-invite__mobile-text')).toBeHidden();
+    await expect.poll(async () => {
+      const box = await invite.boundingBox();
+      const dock = await page.locator('#liveCustomControls').boundingBox();
+      const tab = await page.locator('#heroLiveToggleChaptersBtn').boundingBox();
+      return Math.abs(box.x + box.width - dock.x - dock.width) <= 1 && box.y >= tab.y + tab.height + 7 && box.y + box.height < dock.y;
+    }).toBe(true);
     await page.setViewportSize({ width: 390, height: 1000 });
     await expect.poll(() => invite.evaluate(el => el.nextElementSibling?.id)).toBe('liveCustomTopic');
     await expect(invite.locator('.live-group-invite__qr')).toBeHidden();
