@@ -71,10 +71,10 @@
   <link rel="preload" href="/assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
   <link rel="stylesheet" href="/assets/css/main.css?v=20261006-bus-footer-fix">
   <link rel="stylesheet" href="/assets/css/onibus.css?v=20261006-bus-footer-fix">
-  <link rel="stylesheet" href="/assets/css/footer-sponsors.css?v=20261007-footer-sponsors">
+  <link rel="stylesheet" href="/assets/css/footer-sponsors.css?v=20261007-sponsors-marquee">
   <link rel="stylesheet" href="/assets/css/cookie-consent.css?v=20260820-fix-contrast">
   <script defer src="/assets/js/cookie-consent.js?v=20260713-5"></script>
-  <script defer src="/assets/js/footer-sponsors.js?v=20261007-footer-sponsors"></script>
+  <script defer src="/assets/js/footer-sponsors.js?v=20261007-sponsors-marquee"></script>
   <script defer src="/assets/js/onibus.js?v=20261003-live-content"></script>
 </head>
 
@@ -1051,15 +1051,12 @@
       <section class="footer-sponsors" data-footer-sponsors aria-labelledby="footer-sponsors-title">
         <div class="footer-sponsors__head">
           <h2 class="footer-sponsors__title" id="footer-sponsors-title">Who makes Kriativos On Board happen</h2>
-          <div class="footer-sponsors__controls" hidden>
-            <button class="footer-sponsors__button" type="button" data-sponsors-previous aria-label="Previous sponsors" aria-controls="footer-sponsors-list" disabled>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
-            </button>
-            <button class="footer-sponsors__button" type="button" data-sponsors-next aria-label="Next sponsors" aria-controls="footer-sponsors-list">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
-            </button>
-          </div>
+          <button class="footer-sponsors__button" type="button" data-sponsors-pause data-pause-label="Pause sponsor animation" data-resume-label="Resume sponsor animation" aria-label="Pause sponsor animation" aria-controls="footer-sponsors-list" hidden>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path data-sponsors-pause-icon d="M8 5v14M16 5v14"></path><path data-sponsors-play-icon d="m8 5 11 7-11 7Z" hidden></path></svg>
+          </button>
         </div>
+        <div class="footer-sponsors__viewport">
+          <div class="footer-sponsors__belt">
         <ul class="footer-sponsors__track" id="footer-sponsors-list">
           <li class="footer-sponsors__item">
             <a class="footer-sponsors__link" href="https://www.mosaicoloja.com.br/" target="_blank" rel="noopener noreferrer" aria-label="Mosaico Jogos — Sponsor">
@@ -1096,7 +1093,14 @@
               <img src="/assets/images/partners/jogue-e-vista.webp" alt="Jogue &amp; Vista" width="438" height="438" loading="lazy" decoding="async">
             </a>
           </li>
+          <li class="footer-sponsors__item">
+            <a class="footer-sponsors__link" href="https://facilshopping.com.br/" target="_blank" rel="noopener noreferrer" aria-label="Fácil Shopping — Sponsor">
+              <img src="/assets/images/partners/facil-shopping.webp" alt="Fácil Shopping" width="600" height="186" loading="lazy" decoding="async">
+            </a>
+          </li>
         </ul>
+          </div>
+        </div>
       </section>
 
       <div class="footer__bottom">

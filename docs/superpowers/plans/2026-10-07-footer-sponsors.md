@@ -26,3 +26,9 @@
 Publications already in flight (WhatsApp invitation card) remain separate and will also be verified. No deployment cancellation or CI workflow change belongs to this task.
 
 Validation: 18 route/viewport combinations passed loaded logo count, page overflow, conditional controls and forward navigation under reduced motion. Desktop/tablet/mobile screenshots inspected together. Existing footer markup is preserved (ignoring whitespace). Publication pending CI/deployment.
+
+## Revised brief: Fácil Shopping and continuous loop
+
+The maintainer requested the official store to also be credited as a sponsor here, and replaced lateral scrolling with a continuous marquee. Include all eight brands, shuffle once per page initialization, then repeat that stable sequence without a visible seam. Keep original logo colors on the white rail. A CSS transform moves at 28px/s; pause on hover, keyboard interaction, explicit pause, offscreen and document hiding. Reduced motion and no JavaScript show a wrapped static list. The visual copy is hidden from assistive technology and removed from tab order; links remain usable. Localize the pause/resume labels in PT/EN/ES.
+
+Validation: two Playwright regression tests passed across all six routes, covering seam geometry, original/duplicate order parity, Fácil Shopping destination, pause/resume, keyboard visibility, offscreen pause, and reduced-motion layout. The batched 18 viewport/route checks passed loaded logos and absence of page overflow. Desktop/tablet/mobile screenshots inspected together. Previous footer release (PR38) confirmed by exact production hashes of all six pages and both shared assets. Revised publication pending CI/deploy.
