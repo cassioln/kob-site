@@ -4,7 +4,7 @@ import { normalizeSearch, matchChapter, highlightParts, excerpt } from './manual
 import { topicAt, topicProgress, seekInTopic, isNoticeDue, isGroupInviteDue } from './manual-de-bordo-live-timeline.js?v=20261007-charter-notice';
 import { initLiveGuideHelp } from './manual-de-bordo-live-help.js?v=20261005-mobile-live';
 import { initLiveMarkers } from './manual-de-bordo-live-markers.js?v=20261005-mobile-live';
-import { initLiveControlMarquee } from './manual-de-bordo-live-marquee.js?v=20261005-ui-final';
+import { initLiveControlMarquee, initLiveNoticeMarquee } from './manual-de-bordo-live-marquee.js?v=20261007-mobile-notice-ticker';
 import { initLiveTopicTransition } from './manual-de-bordo-live-topic.js?v=20261005-mobile-live';
 import { supportAt } from './manual-de-bordo-live-support.js?v=20261006-live-copy';
 
@@ -17,7 +17,7 @@ const copy = {
     videoError: 'O YouTube não conseguiu reproduzir este vídeo. Tente novamente ou abra o trecho no YouTube.', fullscreenError: 'Não foi possível ampliar. Você pode abrir o vídeo no YouTube.', expand: 'Ampliar vídeo', exit: 'Sair da tela cheia',
     previousShort: 'Anterior', nextShort: 'Próximo', fullLive: 'Live completa', searchHint: 'Buscar na live', loading: 'Carregando vídeo…',
     noticePill: 'Atualização', showNotice: 'Mostrar atualização', collapseNotice: 'Recolher aviso',
-    groupQrTitle: 'Grupo oficial', groupQrHint: 'ou clique aqui:', groupQrAction: 'ENTRAR NO GRUPO', groupQrAlt: 'QR code para entrar no grupo oficial do WhatsApp',
+    groupQrPrompt: 'Clique aqui para', groupQrHint: 'ou acesse pelo QR Code', groupQrAction: 'ENTRAR NO GRUPO', groupQrAlt: 'QR code para entrar no grupo oficial do WhatsApp',
     groupInvite: 'Clique aqui para entrar no grupo', groupInviteLabel: 'Entrar no grupo oficial do WhatsApp (abre em nova aba)',
     supportPill: 'Apoio', showSupport: 'Mostrar apoio da live', opensNewTab: 'abre em nova aba'
   },
@@ -28,7 +28,7 @@ const copy = {
     videoError: 'YouTube could not play this video. Try again or open this topic on YouTube.', fullscreenError: 'Full screen is unavailable. You can open the video on YouTube.', expand: 'Expand video', exit: 'Exit full screen',
     previousShort: 'Previous', nextShort: 'Next', fullLive: 'Full recording', searchHint: 'Search the recording', loading: 'Loading video…',
     noticePill: 'Update', showNotice: 'Show update', collapseNotice: 'Collapse notice',
-    groupQrTitle: 'Official group', groupQrHint: 'or click here:', groupQrAction: 'JOIN THE GROUP', groupQrAlt: 'QR code to join the official WhatsApp group',
+    groupQrPrompt: 'Click here to', groupQrHint: 'or scan the QR code', groupQrAction: 'JOIN THE GROUP', groupQrAlt: 'QR code to join the official WhatsApp group',
     groupInvite: 'Click here to join the group', groupInviteLabel: 'Join the official WhatsApp group (opens in a new tab)',
     supportPill: 'Help', showSupport: 'Show recording help', opensNewTab: 'opens in a new tab'
   },
@@ -39,7 +39,7 @@ const copy = {
     videoError: 'YouTube no pudo reproducir el vídeo. Inténtalo de nuevo o abre este tema en YouTube.', fullscreenError: 'No se pudo ampliar. Puedes abrir el vídeo en YouTube.', expand: 'Ampliar vídeo', exit: 'Salir de pantalla completa',
     previousShort: 'Anterior', nextShort: 'Siguiente', fullLive: 'Charla completa', searchHint: 'Busca en la charla', loading: 'Cargando vídeo…',
     noticePill: 'Actualización', showNotice: 'Mostrar actualización', collapseNotice: 'Recoger aviso',
-    groupQrTitle: 'Grupo oficial', groupQrHint: 'o haz clic aquí:', groupQrAction: 'ENTRAR AL GRUPO', groupQrAlt: 'Código QR para entrar al grupo oficial de WhatsApp',
+    groupQrPrompt: 'Haz clic aquí para', groupQrHint: 'o escanea el código QR', groupQrAction: 'ENTRAR AL GRUPO', groupQrAlt: 'Código QR para entrar al grupo oficial de WhatsApp',
     groupInvite: 'Haz clic aquí para entrar al grupo', groupInviteLabel: 'Entrar al grupo oficial de WhatsApp (se abre en una pestaña nueva)',
     supportPill: 'Ayuda', showSupport: 'Mostrar ayuda de la charla', opensNewTab: 'se abre en una pestaña nueva'
   }
@@ -91,6 +91,14 @@ function initLive() {
   noteAction.hidden = true;
   note.before(noticeGroup);
   noticeGroup.append(note, noteAction);
+  const noticeSymbol = document.createElement('span');
+  noticeSymbol.className = 'live-chapter-notice__symbol';
+  noticeSymbol.setAttribute('aria-hidden', 'true');
+  noticeGroup.prepend(noticeSymbol);
+  const noticeTicker = document.createElement('div');
+  noticeTicker.className = 'live-notice-ticker';
+  note.append(noticeTicker);
+  const noticeMarquee = initLiveNoticeMarquee(note, noticeTicker, noticeGroup);
   const updateDimensions = () => {
     const controls = byId('liveCustomControls');
     const topic = byId('liveCustomTopic');
@@ -112,32 +120,21 @@ function initLive() {
         const tabBottom = tab.offsetTop + tab.offsetHeight / 2;
         const room = video.clientHeight - 18 - (controls.offsetHeight + 12) - tabBottom - 8;
         const copyHeight = invite.offsetHeight - qr.offsetHeight;
-        video.style.setProperty('--live-group-qr-size', `${Math.min(135, Math.max(80, Math.floor(room - copyHeight)))}px`);
+        const fittingSize = Math.min(147, Math.max(80, Math.floor(room - copyHeight)));
+        // This asset has 49 modules including its quiet zone. Whole pixels keep
+        // compact QR modules aligned and readable instead of unevenly rasterized.
+        const wholeModuleSize = Math.floor(fittingSize / 49) * 49;
+        video.style.setProperty('--live-group-qr-size', `${wholeModuleSize >= 98 ? wholeModuleSize : fittingSize}px`);
       }
     } else {
-      // Mobile keeps the title and the notice on the video; the dock and topics button sit below it.
+      // Mobile overlays stay compact; the controls and topics button sit below the video.
       if (controls.parentElement !== cinema) cinema.insertBefore(controls, byId('heroLiveChaptersCol'));
       if (topic.parentElement !== lowerThird) lowerThird.prepend(topic);
       if (noticeGroup.parentElement !== video) video.append(noticeGroup);
-      if (invite && invite.parentElement !== lowerThird) lowerThird.insertBefore(invite, topic);
+      if (invite && (invite.parentElement !== lowerThird || topic.nextElementSibling !== invite)) lowerThird.append(invite);
       lowerThird.hidden = topic.hidden;
     }
-    if (mobile.matches && !noticeGroup.hidden) {
-      // Keep the title, invitation and actions reachable; scroll only long notice text.
-      const lowerHeight = lowerThird.getBoundingClientRect().height;
-      const actionsHeight = noteAction.getBoundingClientRect().height;
-      // Translated actions can wrap into two rows as fonts load. Reserve room for
-      // both rows and at least two lines of guidance, rather than overlapping the invite.
-      const minimumHeight = lowerHeight + actionsHeight + 46 + 32;
-      video.style.setProperty('--live-guidance-min-height', `${Math.ceil(Math.max(240, minimumHeight))}px`);
-      const bodyRoom = video.getBoundingClientRect().height - lowerHeight - actionsHeight - 46;
-      note.style.setProperty('--live-note-body-max-height', `${Math.max(32, bodyRoom)}px`);
-    } else {
-      video.style.removeProperty('--live-guidance-min-height');
-      note.style.removeProperty('--live-note-body-max-height');
-    }
-    if (mobile.matches && noticeGroup.dataset.noticeKind !== 'update' && note.scrollHeight > note.clientHeight) note.tabIndex = 0;
-    else note.removeAttribute('tabindex');
+    noticeMarquee.refresh();
     const h = document.querySelector('.guide-header')?.offsetHeight;
     if (h) document.documentElement.style.setProperty('--guide-header-height', `${h}px`);
     if (window.innerWidth > 768) {
@@ -193,27 +190,33 @@ function initLive() {
   groupInvite.append(inviteText);
   const qrCard = document.createElement('span');
   qrCard.className = 'live-group-invite__desktop';
-  const qrTitle = document.createElement('span');
-  qrTitle.className = 'live-group-invite__title';
-  qrTitle.textContent = copy.groupQrTitle;
   const qrImage = document.createElement('img');
   qrImage.className = 'live-group-invite__qr';
-  qrImage.src = '/assets/images/manual/whatsapp-grupo-qr.svg?v=20261007-logo';
-  qrImage.width = qrImage.height = 135;
+  qrImage.src = '/assets/images/manual/whatsapp-grupo-qr.svg?v=20261007-monochrome';
+  qrImage.width = qrImage.height = 147;
   qrImage.alt = copy.groupQrAlt;
   const qrHint = document.createElement('span');
   qrHint.className = 'live-group-invite__hint';
   qrHint.textContent = copy.groupQrHint;
   const qrAction = document.createElement('span');
   qrAction.className = 'live-group-invite__action';
-  const qrActionIcon = groupInvite.querySelector('.live-group-invite__logo').cloneNode(true);
-  qrActionIcon.setAttribute('class', 'live-group-invite__action-icon');
+  const qrActionIcon = document.createElement('img');
+  qrActionIcon.className = 'live-group-invite__action-icon';
+  qrActionIcon.src = '/assets/images/manual/whatsapp-icon.svg';
+  qrActionIcon.alt = '';
   qrActionIcon.setAttribute('width', '16');
   qrActionIcon.setAttribute('height', '16');
+  const qrActionLines = document.createElement('span');
+  qrActionLines.className = 'live-group-invite__action-lines';
+  const qrActionPrompt = document.createElement('span');
+  qrActionPrompt.className = 'live-group-invite__action-prompt';
+  qrActionPrompt.textContent = copy.groupQrPrompt;
   const qrActionText = document.createElement('span');
+  qrActionText.className = 'live-group-invite__action-title';
   qrActionText.textContent = copy.groupQrAction;
-  qrAction.append(qrActionIcon, qrActionText);
-  qrCard.append(qrTitle, qrImage, qrHint, qrAction);
+  qrActionLines.append(qrActionPrompt, qrActionText);
+  qrAction.append(qrActionIcon, qrActionLines);
+  qrCard.append(qrAction, qrHint, qrImage);
   groupInvite.append(qrCard);
   wrapper.append(groupInvite);
   updateDimensions();
@@ -291,14 +294,13 @@ function initLive() {
       facade.hidden = true;
     }, 300);
   }
-  // Mobile: the notice floats over the video when its mapped utterance is reached,
-  // and "−" folds it into an "Atualização" pill in the video's top-left corner.
+  // Mobile notices use a compact ticker at the top of the video.
   const noticeCollapse = document.createElement('button');
   noticeCollapse.type = 'button';
   noticeCollapse.className = 'live-chapter-notice__collapse';
   noticeCollapse.setAttribute('aria-label', copy.collapseNotice);
   noticeCollapse.setAttribute('aria-controls', noticeGroup.id);
-  noticeCollapse.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 12h12"/></svg>';
+  noticeCollapse.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 15 6-6 6 6"/></svg>';
   noticeGroup.append(noticeCollapse);
   const noticePill = document.createElement('button');
   noticePill.type = 'button';
@@ -306,7 +308,7 @@ function initLive() {
   noticePill.hidden = true;
   noticePill.setAttribute('aria-label', copy.showNotice);
   noticePill.setAttribute('aria-controls', noticeGroup.id);
-  noticePill.innerHTML = '<svg class="live-notice-pill__icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4M12 17h.01"/></svg><span></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 6v12M6 12h12"/></svg>';
+  noticePill.innerHTML = '<svg class="live-notice-pill__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M12 4v10M12 20h.01"/></svg><span></span>';
   noticePill.querySelector('span').textContent = copy.noticePill;
   wrapper.append(noticePill);
   let noticeCollapsed = false;
@@ -437,17 +439,17 @@ function initLive() {
       if (support) details.classList.add('live-guide-trigger--secondary');
       actions.push(details);
     }
-    note.replaceChildren(content);
+    noticeTicker.replaceChildren(content);
     note.hidden = !(chapter?.notice || support);
     noteAction.replaceChildren(...actions);
     noteAction.hidden = !actions.length;
     noticeGroup.dataset.noticeKind = support ? (updateDue ? 'mixed' : 'support') : 'update';
     noticePill.querySelector('span').textContent = support ? (updateDue ? `${copy.noticePill} · ${copy.supportPill}` : copy.supportPill) : copy.noticePill;
     const icon = noticeLabel(support && !updateDue ? 'support' : 'update').firstElementChild;
-    icon.classList.add('live-notice-pill__icon');
     icon.setAttribute('width', '14');
     icon.setAttribute('height', '14');
-    noticePill.firstElementChild.replaceWith(icon);
+    noticeSymbol.replaceChildren(icon);
+    noticeMarquee.refresh();
     noticePill.setAttribute('aria-label', support && !updateDue ? copy.showSupport : copy.showNotice);
   }
 
@@ -456,7 +458,11 @@ function initLive() {
     button.type = 'button';
     button.className = 'live-guide-trigger';
     button.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7h.01"/></svg>';
-    button.append(document.createTextNode(copy.faq));
+    const label = document.createElement('span');
+    label.className = 'live-guide-trigger__text';
+    label.textContent = copy.faq;
+    button.append(label);
+    button.setAttribute('aria-label', copy.faq);
     button.title = copy.detailHint;
     button.dataset.liveFaq = chapter.faqId;
     button.setAttribute('aria-expanded', 'false');
