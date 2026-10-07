@@ -9,3 +9,15 @@ repositório. A leitura de arquivos está autorizada sem scan do Sonar.
 
 Não remover ou alterar a integração de outros projetos. Continuar evitando
 a exposição de credenciais em saídas de ferramentas e commits.
+
+## Paridade Internacional (i18n) em Todas as Alterações
+
+Sempre que o usuário solicitar uma alteração (seja de conteúdo, textos, layout, atributos de acessibilidade ou estrutura):
+1. **Aplicação automática em todos os idiomas**: Aplique a mesma alteração em todas as versões de idiomas do projeto (Português na raiz, Inglês em `/en/` e Espanhol em `/es/`), a não ser que o usuário diga explicitamente o contrário.
+2. **Na dúvida, pergunte antes de qualquer mudança**: Caso haja qualquer incerteza, ambiguidade ou detalhe indefinido sobre o escopo da alteração ou adaptação de conteúdo, pergunte ao usuário antes de aplicar as mudanças.
+3. **Tradução e padrões conforme a skill `i18n-expert`**:
+   - A tradução e localização devem seguir rigorosamente as diretrizes da skill `i18n-expert`.
+   - Garantir paridade total de tags, atributos acessíveis (`aria-label`, `title`, `alt`), seletores e marcação estrutural entre as línguas.
+   - Manter termos de marca intactos (ex.: "Kriativos On Board", "KOB", nomes próprios).
+   - Validar testes automatizados para cobrir todos os idiomas afetados.
+
