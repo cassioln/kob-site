@@ -3246,7 +3246,7 @@
   inset: 0 auto 0 0;
   width: min(460px, calc(100vw - 16px));
   height: 100dvh;
-  z-index: 2300;
+  z-index: 2350;
   background: #f8fafc;
   color: #16324c;
   box-shadow: 16px 0 40px rgba(4, 29, 58, .22);
