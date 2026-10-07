@@ -91,6 +91,10 @@ function initLive() {
   noteAction.hidden = true;
   note.before(noticeGroup);
   noticeGroup.append(note, noteAction);
+  const noticeSymbol = document.createElement('span');
+  noticeSymbol.className = 'live-chapter-notice__symbol';
+  noticeSymbol.setAttribute('aria-hidden', 'true');
+  noticeGroup.prepend(noticeSymbol);
   const noticeTicker = document.createElement('div');
   noticeTicker.className = 'live-notice-ticker';
   note.append(noticeTicker);
@@ -296,7 +300,7 @@ function initLive() {
   noticeCollapse.className = 'live-chapter-notice__collapse';
   noticeCollapse.setAttribute('aria-label', copy.collapseNotice);
   noticeCollapse.setAttribute('aria-controls', noticeGroup.id);
-  noticeCollapse.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 12h12"/></svg>';
+  noticeCollapse.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 15 6-6 6 6"/></svg>';
   noticeGroup.append(noticeCollapse);
   const noticePill = document.createElement('button');
   noticePill.type = 'button';
@@ -304,7 +308,7 @@ function initLive() {
   noticePill.hidden = true;
   noticePill.setAttribute('aria-label', copy.showNotice);
   noticePill.setAttribute('aria-controls', noticeGroup.id);
-  noticePill.innerHTML = '<svg class="live-notice-pill__icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4M12 17h.01"/></svg><span></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 6v12M6 12h12"/></svg>';
+  noticePill.innerHTML = '<svg class="live-notice-pill__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M12 4v10M12 20h.01"/></svg><span></span>';
   noticePill.querySelector('span').textContent = copy.noticePill;
   wrapper.append(noticePill);
   let noticeCollapsed = false;
@@ -442,11 +446,9 @@ function initLive() {
     noticeGroup.dataset.noticeKind = support ? (updateDue ? 'mixed' : 'support') : 'update';
     noticePill.querySelector('span').textContent = support ? (updateDue ? `${copy.noticePill} · ${copy.supportPill}` : copy.supportPill) : copy.noticePill;
     const icon = noticeLabel(support && !updateDue ? 'support' : 'update').firstElementChild;
-    icon.classList.add('live-notice-pill__icon');
     icon.setAttribute('width', '14');
     icon.setAttribute('height', '14');
-    noticePill.firstElementChild.replaceWith(icon);
-    noticeCollapse.replaceChildren(icon.cloneNode(true));
+    noticeSymbol.replaceChildren(icon);
     noticeMarquee.refresh();
     noticePill.setAttribute('aria-label', support && !updateDue ? copy.showSupport : copy.showNotice);
   }

@@ -978,6 +978,10 @@ test('No mobile o aviso usa uma faixa no topo do vídeo e pode ser recolhido', a
   const pill = page.locator('.live-notice-pill');
   await expect(pill).toBeVisible();
   await expect(pill).toContainText('Atualização');
+  await expect(pill.locator('span')).toBeHidden();
+  await expect(pill).toHaveCSS('border-radius', '50%');
+  await expect(pill).toHaveCSS('color', 'rgb(255, 255, 255)');
+  await expect(pill).toHaveCSS('background-color', 'rgb(255, 194, 14)');
   await expect(pill).toBeFocused();
   // Measure the video again: Playwright may scroll the page to click "−".
   const pillBox = await pill.boundingBox();
@@ -1133,6 +1137,9 @@ for (const [path, label, inviteCopy, qrPrompt, qrHint, qrAction] of [
     await expect(invite.locator('.live-group-invite__qr')).toBeHidden();
     await expect(invite.locator('.live-group-invite__mobile-text')).toBeHidden();
     await expect(invite.locator('.live-group-invite__action')).toBeVisible();
+    await expect(invite.locator('.live-group-invite__action')).toHaveCSS('color', 'rgb(255, 255, 255)');
+    await expect(invite.locator('.live-group-invite__action')).toHaveCSS('background-color', 'rgb(8, 123, 65)');
+    await expect(invite.locator('.live-group-invite__action-icon')).toHaveCSS('filter', 'brightness(0) invert(1)');
     await expect(invite.locator('.live-group-invite__hint')).toBeHidden();
     await expect(invite.locator('.live-group-invite__action-prompt')).toBeHidden();
     expect((await invite.boundingBox()).height).toBeLessThanOrEqual(40);
@@ -1417,7 +1424,8 @@ for (const [lang, path, details] of [
         const text = await viewport.boundingBox();
         const button = await action.boundingBox();
         const lower = await page.locator('#liveLowerThird').boundingBox();
-        return strip.height <= 36 && strip.y >= video.y && strip.y + strip.height < lower.y &&
+        const collapse = await page.locator('.live-chapter-notice__collapse').boundingBox();
+        return collapse.y <= strip.y + 1 && Math.abs(collapse.x + collapse.width - strip.x - strip.width) < 1 && strip.height <= 36 && strip.y >= video.y && strip.y + strip.height < lower.y &&
           text.x + text.width <= button.x && button.x + button.width <= strip.x + strip.width;
       }).toBe(true);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
