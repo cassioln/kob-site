@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 
 test.use({ trace: 'off', screenshot: 'off', video: 'off' });
 
-test('redirect same-origin resolve CTA estável sem carregar analytics', async ({ page }) => {
+test('redirect same-origin resolve CTA estável sem carregar analytics', { tag: '@smoke' }, async ({ page }) => {
   let redirect = null;
   await page.route(/https:\/\/api\.whatsapp\.com\/send/, (route) => {
     const destination = new URL(route.request().url());
@@ -24,7 +24,7 @@ test('redirect same-origin resolve CTA estável sem carregar analytics', async (
   expect(await page.evaluate(() => Boolean(window.dataLayer || window.google_tag_manager))).toBe(false);
 });
 
-test('redirect desconhecido retorna para reserva sem destino externo', async ({ page }) => {
+test('redirect desconhecido retorna para reserva sem destino externo', { tag: '@smoke' }, async ({ page }) => {
   await page.goto('/whatsapp.html?cta=unknown');
   await expect(page).toHaveURL(/\/#reserve$/);
 });

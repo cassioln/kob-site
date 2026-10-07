@@ -135,7 +135,7 @@ test('Progresso real do player atualiza o capítulo e a falha mantém alternativ
 });
 
 
-test('Controles personalizados substituem os controles do YouTube e navegam entre assuntos', async ({ page }) => {
+test('Controles personalizados substituem os controles do YouTube e navegam entre assuntos', { tag: '@smoke' }, async ({ page }) => {
   await page.goto('/manual-de-bordo.html');
   await expect(page.locator('#liveCustomControls')).toBeHidden();
   await page.locator('#loadLivePlayerBtn').click();
@@ -1265,7 +1265,7 @@ test('Apoio interno usa o popover e mantém o vídeo e a URL', async ({ page }) 
   await expect(page.locator('#livePlayerContainer iframe')).toHaveCount(1);
 });
 
-test('Mobile preserva recolhimento e apoios não encobrem o convite e o assunto', async ({ page }) => {
+test('Mobile preserva recolhimento e apoios não encobrem o convite e o assunto', { tag: '@smoke' }, async ({ page }) => {
   for (const lang of ['pt', 'en', 'es']) for (const width of [320, 390]) {
     await page.setViewportSize({ width, height: 1000 });
     await page.goto(`/${lang === 'pt' ? '' : `${lang}/`}manual-de-bordo.html`);

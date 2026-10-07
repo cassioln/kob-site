@@ -18,7 +18,7 @@ function fakePixResponse() {
 
 test.use({ trace: 'off', screenshot: 'off', video: 'off' });
 
-test('cadastra o grupo, calcula o valor e exibe o Pix', async ({ page }) => {
+test('cadastra o grupo, calcula o valor e exibe o Pix', { tag: '@smoke' }, async ({ page }) => {
   let requestBody = null;
   await page.route('**/api/create-pix-order', async (route) => {
     requestBody = JSON.parse(route.request().postData() || '{}');
@@ -146,7 +146,7 @@ test('bloqueia WhatsApp preenchido com estrutura inválida', async ({ page }) =>
   expect(createRequests).toBe(0);
 });
 
-test('confirma a vaga automaticamente quando o pagamento é identificado', async ({ page }) => {
+test('confirma a vaga automaticamente quando o pagamento é identificado', { tag: '@smoke' }, async ({ page }) => {
   let statusChecks = 0;
   await page.route('**/api/create-pix-order', async (route) => {
     await route.fulfill({

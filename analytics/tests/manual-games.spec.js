@@ -4,7 +4,7 @@ for (const [language, path] of [
   ['pt', '/manual-de-bordo.html'], ['en', '/en/manual-de-bordo.html'], ['es', '/es/manual-de-bordo.html']
 ]) {
   for (const width of [390, 850, 1440]) {
-    test(`Games carousel: arrows, keyboard and layout (${language}, ${width}px)`, async ({ page }) => {
+    test(`Games carousel: arrows, keyboard and layout (${language}, ${width}px)`, { tag: language === 'pt' && width === 390 ? ['@smoke'] : [] }, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });
       await page.emulateMedia({ reducedMotion: 'reduce' });
       await page.addInitScript(() => localStorage.setItem('cookie_consent_status', 'denied'));
