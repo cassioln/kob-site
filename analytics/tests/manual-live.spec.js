@@ -586,7 +586,7 @@ for(const [lang,path,home,charter,prefix] of [
   await expect(page.locator('#drawer .guide-menu-mobile')).toBeVisible();
   await expect(page.locator('#drawer .guide-menu-mobile')).toHaveAttribute('href','#transporte');
   await page.setViewportSize({width:600,height:844});
-  await expect(page.locator('.guide-header__home-link')).toBeVisible();
+  await expect(page.locator('.guide-header__home-link')).toHaveCount(0);
  });
 }
 
