@@ -399,7 +399,10 @@ function initLive() {
       const update = document.createElement('div');
       update.className = 'live-notice-update';
       update.hidden = !updateDue;
-      update.append(noticeLabel(), ' ', chapter.notice[lang]);
+      const explanation = document.createElement('span');
+      explanation.className = 'live-notice-body';
+      explanation.textContent = chapter.notice[lang];
+      update.append(noticeLabel(), ' ', explanation);
       content.append(update);
     }
     if (support) {
@@ -411,7 +414,10 @@ function initLive() {
       if (emphasis && text.startsWith(emphasis)) {
         const strong = document.createElement('strong');
         strong.textContent = emphasis;
-        help.append(strong, text.slice(emphasis.length));
+        const explanation = document.createElement('span');
+        explanation.className = 'live-notice-body';
+        explanation.textContent = text.slice(emphasis.length);
+        help.append(strong, explanation);
       } else help.textContent = text;
       content.append(help);
       if (support.action.href) {

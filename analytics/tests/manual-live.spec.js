@@ -1221,6 +1221,35 @@ for (const [lang, path] of [
   ['en', '/en/manual-de-bordo.html'],
   ['es', '/es/manual-de-bordo.html']
 ]) {
+  test(`Destaque do aviso acima do texto em desktop e mobile: ${lang}`, async ({ page }) => {
+    for (const width of [390, 1440]) {
+      await page.setViewportSize({ width, height: 1000 });
+      await page.goto(path);
+      await page.locator('#loadLivePlayerBtn').click();
+      await readyPlayer(page);
+      for (const [seconds, selector] of [[1319, '.live-notice-update'], [1742, '.live-notice-support']]) {
+        await pauseAtLiveTime(page, seconds);
+        const message = page.locator(`#liveChapterNote ${selector}`);
+        await expect(message).toBeVisible();
+        await expect.poll(async () => {
+          const label = await message.locator('strong').boundingBox();
+          const body = await message.locator('.live-notice-body').boundingBox();
+          return body.y >= label.y + label.height && Math.abs(body.x - label.x) < 1;
+        }).toBe(true);
+        if (width === 390) {
+          const styles = await message.evaluate(el => {
+            const label = getComputedStyle(el.querySelector('strong'));
+            const body = getComputedStyle(el.querySelector('.live-notice-body'));
+            return { labelSize: label.fontSize, bodySize: body.fontSize, weight: label.fontWeight, labelColor: label.color, bodyColor: body.color };
+          });
+          expect(styles.labelSize).toBe(styles.bodySize);
+          expect(Number(styles.weight)).toBeGreaterThanOrEqual(700);
+          expect(styles.labelColor).not.toBe(styles.bodyColor);
+        }
+      }
+    }
+  });
+
   test(`Textos aprovados e destinos dos apoios em ${lang}`, async ({ page }) => {
     await page.goto(path);
     await page.locator('#loadLivePlayerBtn').click();
@@ -1237,7 +1266,7 @@ for (const [lang, path] of [
           const body = getComputedStyle(el), bold = getComputedStyle(el.querySelector('strong'));
           return { bodyColor: body.color, boldColor: bold.color, bodySize: body.fontSize, boldSize: bold.fontSize, boldWeight: bold.fontWeight };
         });
-        expect(styles.boldColor).toBe(styles.bodyColor);
+        expect(styles.boldColor).toBe('rgb(7, 101, 140)');
         expect(styles.boldSize).toBe(styles.bodySize);
         expect(Number(styles.boldWeight)).toBeGreaterThanOrEqual(700);
       } else await expect(support.locator('strong')).toHaveCount(0);

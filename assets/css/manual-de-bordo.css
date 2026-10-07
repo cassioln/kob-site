@@ -1679,6 +1679,21 @@
   font-size: 1rem;
 }
 
+/* Each notice's emphasis is a heading, separate from its explanation. */
+.live-chapter-notice .live-chapter-note strong {
+  display: block;
+  margin: 0 0 4px;
+  font-weight: 700;
+}
+
+.live-chapter-notice .live-chapter-note strong.live-notice-label {
+  display: flex;
+}
+
+.live-notice-body {
+  display: block;
+}
+
 .live-notice-label {
   display: inline-flex;
   align-items: center;
@@ -1693,7 +1708,7 @@
 }
 
 .live-chapter-notice .live-chapter-note .live-notice-support strong {
-  color: inherit;
+  color: #07658c;
   font-size: inherit;
 }
 
@@ -2422,9 +2437,10 @@
     line-height: inherit;
   }
 
-  .hero-live-player>.live-chapter-notice strong {
+  .hero-live-player>.live-chapter-notice .live-chapter-note strong {
     color: #725200;
     font-size: inherit;
+    margin-bottom: 2px;
   }
 
   .hero-live-player .live-chapter-note__action {
