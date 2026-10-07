@@ -31,7 +31,7 @@ test('Phone checklist shortcut enters from below, opens and restores focus in al
   }
 });
 
-test('Home header shortcut is removed at all widths; desktop and tablet retain their lateral checklist', async ({ page }) => {
+test('Home header shortcut is removed at all widths; desktop and tablet retain their lateral checklist shortcut', async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem('cookie_consent_status', 'denied'));
   for (const [lang, path] of routes) {
     await page.goto(`${path}?lang=${lang}`);
@@ -47,4 +47,55 @@ test('Home header shortcut is removed at all widths; desktop and tablet retain t
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.setViewportSize({ width: 320, height: 844 });
   expect(await page.locator('#checklistSidebarToggle').evaluate(el => getComputedStyle(el).transitionDuration)).toBe('0s');
+});
+
+test('Checklist panel enters vertically below desktop and laterally only on desktop', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('cookie_consent_status', 'denied'));
+  for (const [lang, path] of routes) {
+    await page.goto(`${path}?lang=${lang}`);
+    for (const width of [320, 390, 768, 1023, 1024, 1440]) {
+      await page.setViewportSize({ width, height: 844 });
+      await page.locator('#cronograma').scrollIntoViewIfNeeded();
+      const sidebar = page.locator('#checklistSidebar');
+      await sidebar.evaluate(el => Promise.all(el.getAnimations().map(animation => animation.finished.catch(() => {}))));
+      const closed = await sidebar.evaluate(el => {
+        const matrix = new DOMMatrix(getComputedStyle(el).transform);
+        return { x: matrix.m41, y: matrix.m42 };
+      });
+      if (width < 1024) {
+        expect(closed.x).toBe(0);
+        expect(closed.y).toBeGreaterThan(0);
+      } else {
+        expect(closed.x).toBeLessThan(0);
+        expect(closed.y).toBe(0);
+      }
+      const samples = await page.evaluate(() => new Promise(resolve => {
+        const el = document.getElementById('checklistSidebar');
+        const values = [];
+        document.getElementById('checklistSidebarToggle').click();
+        function sample() {
+          const matrix = new DOMMatrix(getComputedStyle(el).transform);
+          values.push({ x: matrix.m41, y: matrix.m42 });
+          if (Math.abs(matrix.m41) < .01 && Math.abs(matrix.m42) < .01) resolve(values);
+          else requestAnimationFrame(sample);
+        }
+        requestAnimationFrame(sample);
+      }));
+      expect(samples.length).toBeGreaterThan(1);
+      if (width < 1024) {
+        expect(samples.every(value => value.x === 0)).toBe(true);
+        expect(samples[0].y).toBeGreaterThan(samples.at(-1).y);
+      } else {
+        expect(samples.every(value => value.y === 0)).toBe(true);
+        expect(samples[0].x).toBeLessThan(samples.at(-1).x);
+      }
+      await expect(sidebar).toHaveAttribute('aria-hidden', 'false');
+      await page.locator('#checklistSidebarClose').click();
+      await expect(sidebar).toHaveAttribute('aria-hidden', 'true');
+      await expect.poll(() => sidebar.evaluate(el => {
+        const matrix = new DOMMatrix(getComputedStyle(el).transform);
+        return innerWidth < 1024 ? matrix.m42 : -matrix.m41;
+      })).toBeGreaterThan(300);
+    }
+  }
 });
