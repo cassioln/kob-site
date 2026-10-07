@@ -3056,7 +3056,7 @@
 /* Aba retrátil do Checklist de Bordo (Design inspirado na aba .live-drawer__tab) */
 .checklist-sidebar-toggle {
   position: fixed;
-  left: 0;
+  left: -7px;
   top: 50%;
   transform: translateY(-50%) translateX(0);
   z-index: 900;
@@ -3065,7 +3065,7 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-  width: 48px;
+  width: 60px;
   min-height: 190px;
   padding: 16px 8px;
   background: #041d3a;
