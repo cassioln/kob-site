@@ -20,7 +20,7 @@ test('Timeline animated track and gold marker works across PT, EN and ES', async
     await page.waitForTimeout(300);
 
     const steps = page.locator('#cronograma .timeline-step');
-    await expect(steps).toHaveCount(15);
+    await expect(steps).toHaveCount(16);
 
     // Primeiro step deve ter is-reached e is-current inicialmente
     await expect(steps.first()).toHaveClass(/is-reached/);
