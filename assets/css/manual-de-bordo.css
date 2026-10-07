@@ -1903,10 +1903,6 @@
     color: #087b41;
   }
 
-  .live-group-invite__action-icon path:last-child {
-    fill: #fff;
-  }
-
   .live-group-invite:is(:hover, :focus-visible) .live-group-invite__action {
     background: #effff5;
   }

@@ -1051,9 +1051,9 @@ for (const width of [390, 1440]) {
 }
 
 for (const [path, label, inviteCopy, qrTitle, qrHint, qrAction] of [
-  ['/manual-de-bordo.html', 'ATUALIZAÇÃO', 'Clique aqui para entrar no grupo', 'Grupo oficial', 'ou clique aqui:', 'ENTRAR NO GRUPO'],
-  ['/en/manual-de-bordo.html', 'UPDATE', 'Click here to join the group', 'Official group', 'or click here:', 'JOIN THE GROUP'],
-  ['/es/manual-de-bordo.html', 'ACTUALIZACIÓN', 'Haz clic aquí para entrar al grupo', 'Grupo oficial', 'o haz clic aquí:', 'ENTRAR AL GRUPO']
+  ['/manual-de-bordo.html', 'ATUALIZAÇÃO', 'Clique aqui para entrar no grupo', 'Grupo oficial', 'ou acesse pelo QR Code', 'ENTRAR NO GRUPO'],
+  ['/en/manual-de-bordo.html', 'UPDATE', 'Click here to join the group', 'Official group', 'or scan the QR code', 'JOIN THE GROUP'],
+  ['/es/manual-de-bordo.html', 'ACTUALIZACIÓN', 'Haz clic aquí para entrar al grupo', 'Grupo oficial', 'o escanea el código QR', 'ENTRAR AL GRUPO']
 ]) {
   test(`Rótulo com atenção, convite e posicionamento em ${path}`, async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 1000 });
@@ -1080,6 +1080,8 @@ for (const [path, label, inviteCopy, qrTitle, qrHint, qrAction] of [
     await expect(invite.locator('.live-group-invite__title')).toHaveText(qrTitle);
     await expect(invite.locator('.live-group-invite__title')).toHaveCSS('white-space', 'nowrap');
     await expect(invite.locator('.live-group-invite__hint')).toHaveText(qrHint);
+    const order = await invite.locator('.live-group-invite__desktop').evaluate(el => Array.from(el.children, child => child.className));
+    expect(order).toEqual(['live-group-invite__title', 'live-group-invite__action', 'live-group-invite__hint', 'live-group-invite__qr']);
     await expect(invite.locator('.live-group-invite__action')).toHaveText(qrAction);
     await expect(invite.locator('.live-group-invite__action')).toHaveCSS('background-color', 'rgb(255, 255, 255)');
     await expect(invite.locator('.live-group-invite__action-icon')).toHaveCSS('color', 'rgb(8, 123, 65)');
