@@ -1071,7 +1071,8 @@ for (const [path, label, inviteCopy] of [
     await expect(invite).toBeHidden();
     await pauseAtLiveTime(page, 1356.159);
     await expect(invite).toBeVisible();
-    await expect(invite).toHaveText(inviteCopy);
+    await expect(invite.locator('.live-group-invite__mobile-text')).toHaveText(inviteCopy);
+    await expect(invite.locator('.live-group-invite__qr')).toBeVisible();
     await expect(invite).toHaveAttribute('href', GROUP_INVITE_URL);
     await expect(invite).toHaveAttribute('target', '_blank');
     await expect(invite).toHaveAttribute('rel', 'noopener noreferrer');
@@ -1090,10 +1091,19 @@ for (const [path, label, inviteCopy] of [
     await checkInviteStyle();
     await expect.poll(async () => {
       const box = await invite.boundingBox(), video = await page.locator('#livePlayerWrapper').boundingBox();
-      return Math.abs(box.x - video.x - 22) < 2 && Math.abs(box.y - video.y - 18) < 2;
+      const topic = await page.locator('#liveLowerThird').boundingBox();
+      return box.x > video.x + video.width / 2 && box.y > video.y && box.x >= topic.x + topic.width;
     }).toBe(true);
+    await page.setViewportSize({ width: 1023, height: 1000 });
+    await expect(invite.locator('.live-group-invite__qr')).toBeHidden();
+    await expect(invite.locator('.live-group-invite__mobile-text')).toBeVisible();
+    await page.setViewportSize({ width: 1024, height: 1000 });
+    await expect(invite.locator('.live-group-invite__qr')).toBeVisible();
+    await expect(invite.locator('.live-group-invite__mobile-text')).toBeHidden();
     await page.setViewportSize({ width: 390, height: 1000 });
     await expect.poll(() => invite.evaluate(el => el.nextElementSibling?.id)).toBe('liveCustomTopic');
+    await expect(invite.locator('.live-group-invite__qr')).toBeHidden();
+    await expect(invite.locator('.live-group-invite__mobile-text')).toBeVisible();
     await checkInviteStyle();
     await expect.poll(async () => {
       const box = await invite.boundingBox(), topic = await page.locator('#liveCustomTopic').boundingBox();
