@@ -17,7 +17,7 @@ const copy = {
     videoError: 'O YouTube não conseguiu reproduzir este vídeo. Tente novamente ou abra o trecho no YouTube.', fullscreenError: 'Não foi possível ampliar. Você pode abrir o vídeo no YouTube.', expand: 'Ampliar vídeo', exit: 'Sair da tela cheia',
     previousShort: 'Anterior', nextShort: 'Próximo', fullLive: 'Live completa', searchHint: 'Buscar na live', loading: 'Carregando vídeo…',
     noticePill: 'Atualização', showNotice: 'Mostrar atualização', collapseNotice: 'Recolher aviso',
-    groupQrTitle: 'Grupo oficial', groupQrHint: 'ou acesse pelo QR Code', groupQrAction: 'ENTRAR NO GRUPO', groupQrAlt: 'QR code para entrar no grupo oficial do WhatsApp',
+    groupQrPrompt: 'Clique aqui para', groupQrHint: 'ou acesse pelo QR Code', groupQrAction: 'ENTRAR NO GRUPO', groupQrAlt: 'QR code para entrar no grupo oficial do WhatsApp',
     groupInvite: 'Clique aqui para entrar no grupo', groupInviteLabel: 'Entrar no grupo oficial do WhatsApp (abre em nova aba)',
     supportPill: 'Apoio', showSupport: 'Mostrar apoio da live', opensNewTab: 'abre em nova aba'
   },
@@ -28,7 +28,7 @@ const copy = {
     videoError: 'YouTube could not play this video. Try again or open this topic on YouTube.', fullscreenError: 'Full screen is unavailable. You can open the video on YouTube.', expand: 'Expand video', exit: 'Exit full screen',
     previousShort: 'Previous', nextShort: 'Next', fullLive: 'Full recording', searchHint: 'Search the recording', loading: 'Loading video…',
     noticePill: 'Update', showNotice: 'Show update', collapseNotice: 'Collapse notice',
-    groupQrTitle: 'Official group', groupQrHint: 'or scan the QR code', groupQrAction: 'JOIN THE GROUP', groupQrAlt: 'QR code to join the official WhatsApp group',
+    groupQrPrompt: 'Click here to', groupQrHint: 'or scan the QR code', groupQrAction: 'JOIN THE GROUP', groupQrAlt: 'QR code to join the official WhatsApp group',
     groupInvite: 'Click here to join the group', groupInviteLabel: 'Join the official WhatsApp group (opens in a new tab)',
     supportPill: 'Help', showSupport: 'Show recording help', opensNewTab: 'opens in a new tab'
   },
@@ -39,7 +39,7 @@ const copy = {
     videoError: 'YouTube no pudo reproducir el vídeo. Inténtalo de nuevo o abre este tema en YouTube.', fullscreenError: 'No se pudo ampliar. Puedes abrir el vídeo en YouTube.', expand: 'Ampliar vídeo', exit: 'Salir de pantalla completa',
     previousShort: 'Anterior', nextShort: 'Siguiente', fullLive: 'Charla completa', searchHint: 'Busca en la charla', loading: 'Cargando vídeo…',
     noticePill: 'Actualización', showNotice: 'Mostrar actualización', collapseNotice: 'Recoger aviso',
-    groupQrTitle: 'Grupo oficial', groupQrHint: 'o escanea el código QR', groupQrAction: 'ENTRAR AL GRUPO', groupQrAlt: 'Código QR para entrar al grupo oficial de WhatsApp',
+    groupQrPrompt: 'Haz clic aquí para', groupQrHint: 'o escanea el código QR', groupQrAction: 'ENTRAR AL GRUPO', groupQrAlt: 'Código QR para entrar al grupo oficial de WhatsApp',
     groupInvite: 'Haz clic aquí para entrar al grupo', groupInviteLabel: 'Entrar al grupo oficial de WhatsApp (se abre en una pestaña nueva)',
     supportPill: 'Ayuda', showSupport: 'Mostrar ayuda de la charla', opensNewTab: 'se abre en una pestaña nueva'
   }
@@ -112,7 +112,11 @@ function initLive() {
         const tabBottom = tab.offsetTop + tab.offsetHeight / 2;
         const room = video.clientHeight - 18 - (controls.offsetHeight + 12) - tabBottom - 8;
         const copyHeight = invite.offsetHeight - qr.offsetHeight;
-        video.style.setProperty('--live-group-qr-size', `${Math.min(135, Math.max(80, Math.floor(room - copyHeight)))}px`);
+        const fittingSize = Math.min(147, Math.max(80, Math.floor(room - copyHeight)));
+        // This asset has 49 modules including its quiet zone. Whole pixels keep
+        // compact QR modules aligned and readable instead of unevenly rasterized.
+        const wholeModuleSize = Math.floor(fittingSize / 49) * 49;
+        video.style.setProperty('--live-group-qr-size', `${wholeModuleSize >= 98 ? wholeModuleSize : fittingSize}px`);
       }
     } else {
       // Mobile keeps the title and the notice on the video; the dock and topics button sit below it.
@@ -193,13 +197,10 @@ function initLive() {
   groupInvite.append(inviteText);
   const qrCard = document.createElement('span');
   qrCard.className = 'live-group-invite__desktop';
-  const qrTitle = document.createElement('span');
-  qrTitle.className = 'live-group-invite__title';
-  qrTitle.textContent = copy.groupQrTitle;
   const qrImage = document.createElement('img');
   qrImage.className = 'live-group-invite__qr';
   qrImage.src = '/assets/images/manual/whatsapp-grupo-qr.svg?v=20261007-monochrome';
-  qrImage.width = qrImage.height = 135;
+  qrImage.width = qrImage.height = 147;
   qrImage.alt = copy.groupQrAlt;
   const qrHint = document.createElement('span');
   qrHint.className = 'live-group-invite__hint';
@@ -212,10 +213,17 @@ function initLive() {
   qrActionIcon.alt = '';
   qrActionIcon.setAttribute('width', '16');
   qrActionIcon.setAttribute('height', '16');
+  const qrActionLines = document.createElement('span');
+  qrActionLines.className = 'live-group-invite__action-lines';
+  const qrActionPrompt = document.createElement('span');
+  qrActionPrompt.className = 'live-group-invite__action-prompt';
+  qrActionPrompt.textContent = copy.groupQrPrompt;
   const qrActionText = document.createElement('span');
+  qrActionText.className = 'live-group-invite__action-title';
   qrActionText.textContent = copy.groupQrAction;
-  qrAction.append(qrActionIcon, qrActionText);
-  qrCard.append(qrTitle, qrAction, qrHint, qrImage);
+  qrActionLines.append(qrActionPrompt, qrActionText);
+  qrAction.append(qrActionIcon, qrActionLines);
+  qrCard.append(qrAction, qrHint, qrImage);
   groupInvite.append(qrCard);
   wrapper.append(groupInvite);
   updateDimensions();
