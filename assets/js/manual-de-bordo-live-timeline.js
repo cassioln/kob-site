@@ -1,5 +1,7 @@
 import { CHAPTERS, LIVE_DURATION, GROUP_INVITE_CUES, GROUP_INVITE_DURATION } from './manual-de-bordo-live-data.js?v=20261007-charter-notice';
 
+import { SUPPORT_NOTICES } from './manual-de-bordo-live-support.js?v=20261006-live-copy';
+
 export function topicAt(seconds) {
   return CHAPTERS.findLast(topic => topic.seconds <= Number(seconds)) || CHAPTERS[0];
 }
@@ -18,6 +20,25 @@ export function isNoticeDue(topic, seconds) {
   const { end } = topicBounds(topic);
   const position = Number(seconds);
   return position >= topic.noticeSeconds && position < end;
+}
+
+/** On mobile the latest utterance remains available until its topic ends. */
+export function mobileNoticeAt(topic, seconds) {
+  if (!topic || !Number.isFinite(Number(seconds))) return null;
+  const position = Number(seconds);
+  const { start, end } = topicBounds(topic);
+  if (position < start || position >= end) return null;
+  let latest = isNoticeDue(topic, position)
+    ? { key: `${topic.id}:update:${topic.noticeSeconds}`, seconds: topic.noticeSeconds, update: true, support: null }
+    : null;
+  for (const support of SUPPORT_NOTICES) {
+    for (const cue of support.cueSeconds) {
+      if (cue >= start && cue <= position && (!latest || cue > latest.seconds)) {
+        latest = { key: `${topic.id}:${support.id}:${cue}`, seconds: cue, update: false, support };
+      }
+    }
+  }
+  return latest;
 }
 
 export function isGroupInviteDue(seconds) {
