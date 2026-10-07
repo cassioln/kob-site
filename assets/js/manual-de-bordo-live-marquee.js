@@ -36,6 +36,9 @@ export function initLiveControlMarquee(buttons) {
 /** A single accessible copy of the notice; animate only actual mobile overflow. */
 export function initLiveNoticeMarquee(viewport, text, notice) {
   const mobile = matchMedia('(max-width: 768px)');
+  const repeat = document.createElement('span');
+  repeat.className = 'live-notice-repeat';
+  repeat.setAttribute('aria-hidden', 'true');
   let frame;
   let onscreen = true;
   function syncPlayback() {
@@ -45,11 +48,21 @@ export function initLiveNoticeMarquee(viewport, text, notice) {
     if (frame !== undefined) return;
     frame = requestAnimationFrame(() => {
       frame = undefined;
-      const distance = Math.max(0, text.scrollWidth - viewport.clientWidth);
-      const overflowing = mobile.matches && viewport.clientWidth > 0 && distance > 1;
+      repeat.remove();
+      const originalWidth = text.scrollWidth;
+      const overflowing = mobile.matches && viewport.clientWidth > 0 && originalWidth > viewport.clientWidth + 1;
+      if (overflowing) {
+        repeat.textContent = Array.from(text.children)
+          .filter(message => !message.hidden)
+          .map(message => message.classList.contains('live-notice-update')
+            ? message.querySelector('.live-notice-body').textContent : message.textContent)
+          .join(' · ');
+        text.append(repeat);
+      }
+      const travel = originalWidth + 32;
       viewport.classList.toggle('is-overflowing', overflowing);
-      viewport.style.setProperty('--live-label-travel', `${-distance}px`);
-      viewport.style.setProperty('--live-label-duration', `${Math.max(8, distance / 36 / .76)}s`);
+      viewport.style.setProperty('--live-label-travel', `${-travel}px`);
+      viewport.style.setProperty('--live-label-duration', `${Math.max(8, travel / 36)}s`);
       if (overflowing) viewport.tabIndex = 0;
       else viewport.removeAttribute('tabindex');
     });

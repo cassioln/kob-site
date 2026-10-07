@@ -969,7 +969,7 @@ test('No mobile o aviso usa uma faixa no topo do vídeo e pode ser recolhido', a
   const video = await page.locator('#livePlayerWrapper').boundingBox();
   const box = await notice.boundingBox();
   expect(box.y).toBeGreaterThanOrEqual(video.y);
-  expect(box.height).toBeLessThanOrEqual(52);
+  expect(box.height).toBeLessThanOrEqual(36);
   expect(box.y + box.height).toBeLessThan(video.y + video.height / 2);
   const controls = await page.locator('#liveCustomControls').boundingBox();
   expect(controls.y).toBeGreaterThanOrEqual(box.y + box.height);
@@ -1134,6 +1134,8 @@ for (const [path, label, inviteCopy, qrPrompt, qrHint, qrAction] of [
     await expect(invite.locator('.live-group-invite__mobile-text')).toBeHidden();
     await expect(invite.locator('.live-group-invite__action')).toBeVisible();
     await expect(invite.locator('.live-group-invite__hint')).toBeHidden();
+    await expect(invite.locator('.live-group-invite__action-prompt')).toBeHidden();
+    expect((await invite.boundingBox()).height).toBeLessThanOrEqual(40);
     await expect(invite).toHaveCSS('background-color', 'rgb(8, 123, 65)');
     await expect.poll(async () => {
       const box = await invite.boundingBox(), topic = await page.locator('#liveCustomTopic').boundingBox();
@@ -1403,7 +1405,9 @@ for (const [lang, path, details] of [
     const viewport = page.locator('#liveChapterNote');
     const action = page.locator('#liveChapterNoteAction button');
     await expect(action).toHaveText(details);
-    await expect(ticker).toHaveCSS('animation-name', 'live-label-marquee');
+    await expect(ticker).toHaveCSS('animation-name', 'live-notice-marquee');
+    await expect(ticker).toHaveCSS('animation-direction', 'normal');
+    await expect(page.locator('.live-notice-repeat')).toHaveAttribute('aria-hidden', 'true');
     expect(await ticker.evaluate(el => parseFloat(getComputedStyle(el).animationDuration))).toBeGreaterThanOrEqual(8);
     for (const width of [320, 390, 768]) {
       await page.setViewportSize({ width, height: 900 });
@@ -1413,7 +1417,7 @@ for (const [lang, path, details] of [
         const text = await viewport.boundingBox();
         const button = await action.boundingBox();
         const lower = await page.locator('#liveLowerThird').boundingBox();
-        return strip.height <= 52 && strip.y >= video.y && strip.y + strip.height < lower.y &&
+        return strip.height <= 36 && strip.y >= video.y && strip.y + strip.height < lower.y &&
           text.x + text.width <= button.x && button.x + button.width <= strip.x + strip.width;
       }).toBe(true);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
@@ -1423,8 +1427,10 @@ for (const [lang, path, details] of [
     await expect(ticker).toHaveCSS('animation-play-state', 'paused');
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await expect(ticker).toHaveCSS('animation-name', 'none');
+    await expect(page.locator('.live-notice-repeat')).toBeHidden();
     await expect(viewport).toHaveCSS('overflow-x', 'auto');
-    await action.click();
+    // Keyboard focus opens the help before a pointer click; avoid clicking its backdrop.
+    await action.focus();
     await expect(page.locator('#liveGuidePopover')).toBeVisible();
   });
 }
