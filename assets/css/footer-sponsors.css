@@ -26,18 +26,9 @@
   text-wrap: balance;
 }
 
-.footer-sponsors__controls {
-  display: flex;
-  flex: none;
-  gap: 8px;
-}
-
-.footer-sponsors__controls[hidden] {
-  display: none;
-}
-
 .footer-sponsors__button {
   display: grid;
+  flex: none;
   place-items: center;
   width: 44px;
   height: 44px;
@@ -50,13 +41,12 @@
   transition: background 160ms ease-out;
 }
 
-.footer-sponsors__button:hover:not(:disabled) {
-  background: rgba(244, 248, 251, .12);
+.footer-sponsors__button[hidden], .footer-sponsors__button [hidden] {
+  display: none;
 }
 
-.footer-sponsors__button:disabled {
-  opacity: .35;
-  cursor: default;
+.footer-sponsors__button:hover {
+  background: rgba(244, 248, 251, .12);
 }
 
 .footer-sponsors__button:focus-visible {
@@ -64,26 +54,26 @@
   outline-offset: 3px;
 }
 
-.footer-sponsors__track {
-  display: flex;
-  gap: 16px;
-  margin: 0;
+.footer-sponsors__viewport {
   padding: 12px;
-  overflow-x: auto;
-  list-style: none;
+  overflow: hidden;
   border-radius: 12px;
   background: #fff;
-  scroll-snap-type: x proximity;
-  scroll-padding-inline: 12px;
-  overscroll-behavior-inline: contain;
-  scrollbar-width: thin;
-  scrollbar-color: #8da8bd #f4f8fb;
+}
+
+.footer-sponsors__track {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 24px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
 .footer-sponsors__item {
-  flex: 1 0 116px;
-  min-width: 116px;
-  scroll-snap-align: start;
+  flex: none;
+  width: 128px;
 }
 
 .footer-sponsors__link {
@@ -112,20 +102,61 @@
   object-fit: contain;
 }
 
+.footer-sponsors.is-enhanced .footer-sponsors__belt {
+  position: relative;
+  display: flex;
+  width: max-content;
+  animation: footer-sponsors-loop var(--sponsors-duration, 44s) linear infinite;
+}
+
+.footer-sponsors.is-enhanced .footer-sponsors__track {
+  flex-wrap: nowrap;
+  padding-inline-end: 24px;
+}
+
+.footer-sponsors.is-paused .footer-sponsors__belt,
+.footer-sponsors__viewport:hover .footer-sponsors__belt {
+  animation-play-state: paused;
+}
+
+.footer-sponsors.is-keyboard .footer-sponsors__belt {
+  animation: none;
+}
+
+@keyframes footer-sponsors-loop {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
 @media (max-width: 480px) {
   .footer-sponsors__head {
     align-items: flex-end;
     gap: 12px;
   }
-
-  .footer-sponsors__track {
-    gap: 12px;
+  .footer-sponsors:not(.is-enhanced) .footer-sponsors__item {
+    width: 104px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .footer-sponsors__button,
-  .footer-sponsors__link {
+  .footer-sponsors.is-enhanced .footer-sponsors__belt {
+    display: block;
+    width: auto;
+    animation: none;
+  }
+  .footer-sponsors.is-enhanced .footer-sponsors__track {
+    flex-wrap: wrap;
+    padding: 0;
+    gap: 16px;
+  }
+  .footer-sponsors.is-enhanced .footer-sponsors__copy {
+    display: none;
+  }
+  .footer-sponsors__item {
+    width: 104px;
+  }
+  .footer-sponsors__button, .footer-sponsors__link {
     transition: none;
   }
 }
