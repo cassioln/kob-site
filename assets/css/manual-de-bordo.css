@@ -3360,6 +3360,17 @@
   visibility: visible;
 }
 
+/* On phones and tablets, the panel rises from the bottom instead of sliding sideways. */
+@media (max-width: 1023px) {
+  .checklist-sidebar {
+    transform: translateY(100%);
+  }
+
+  .checklist-sidebar.is-open {
+    transform: translateY(0);
+  }
+}
+
 .checklist-sidebar__header {
   position: relative;
   display: grid;
