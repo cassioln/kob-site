@@ -46,7 +46,7 @@
   <link rel="preload" href="/assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
 
   <link rel="stylesheet" href="/assets/css/main.css?v=20261005-ui-final">
-  <link rel="stylesheet" href="/assets/css/manual-de-bordo.css?v=20261007-checklist-categories">
+  <link rel="stylesheet" href="/assets/css/manual-de-bordo.css?v=20261007-timeline-categories">
   <link rel="stylesheet" href="/assets/css/cookie-consent.css?v=20260820-fix-contrast">
 
   <script defer src="/assets/js/cookie-consent.js?v=20260713-5"></script>
@@ -449,10 +449,10 @@
               </button>
             </div>
             <div class="timeline-group__steps" id="timeline-steps-antes">
-              <article class="timeline-step" data-timeline-phase="antes">
+              <article class="timeline-step" data-timeline-category="required" data-timeline-phase="antes">
                 <header class="timeline-step__header">
                   <span class="timeline-step__time">Now</span>
-                  <span class="timeline-step__status timeline-step__status--action">Action Required</span>
+                  <span class="timeline-step__status">REQUIRED</span>
                 </header>
                 <p class="timeline-step__text">
                   <strong>Check your booking:</strong> Verify all passenger details in your cabin with Royal Trip. Include
@@ -460,10 +460,10 @@
                 </p>
               </article>
 
-              <article class="timeline-step" data-timeline-phase="antes">
+              <article class="timeline-step" data-timeline-category="recommended" data-timeline-phase="antes">
                 <header class="timeline-step__header">
                   <span class="timeline-step__time">Now</span>
-                  <span class="timeline-step__status timeline-step__status--action">Recommended Action</span>
+                  <span class="timeline-step__status">RECOMMENDED</span>
                 </header>
                 <p class="timeline-step__text">
                   <strong>Prepare your games:</strong> Open Kriativos On Board in the Board Game Guru app, click ‘I’m
@@ -472,10 +472,10 @@
                 </p>
               </article>
 
-              <article class="timeline-step" data-timeline-phase="antes">
+              <article class="timeline-step" data-timeline-category="required" data-timeline-phase="antes">
                 <header class="timeline-step__header">
                   <span class="timeline-step__time">When agency announces in group</span>
-                  <span class="timeline-step__status timeline-step__status--action">Action Required</span>
+                  <span class="timeline-step__status">REQUIRED</span>
                 </header>
                 <p class="timeline-step__text">
                   <strong>Request vouchers:</strong> The cabin lead should message Júnior / Royal Trip privately to receive
@@ -483,10 +483,10 @@
                 </p>
               </article>
 
-              <article class="timeline-step" data-timeline-phase="antes">
+              <article class="timeline-step" data-timeline-category="required" data-timeline-phase="antes">
                 <header class="timeline-step__header">
                   <span class="timeline-step__time">Before leaving home</span>
-                  <span class="timeline-step__status timeline-step__status--action">Action Required</span>
+                  <span class="timeline-step__status">REQUIRED</span>
                 </header>
                 <p class="timeline-step__text">
                   <strong>Final review:</strong> Check documents, luggage tags, carry-on essentials, driving route, and
@@ -507,21 +507,23 @@
               </button>
             </div>
             <div class="timeline-group__steps" id="timeline-steps-embarque">
-              <article class="timeline-step" data-timeline-phase="embarque">
+              <article class="timeline-step" data-timeline-category="attention" data-timeline-phase="embarque">
                 <header class="timeline-step__header">
                   <span class="timeline-step__time">Friday, Nov 20 — KOB Bus Charter</span>
-                  <span class="timeline-step__status timeline-step__status--estimate">Scheduled Departure</span>
+                  <span class="timeline-step__status">ATTENTION</span>
                 </header>
                 <p class="timeline-step__text">
-                  <strong>São Paulo Departure:</strong> Bus 1: meeting at 06:00, departure at 06:30. Bus 2: meeting at
-                  06:40, departure at 07:20. Location: Rua Tagipuru, near nº 552, Barra Funda, São Paulo.
+                  <strong>São Paulo Departure (Barra Funda):</strong> For passengers who booked the KOB bus charter.
+                  Bus 1: meeting at 06:00, departure at 06:30. Bus 2: meeting at 06:40, departure at 07:20.
+                  Location: Rua Tagipuru, near nº 552, Barra Funda, São Paulo. Use the time for the bus assigned to your booking.
+                  <a href="https://busao.kriativosonboard.com.br/en/" target="_blank" rel="noopener noreferrer">See details and booking information.</a>
                 </p>
               </article>
 
-              <article class="timeline-step" data-timeline-phase="embarque">
+              <article class="timeline-step" data-timeline-category="required" data-timeline-phase="embarque">
                 <header class="timeline-step__header">
                   <span class="timeline-step__time">Friday, Nov 20 — Concais Terminal</span>
-                  <span class="timeline-step__status timeline-step__status--msc">MSC Window</span>
+                  <span class="timeline-step__status">REQUIRED</span>
                 </header>
                 <p class="timeline-step__text">
                   <strong>Santos Terminal Arrival:</strong> Follow the arrival window indicated on your voucher. Drop
@@ -532,7 +534,6 @@
               <article class="timeline-step" data-timeline-phase="embarque">
                 <header class="timeline-step__header">
                   <span class="timeline-step__time">After boarding the ship</span>
-                  <span class="timeline-step__status timeline-step__status--estimate">Estimated</span>
                 </header>
                 <p class="timeline-step__text">
                   <strong>Buffet &amp; Cabins:</strong> Visit the buffet while cabins are prepared. Cabin release is
@@ -540,10 +541,10 @@
                 </p>
               </article>
 
-              <article class="timeline-step" data-timeline-phase="embarque">
+              <article class="timeline-step" data-timeline-category="attention" data-timeline-phase="embarque">
                 <header class="timeline-step__header">
                   <span class="timeline-step__time">Friday afternoon — KOB Welcome</span>
-                  <span class="timeline-step__status timeline-step__status--estimate">KOB Estimate</span>
+                  <span class="timeline-step__status">ATTENTION</span>
                 </header>
                 <p class="timeline-step__text">
                   <strong>Kit distribution:</strong> Welcome kit pickup estimated at 16:00/16:30 at Crystal Lounge. Confirm
@@ -551,10 +552,10 @@
                 </p>
               </article>
 
-              <article class="timeline-step" data-timeline-phase="embarque">
+              <article class="timeline-step" data-timeline-category="required" data-timeline-phase="embarque">
                 <header class="timeline-step__header">
                   <span class="timeline-step__time">First evening — Safety &amp; Dinner</span>
-                  <span class="timeline-step__status timeline-step__status--msc">Mandatory Drill</span>
+                  <span class="timeline-step__status">REQUIRED</span>
                 </header>
                 <p class="timeline-step__text">
                   <strong>Safety drill &amp; Dining:</strong> Complete mandatory MSC safety drill. Check your dinner shift
@@ -578,7 +579,6 @@
               <article class="timeline-step" data-timeline-phase="bordo">
                 <header class="timeline-step__header">
                   <span class="timeline-step__time">During the cruise</span>
-                  <span class="timeline-step__status timeline-step__status--msc">On board</span>
                 </header>
                 <p class="timeline-step__text">
                   <strong>Gaming &amp; Call:</strong> Check daily schedule board and MSC program. Enjoy gaming tables during
@@ -586,10 +586,10 @@
                 </p>
               </article>
 
-              <article class="timeline-step" data-timeline-phase="bordo">
+              <article class="timeline-step" data-timeline-category="required" data-timeline-phase="bordo">
                 <header class="timeline-step__header">
                   <span class="timeline-step__time">Sunday, Nov 22 — Game Inventory</span>
-                  <span class="timeline-step__status timeline-step__status--action">Action Required</span>
+                  <span class="timeline-step__status">REQUIRED</span>
                 </header>
                 <p class="timeline-step__text">
                   <strong>Game return deadline:</strong> Return all borrowed games before the deadline posted in the
@@ -601,7 +601,6 @@
               <article class="timeline-step" data-timeline-phase="bordo">
                 <header class="timeline-step__header">
                   <span class="timeline-step__time">Sunday night — Farewell Party</span>
-                  <span class="timeline-step__status timeline-step__status--estimate">Announced Theme</span>
                 </header>
                 <p class="timeline-step__text">
                   <strong>80s Retro Theme:</strong> 80s attire, neon, and accessories welcome. Check daily bulletin for
@@ -622,10 +621,10 @@
               </button>
             </div>
             <div class="timeline-group__steps" id="timeline-steps-desembarque">
-              <article class="timeline-step" data-timeline-phase="desembarque">
+              <article class="timeline-step" data-timeline-category="attention" data-timeline-phase="desembarque">
                 <header class="timeline-step__header">
                   <span class="timeline-step__time">Disembarkation Prep</span>
-                  <span class="timeline-step__status timeline-step__status--msc">MSC Guideline</span>
+                  <span class="timeline-step__status">ATTENTION</span>
                 </header>
                 <p class="timeline-step__text">
                   <strong>Checked bags:</strong> Follow MSC color-coded tag instructions for luggage collection outside
@@ -634,10 +633,10 @@
                 </p>
               </article>
 
-              <article class="timeline-step" data-timeline-phase="desembarque">
+              <article class="timeline-step" data-timeline-category="attention" data-timeline-phase="desembarque">
                 <header class="timeline-step__header">
                   <span class="timeline-step__time">Monday, Nov 23 — Cabin Clearance</span>
-                  <span class="timeline-step__status timeline-step__status--msc">MSC Guideline</span>
+                  <span class="timeline-step__status">ATTENTION</span>
                 </header>
                 <p class="timeline-step__text">
                   <strong>Early checkout:</strong> Vacate cabins early according to ship instructions. The ~10:00 time is
@@ -646,10 +645,10 @@
                 </p>
               </article>
 
-              <article class="timeline-step" data-timeline-phase="desembarque">
+              <article class="timeline-step" data-timeline-category="attention" data-timeline-phase="desembarque">
                 <header class="timeline-step__header">
                   <span class="timeline-step__time">Monday, Nov 23 — Bus Return</span>
-                  <span class="timeline-step__status timeline-step__status--estimate">Est. 10:30 Departure</span>
+                  <span class="timeline-step__status">ATTENTION</span>
                 </header>
                 <p class="timeline-step__text">
                   <strong>Return to São Paulo:</strong> Charter departure from Port of Santos estimated at 10:30. Confirm
