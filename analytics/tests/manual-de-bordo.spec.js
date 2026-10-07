@@ -33,9 +33,9 @@ test.describe('Página Manual de Bordo (embarcados) — Portal do Passageiro Con
     const checklistItems = page.locator('[data-checklist-id]');
     await expect(checklistItems).toHaveCount(25);
 
-    // Cronograma: 15 etapas
+    // Cronograma: 16 etapas
     const timelineItems = page.locator('.timeline-step');
-    await expect(timelineItems).toHaveCount(15);
+    await expect(timelineItems).toHaveCount(16);
 
     // Transporte: removido do manual
     await expect(page.locator('.transport-card')).toHaveCount(0);
