@@ -3068,7 +3068,7 @@
   width: 60px;
   min-height: 190px;
   padding: 16px 8px;
-  background: #041d3a;
+  background: var(--ocean-navy);
   border: 1px solid rgba(133, 201, 245, 0.45);
   border-left: 0;
   border-radius: 0 12px 12px 0;
