@@ -2592,11 +2592,13 @@
   }
 
   .live-total-progress {
-    transition: height .15s ease;
+    transform: scaleY(1);
+    transform-origin: center;
+    transition: transform .15s cubic-bezier(.16, 1, .3, 1);
   }
 
   .live-total-track.is-scrubbing .live-total-progress {
-    height: 6px;
+    transform: scaleY(2);
   }
 
   .live-total-markers {
@@ -2718,7 +2720,7 @@
     box-shadow: 0 -12px 32px rgba(0, 0, 0, .32);
     visibility: hidden;
     transform: translateY(calc(100% + 32px));
-    transition: transform 320ms cubic-bezier(.16, 1, .3, 1), height 320ms cubic-bezier(.16, 1, .3, 1), visibility 0s 320ms;
+    transition: transform 320ms cubic-bezier(.16, 1, .3, 1), visibility 0s 320ms;
   }
 
   .hero-live-cinema:not(.is-collapsed) .live-drawer__panel {
@@ -5938,13 +5940,13 @@
   font-size: 1.25rem;
   padding: 12px 0;
   color: #0f2942;
-  transition: color 0.15s ease, padding-left 0.15s ease;
+  transition: color .15s ease, transform .15s cubic-bezier(.16, 1, .3, 1);
 }
 
 .guide-page .drawer nav a:hover,
 .guide-page .drawer nav a:focus-visible {
   color: #009adb;
-  padding-left: 6px;
+  transform: translateX(6px);
 }
 
 
@@ -6042,6 +6044,15 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+
+  .live-total-progress,
+  .guide-page .drawer nav a {
+    transition: none !important;
+  }
+
+  .guide-page .drawer nav a {
+    transform: none !important;
+  }
 
   .live-custom-controls,
   .live-custom-controls button,
