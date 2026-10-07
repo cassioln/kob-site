@@ -84,7 +84,7 @@
 
   <!-- Estilos Globais e Específicos -->
   <link rel="stylesheet" href="/assets/css/main.css?v=20261005-ui-final">
-  <link rel="stylesheet" href="/assets/css/manual-de-bordo.css?v=20261007-checklist-categories">
+  <link rel="stylesheet" href="/assets/css/manual-de-bordo.css?v=20261007-timeline-categories">
   <link rel="stylesheet" href="/assets/css/cookie-consent.css?v=20260820-fix-contrast">
 
   <script defer src="/assets/js/cookie-consent.js?v=20260713-5"></script>
@@ -519,10 +519,10 @@
               </button>
             </div>
             <div class="timeline-group__steps" id="timeline-steps-antes">
-              <article class="timeline-step" data-timeline-phase="antes">
+              <article class="timeline-step" data-timeline-category="required" data-timeline-phase="antes">
                 <header class="timeline-step__header">
                   <span class="timeline-step__time">Agora</span>
-                  <span class="timeline-step__status timeline-step__status--action">Ação necessária</span>
+                  <span class="timeline-step__status">OBRIGATÓRIO</span>
                 </header>
                 <p class="timeline-step__text">
                   <strong>Confira sua reserva:</strong> Confira os dados de todos os passageiros da cabine com a Royal Trip.
@@ -530,10 +530,10 @@
                 </p>
               </article>
 
-              <article class="timeline-step" data-timeline-phase="antes">
+              <article class="timeline-step" data-timeline-category="recommended" data-timeline-phase="antes">
                 <header class="timeline-step__header">
                   <span class="timeline-step__time">Agora</span>
-                  <span class="timeline-step__status timeline-step__status--action">Ação recomendada</span>
+                  <span class="timeline-step__status">RECOMENDADO</span>
                 </header>
                 <p class="timeline-step__text">
                   <strong>Prepare os jogos:</strong> Acesse o Kriativos On Board no Board Game Guru, marque ‘Eu vou’,
@@ -541,10 +541,10 @@
                 </p>
               </article>
 
-              <article class="timeline-step" data-timeline-phase="antes">
+              <article class="timeline-step" data-timeline-category="required" data-timeline-phase="antes">
                 <header class="timeline-step__header">
                   <span class="timeline-step__time">Quando a agência avisar no grupo</span>
-                  <span class="timeline-step__status timeline-step__status--action">Ação necessária</span>
+                  <span class="timeline-step__status">OBRIGATÓRIO</span>
                 </header>
                 <p class="timeline-step__text">
                   <strong>Solicite os vouchers:</strong> O responsável pela cabine deve chamar Júnior/Royal Trip no privado
@@ -552,10 +552,10 @@
                 </p>
               </article>
 
-              <article class="timeline-step" data-timeline-phase="antes">
+              <article class="timeline-step" data-timeline-category="required" data-timeline-phase="antes">
                 <header class="timeline-step__header">
                   <span class="timeline-step__time">Antes de sair de casa</span>
-                  <span class="timeline-step__status timeline-step__status--action">Ação necessária</span>
+                  <span class="timeline-step__status">OBRIGATÓRIO</span>
                 </header>
                 <p class="timeline-step__text">
                   <strong>Conferência final:</strong> Confira documentos, etiquetas, bagagem de mão, trajeto e instruções da
@@ -576,22 +576,23 @@
               </button>
             </div>
             <div class="timeline-group__steps" id="timeline-steps-embarque">
-              <article class="timeline-step" data-timeline-phase="embarque">
+              <article class="timeline-step" data-timeline-category="attention" data-timeline-phase="embarque">
                 <header class="timeline-step__header">
                   <span class="timeline-step__time">Sexta, 20/11 — Fretado KOB</span>
-                  <span class="timeline-step__status timeline-step__status--estimate">Horários definidos</span>
+                  <span class="timeline-step__status">ATENÇÃO</span>
                 </header>
                 <p class="timeline-step__text">
-                  <strong>Saída de São Paulo (Barra Funda):</strong> Ônibus 1: encontro às 06h00 e saída às 06h30. Ônibus 2:
-                  encontro às 06h40 e saída às 07h20. Ponto: Rua Tagipuru, altura do nº 552, Barra Funda, São Paulo. Use o
-                  horário do ônibus atribuído à sua reserva.
+                  <strong>Saída de São Paulo (Barra Funda):</strong> Serviço exclusivo para quem contratou o fretado KOB.
+                  Ônibus 1: encontro às 06h00 e saída às 06h30. Ônibus 2: encontro às 06h40 e saída às 07h20.
+                  Ponto: Rua Tagipuru, altura do nº 552, Barra Funda, São Paulo. Use o horário do ônibus atribuído à sua reserva.
+                  <a href="https://busao.kriativosonboard.com.br/" target="_blank" rel="noopener noreferrer">Veja os detalhes e como contratar o fretado.</a>
                 </p>
               </article>
 
-              <article class="timeline-step" data-timeline-phase="embarque">
+              <article class="timeline-step" data-timeline-category="required" data-timeline-phase="embarque">
                 <header class="timeline-step__header">
                   <span class="timeline-step__time">Sexta, 20/11 — Chegada ao Concais</span>
-                  <span class="timeline-step__status timeline-step__status--msc">Regra MSC / Voucher</span>
+                  <span class="timeline-step__status">OBRIGATÓRIO</span>
                 </header>
                 <p class="timeline-step__text">
                   <strong>Terminal de Santos:</strong> Siga a janela de chegada indicada no voucher e pela agência. Entregue
@@ -602,7 +603,6 @@
               <article class="timeline-step" data-timeline-phase="embarque">
                 <header class="timeline-step__header">
                   <span class="timeline-step__time">Depois de entrar no navio</span>
-                  <span class="timeline-step__status timeline-step__status--estimate">Previsão</span>
                 </header>
                 <p class="timeline-step__text">
                   <strong>Acomodação inicial:</strong> Você pode consultar as opções do buffet enquanto aguarda a liberação
@@ -610,10 +610,10 @@
                 </p>
               </article>
 
-              <article class="timeline-step" data-timeline-phase="embarque">
+              <article class="timeline-step" data-timeline-category="attention" data-timeline-phase="embarque">
                 <header class="timeline-step__header">
                   <span class="timeline-step__time">Sexta à tarde — Encontro KOB</span>
-                  <span class="timeline-step__status timeline-step__status--estimate">Previsão KOB</span>
+                  <span class="timeline-step__status">ATENÇÃO</span>
                 </header>
                 <p class="timeline-step__text">
                   <strong>Retirada dos kits:</strong> A retirada dos kits está prevista para 16h/16h30, na Crystal Lounge.
@@ -621,10 +621,10 @@
                 </p>
               </article>
 
-              <article class="timeline-step" data-timeline-phase="embarque">
+              <article class="timeline-step" data-timeline-category="required" data-timeline-phase="embarque">
                 <header class="timeline-step__header">
                   <span class="timeline-step__time">Primeiro dia — Segurança e Jantar</span>
-                  <span class="timeline-step__status timeline-step__status--msc">Regra MSC Obrigatória</span>
+                  <span class="timeline-step__status">OBRIGATÓRIO</span>
                 </header>
                 <p class="timeline-step__text">
                   <strong>Treinamento e refeição:</strong> Cumpra o treinamento obrigatório de segurança conforme as
@@ -649,7 +649,6 @@
               <article class="timeline-step" data-timeline-phase="bordo">
                 <header class="timeline-step__header">
                   <span class="timeline-step__time">Durante o cruzeiro</span>
-                  <span class="timeline-step__status timeline-step__status--msc">A bordo</span>
                 </header>
                 <p class="timeline-step__text">
                   <strong>Jogos e escala:</strong> Consulte diariamente o mural, os avisos do grupo e a programação do
@@ -657,10 +656,10 @@
                 </p>
               </article>
 
-              <article class="timeline-step" data-timeline-phase="bordo">
+              <article class="timeline-step" data-timeline-category="required" data-timeline-phase="bordo">
                 <header class="timeline-step__header">
                   <span class="timeline-step__time">Domingo, 22/11 — Devolução e Inventário</span>
-                  <span class="timeline-step__status timeline-step__status--action">Ação necessária</span>
+                  <span class="timeline-step__status">OBRIGATÓRIO</span>
                 </header>
                 <p class="timeline-step__text">
                   <strong>Acervo KOB:</strong> Devolva os jogos do acervo até o limite informado no grupo oficial. O
@@ -671,7 +670,6 @@
               <article class="timeline-step" data-timeline-phase="bordo">
                 <header class="timeline-step__header">
                   <span class="timeline-step__time">Domingo à noite — Encerramento</span>
-                  <span class="timeline-step__status timeline-step__status--estimate">Tema anunciado</span>
                 </header>
                 <p class="timeline-step__text">
                   <strong>Festa temática Anos 80:</strong> O tema do encerramento é Anos 80. Leve adereços se quiser
@@ -693,10 +691,10 @@
               </button>
             </div>
             <div class="timeline-group__steps" id="timeline-steps-desembarque">
-              <article class="timeline-step" data-timeline-phase="desembarque">
+              <article class="timeline-step" data-timeline-category="attention" data-timeline-phase="desembarque">
                 <header class="timeline-step__header">
                   <span class="timeline-step__time">Preparação do desembarque</span>
-                  <span class="timeline-step__status timeline-step__status--msc">Instrução MSC</span>
+                  <span class="timeline-step__status">ATENÇÃO</span>
                 </header>
                 <p class="timeline-step__text">
                   <strong>Malas despachadas:</strong> Siga as instruções e etiquetas fornecidas pela MSC para a bagagem.
@@ -704,10 +702,10 @@
                 </p>
               </article>
 
-              <article class="timeline-step" data-timeline-phase="desembarque">
+              <article class="timeline-step" data-timeline-category="attention" data-timeline-phase="desembarque">
                 <header class="timeline-step__header">
                   <span class="timeline-step__time">Segunda, 23/11 — Libere a cabine</span>
-                  <span class="timeline-step__status timeline-step__status--msc">Instrução MSC</span>
+                  <span class="timeline-step__status">ATENÇÃO</span>
                 </header>
                 <p class="timeline-step__text">
                   <strong>Desocupação de cabines:</strong> Organize-se para sair da cabine cedo, no horário informado pela
@@ -715,10 +713,10 @@
                 </p>
               </article>
 
-              <article class="timeline-step" data-timeline-phase="desembarque">
+              <article class="timeline-step" data-timeline-category="attention" data-timeline-phase="desembarque">
                 <header class="timeline-step__header">
                   <span class="timeline-step__time">Segunda, 23/11 — Retorno do fretado</span>
-                  <span class="timeline-step__status timeline-step__status--estimate">Previsão 10h30</span>
+                  <span class="timeline-step__status">ATENÇÃO</span>
                 </header>
                 <p class="timeline-step__text">
                   <strong>Volta para SP:</strong> A saída do fretado do Porto de Santos está prevista para 10h30. Confirme o
