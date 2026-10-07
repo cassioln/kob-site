@@ -37,9 +37,8 @@ test.describe('Página Manual de Bordo (embarcados) — Portal do Passageiro Con
     const timelineItems = page.locator('.timeline-step');
     await expect(timelineItems).toHaveCount(15);
 
-    // Transporte: Ônibus 1 e 2 na grid
-    await expect(page.locator('.transport-grid .transport-card')).toHaveCount(2);
-    await expect(page.locator('.transport-card')).toHaveCount(2);
+    // Transporte: removido do manual
+    await expect(page.locator('.transport-card')).toHaveCount(0);
 
     // Jogos: Lounge e blocos do guia
     await expect(page.locator('.game-block')).toHaveCount(5);
@@ -85,6 +84,7 @@ test.describe('Página Manual de Bordo (embarcados) — Portal do Passageiro Con
     await page.reload();
 
     const firstItem = page.locator('[data-checklist-id="reserva-dados"]');
+    await page.locator('#cronograma').scrollIntoViewIfNeeded();
     await page.locator('#checklistSidebarToggle').click();
     await expect(firstItem).toBeVisible();
 
@@ -105,6 +105,7 @@ test.describe('Página Manual de Bordo (embarcados) — Portal do Passageiro Con
 
     // Recarrega a página e valida persistência no localStorage
     await page.reload();
+    await page.locator('#cronograma').scrollIntoViewIfNeeded();
     await page.locator('#checklistSidebarToggle').click();
     const reloadedFirst = page.locator('[data-checklist-id="reserva-dados"]');
     const reloadedMinor = page.locator('[data-checklist-id="menor-documentos"]');
@@ -122,7 +123,7 @@ test.describe('Página Manual de Bordo (embarcados) — Portal do Passageiro Con
     await expect(page.locator('#checklistSidebarProgressText')).toContainText('0 de');
   });
 
-  test('Sidebar Retrátil do Checklist: expansão/redução, sincronização bidirecional e filtros', async ({ page }) => {
+  test('Sidebar Retrátil do Checklist: visibilidade contextual (oculto na hero/footer), expansão/redução, sincronização bidirecional e filtros', async ({ page }) => {
     await page.goto('/manual-de-bordo.html');
     // The consent dialog stays above shortcuts; answer it before using the sidebar.
 
@@ -131,9 +132,23 @@ test.describe('Página Manual de Bordo (embarcados) — Portal do Passageiro Con
     const backdrop = page.locator('#checklistSidebarBackdrop');
     const closeBtn = page.locator('#checklistSidebarClose');
 
-    // Botão na lateral esquerda deve estar visível com badge inicial
+    // Na Hero (topo da página), o botão deve estar oculto
+    await expect(toggleBtn).toHaveClass(/is-hidden/);
+
+    // Ao rolar para fora da hero (seção de conteúdo), o botão torna-se visível
+    await page.locator('#cronograma').scrollIntoViewIfNeeded();
+    await expect(toggleBtn).not.toHaveClass(/is-hidden/);
     await expect(toggleBtn).toBeVisible();
     await expect(page.locator('#checklistSidebarToggleBadge')).toBeVisible();
+
+    // Ao rolar até o footer, o botão deve ficar oculto novamente
+    await page.locator('footer.guide-footer').scrollIntoViewIfNeeded();
+    await expect(toggleBtn).toHaveClass(/is-hidden/);
+
+    // Retorna para o conteúdo para testar a abertura da sidebar
+    await page.locator('#cronograma').scrollIntoViewIfNeeded();
+    await expect(toggleBtn).not.toHaveClass(/is-hidden/);
+    await expect(toggleBtn).toBeVisible();
 
     // Sidebar inicialmente oculta / recolhida
     await expect(sidebar).not.toHaveClass(/is-open/);
@@ -143,6 +158,7 @@ test.describe('Página Manual de Bordo (embarcados) — Portal do Passageiro Con
     await expect(sidebar).toHaveClass(/is-open/);
     await expect(backdrop).toHaveClass(/is-open/);
     await expect(sidebar).toHaveAttribute('aria-hidden', 'false');
+    await expect(toggleBtn).toHaveAttribute('aria-expanded', 'true');
 
     // Contém 25 itens compactos espelhados com data-sidebar-item-id
     const sidebarItems = page.locator('#checklistSidebarList .checklist-sidebar-item');

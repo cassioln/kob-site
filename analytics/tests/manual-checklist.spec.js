@@ -2,7 +2,10 @@ import {test,expect} from '@playwright/test';
 async function openChecklist(page, path='/manual-de-bordo.html') {
  await page.addInitScript(()=>localStorage.setItem('cookie_consent_status','denied'));
  await page.goto(path);
- if(!await page.locator('#checklistSidebar').evaluate(el=>el.classList.contains('is-open'))) await page.locator('#checklistSidebarToggle').click();
+ if(!await page.locator('#checklistSidebar').evaluate(el=>el.classList.contains('is-open'))) {
+   await page.locator('#cronograma').scrollIntoViewIfNeeded();
+   await page.locator('#checklistSidebarToggle').click();
+ }
  await expect(page.locator('#checklistSidebar')).toHaveClass(/is-open/);
 }
 test('Sidebar mostra os textos reais, filtra grupos e sincroniza os estados aplicáveis',async({page})=>{
