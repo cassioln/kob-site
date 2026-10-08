@@ -84,19 +84,21 @@
 
   <!-- Estilos Globais e Específicos -->
   <link rel="stylesheet" href="/assets/css/main.css?v=20261005-ui-final">
+  <link rel="stylesheet" href="/assets/css/site-search.css?v=20261008-busca">
   <link rel="stylesheet" href="/assets/css/manual-de-bordo.css?v=20261007-mobile-invite-compact">
   <link rel="stylesheet" href="/assets/css/footer-sponsors.css?v=20261007-sponsors-marquee">
   <link rel="stylesheet" href="/assets/css/cookie-consent.css?v=20260820-fix-contrast">
 
   <script defer src="/assets/js/cookie-consent.js?v=20260713-5"></script>
   <script defer src="/assets/js/footer-sponsors.js?v=20261007-sponsors-marquee"></script>
-  <script defer src="/assets/js/manual-de-bordo.js?v=20261006-timeline-animation"></script>
+  <script defer src="/assets/js/manual-de-bordo.js?v=20261008-busca"></script>
 
   <script type="module" src="/assets/js/manual-de-bordo-live.js?v=20261007-mobile-invite-compact"></script>
 
   <script type="module" src="/assets/js/manual-de-bordo-checklist.js?v=20261005-topic-player"></script>
   <script type="module" src="/assets/js/manual-de-bordo-routing.js?v=20261006-manual-domain"></script>
   <script type="module" src="/assets/js/manual-games-carousel.js?v=20261006-manual-carousel"></script>
+  <script type="module" src="/assets/js/site-search.js?v=20261008-busca"></script>
 
   <!-- Schema JSON-LD -->
   <script type="application/ld+json">
@@ -188,6 +190,13 @@
         <a href="#contato" class="guide-header__nav-link">Contato</a>
       </nav>
       <div class="guide-header__actions">
+        <button type="button" class="site-search-trigger" data-site-search-open aria-haspopup="dialog"
+          aria-keyshortcuts="Meta+K Control+K" aria-label="Buscar no site">
+          <svg class="site-search-trigger__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4 4"></path></svg>
+          <span class="site-search-trigger__label">Buscar</span>
+          <kbd class="site-search-trigger__kbd" data-site-search-kbd aria-hidden="true">⌘ K</kbd>
+        </button>
         <nav class="lang-switch" aria-label="Idioma / Language / Idioma">
           <span class="lang-switch__item is-active" aria-current="page">PT</span>
           <a href="https://manualdebordo.kriativosonboard.com.br/en/" class="lang-switch__item" hreflang="en" lang="en">EN</a>
@@ -858,7 +867,8 @@
                 autocomplete="off" aria-describedby="faq-search-status">
               <button type="button" class="faq-search-clear" id="faqClearBtn" title="Limpar busca"
                 aria-label="Limpar busca">Limpar</button>
-              <kbd aria-hidden="true">⌘ K</kbd>
+              <button type="button" class="faq-search__spotlight" data-site-search-open data-site-search-kbd
+                aria-label="Pesquisar no site inteiro">⌘ K</button>
             </span>
             <small id="faq-search-status" aria-live="polite"><span id="faqResultsCount">42</span> respostas organizadas
               por tema</small>

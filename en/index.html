@@ -247,6 +247,7 @@
   <link rel="preload" href="/assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
 
   <link rel="stylesheet" href="/assets/css/main.css?v=20261005-ui-final">
+  <link rel="stylesheet" href="/assets/css/site-search.css?v=20261008-busca">
   <link rel="stylesheet" href="/assets/css/cookie-consent.css?v=20260820-fix-contrast">
   <script defer src="/assets/js/cookie-consent.js?v=20260713-5"></script>
 </head>
@@ -403,6 +404,13 @@
       <a class="nav__link--fold1" href="https://manualdebordo.kriativosonboard.com.br/en/">Onboard Guide</a>
     </nav>
     <div class="nav__right">
+      <button type="button" class="site-search-trigger" data-site-search-open aria-haspopup="dialog"
+        aria-keyshortcuts="Meta+K Control+K" aria-label="Search the site">
+        <svg class="site-search-trigger__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4 4"></path></svg>
+        <span class="site-search-trigger__label">Search</span>
+        <kbd class="site-search-trigger__kbd" data-site-search-kbd aria-hidden="true">⌘ K</kbd>
+      </button>
       <div class="lang-switch" role="group" aria-label="Language selector">
         <a href="/" class="lang-switch__btn" hreflang="pt-BR" title="Português (Brasil)">PT</a>
         <span class="lang-switch__sep" aria-hidden="true">|</span>
@@ -2489,7 +2497,8 @@
               </svg>
               <input id="faq-search" type="search" placeholder="Search: documents, drinks, games…" autocomplete="off"
                 aria-describedby="faq-search-status">
-              <kbd aria-hidden="true">⌘ K</kbd>
+              <button type="button" class="faq-search__spotlight" data-site-search-open data-site-search-kbd
+                aria-label="Search the whole site">⌘ K</button>
             </span>
             <small id="faq-search-status" aria-live="polite">34 answers organized by category</small>
           </label>
@@ -2990,7 +2999,8 @@
     </svg>
   </a>
 
-  <script src="/assets/js/main.js?v=20261007-faq-sync"></script>
+  <script src="/assets/js/main.js?v=20261008-busca"></script>
+  <script type="module" src="/assets/js/site-search.js?v=20261008-busca"></script>
 </body>
 
 </html>

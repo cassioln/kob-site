@@ -37,6 +37,7 @@ const copy = COPY[lang] || COPY.pt;
 const platform = navigator.userAgentData?.platform || navigator.platform || navigator.userAgent || '';
 const isApple = /Mac|iPhone|iPad|iPod/i.test(platform);
 const shortcutLabel = isApple ? '⌘ K' : 'Ctrl K';
+const shortcutKeys = isApple ? 'Meta+K' : 'Control+K';
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 const SVG = 'http://www.w3.org/2000/svg';
 
@@ -179,7 +180,8 @@ function showState(node) {
   if (node) body.insertBefore(node, list);
 }
 
-function setStatus(text) { status.textContent = text; }
+// Only real changes reach the live region: rewriting the same text would re-announce it on every keystroke.
+function setStatus(text) { if (status.textContent !== text) status.textContent = text; }
 
 function render() {
   synonymLine.hidden = true;
@@ -236,6 +238,8 @@ function renderError() {
 
 async function retryLoad() {
   const attempt = load();
+  // Focus first: render() swaps the error (and the focused retry button) for the loading state.
+  input.focus();
   render();
   try {
     await attempt;
@@ -243,9 +247,7 @@ async function retryLoad() {
     if (dialog.open) renderError().focus();
     return;
   }
-  if (!dialog.open) return;
-  render();
-  input.focus();
+  if (dialog.open) render();
 }
 
 function highlightInto(node, text, terms) {
@@ -321,11 +323,13 @@ export function goToAnchor(anchor) {
 
 function init() {
   for (const trigger of document.querySelectorAll('[data-site-search-open]')) {
+    trigger.setAttribute('aria-keyshortcuts', shortcutKeys);
     trigger.addEventListener('click', event => { event.preventDefault(); open(trigger); });
     trigger.addEventListener('pointerenter', () => { load().catch(() => {}); }, { once: true });
   }
   for (const kbd of document.querySelectorAll('[data-site-search-kbd]')) kbd.textContent = shortcutLabel;
-  // Capture phase + stopPropagation: the global search owns ⌘K/Ctrl+K, ahead of older page shortcuts (FAQ box).
+  // Capture phase + stopPropagation: the global search owns ⌘K/Ctrl+K on every page, ahead of any handler
+  // on the focused field or widget (the FAQ boxes no longer bind it).
   document.addEventListener('keydown', event => {
     const platformKey = isApple ? event.metaKey && !event.ctrlKey : event.ctrlKey && !event.metaKey;
     if (!platformKey || event.altKey || event.shiftKey || String(event.key).toLowerCase() !== 'k') return;

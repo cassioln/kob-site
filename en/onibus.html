@@ -70,12 +70,14 @@
     rel="stylesheet">
   <link rel="preload" href="/assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
   <link rel="stylesheet" href="/assets/css/main.css?v=20261006-bus-footer-fix">
+  <link rel="stylesheet" href="/assets/css/site-search.css?v=20261008-busca">
   <link rel="stylesheet" href="/assets/css/onibus.css?v=20261006-bus-footer-fix">
   <link rel="stylesheet" href="/assets/css/footer-sponsors.css?v=20261007-sponsors-marquee">
   <link rel="stylesheet" href="/assets/css/cookie-consent.css?v=20260820-fix-contrast">
   <script defer src="/assets/js/cookie-consent.js?v=20260713-5"></script>
   <script defer src="/assets/js/footer-sponsors.js?v=20261007-sponsors-marquee"></script>
   <script defer src="/assets/js/onibus.js?v=20261003-live-content"></script>
+  <script type="module" src="/assets/js/site-search.js?v=20261008-busca"></script>
 </head>
 
 <body class="bus-page">
@@ -87,6 +89,13 @@
       <img src="/assets/images/brand/kriativos-on-board-logo.webp" alt="Kriativos On Board" width="2930" height="1796">
     </a>
     <div class="bus-header__right">
+      <button type="button" class="site-search-trigger" data-site-search-open aria-haspopup="dialog"
+        aria-keyshortcuts="Meta+K Control+K" aria-label="Search the site">
+        <svg class="site-search-trigger__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4 4"></path></svg>
+        <span class="site-search-trigger__label">Search</span>
+        <kbd class="site-search-trigger__kbd" data-site-search-kbd aria-hidden="true">⌘ K</kbd>
+      </button>
       <nav class="lang-switch" aria-label="Language / Idioma">
         <a href="https://busao.kriativosonboard.com.br/" class="lang-switch__item" hreflang="pt-BR" lang="pt-BR">PT</a>
         <span class="lang-switch__item is-active" aria-current="page">EN</span>

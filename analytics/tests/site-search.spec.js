@@ -7,10 +7,11 @@ const input = page => page.locator('.site-search__input');
 const options = page => page.locator('#site-search-results [role="option"]');
 
 // Most tests start with the cookie choice already made, so the banner stays out of the way.
-async function home(page) {
+async function visit(page, path = '/') {
   await page.addInitScript(() => localStorage.setItem('cookie_consent_status', 'denied'));
-  await page.goto('/');
+  await page.goto(path);
 }
+const home = page => visit(page, '/');
 
 // The trigger's <kbd> names the platform key ("⌘ K" on Apple, "Ctrl K" elsewhere). The page decides the
 // platform from its user agent (the Desktop Chrome profile reports Windows), so tests press exactly that key
@@ -86,6 +87,19 @@ test('só a tecla da plataforma abre o bilhete (⌘ no Mac, Ctrl nos outros)', a
   await expect(dialog(page)).toBeVisible();
 });
 
+for (const [platform, label, keys] of [['macOS', '⌘ K', 'Meta+K'], ['Windows', 'Ctrl K', 'Control+K']]) {
+  test(`${platform}: cada botão anuncia só o atalho da plataforma (${keys})`, async ({ page }) => {
+    await page.addInitScript(name => Object.defineProperty(Navigator.prototype, 'userAgentData', {
+      configurable: true, get: () => ({ platform: name })
+    }), platform);
+    await home(page);
+    await expect(page.locator('.site-search-trigger [data-site-search-kbd]')).toHaveText(label);
+    for (const trigger of await page.locator('[data-site-search-open]').all()) {
+      await expect(trigger).toHaveAttribute('aria-keyshortcuts', keys);
+    }
+  });
+}
+
 test('consulta com HTML vira texto e o vazio oferece WhatsApp', async ({ page }) => {
   await home(page);
   await pressShortcut(page);
@@ -140,6 +154,43 @@ test('depois da falha, digitar mantém o erro; nova falha foca "Tentar de novo"'
   await page.locator('.site-search__retry').click();
   await expect(options(page).first()).toContainText(/bagagem/i);
   await expect(input(page)).toBeFocused();
+});
+
+test('"Tentar de novo" leva o foco ao campo enquanto carrega, sem cair no body', async ({ page }) => {
+  let block = true;
+  let release;
+  const held = new Promise(resolve => { release = resolve; });
+  await page.route('**/assets/data/search-index.pt.json*', async route => {
+    if (block) return route.abort();
+    await held;
+    return route.continue();
+  });
+  await home(page);
+  await pressShortcut(page);
+  await expect(page.locator('.site-search__error')).toBeVisible();
+  block = false;
+  await page.locator('.site-search__retry').click();
+  await expect(page.locator('.site-search__lead')).toHaveText('Carregando a busca…');
+  await expect(input(page)).toBeFocused();
+  release();
+  await expect(options(page)).toHaveCount(5);
+  await expect(input(page)).toBeFocused();
+});
+
+test('com o erro na tela, digitar não reescreve o aviso para o leitor de tela', async ({ page }) => {
+  await page.route('**/assets/data/search-index.pt.json*', route => route.abort());
+  await home(page);
+  await pressShortcut(page);
+  await expect(page.locator('#site-search-status')).toHaveText(/Não foi possível carregar a busca/);
+  await page.evaluate(() => {
+    window.statusWrites = 0;
+    new MutationObserver(records => { window.statusWrites += records.length; })
+      .observe(document.getElementById('site-search-status'), { childList: true, characterData: true, subtree: true });
+  });
+  await input(page).pressSequentially('mala');
+  await expect(input(page)).toHaveValue('mala');
+  await expect(page.locator('.site-search__error')).toBeVisible();
+  expect(await page.evaluate(() => window.statusWrites)).toBe(0);
 });
 
 test('Esc fecha a busca sem responder ao banner de cookies', async ({ page }) => {
@@ -247,3 +298,74 @@ test('movimento reduzido usa só fade', async ({ page }) => {
   await pressShortcut(page);
   await expect(page.locator('.site-search__ticket')).toHaveCSS('animation-name', 'site-search-fade');
 });
+
+const PAGES = [
+  ['/', 'pt', '.nav__right'], ['/en/', 'en', '.nav__right'], ['/es/', 'es', '.nav__right'],
+  ['/manual-de-bordo.html', 'pt', '.guide-header__actions'], ['/en/manual-de-bordo.html', 'en', '.guide-header__actions'], ['/es/manual-de-bordo.html', 'es', '.guide-header__actions'],
+  ['/onibus.html', 'pt', '.bus-header__right'], ['/en/onibus.html', 'en', '.bus-header__right'], ['/es/onibus.html', 'es', '.bus-header__right']
+];
+const TEXT = {
+  pt: { label: 'Buscar no site', placeholder: 'O que você procura?', where: 'Pesquisa no site', faqButton: 'Pesquisar no site inteiro' },
+  en: { label: 'Search the site', placeholder: 'What are you looking for?', where: 'Search the site', faqButton: 'Search the whole site' },
+  es: { label: 'Buscar en el sitio', placeholder: '¿Qué estás buscando?', where: 'Buscar en el sitio', faqButton: 'Buscar en todo el sitio' }
+};
+
+for (const [path, lang, container] of PAGES) {
+  test(`busca disponível em ${path} (${lang})`, async ({ page }) => {
+    await page.route(/https:\/\/.*youtube(?:-nocookie)?\.com\/.*/, route => route.fulfill({ contentType: 'text/html', body: '<html></html>' }));
+    await visit(page, path);
+    const trigger = page.locator(`${container} > .site-search-trigger:first-child`);
+    await expect(trigger).toHaveAttribute('aria-label', TEXT[lang].label);
+    await expect(trigger.locator('[data-site-search-kbd]')).toHaveText(/^(⌘ K|Ctrl K)$/);
+    await pressShortcut(page);
+    await expect(page.locator('.site-search__input')).toBeFocused();
+    await expect(page.locator('.site-search__input')).toHaveAttribute('placeholder', TEXT[lang].placeholder);
+    await expect(page.locator('.site-search__where')).toHaveText(TEXT[lang].where);
+    await expect(page.locator('#site-search-results [role="option"]')).toHaveCount(5);
+  });
+}
+
+for (const [path, lang, faqInput] of [['/', 'pt', '#faq-search'], ['/en/', 'en', '#faq-search'], ['/es/', 'es', '#faq-search'], ['/manual-de-bordo.html', 'pt', '#faqSearchInput'], ['/en/manual-de-bordo.html', 'en', '#faqSearchInput'], ['/es/manual-de-bordo.html', 'es', '#faqSearchInput']]) {
+  test(`o selo da caixa do FAQ abre a busca global e Ctrl+K não foca mais o FAQ (${path})`, async ({ page }) => {
+    await page.route(/https:\/\/.*youtube(?:-nocookie)?\.com\/.*/, route => route.fulfill({ contentType: 'text/html', body: '<html></html>' }));
+    await visit(page, path);
+    const button = page.locator('.faq-search__spotlight');
+    await expect(button).toHaveAttribute('aria-label', TEXT[lang].faqButton);
+    await button.click();
+    await expect(page.locator('dialog.site-search')).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(page.locator('dialog.site-search')).toBeHidden();
+    await page.locator(faqInput).focus();
+    await pressShortcut(page);
+    await expect(page.locator('.site-search__input')).toBeFocused();
+  });
+}
+
+test('Ctrl+K abre com foco num campo do formulário do busão', async ({ page }) => {
+  await visit(page, '/onibus.html');
+  await page.locator('#primary-email').focus();
+  await pressShortcut(page);
+  await expect(page.locator('.site-search__input')).toBeFocused();
+});
+
+for (const width of [320, 390]) {
+  test(`headers cabem a ${width}px com a lupa`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 800 });
+    for (const path of ['/', '/manual-de-bordo.html', '/onibus.html']) {
+      await visit(page, path);
+      const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+      expect(overflow, path).toBeLessThanOrEqual(0);
+      await expect(page.locator('.site-search-trigger').first()).toBeVisible();
+    }
+  });
+}
+
+// Shrinking the window must not animate the header pills' size: mid-transition they kept the desktop
+// width and, with the search button in the row, the bus header overflowed.
+for (const path of ['/onibus.html', '/en/onibus.html', '/es/onibus.html']) {
+  test(`header do busão cabe logo depois de a janela encolher (${path})`, async ({ page }) => {
+    await visit(page, path);
+    await page.setViewportSize({ width: 390, height: 900 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
+  });
+}

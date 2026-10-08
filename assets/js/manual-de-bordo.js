@@ -866,11 +866,6 @@
       });
 
       document.addEventListener('keydown', function (event) {
-        if ((event.metaKey || event.ctrlKey) && event.key && event.key.toLowerCase() === 'k') {
-          event.preventDefault();
-          searchInput.focus();
-          searchInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
         if (event.key === 'Escape' && document.activeElement === searchInput && searchInput.value) {
           if (clearBtn) clearBtn.click();
         }
