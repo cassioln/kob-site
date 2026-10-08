@@ -53,7 +53,7 @@ test('"mala" mostra resultados de bagagem, sinônimo e destino', async ({ page }
   await expect(page.locator('#site-search-status')).toContainText(/resultados?/);
 });
 
-test('setas mudam a opção ativa e Enter abre o manual na pergunta', async ({ page }) => {
+test('setas mudam a opção ativa e Enter abre o manual na pergunta', { tag: '@smoke' }, async ({ page }) => {
   await home(page);
   await pressShortcut(page);
   await input(page).fill('limite bagagem');
@@ -328,7 +328,13 @@ const TEXT = {
 };
 
 for (const [path, lang, container] of PAGES) {
-  test(`busca disponível em ${path} (${lang})`, async ({ page }) => {
+  test(`busca disponível em ${path} (${lang})`, { tag: '@smoke' }, async ({ page }) => {
+    // No uncaught error anywhere on the page, and no console error coming from the search's own modules.
+    const errors = [];
+    page.on('pageerror', error => errors.push(error.message));
+    page.on('console', message => {
+      if (message.type() === 'error' && /\/assets\/js\/site-search/.test(message.location().url)) errors.push(message.text());
+    });
     await page.route(/https:\/\/.*youtube(?:-nocookie)?\.com\/.*/, route => route.fulfill({ contentType: 'text/html', body: '<html></html>' }));
     await visit(page, path);
     const trigger = page.locator(`${container} > .site-search-trigger:first-child`);
@@ -339,6 +345,9 @@ for (const [path, lang, container] of PAGES) {
     await expect(page.locator('.site-search__input')).toHaveAttribute('placeholder', TEXT[lang].placeholder);
     await expect(page.locator('.site-search__where')).toHaveText(TEXT[lang].where);
     await expect(page.locator('#site-search-results [role="option"]')).toHaveCount(5);
+    await page.locator('.site-search__input').fill('bus');
+    await expect(page.locator('#site-search-results [role="option"]').first()).toBeVisible();
+    expect(errors).toEqual([]);
   });
 }
 

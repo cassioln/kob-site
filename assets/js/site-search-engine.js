@@ -1,6 +1,5 @@
-import { normalizeSearch, highlightParts, excerpt } from './manual-de-bordo-live-search.js?v=20261007-transcript-i18n';
+import { normalizeSearch, searchText } from './manual-de-bordo-live-search.js?v=20261007-transcript-i18n';
 
-export { highlightParts };
 
 const FIELD_WEIGHT = { title: 3, keywords: 2, text: 1 };
 const KIND_WEIGHT = { section: 0.9, checklist: 0.85, live: 0.8 };
@@ -165,13 +164,52 @@ export function search(prepared, query, { limit = 20 } = {}) {
   return { tokens, results: results.map(({ entry, score, matched }) => ({ entry, score, matched })), synonymsUsed };
 }
 
+// Matches count only where a word starts: a matched term is a whole word or the start of one (prefix, stem,
+// synonym), so "id" marks "ID" but not "[id]entification", and the snippet centres on that word.
+function wordStartRanges(text, query) {
+  const { normalized, offsets } = searchText(text);
+  const ranges = [];
+  for (const token of new Set(normalizeSearch(query).split(' ').filter(Boolean))) {
+    for (let i = normalized.indexOf(token); i !== -1; i = normalized.indexOf(token, i + 1)) {
+      if (i === 0 || normalized[i - 1] === ' ') ranges.push([offsets[i].start, offsets[i + token.length - 1].end]);
+    }
+  }
+  return ranges.sort((a, b) => a[0] - b[0]);
+}
+
+export function highlightParts(text, query) {
+  text = String(text || '');
+  const merged = [];
+  for (const range of wordStartRanges(text, query)) {
+    const last = merged[merged.length - 1];
+    if (last && range[0] <= last[1]) last[1] = Math.max(last[1], range[1]);
+    else merged.push([...range]);
+  }
+  const parts = [];
+  let from = 0;
+  for (const [start, end] of merged) {
+    if (start > from) parts.push({ text: text.slice(from, start), match: false });
+    parts.push({ text: text.slice(start, end), match: true });
+    from = end;
+  }
+  if (from < text.length || !parts.length) parts.push({ text: text.slice(from), match: false });
+  return parts;
+}
+
 export function snippetFor(result, radius = 90) {
   const text = result.entry.text || '';
   if (!text) return '';
-  const found = excerpt(text, result.matched.join(' '), radius);
-  if (found) return found;
-  const limit = radius * 2;
-  return text.length > limit ? `${text.slice(0, limit).replace(/\s+\S*$/, '')} …` : text;
+  const first = wordStartRanges(text, result.matched.join(' '))[0];
+  if (!first) {
+    const limit = radius * 2;
+    return text.length > limit ? `${text.slice(0, limit).replace(/\s+\S*$/, '')} …` : text;
+  }
+  const match = first[0];
+  let start = Math.max(0, match - radius);
+  let end = Math.min(text.length, match + radius);
+  if (start > 0) { const boundary = text.indexOf(' ', start); if (boundary < match) start = boundary + 1; }
+  if (end < text.length) { const boundary = text.lastIndexOf(' ', end); if (boundary > match) end = boundary; }
+  return (start ? '… ' : '') + text.slice(start, end).replace(/\s+/g, ' ').trim() + (end < text.length ? ' …' : '');
 }
 
 export function currentPageFrom({ hostname = '', pathname = '/' } = {}) {

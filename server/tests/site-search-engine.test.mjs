@@ -189,3 +189,13 @@ test('perguntas comuns acham resposta: hotel, preço, possessivos e plural do si
   }
   assert.ok(titles(search(prepared.pt, 'hotel')).some(t => /ibis|novotel|hospedagem/i.test(t)), JSON.stringify(titles(search(prepared.pt, 'hotel'))));
 });
+
+test('destaque e trecho só em começo de palavra', async () => {
+  const { highlightParts } = await import('../../assets/js/site-search-engine.js');
+  const parts = highlightParts('A carga de 12x exige o RG e 2 vias', 'rg 2');
+  assert.deepEqual(parts.filter(p => p.match).map(p => p.text), ['RG', '2']);
+  assert.equal(parts.map(p => p.text).join(''), 'A carga de 12x exige o RG e 2 vias');
+  const text = `${'A carga segue. '.repeat(20)}Traga o RG válido.`;
+  const snippet = snippetFor({ entry: { text }, matched: ['rg'] }, 30);
+  assert.match(snippet, /RG válido/);
+});
