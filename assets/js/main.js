@@ -131,6 +131,7 @@ document.documentElement.classList.add('js');
     var passedFold = navioEl ? navioReached : y >= window.innerHeight;
     // A partir de #navio: header visível com fundo azul
     nav.dataset.scrolled = passedFold ? 'true' : 'false';
+    syncHomeLanguage(passedFold);
     // Antes de #navio e já rolando: oculta; no topo (<=20) fica visível
     nav.dataset.hidden = (!passedFold && y > 20) ? 'true' : 'false';
   }
@@ -187,6 +188,22 @@ document.documentElement.classList.add('js');
   var drawer = document.getElementById('drawer');
   var toggle = document.getElementById('navToggle');
   var closeBtn = document.getElementById('drawerClose');
+  var mobileLanguage = nav.querySelector('.lang-switch--mobile');
+  var drawerLanguage = drawer.querySelector('[data-home-drawer-language]');
+  var languageHeader = mobileLanguage && mobileLanguage.parentElement;
+  var languageNext = mobileLanguage && mobileLanguage.nextElementSibling;
+  var mobileNavigation = window.matchMedia('(max-width: 1320px)');
+  function syncHomeLanguage(passedFold) {
+    if (!mobileLanguage || !drawerLanguage) return;
+    var showInDrawer = mobileNavigation.matches && passedFold;
+    if (showInDrawer && mobileLanguage.parentElement !== drawerLanguage) {
+      drawerLanguage.appendChild(mobileLanguage);
+    } else if (!showInDrawer && mobileLanguage.parentElement !== languageHeader) {
+      languageHeader.insertBefore(mobileLanguage, languageNext);
+    }
+    drawerLanguage.hidden = !showInDrawer;
+  }
+  syncHomeLanguage(nav.dataset.scrolled === 'true');
   function openDrawer() { drawer.dataset.open = 'true'; drawer.setAttribute('aria-hidden', 'false'); drawer.removeAttribute('inert'); toggle.setAttribute('aria-expanded', 'true'); document.body.style.overflow = 'hidden'; setInert(true); closeBtn.focus(); }
   function closeDrawer() { drawer.dataset.open = 'false'; drawer.setAttribute('aria-hidden', 'true'); drawer.setAttribute('inert', ''); toggle.setAttribute('aria-expanded', 'false'); document.body.style.overflow = ''; setInert(false); toggle.focus(); }
   function setInert(on) {
@@ -198,7 +215,9 @@ document.documentElement.classList.add('js');
   }
   toggle.addEventListener('click', openDrawer);
   closeBtn.addEventListener('click', closeDrawer);
-  drawer.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', closeDrawer); });
+  drawer.addEventListener('click', function (event) {
+    if (event.target.closest('a[href]')) closeDrawer();
+  });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && drawer.dataset.open === 'true') closeDrawer(); });
 
   // (Tabs removidas: a antiga seção "Informações" virou "Itinerário", sem abas.)

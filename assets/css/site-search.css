@@ -25,15 +25,41 @@
   .site-search-trigger__label, .site-search-trigger__kbd { display: none; }
 }
 
+/* Na hero, busca e idiomas compartilham a borda clara e o hover translúcido. */
+.nav[data-scrolled="false"] .site-search-trigger {
+  color: var(--foam-white, #fff);
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.25);
+}
+.nav[data-scrolled="false"] .site-search-trigger:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.45);
+}
+
 /* Home, scrolled: the bar turns navy, so the button takes the white of its neighbours (menu, languages). */
 .nav[data-scrolled="true"] .site-search-trigger { color: var(--foam-white, #fff); }
 
-/* Home, scrolled desktop bar: menu + manual link + "Garantir minha vaga" already filled the row (the logo
-   collapsed below ~1455px), and the full button pushed the reserve button off the screen. Until there is
-   room for everything, logo included (~1680px), the button keeps only its icon and the manual link drops
-   its "Confira o", so the reserve button stays on screen (EN still squeezes the logo a little more). */
+/* Desktop da home: mesma altura das ações vizinhas, com largura progressiva. */
+@media (min-width: 1321px) {
+  .nav[data-scrolled="true"] .site-search-trigger {
+    width: clamp(176px, 10vw, 200px);
+    height: 58px;
+    min-height: 58px;
+    box-sizing: border-box;
+    justify-content: center;
+    padding: 0 18px;
+    border-radius: var(--r-pill, 6px);
+  }
+  .nav[data-scrolled="true"] .site-search-trigger__icon { width: 22px; height: 22px; }
+}
+
+@media (min-width: 1680px) and (max-width: 1919px) {
+  .nav[data-scrolled="true"] .site-search-trigger { width: 140px; }
+  .nav[data-scrolled="true"] .site-search-trigger__kbd { display: none; }
+}
+
 @media (min-width: 1321px) and (max-width: 1679px) {
-  .nav[data-scrolled="true"] .site-search-trigger { width: 44px; min-height: 44px; padding: 0; justify-content: center; }
+  .nav[data-scrolled="true"] .site-search-trigger { width: 58px; padding: 0; }
   .nav[data-scrolled="true"] .site-search-trigger__label,
   .nav[data-scrolled="true"] .site-search-trigger__kbd,
   .nav[data-scrolled="true"] .nav__right .header-manual-link__prefix { display: none; }
