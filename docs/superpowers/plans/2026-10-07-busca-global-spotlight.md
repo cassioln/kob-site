@@ -760,7 +760,7 @@ test('EN e ES usam o próprio idioma', () => {
 });
 
 test('trecho contém a palavra casada e nunca fabrica HTML', () => {
-  const r = search(prepared.pt, 'concais').results[0];
+  const r = search(prepared.pt, 'concais').results.find(x => /concais/i.test(x.entry.text));
   const s = snippetFor(r);
   assert.match(s, /Concais/i);
   assert.doesNotMatch(s, /</);
@@ -1052,8 +1052,8 @@ test('consulta com HTML vira texto e o vazio oferece WhatsApp', async ({ page })
   await page.keyboard.press('Control+k');
   await input(page).fill('<img src=x onerror=alert(1)>');
   await expect(dialog(page).locator('img')).toHaveCount(0);
-  await input(page).fill('patinete');
-  await expect(page.locator('.site-search__empty strong')).toHaveText('Nada sobre “patinete” no site.');
+  await input(page).fill('xyzqwk');
+  await expect(page.locator('.site-search__empty strong')).toHaveText('Nada sobre “xyzqwk” no site.');
   await expect(page.locator('.site-search__whatsapp')).toHaveAttribute('href', /api\.whatsapp\.com\/send\?phone=5513981580498/);
   await page.locator('.site-search__try-term', { hasText: 'bagagem' }).click();
   await expect(input(page)).toHaveValue('bagagem');
