@@ -1212,7 +1212,7 @@ for (const width of [390, 1440]) {
     const support = page.locator('.live-notice-support');
     for (const approved of SUPPORT_NOTICES) for (const start of approved.cueSeconds) {
       await pauseAtLiveTime(page, start - .001);
-      await expect(support).toHaveCount(0);
+      if (width > 768) await expect(support).toHaveCount(0);
       await pauseAtLiveTime(page, start);
       await expect(support).toBeVisible();
       await expect(support).toHaveAttribute('data-support-id', approved.id);
@@ -1223,11 +1223,11 @@ for (const width of [390, 1440]) {
       if (approved.action.href) await expect(page.locator('.live-support-link')).toHaveAttribute('href', approved.action.href);
       else await expect(page.locator(`#liveChapterNoteAction [data-live-faq="${approved.action.faqId}"]`)).toBeVisible();
       await pauseAtLiveTime(page, start + 12);
-      await expect(support).toHaveCount(0);
+      if (width > 768) await expect(support).toHaveCount(0);
       await pauseAtLiveTime(page, start + 1);
       await expect(support).toBeVisible();
       await pauseAtLiveTime(page, start - 1);
-      await expect(support).toHaveCount(0);
+      if (width > 768) await expect(support).toHaveCount(0);
     }
     await pauseAtLiveTime(page, 1674);
     await expect(page.locator('#liveChapterNotice')).toHaveAttribute('data-notice-kind', 'support');
@@ -1235,9 +1235,10 @@ for (const width of [390, 1440]) {
     await expect(page.locator('#liveChapterNoteAction [data-live-faq="faq-o12"]')).toHaveCount(0);
     await expect(page.locator('.live-support-link')).toBeVisible();
     await pauseAtLiveTime(page, 2593);
-    await expect(page.locator('#liveChapterNotice')).toHaveAttribute('data-notice-kind', 'mixed');
-    await expect(page.locator('.live-notice-update')).toBeVisible();
-    await expect(page.locator('#liveChapterNoteAction [data-live-faq="faq-o30"]')).toBeVisible();
+    await expect(page.locator('#liveChapterNotice')).toHaveAttribute('data-notice-kind', width <= 768 ? 'support' : 'mixed');
+    if (width > 768) await expect(page.locator('.live-notice-update')).toBeVisible();
+    else await expect(page.locator('.live-notice-update')).toBeHidden();
+    if (width > 768) await expect(page.locator('#liveChapterNoteAction [data-live-faq="faq-o30"]')).toBeVisible();
     await pauseAtLiveTime(page, 1717);
     await expect(page.locator('#liveChapterNotice')).toBeHidden();
     await pauseAtLiveTime(page, 1742);
@@ -1245,11 +1246,16 @@ for (const width of [390, 1440]) {
     await expect(page.locator('.live-notice-update')).toHaveCount(0);
     await expect(page.locator('#liveChapterNoteAction [data-live-faq="faq-o13"]')).toHaveCount(0);
     await pauseAtLiveTime(page, 1754);
-    await expect(page.locator('#liveChapterNotice')).toBeHidden();
-    await expect(page.locator('.live-support-link')).toHaveCount(0);
+    if (width > 768) {
+      await expect(page.locator('#liveChapterNotice')).toBeHidden();
+      await expect(page.locator('.live-support-link')).toHaveCount(0);
+    } else {
+      await expect(page.locator('#liveChapterNotice')).toBeVisible();
+      await expect(support).toHaveAttribute('data-support-id', 'support-01');
+    }
     for (const rejected of [1034.839, 1291.600, 1358.400, 2124.839, 2166.079, 2444.599, 3008.559, 3162.760, 3985.920, 4523.280]) {
       await pauseAtLiveTime(page, rejected);
-      await expect(support).toHaveCount(0);
+      if (width > 768) await expect(support).toHaveCount(0);
     }
   });
 }
@@ -1506,3 +1512,42 @@ for (const width of [390, 1440]) {
     await expect(page.locator('iframe')).toHaveCount(0);
   });
 }
+
+
+for (const lang of ['pt', 'en', 'es']) {
+  test(`Aviso mobile termina a leitura ao cruzar o fim do assunto: ${lang}`, async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.goto(`/${lang === 'pt' ? '' : lang + '/'}manual-de-bordo.html`);
+    await page.locator('#loadLivePlayerBtn').click();
+    await readyPlayer(page);
+    await pauseAtLiveTime(page, 1763);
+    await expect(page.locator('.live-notice-support')).toHaveAttribute('data-support-id', 'support-10');
+    const original = await page.locator('.live-notice-ticker').textContent();
+    // This utterance starts just three seconds before the topic ends.
+    await pauseAtLiveTime(page, 1765);
+    await expect(page.locator('#liveCustomTopic')).toContainText(lang === 'pt' ? 'Estacionamento' : lang === 'en' ? 'Parking' : 'Estacionamiento');
+    await expect(page.locator('#liveChapterNotice')).toBeVisible();
+    await expect(page.locator('.live-notice-ticker')).toHaveText(original);
+    await page.locator('.live-notice-ticker').evaluate(el => el.dispatchEvent(new AnimationEvent('animationend', { animationName: 'live-notice-marquee' })));
+    await expect(page.locator('#liveChapterNotice')).toBeHidden();
+    await expect(page.locator('.live-notice-pill')).toBeHidden();
+    // A fresh notice in the new topic still appears normally.
+    await pauseAtLiveTime(page, 1779);
+    await expect(page.locator('.live-notice-support')).toHaveAttribute('data-support-id', 'support-02');
+    await expect(page.locator('#liveChapterNotice')).toBeVisible();
+  });
+}
+
+
+test('Navegação explícita troca de assunto sem carregar o aviso anterior', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/manual-de-bordo.html');
+  await page.locator('#loadLivePlayerBtn').click();
+  await readyPlayer(page);
+  await pauseAtLiveTime(page, 1763);
+  await expect(page.locator('#liveChapterNotice')).toBeVisible();
+  await page.locator('#liveNextChapterBtn').click();
+  await expect(page.locator('#liveChapterNotice')).toBeHidden();
+  await expect(page.locator('.live-notice-pill')).toBeHidden();
+});

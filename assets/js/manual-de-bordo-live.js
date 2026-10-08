@@ -1,10 +1,10 @@
 import { CHAPTERS, LIVE_VIDEO_ID, LIVE_DURATION, GROUP_INVITE_URL } from './manual-de-bordo-live-data.js?v=20261007-transcript-i18n';
 import { normalizeSearch, matchChapter, highlightParts, excerpt, transcriptFor } from './manual-de-bordo-live-search.js?v=20261007-transcript-i18n';
 
-import { topicAt, topicProgress, seekInTopic, isNoticeDue, isGroupInviteDue, mobileNoticeAt } from './manual-de-bordo-live-timeline.js?v=20261007-notice-auto-collapse';
+import { topicAt, topicProgress, seekInTopic, isNoticeDue, isGroupInviteDue, mobileNoticeAt } from './manual-de-bordo-live-timeline.js?v=20261007-notice-reading-complete';
 import { initLiveGuideHelp } from './manual-de-bordo-live-help.js?v=20261005-mobile-live';
 import { initLiveMarkers } from './manual-de-bordo-live-markers.js?v=20261005-mobile-live';
-import { initLiveControlMarquee, initLiveNoticeMarquee, initLivePulse } from './manual-de-bordo-live-marquee.js?v=20261007-notice-auto-collapse';
+import { initLiveControlMarquee, initLiveNoticeMarquee, initLivePulse } from './manual-de-bordo-live-marquee.js?v=20261007-notice-reading-complete';
 import { initLiveTopicTransition } from './manual-de-bordo-live-topic.js?v=20261005-mobile-live';
 import { supportAt } from './manual-de-bordo-live-support.js?v=20261006-live-copy';
 
@@ -310,9 +310,33 @@ function initLive() {
   let activeNoticeId = null;
   let noticeRenderKey;
   let lastPlaybackSeconds = 0;
+  let lastNoticeSeconds = 0;
+  let mobileReadingNotice = null;
+  let noticeFinishing = false;
+  function resetNoticeReading() {
+    clearTimeout(collapseTimer);
+    noticeFinishing = false;
+    mobileReadingNotice = null;
+    activeNoticeId = null;
+    noticeRenderKey = undefined;
+    noticeCollapsed = false;
+    noticeMarquee.stop();
+    noticeGroup.classList.remove('is-notice-exiting');
+  }
   function syncNotice() {
     // Without an API clock, keep the update available in search and the guide only.
-    const mobileNotice = ready && !apiFailed && mobile.matches ? mobileNoticeAt(selected, lastPlaybackSeconds) : null;
+    let mobileNotice = ready && !apiFailed && mobile.matches ? mobileNoticeAt(selected, lastPlaybackSeconds) : null;
+    const elapsed = lastPlaybackSeconds - lastNoticeSeconds;
+    lastNoticeSeconds = lastPlaybackSeconds;
+    if (mobileNotice) {
+      mobileReadingNotice = { ...mobileNotice, chapter: selected };
+      mobileNotice = mobileReadingNotice;
+    } else if (mobile.matches && ready && !apiFailed && !noticeCollapsed && elapsed >= 0 &&
+      (noticeMarquee.isReading() || noticeFinishing)) {
+      // A natural topic boundary must not cut off an unfinished reading cycle.
+      mobileNotice = mobileReadingNotice;
+    } else mobileReadingNotice = null;
+    const noticeChapter = mobileNotice?.chapter || selected;
     const due = mobile.matches ? Boolean(mobileNotice?.update) : ready && !apiFailed && isNoticeDue(selected, lastPlaybackSeconds);
     const support = mobile.matches ? mobileNotice?.support : ready && !apiFailed ? supportAt(lastPlaybackSeconds) : null;
     const visibleNotice = due || support;
@@ -327,16 +351,17 @@ function initLive() {
         guideHelp.hide();
       }
       clearTimeout(collapseTimer);
+      noticeFinishing = false;
       noticeGroup.classList.remove('is-notice-exiting');
       noticeMarquee.stop();
       noticeCollapsed = false;
       activeNoticeId = nextNoticeId;
     }
-    const renderKey = `${mobile.matches}:${selected?.id || ''}:${nextNoticeId}`;
+    const renderKey = `${mobile.matches}:${noticeChapter?.id || ''}:${nextNoticeId}`;
     const renderChanged = noticeRenderKey !== renderKey;
     if (renderChanged) {
       if (noticeGroup.contains(document.activeElement)) playPause.focus({ preventScroll: true });
-      renderNotice(selected, due, support);
+      renderNotice(noticeChapter, due, support);
       noticeRenderKey = renderKey;
     }
     noticeGroup.hidden = !visibleNotice;
@@ -351,19 +376,22 @@ function initLive() {
   function collapseNotice() {
     if (!mobile.matches || !activeNoticeId || noticeCollapsed) return;
     const key = activeNoticeId;
+    noticeFinishing = true;
     noticeGroup.classList.add('is-notice-exiting');
     collapseTimer = setTimeout(() => {
       if (key !== activeNoticeId) return;
       const restoreFocus = noticeGroup.contains(document.activeElement);
       noticeCollapsed = true;
+      noticeFinishing = false;
       noticeGroup.classList.remove('is-notice-exiting');
       syncNotice();
       updateDimensions();
-      if (restoreFocus) noticePill.focus({ preventScroll: true });
+      if (restoreFocus) (noticePill.hidden ? playPause : noticePill).focus({ preventScroll: true });
     }, matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 180);
   }
   noticePill.addEventListener('click', () => {
     clearTimeout(collapseTimer);
+    noticeFinishing = false;
     noticeGroup.classList.remove('is-notice-exiting');
     noticeCollapsed = false;
     syncNotice();
@@ -848,6 +876,7 @@ function initLive() {
     }
   }
   function playAt(seconds = 0) {
+    resetNoticeReading();
     pendingSeconds = seconds;
     if (ready && player) {
       current = null;
@@ -911,6 +940,7 @@ function initLive() {
     if (!selected || !ready) return;
     topicTransition.cancel();
     const seconds = seekInTopic(selected, progress.value, player.getDuration?.());
+    resetNoticeReading();
     player.seekTo(seconds, true);
     updateProgress(seconds);
     revealControls();

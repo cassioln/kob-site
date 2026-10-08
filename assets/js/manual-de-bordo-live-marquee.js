@@ -99,7 +99,7 @@ export function initLiveNoticeMarquee(viewport, text, notice, onComplete) {
   reduced.addEventListener('change', refresh);
   document.fonts?.ready.then(refresh);
   document.addEventListener('visibilitychange', syncPlayback);
-  return { refresh, start, stop };
+  return { refresh, start, stop, isReading: () => active };
 }
 
 /** Pulses retain their existing placement and stop while hidden or offscreen. */
