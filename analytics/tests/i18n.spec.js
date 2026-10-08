@@ -89,7 +89,7 @@ test.describe('Internacionalização e Validação de Páginas /en/ e /es/', () 
     await expect(status).toHaveText(/34 respuestas organizadas por tema/i);
 
     // Valida modal de cabines em espanhol
-    await page.getByRole('tab', { name: /Cabinas/i }).click();
+    await page.getByRole('tab', { name: /Camarotes/i }).click();
     await page.getByRole('button', { name: /Ver Detalles/i }).first().click();
     const cabinModal = page.locator('#cabinModal');
     await expect(cabinModal).toBeVisible();
