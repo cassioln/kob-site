@@ -61,7 +61,17 @@ export function prepareIndex(entries, { groups = [], stopwords = [] } = {}) {
       synonyms.set(word, set);
     }
   }
-  return { items, vocabulary: [...vocabulary], surface, synonyms, stopwords: new Set(stopwords.flatMap(words)), cache: new Map() };
+  return { items, vocabulary: [...vocabulary], vocabularySet: vocabulary, surface, synonyms, stopwords: new Set(stopwords.flatMap(words)), cache: new Map() };
+}
+
+// Plural endings (normalized, no accents) and their singular replacements, most specific first.
+const PLURAL_RULES = [['oes', 'ao'], ['aes', 'ao'], ['ns', 'm'], ['ies', 'y'], ['es', ''], ['s', '']];
+
+function singularStems(token) {
+  if (token.length < 4 || !token.endsWith('s')) return [];
+  return PLURAL_RULES.filter(([ending]) => token.endsWith(ending))
+    .map(([ending, replacement]) => token.slice(0, -ending.length) + replacement)
+    .filter(stem => stem.length >= 3);
 }
 
 function candidates(prepared, token) {
@@ -70,6 +80,10 @@ function candidates(prepared, token) {
   for (const word of prepared.vocabulary) {
     if (word === token) out.set(word, 1);
     else if (token.length >= 3 && word.startsWith(token)) out.set(word, 0.8);
+  }
+  // A plural reaches its singular ("limites" → "limite"); this counts as a found word and keeps the typo gate closed.
+  for (const stem of singularStems(token)) {
+    if (prepared.vocabularySet.has(stem) && (out.get(stem) ?? 0) < 0.8) out.set(stem, 0.8);
   }
   // Typo tolerance is only for words the index does not have: a real word is never "corrected" into another.
   const limit = out.size ? 0 : fuzzyLimit(token.length);
@@ -99,12 +113,14 @@ function rank(prepared, perToken, phrase, allowMissing) {
     const used = new Set();
     for (const { direct, viaSynonym } of perToken) {
       let best = 0;
-      let bestSynonym = null; // reported only when a synonym, not the typed word, gave this token its best score
+      let typedFound = false; // the typed word (exact, prefix, plural or typo form) is in this entry
+      let bestSynonym = null; // reported only when the entry matched this token through a synonym alone
       for (const [field, weight] of Object.entries(FIELD_WEIGHT)) {
         const set = item.fields[field];
         for (const [word, score] of direct) {
           if (!set.has(word)) continue;
           matched.add(word);
+          typedFound = true;
           if (score * weight > best) { best = score * weight; bestSynonym = null; }
         }
         for (const [word, score] of viaSynonym) {
@@ -114,7 +130,7 @@ function rank(prepared, perToken, phrase, allowMissing) {
         }
       }
       if (!best && ++missing > allowMissing) break;
-      if (bestSynonym) used.add(bestSynonym);
+      if (bestSynonym && !typedFound) used.add(bestSynonym);
       total += best;
     }
     if (missing > allowMissing) continue;

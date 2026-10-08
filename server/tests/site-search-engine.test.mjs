@@ -104,13 +104,32 @@ test('palavra que existe no índice não é "corrigida" para outra', () => {
   }
 });
 
+test('plural encontra o singular nos 3 idiomas', () => {
+  // Some result must have the singular and not the plural: only the plural→singular rule can find it.
+  const singularOnly = (r, singular, plural) => r.results.some(x => {
+    const all = `${x.entry.title} ${x.entry.keywords} ${x.entry.text}`;
+    return new RegExp(`\\b${singular}\\b`, 'i').test(all) && !new RegExp(`\\b${plural}\\b`, 'i').test(all);
+  });
+  const limites = search(prepared.pt, 'limites');
+  assert.ok(titles(limites).includes('Qual é o limite de bagagem da MSC?'));
+  assert.ok(singularOnly(limites, 'limite', 'limites'));
+  assert.ok(singularOnly(search(prepared.pt, 'navios'), 'navio', 'navios'));
+  assert.ok(singularOnly(search(prepared.en, 'passengers'), 'passenger', 'passengers'));
+  // Only 2 ES entries contain "permiso(s)"; the old 4 results included typo noise ("premios").
+  const permisos = search(prepared.es, 'permisos');
+  const ids = permisos.results.map(x => x.entry.id);
+  const withWord = read('assets/data/search-index.es.json').entries.filter(e => /\bpermisos?\b/i.test(`${e.title} ${e.keywords} ${e.text}`));
+  assert.ok(withWord.length >= 2 && withWord.every(e => ids.includes(e.id)), JSON.stringify(ids));
+  assert.ok(singularOnly(permisos, 'permiso', 'permisos'));
+});
+
 test('"são" continua sendo termo de busca (São Paulo)', () => {
   const r = search(prepared.pt, 'são paulo');
   assert.deepEqual(r.tokens, ['sao', 'paulo']);
   assert.match(r.results[0].entry.title, /São Paulo/);
 });
 
-test('sinônimo só é informado quando foi a melhor correspondência', () => {
+test('sinônimo só é informado quando a palavra digitada não casou na entrada', () => {
   const r = search(prepared.pt, 'documentos');
   assert.ok(r.results[0].matched.some(w => w.startsWith('documento')));
   assert.ok(!r.synonymsUsed.includes('rg') && !r.synonymsUsed.includes('cnh'), JSON.stringify(r.synonymsUsed));
