@@ -327,7 +327,12 @@ function init() {
     trigger.addEventListener('click', event => { event.preventDefault(); open(trigger); });
     trigger.addEventListener('pointerenter', () => { load().catch(() => {}); }, { once: true });
   }
-  for (const kbd of document.querySelectorAll('[data-site-search-kbd]')) kbd.textContent = shortcutLabel;
+  for (const kbd of document.querySelectorAll('[data-site-search-kbd]')) {
+    kbd.textContent = shortcutLabel;
+    // A button whose visible text is the shortcut (the FAQ chip) keeps that text in its name (WCAG 2.5.3).
+    const base = kbd.matches('[data-site-search-open]') && kbd.getAttribute('aria-label');
+    if (base) kbd.setAttribute('aria-label', `${base} (${shortcutLabel})`);
+  }
   // Capture phase + stopPropagation: the global search owns ⌘K/Ctrl+K on every page, ahead of any handler
   // on the focused field or widget (the FAQ boxes no longer bind it).
   document.addEventListener('keydown', event => {

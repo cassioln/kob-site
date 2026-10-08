@@ -5052,17 +5052,6 @@
   background: rgba(255, 255, 255, 0.28);
 }
 
-#duvidas .faq-search kbd {
-  padding: 4px 7px;
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  border-radius: 5px;
-  color: rgba(255, 255, 255, 0.72);
-  background: rgba(255, 255, 255, 0.08);
-  font-family: var(--font-body, inherit);
-  font-size: 0.68rem;
-  line-height: 1;
-}
-
 #duvidas .faq-search small {
   min-height: 1.4em;
   color: rgba(255, 255, 255, 0.68);

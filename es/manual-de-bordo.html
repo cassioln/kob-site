@@ -45,9 +45,9 @@
     rel="stylesheet">
   <link rel="preload" href="/assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
 
-  <link rel="stylesheet" href="/assets/css/main.css?v=20261005-ui-final">
+  <link rel="stylesheet" href="/assets/css/main.css?v=20261008-busca">
   <link rel="stylesheet" href="/assets/css/site-search.css?v=20261008-busca">
-  <link rel="stylesheet" href="/assets/css/manual-de-bordo.css?v=20261007-mobile-invite-compact">
+  <link rel="stylesheet" href="/assets/css/manual-de-bordo.css?v=20261008-busca">
   <link rel="stylesheet" href="/assets/css/footer-sponsors.css?v=20261007-sponsors-marquee">
   <link rel="stylesheet" href="/assets/css/cookie-consent.css?v=20260820-fix-contrast">
 
@@ -774,14 +774,14 @@
             </p>
           </div>
           <label class="faq-search" for="faqSearchInput">
-            <span>¿Qué necesitas saber?</span>
+            <span id="faqSearchLabel">¿Qué necesitas saber?</span>
             <span class="faq-search__field">
               <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <circle cx="11" cy="11" r="6.5"></circle>
                 <path d="m16 16 4 4"></path>
               </svg>
               <input id="faqSearchInput" type="search" placeholder="ej.: documentos, equipaje, internet, juegos…" autocomplete="off"
-                aria-describedby="faq-search-status">
+                aria-labelledby="faqSearchLabel" aria-describedby="faq-search-status">
               <button type="button" class="faq-search-clear" id="faqClearBtn" title="Limpiar búsqueda" aria-label="Limpiar búsqueda">Limpiar</button>
               <button type="button" class="faq-search__spotlight" data-site-search-open data-site-search-kbd
                 aria-label="Buscar en todo el sitio">⌘ K</button>

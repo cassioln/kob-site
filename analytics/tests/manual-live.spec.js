@@ -979,7 +979,8 @@ test('No mobile o aviso usa uma faixa no topo e se recolhe após um ciclo', asyn
   const video = await page.locator('#livePlayerWrapper').boundingBox();
   const box = await notice.boundingBox();
   expect(box.y).toBeGreaterThanOrEqual(video.y);
-  expect(box.height).toBeLessThanOrEqual(36);
+  // Half a pixel of slack: the entrance animation sometimes leaves 36.0000076px (also flaky on main).
+  expect(box.height).toBeLessThanOrEqual(36.5);
   expect(box.y + box.height).toBeLessThan(video.y + video.height / 2);
   const controls = await page.locator('#liveCustomControls').boundingBox();
   expect(controls.y).toBeGreaterThanOrEqual(box.y + box.height);

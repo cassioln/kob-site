@@ -97,6 +97,9 @@ for (const [platform, label, keys] of [['macOS', '⌘ K', 'Meta+K'], ['Windows',
     for (const trigger of await page.locator('[data-site-search-open]').all()) {
       await expect(trigger).toHaveAttribute('aria-keyshortcuts', keys);
     }
+    // The FAQ chip's visible text is the shortcut, so its name carries it too (WCAG 2.5.3).
+    await expect(page.locator('.faq-search__spotlight')).toHaveText(label);
+    await expect(page.locator('.faq-search__spotlight')).toHaveAccessibleName(`Buscar no site inteiro (${label})`);
   });
 }
 
@@ -305,7 +308,7 @@ const PAGES = [
   ['/onibus.html', 'pt', '.bus-header__right'], ['/en/onibus.html', 'en', '.bus-header__right'], ['/es/onibus.html', 'es', '.bus-header__right']
 ];
 const TEXT = {
-  pt: { label: 'Buscar no site', placeholder: 'O que você procura?', where: 'Pesquisa no site', faqButton: 'Pesquisar no site inteiro' },
+  pt: { label: 'Buscar no site', placeholder: 'O que você procura?', where: 'Pesquisa no site', faqButton: 'Buscar no site inteiro' },
   en: { label: 'Search the site', placeholder: 'What are you looking for?', where: 'Search the site', faqButton: 'Search the whole site' },
   es: { label: 'Buscar en el sitio', placeholder: '¿Qué estás buscando?', where: 'Buscar en el sitio', faqButton: 'Buscar en todo el sitio' }
 };
@@ -325,12 +328,24 @@ for (const [path, lang, container] of PAGES) {
   });
 }
 
-for (const [path, lang, faqInput] of [['/', 'pt', '#faq-search'], ['/en/', 'en', '#faq-search'], ['/es/', 'es', '#faq-search'], ['/manual-de-bordo.html', 'pt', '#faqSearchInput'], ['/en/manual-de-bordo.html', 'en', '#faqSearchInput'], ['/es/manual-de-bordo.html', 'es', '#faqSearchInput']]) {
+// The 6 pages with a FAQ box: the filter's id and the exact question that captions it.
+const FAQ_BOXES = [
+  ['/', 'pt', '#faq-search', 'O que você precisa saber?'],
+  ['/en/', 'en', '#faq-search', 'What would you like to know?'],
+  ['/es/', 'es', '#faq-search', '¿Qué necesita saber?'],
+  ['/manual-de-bordo.html', 'pt', '#faqSearchInput', 'O que você precisa saber?'],
+  ['/en/manual-de-bordo.html', 'en', '#faqSearchInput', 'What do you need to know?'],
+  ['/es/manual-de-bordo.html', 'es', '#faqSearchInput', '¿Qué necesitas saber?']
+];
+
+for (const [path, lang, faqInput, caption] of FAQ_BOXES) {
   test(`o selo da caixa do FAQ abre a busca global e Ctrl+K não foca mais o FAQ (${path})`, async ({ page }) => {
     await page.route(/https:\/\/.*youtube(?:-nocookie)?\.com\/.*/, route => route.fulfill({ contentType: 'text/html', body: '<html></html>' }));
     await visit(page, path);
     const button = page.locator('.faq-search__spotlight');
-    await expect(button).toHaveAttribute('aria-label', TEXT[lang].faqButton);
+    const shortcut = await button.textContent();
+    expect(shortcut).toMatch(/^(⌘ K|Ctrl K)$/);
+    await expect(button).toHaveAccessibleName(`${TEXT[lang].faqButton} (${shortcut})`);
     await button.click();
     await expect(page.locator('dialog.site-search')).toBeVisible();
     await page.keyboard.press('Escape');
@@ -338,6 +353,26 @@ for (const [path, lang, faqInput] of [['/', 'pt', '#faq-search'], ['/en/', 'en',
     await page.locator(faqInput).focus();
     await pressShortcut(page);
     await expect(page.locator('.site-search__input')).toBeFocused();
+  });
+
+  // The chip sits inside the box's <label>; the filter is named by the question alone.
+  test(`o filtro do FAQ se chama só pela pergunta da caixa (${path})`, async ({ page }) => {
+    await page.route(/https:\/\/.*youtube(?:-nocookie)?\.com\/.*/, route => route.fulfill({ contentType: 'text/html', body: '<html></html>' }));
+    await visit(page, path);
+    await expect(page.locator(faqInput)).toHaveAccessibleName(caption);
+  });
+}
+
+// The global listener ignores the other platform's modifier, so this proves no FAQ handler is left to catch it.
+for (const [path, faqInput] of [['/', '#faq-search'], ['/manual-de-bordo.html', '#faqSearchInput']]) {
+  test(`a tecla da outra plataforma + K não foca o filtro do FAQ (${path})`, async ({ page }) => {
+    await page.route(/https:\/\/.*youtube(?:-nocookie)?\.com\/.*/, route => route.fulfill({ contentType: 'text/html', body: '<html></html>' }));
+    await visit(page, path);
+    const other = (await shortcutKey(page)) === 'Meta' ? 'Control' : 'Meta';
+    await page.evaluate(() => document.activeElement?.blur());
+    await page.keyboard.press(`${other}+k`);
+    await expect(page.locator(faqInput)).not.toBeFocused();
+    await expect(dialog(page)).toBeHidden();
   });
 }
 
@@ -348,14 +383,57 @@ test('Ctrl+K abre com foco num campo do formulário do busão', async ({ page })
   await expect(page.locator('.site-search__input')).toBeFocused();
 });
 
+// Measures the header row for real: every visible control of the right-hand group ends inside the page,
+// and whatever sits before it in the row (brand, menu links, down to their text) ends before it starts.
+async function expectHeaderFits(page, container, where) {
+  await expect(page.locator(`${container} > .site-search-trigger:first-child`), where).toBeVisible();
+  const fit = await page.evaluate(selector => {
+    const shown = el => el.getClientRects().length > 0 && getComputedStyle(el).visibility !== 'hidden';
+    const right = el => el.getBoundingClientRect().right;
+    const group = document.querySelector(selector);
+    const controls = [...group.children].filter(shown);
+    const start = Math.min(...controls.map(el => el.getBoundingClientRect().left));
+    const before = [...group.parentElement.children].filter(el => el !== group && shown(el) && el.getBoundingClientRect().left < start)
+      .flatMap(el => [el, ...el.querySelectorAll('*')]).filter(shown).map(right);
+    return {
+      clientWidth: document.documentElement.clientWidth,
+      overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      end: Math.max(...controls.map(right)), start, beforeEnd: Math.max(0, ...before)
+    };
+  }, container);
+  expect(fit.overflow, `${where}: rolagem horizontal`).toBe(0);
+  expect(fit.end, `${where}: o grupo da direita passa da borda`).toBeLessThanOrEqual(fit.clientWidth + 0.5);
+  expect(fit.beforeEnd, `${where}: marca/menu invadem o grupo da direita`).toBeLessThanOrEqual(fit.start + 0.5);
+}
+
+async function scrollHomeNav(page) {
+  await page.evaluate(() => document.getElementById('navio').scrollIntoView({ behavior: 'instant' }));
+  await expect(page.locator('#nav')).toHaveAttribute('data-scrolled', 'true');
+}
+
 for (const width of [320, 390]) {
-  test(`headers cabem a ${width}px com a lupa`, async ({ page }) => {
+  test(`os 9 headers cabem a ${width}px com a lupa`, async ({ page }) => {
+    await page.route(/https:\/\/.*youtube(?:-nocookie)?\.com\/.*/, route => route.fulfill({ contentType: 'text/html', body: '<html></html>' }));
     await page.setViewportSize({ width, height: 800 });
-    for (const path of ['/', '/manual-de-bordo.html', '/onibus.html']) {
+    for (const [path, , container] of PAGES) {
       await visit(page, path);
-      const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
-      expect(overflow, path).toBeLessThanOrEqual(0);
-      await expect(page.locator('.site-search-trigger').first()).toBeVisible();
+      await expectHeaderFits(page, container, `${path} @${width}`);
+      if (container !== '.nav__right') continue;
+      await scrollHomeNav(page);
+      await expectHeaderFits(page, container, `${path} @${width} rolado`);
+    }
+  });
+}
+
+for (const width of [1321, 1366]) {
+  test(`homes: menu e lupa cabem a ${width}px, no topo e rolado`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 800 });
+    for (const path of ['/', '/en/', '/es/']) {
+      await visit(page, path);
+      await expect(page.locator('#nav')).toHaveAttribute('data-scrolled', 'false');
+      await expectHeaderFits(page, '.nav__right', `${path} @${width} topo`);
+      await scrollHomeNav(page);
+      await expectHeaderFits(page, '.nav__right', `${path} @${width} rolado`);
     }
   });
 }

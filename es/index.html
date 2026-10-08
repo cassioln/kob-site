@@ -246,7 +246,7 @@
   <!-- Fontes da marca (banner KOB): Gobold Extra2 = display, Chantal = acento manuscrito -->
   <link rel="preload" href="/assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
 
-  <link rel="stylesheet" href="/assets/css/main.css?v=20261005-ui-final">
+  <link rel="stylesheet" href="/assets/css/main.css?v=20261008-busca">
   <link rel="stylesheet" href="/assets/css/site-search.css?v=20261008-busca">
   <link rel="stylesheet" href="/assets/css/cookie-consent.css?v=20260820-fix-contrast">
   <script defer src="/assets/js/cookie-consent.js?v=20260713-5"></script>
@@ -2437,14 +2437,14 @@
             <p class="lead">Encuentre respuestas sobre documentos, juegos, comidas y normas del crucero.</p>
           </div>
           <label class="faq-search" for="faq-search">
-            <span>¿Qué necesita saber?</span>
+            <span id="faq-search-label">¿Qué necesita saber?</span>
             <span class="faq-search__field">
               <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <circle cx="11" cy="11" r="6.5"></circle>
                 <path d="m16 16 4 4"></path>
               </svg>
               <input id="faq-search" type="search" placeholder="Ej.: documentos, bebidas, juegos…" autocomplete="off"
-                aria-describedby="faq-search-status">
+                aria-labelledby="faq-search-label" aria-describedby="faq-search-status">
               <button type="button" class="faq-search__spotlight" data-site-search-open data-site-search-kbd
                 aria-label="Buscar en todo el sitio">⌘ K</button>
             </span>
