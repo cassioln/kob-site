@@ -323,57 +323,65 @@ export function goToAnchor(anchor) {
 
 const scrollBehavior = () => (reducedMotion.matches ? 'auto' : 'smooth');
 
+const INTERRUPTS = ['wheel', 'touchstart', 'keydown', 'pointerdown'];
+
 // Scrolls the target to its scroll-margin line (block "start": the manual's own hash handler scrolls the same
-// way, so they agree). Layout above can still settle while a smooth scroll runs (the home FAQ's 24px reveal
-// right after load), so when that scroll ends a small drift is corrected, instantly, once. Any wheel, touch,
-// key or click first means the person is scrolling on their own: the correction is dropped.
+// way, so they agree). A home FAQ block still slides 24px into place (main.css .reveal), so that entrance is
+// finished first, without the slide. If layout above still moves while the smooth scroll runs, a small drift
+// is corrected, instantly, once it ends. Any wheel, touch, key or click first means the person is scrolling on
+// their own: the correction is dropped.
 let cancelSettle = () => {};
 function bringIntoView(target) {
   cancelSettle();
+  const reveal = target.closest('.reveal:not(.is-in)');
+  if (reveal) {
+    reveal.style.transitionProperty = 'opacity';
+    reveal.classList.add('is-in');
+    requestAnimationFrame(() => reveal.style.removeProperty('transition-property'));
+  }
   target.scrollIntoView({ block: 'start', behavior: scrollBehavior() });
   const settle = () => {
     cancelSettle();
     const drift = target.getBoundingClientRect().top - (parseFloat(getComputedStyle(target).scrollMarginTop) || 0);
     if (Math.abs(drift) > 2 && Math.abs(drift) < 64) target.scrollIntoView({ block: 'start', behavior: 'instant' });
   };
-  const interrupts = ['wheel', 'touchstart', 'keydown', 'pointerdown'];
-  const timer = setTimeout(() => cancelSettle(), 2500);
+  const timer = setTimeout(() => cancelSettle(), 6000);
   cancelSettle = () => {
     clearTimeout(timer);
     window.removeEventListener('scrollend', settle);
-    for (const type of interrupts) window.removeEventListener(type, cancelSettle, true);
+    for (const type of INTERRUPTS) window.removeEventListener(type, cancelSettle, true);
     cancelSettle = () => {};
   };
   window.addEventListener('scrollend', settle);
-  for (const type of interrupts) window.addEventListener(type, cancelSettle, { capture: true, passive: true });
+  for (const type of INTERRUPTS) window.addEventListener(type, cancelSettle, { capture: true, passive: true });
 }
 
 const glowTimers = new WeakMap();
 
-// Arrival by hash, from a result or a shared link: a FAQ question opens (clearing the box's filter if it hid
-// it), scrolls in, takes focus and glows; a tab panel (home prices: cabins | drinks) is selected through its tab.
-function arrive() {
+// Arrival by hash, from a result or a shared link, in two steps. prepare() changes the page right away: a tab
+// panel (home prices: cabins | drinks) gets its tab selected; a FAQ question opens, clearing the box's filter if
+// it hid it. It returns land(), which scrolls there, moves focus and, for a question, glows.
+function prepare() {
   let id = '';
-  try { id = decodeURIComponent(window.location.hash.slice(1)); } catch { return; }
+  try { id = decodeURIComponent(window.location.hash.slice(1)); } catch { return null; }
   const target = id && document.getElementById(id);
-  if (!target) return;
+  if (!target) return null;
   if (target.getAttribute('role') === 'tabpanel') {
     const tab = document.querySelector(`[role="tab"][aria-controls="${CSS.escape(id)}"]`);
     if (tab && tab.getAttribute('aria-selected') !== 'true') tab.click();
-    requestAnimationFrame(() => {
+    return () => {
       bringIntoView(target);
       tab?.focus({ preventScroll: true });
-    });
-    return;
+    };
   }
-  if (!/^faq-[ho]\d{2}$/.test(id) || target.tagName !== 'DETAILS') return;
+  if (!/^faq-[ho]\d{2}$/.test(id) || target.tagName !== 'DETAILS') return null;
   const filter = target.closest('section')?.querySelector('input[type="search"]');
   if (filter?.value) {
     filter.value = '';
     filter.dispatchEvent(new Event('input', { bubbles: true }));
   }
   target.open = true;
-  requestAnimationFrame(() => {
+  return () => {
     bringIntoView(target);
     target.querySelector('summary')?.focus({ preventScroll: true });
     clearTimeout(glowTimers.get(target));
@@ -381,6 +389,30 @@ function arrive() {
     void target.offsetWidth; // restart the glow when the same question is reached twice
     target.classList.add('site-search-arrival');
     glowTimers.set(target, setTimeout(() => target.classList.remove('site-search-arrival'), 2000));
+  };
+}
+
+function arrive() {
+  const land = prepare();
+  if (land) requestAnimationFrame(land);
+}
+
+// A link from another page: the page changes at once, but the layout above the target still grows while
+// images and fonts load (hundreds of px on phones), so the scroll waits for load + fonts, 3 s at most. It is
+// skipped if the person already moved (wheel, touch, key, click) or the hash changed meanwhile.
+function arriveFromLink() {
+  const land = prepare();
+  if (!land) return;
+  if (document.readyState === 'complete') { requestAnimationFrame(land); return; }
+  const hash = window.location.hash;
+  let moved = false;
+  const onMove = () => { moved = true; };
+  for (const type of INTERRUPTS) window.addEventListener(type, onMove, { capture: true, passive: true });
+  const loaded = new Promise(resolve => window.addEventListener('load', resolve, { once: true }))
+    .then(() => document.fonts?.ready);
+  Promise.race([loaded, new Promise(resolve => setTimeout(resolve, 3000))]).then(() => {
+    for (const type of INTERRUPTS) window.removeEventListener(type, onMove, true);
+    if (!moved && window.location.hash === hash) requestAnimationFrame(land);
   });
 }
 
@@ -407,10 +439,7 @@ function init() {
     else open(document.activeElement); // also cancels a close still animating
   }, true);
   window.addEventListener('hashchange', arrive);
-  // A link from another page: the layout above the target still grows while images and fonts load (hundreds
-  // of px on phones), so the arrival waits for the page to settle; the browser's own jump covers the wait.
-  if (document.readyState === 'complete') arrive();
-  else window.addEventListener('load', () => { (document.fonts?.ready || Promise.resolve()).then(arrive); }, { once: true });
+  arriveFromLink();
 }
 
 init();

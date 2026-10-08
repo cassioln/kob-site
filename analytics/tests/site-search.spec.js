@@ -493,6 +493,38 @@ for (const [path, width] of [['/', 390], ['/en/', 390], ['/es/', 390], ['/', 768
   });
 }
 
+// A link from another page: the page changes at once (question open, tab selected); the scroll waits for
+// the load, and is skipped if the person has already moved meanwhile.
+test('link de outra página abre a aba de bebidas na hora e rola até ela', async ({ page }) => {
+  await visit(page, '/#panel-bebidas');
+  await expect(page.locator('#tab-bebidas')).toHaveAttribute('aria-selected', 'true');
+  await expect(page.locator('#panel-bebidas')).toBeVisible();
+  await expect(page.locator('#tab-bebidas')).toBeFocused();
+  await expectBelowHeader(page, '.value-tabs', '#nav');
+});
+
+test('rolar enquanto a página carrega não é desfeito pela chegada', async ({ page }) => {
+  // Hold the load event for ~4 s with slow images (past the 3 s cap), so there is time to scroll before it.
+  await page.route(/\/assets\/images\//, async route => { await new Promise(resolve => setTimeout(resolve, 4000)); await route.continue(); });
+  await page.addInitScript(() => {
+    localStorage.setItem('cookie_consent_status', 'denied');
+    // Counts the arrival's own scrolls to the question (the browser's fragment jump does not go through here).
+    window.__landings = 0;
+    const scrollIntoView = Element.prototype.scrollIntoView;
+    Element.prototype.scrollIntoView = function (...args) {
+      if (this.id === 'faq-h23') window.__landings += 1;
+      return scrollIntoView.apply(this, args);
+    };
+  });
+  await page.goto('/#faq-h23', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('#faq-h23')).toHaveAttribute('open', '');
+  await page.mouse.move(640, 400);
+  await page.mouse.wheel(0, 1500);
+  await page.waitForFunction(() => document.readyState === 'complete', null, { timeout: 10000 });
+  await page.waitForTimeout(1000);
+  expect(await page.evaluate(() => window.__landings)).toBe(0);
+});
+
 // The settle step only corrects a small drift: scrolling away right after arriving is not undone.
 test('rolar logo depois de chegar não puxa a página de volta para a pergunta', async ({ page }) => {
   await home(page);
