@@ -199,3 +199,12 @@ test('destaque e trecho só em começo de palavra', async () => {
   const snippet = snippetFor({ entry: { text }, matched: ['rg'] }, 30);
   assert.match(snippet, /RG válido/);
 });
+
+test('o rótulo de cada "Mais procurados" acha o próprio destino', () => {
+  for (const lang of ['pt', 'en', 'es']) {
+    for (const item of synonyms[lang].featured) {
+      const top = search(prepared[lang], item.label).results.slice(0, 5).map(r => `${r.entry.page}${r.entry.anchor}`);
+      assert.ok(top.includes(`${item.page}${item.anchor}`), `${lang} "${item.label}": ${JSON.stringify(top)}`);
+    }
+  }
+});

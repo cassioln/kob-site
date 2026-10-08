@@ -24,7 +24,8 @@ const SECTIONS = {
       anchorOf: node => closest(node, n => n.attrs.role === 'tabpanel')?.attrs.id
     },
     { id: 'hospedagem' },
-    { id: 'parceiros' }
+    // Os nomes dos parceiros só existem no alt dos logos.
+    { id: 'parceiros', alts: true }
   ],
   manual: [
     {
@@ -84,9 +85,10 @@ export function sectionEntries(root, page, configs = SECTIONS[page]) {
     if (!section) throw new Error(`${page}: seção ${config.id} não encontrada`);
     const heading = findFirst(section, n => n.tag === 'h1' || n.tag === 'h2');
     const head = heading?.parent || section;
+    const alts = config.alts ? [...new Set(findAll(section, n => n.tag === 'img' && n.attrs.alt?.trim()).map(n => n.attrs.alt.trim()))] : [];
     const out = [entry({
       id: `${page}-sec-${config.id}-0`, page, kind: 'section', anchor: `#${config.id}`,
-      title: textOf(heading || section), text: clip(textOf(head, { skip: n => n === heading }))
+      title: textOf(heading || section), text: clip([textOf(head, { skip: n => n === heading }), alts.join(', ')].filter(Boolean).join(' '))
     })];
     const titleOf = config.title || (node => findFirst(node, n => isHeading(n) || n.tag === 'strong'));
     const parts = config.parts
@@ -130,6 +132,13 @@ export async function buildIndex(lang) {
     ...sectionEntries(home, 'home'), ...sectionEntries(bus, 'bus'), ...sectionEntries(manual, 'manual'),
     ...checklist(manual), ...liveEntries(CHAPTERS, lang)
   ];
+  // O rótulo de cada "Mais procurados" também acha o próprio destino ("Assistir à live completa").
+  const { featured } = JSON.parse(fs.readFileSync(path.join(ROOT, 'assets/data/search-synonyms.json'), 'utf8'))[lang];
+  for (const item of featured) {
+    const target = entries.find(e => e.page === item.page && e.anchor === item.anchor);
+    if (!target) throw new Error(`${lang}: "Mais procurados" sem entrada no índice: ${item.page} ${item.anchor}`);
+    target.keywords = [target.keywords, item.label].filter(Boolean).join(' ');
+  }
   return { lang, entries };
 }
 
