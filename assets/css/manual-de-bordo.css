@@ -1817,6 +1817,7 @@
 }
 
 .live-group-invite__desktop,
+.live-group-invite__mobile-prompt,
 .live-chapter-notice__symbol {
   display: none;
 }
@@ -1924,9 +1925,9 @@
   .live-lower-third>.live-group-invite:not([hidden]) {
     grid-column: 2;
     grid-row: 1;
-    width: 155px;
-    max-width: 155px;
-    min-height: 38px;
+    width: 140px;
+    max-width: 140px;
+    min-height: 36px;
     margin: 0;
     padding: 3px;
     border-radius: 6px;
@@ -1939,13 +1940,24 @@
   }
 
   .live-lower-third .live-group-invite span.live-group-invite__action {
-    min-height: 32px;
-    padding: 4px;
+    grid-template-columns: 18px minmax(0, 1fr);
+    gap: 5px;
+    min-height: 30px;
+    padding: 3px 4px;
+    font-size: .6rem;
+    line-height: 1.25;
     background: var(--live-invite-green);
     color: #fff;
   }
 
+  .live-lower-third .live-group-invite__mobile-prompt {
+    display: block;
+    font: 500 .56rem/1.25 var(--font-body);
+  }
+
   .live-lower-third .live-group-invite__action-icon {
+    width: 18px;
+    height: 18px;
     filter: brightness(0) invert(1);
   }
 
@@ -2355,8 +2367,10 @@
   /* Topic title as a compact lower third on the video, same swap phases as desktop. */
   .hero-live-player>.live-lower-third {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: center;
+    /* Keep the topic geometry stable while the invitation enters and leaves. */
+    grid-template-columns: minmax(0, 1fr) 140px;
+    min-height: 38px;
+    align-items: end;
     gap: 8px;
     isolation: isolate;
     position: absolute;

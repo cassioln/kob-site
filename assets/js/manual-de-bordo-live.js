@@ -17,7 +17,7 @@ const copy = {
     videoError: 'O YouTube não conseguiu reproduzir este vídeo. Tente novamente ou abra o trecho no YouTube.', fullscreenError: 'Não foi possível ampliar. Você pode abrir o vídeo no YouTube.', expand: 'Ampliar vídeo', exit: 'Sair da tela cheia',
     previousShort: 'Anterior', nextShort: 'Próximo', fullLive: 'Live completa', searchHint: 'Buscar na live', loading: 'Carregando vídeo…',
     noticePill: 'Atualização', showNotice: 'Mostrar atualização',
-    groupQrPrompt: 'Clique aqui para', groupQrHint: 'ou acesse pelo QR Code', groupQrAction: 'ENTRAR NO GRUPO', groupQrAlt: 'QR code para entrar no grupo oficial do WhatsApp',
+    groupQrPrompt: 'Clique aqui para', groupMobilePrompt: 'Clique para', groupQrHint: 'ou acesse pelo QR Code', groupQrAction: 'ENTRAR NO GRUPO', groupQrAlt: 'QR code para entrar no grupo oficial do WhatsApp',
     groupInvite: 'Clique aqui para entrar no grupo', groupInviteLabel: 'Entrar no grupo oficial do WhatsApp (abre em nova aba)',
     supportPill: 'Apoio', showSupport: 'Mostrar apoio da live', opensNewTab: 'abre em nova aba'
   },
@@ -28,7 +28,7 @@ const copy = {
     videoError: 'YouTube could not play this video. Try again or open this topic on YouTube.', fullscreenError: 'Full screen is unavailable. You can open the video on YouTube.', expand: 'Expand video', exit: 'Exit full screen',
     previousShort: 'Previous', nextShort: 'Next', fullLive: 'Full recording', searchHint: 'Search the recording', loading: 'Loading video…',
     noticePill: 'Update', showNotice: 'Show update',
-    groupQrPrompt: 'Click here to', groupQrHint: 'or scan the QR code', groupQrAction: 'JOIN THE GROUP', groupQrAlt: 'QR code to join the official WhatsApp group',
+    groupQrPrompt: 'Click here to', groupMobilePrompt: 'Click to', groupQrHint: 'or scan the QR code', groupQrAction: 'JOIN THE GROUP', groupQrAlt: 'QR code to join the official WhatsApp group',
     groupInvite: 'Click here to join the group', groupInviteLabel: 'Join the official WhatsApp group (opens in a new tab)',
     supportPill: 'Help', showSupport: 'Show recording help', opensNewTab: 'opens in a new tab'
   },
@@ -39,7 +39,7 @@ const copy = {
     videoError: 'YouTube no pudo reproducir el vídeo. Inténtalo de nuevo o abre este tema en YouTube.', fullscreenError: 'No se pudo ampliar. Puedes abrir el vídeo en YouTube.', expand: 'Ampliar vídeo', exit: 'Salir de pantalla completa',
     previousShort: 'Anterior', nextShort: 'Siguiente', fullLive: 'Charla completa', searchHint: 'Busca en la charla', loading: 'Cargando vídeo…',
     noticePill: 'Actualización', showNotice: 'Mostrar actualización',
-    groupQrPrompt: 'Haz clic aquí para', groupQrHint: 'o escanea el código QR', groupQrAction: 'ENTRAR AL GRUPO', groupQrAlt: 'Código QR para entrar al grupo oficial de WhatsApp',
+    groupQrPrompt: 'Haz clic aquí para', groupMobilePrompt: 'Haz clic para', groupQrHint: 'o escanea el código QR', groupQrAction: 'ENTRAR AL GRUPO', groupQrAlt: 'Código QR para entrar al grupo oficial de WhatsApp',
     groupInvite: 'Haz clic aquí para entrar al grupo', groupInviteLabel: 'Entrar al grupo oficial de WhatsApp (se abre en una pestaña nueva)',
     supportPill: 'Ayuda', showSupport: 'Mostrar ayuda de la charla', opensNewTab: 'se abre en una pestaña nueva'
   }
@@ -211,10 +211,13 @@ function initLive() {
   const qrActionPrompt = document.createElement('span');
   qrActionPrompt.className = 'live-group-invite__action-prompt';
   qrActionPrompt.textContent = copy.groupQrPrompt;
+  const mobileActionPrompt = document.createElement('span');
+  mobileActionPrompt.className = 'live-group-invite__mobile-prompt';
+  mobileActionPrompt.textContent = copy.groupMobilePrompt;
   const qrActionText = document.createElement('span');
   qrActionText.className = 'live-group-invite__action-title';
   qrActionText.textContent = copy.groupQrAction;
-  qrActionLines.append(qrActionPrompt, qrActionText);
+  qrActionLines.append(qrActionPrompt, mobileActionPrompt, qrActionText);
   qrAction.append(qrActionIcon, qrActionLines);
   qrCard.append(qrAction, qrHint, qrImage);
   groupInvite.append(qrCard);
