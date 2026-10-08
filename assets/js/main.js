@@ -1851,35 +1851,35 @@ document.documentElement.classList.add('js');
       },
       es: {
         interna: {
-          cabin: 'Cabina Interna',
+          cabin: 'Camarote Interior',
           img: '/assets/images/cabins/cabine-interna.avif',
-          alt: 'Cabina interna del MSC Musica con dos camas individuales, tocador e iluminación acogedora',
+          alt: 'Camarote interior del MSC Musica con dos camas individuales, tocador e iluminación acogedora',
           tour: 'https://virtual-tours.msccruises.com/MSC-Musica/en-gl/index.html?sc=scene_inside',
           title: 'El confort y la elegancia que necesita',
           lead: 'La opción más económica para disfrutar de su crucero con todo el confort a bordo.',
           groups: [{
             items: [
-              'Cabinas (aprox. 14 m²), pisos 5–15',
+              'Camarotes (aprox. 14 m²), pisos 5–15',
               'Sillón de descanso',
               'Baño con ducha, tocador y secador de pelo',
               'Dos camas individuales confortables convertibles en cama matrimonial (bajo petición)*',
               'TV interactiva, teléfono, Wi-Fi disponible (de pago), caja fuerte y minibar'
             ]
           }],
-          note: '* Cabinas para huéspedes con movilidad reducida disponen de camas individuales. Imagen ilustrativa; tamaño y mobiliario pueden variar dentro de la categoría.',
-          wa: WA + encodeURIComponent('Hola, Royal Trip! Vi la Cabina Interna en la sección de precios de Kriativos On Board 2026 y quiero reservar esta opción en el 2º lote.'),
+          note: '* Camarotes para huéspedes con movilidad reducida disponen de camas individuales. Imagen ilustrativa; tamaño y mobiliario pueden variar dentro de la categoría.',
+          wa: WA + encodeURIComponent('Hola, Royal Trip! Vi el Camarote Interior en la sección de precios de Kriativos On Board 2026 y quiero reservar esta opción en el 2º lote.'),
           cta: 'Reservar Ahora'
         },
         janela: {
-          cabin: 'Cabina con Ventana',
+          cabin: 'Camarote con Vista al Mar',
           img: '/assets/images/cabins/cabine-janela.avif',
-          alt: 'Cabina con ventana del MSC Musica con vista al mar y luz natural',
+          alt: 'Camarote con vista al mar del MSC Musica con vista al mar y luz natural',
           tour: 'https://virtual-tours.msccruises.com/MSC-Musica/en-gl/index.html?sc=scene_ocean_view',
-          title: 'Disfrute de la vista al océano desde su cabina',
+          title: 'Disfrute de la vista al océano desde su camarote',
           lead: 'Confortable y elegante, con ventana panorámica al mar.',
           groups: [{
             items: [
-              'Cabinas (aprox. 16–17 m²)',
+              'Camarotes (aprox. 16–17 m²)',
               'Ventana con vista al mar',
               'Sillón de descanso',
               'Baño con ducha, tocador con secador de pelo',
@@ -1887,28 +1887,28 @@ document.documentElement.classList.add('js');
               'TV interactiva, teléfono, Wi-Fi disponible (de pago), caja fuerte y minibar'
             ]
           }],
-          note: '* Cabinas para huéspedes con movilidad reducida disponen de camas individuales. Imagen ilustrativa; tamaño y mobiliario pueden variar dentro de la categoría.',
-          wa: WA + encodeURIComponent('Hola, Royal Trip! Vi la Cabina con Ventana en la sección de precios de Kriativos On Board 2026 y quiero reservar esta opción en el 2º lote.'),
+          note: '* Camarotes para huéspedes con movilidad reducida disponen de camas individuales. Imagen ilustrativa; tamaño y mobiliario pueden variar dentro de la categoría.',
+          wa: WA + encodeURIComponent('Hola, Royal Trip! Vi el Camarote con Vista al Mar en la sección de precios de Kriativos On Board 2026 y quiero reservar esta opción en el 2º lote.'),
           cta: 'Reservar Ahora'
         },
         varanda: {
-          cabin: 'Cabina con Balcón',
+          cabin: 'Camarote con Balcón',
           img: '/assets/images/cabins/cabine-varanda.avif',
-          alt: 'Cabina con balcón del MSC Musica con terraza privada frente al mar',
+          alt: 'Camarote con balcón del MSC Musica con terraza privada frente al mar',
           tour: 'https://virtual-tours.msccruises.com/MSC-Musica/en-gl/index.html?sc=scene_balcony',
           title: 'Relájese con el sol y la brisa marina',
           lead: 'Aproveche el confort de su balcón privado hacia el mar.',
           groups: [{
             items: [
-              'Cabinas (aprox. 15–18 m²) con balcón privado (aprox. 4–5 m²)',
+              'Camarotes (aprox. 15–18 m²) con balcón privado (aprox. 4–5 m²)',
               'Zona de estar con sofá',
               'Baño con ducha, tocador con secador de pelo',
               'Dos camas individuales convertibles en cama matrimonial (bajo petición)*',
               'TV interactiva, teléfono, Wi-Fi disponible (de pago), caja fuerte y minibar'
             ]
           }],
-          note: '* Cabinas para huéspedes con movilidad reducida disponen de camas individuales. Imagen ilustrativa; tamaño y mobiliario pueden variar dentro de la categoría.',
-          wa: WA + encodeURIComponent('Hola, Royal Trip! Vi la Cabina con Balcón en la sección de precios de Kriativos On Board 2026 y quiero reservar esta opção no 2º lote.'),
+          note: '* Camarotes para huéspedes con movilidad reducida disponen de camas individuales. Imagen ilustrativa; tamaño y mobiliario pueden variar dentro de la categoría.',
+          wa: WA + encodeURIComponent('Hola, Royal Trip! Vi el Camarote con Balcón en la sección de precios de Kriativos On Board 2026 y quiero reservar esta opción en el 2º lote.'),
           cta: 'Reservar Ahora'
         },
         easy: {
@@ -2254,10 +2254,10 @@ document.documentElement.classList.add('js');
           ['scene_l_angolo_dell_oggetto', 'L\u2019Angolo dell\u2019Oggetto'],
           ['scene_gym', 'Gimnasio']
         ]],
-        ['Cabinas', [
-          ['scene_inside', 'Cabina interna'],
-          ['scene_ocean_view', 'Cabina con ventana'],
-          ['scene_balcony', 'Cabina con balcón']
+        ['Camarotes', [
+          ['scene_inside', 'Camarote interior'],
+          ['scene_ocean_view', 'Camarote con vista al mar'],
+          ['scene_balcony', 'Camarote con balcón']
         ]],
         ['Spa y Bienestar', [
           ['scene_spa_reception', 'Recepción del Spa'],
