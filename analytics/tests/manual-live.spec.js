@@ -1161,7 +1161,16 @@ for (const [path, label, inviteCopy, qrPrompt, qrHint, qrAction] of [
     await expect(invite.locator('.live-group-invite__action-icon')).toHaveCSS('filter', 'brightness(0) invert(1)');
     await expect(invite.locator('.live-group-invite__hint')).toBeHidden();
     await expect(invite.locator('.live-group-invite__action-prompt')).toBeHidden();
-    expect((await invite.boundingBox()).height).toBeLessThanOrEqual(40);
+    await expect(invite.locator('.live-group-invite__mobile-prompt')).toHaveText({
+      '/manual-de-bordo.html': 'Clique para',
+      '/en/manual-de-bordo.html': 'Click to',
+      '/es/manual-de-bordo.html': 'Haz clic para'
+    }[path]);
+    await expect(invite.locator('.live-group-invite__mobile-prompt')).toBeVisible();
+    expect(await invite.locator('.live-group-invite__action-title').evaluate(el =>
+      Number.parseFloat(getComputedStyle(el).fontSize) < Number.parseFloat(getComputedStyle(document.getElementById('liveCustomTopic')).fontSize)
+    )).toBe(true);
+    expect((await invite.boundingBox()).height).toBeLessThanOrEqual(36);
     await expect(invite).toHaveCSS('background-color', 'rgb(8, 123, 65)');
     await expect.poll(async () => {
       const box = await invite.boundingBox(), topic = await page.locator('#liveCustomTopic').boundingBox();
@@ -1561,3 +1570,31 @@ test('Navegação explícita troca de assunto sem carregar o aviso anterior', as
   await expect(page.locator('#liveChapterNotice')).toBeHidden();
   await expect(page.locator('.live-notice-pill')).toBeHidden();
 });
+
+for (const path of ['/manual-de-bordo.html', '/en/manual-de-bordo.html', '/es/manual-de-bordo.html']) {
+  for (const width of [320, 390, 768]) {
+    test(`Título mobile mantém posição com convite em ${path} (${width}px)`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 1000 });
+      await page.goto(path);
+      await page.locator('#loadLivePlayerBtn').click();
+      await readyPlayer(page);
+      const topic = page.locator('#liveCustomTopic');
+      const invite = page.locator('#liveGroupInvite');
+      await pauseAtLiveTime(page, 1355);
+      await expect(invite).toBeHidden();
+      await expect(topic).toBeVisible();
+      await expect(topic).toHaveCSS('opacity', '1');
+      const before = await topic.boundingBox();
+      await pauseAtLiveTime(page, 1357);
+      await expect(invite).toBeVisible();
+      await expect.poll(async () => {
+        const box = await topic.boundingBox();
+        return Math.max(...['x', 'y', 'width', 'height'].map(key => Math.abs(box[key] - before[key])));
+      }).toBeLessThanOrEqual(1);
+      await pauseAtLiveTime(page, 1369);
+      await expect(invite).toBeHidden();
+      const after = await topic.boundingBox();
+      for (const key of ['x', 'y', 'width', 'height']) expect(Math.abs(after[key] - before[key])).toBeLessThanOrEqual(1);
+    });
+  }
+}
