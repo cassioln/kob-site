@@ -23,6 +23,10 @@ for (const lang of LANGS) {
     assert.ok(entries.filter(e => e.kind === 'section').length >= 30);
     assert.equal(new Set(entries.map(e => e.id)).size, entries.length);
     for (const e of entries) assert.ok(e.title.trim(), `${e.id} sem título`);
+    for (const e of entries.filter(e => e.kind === 'section' && e.id.startsWith('manual-sec-cronograma-') && !e.id.endsWith('-0'))) {
+      assert.ok(e.text.trim(), `${e.id} sem texto`);
+    }
+    assert.ok(!entries.some(e => e.anchor === '#gamesTrack'), 'nenhuma âncora deve apontar para #gamesTrack');
   });
 
   test(`${lang}: toda âncora existe na página de destino`, () => {

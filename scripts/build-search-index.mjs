@@ -9,7 +9,15 @@ export const LANGS = ['pt', 'en', 'es'];
 const FILES = { home: 'index.html', bus: 'onibus.html', manual: 'manual-de-bordo.html' };
 const SECTIONS = {
   home: [{ id: 'navio' }, { id: 'incluso' }, { id: 'itinerario' }, { id: 'valores' }, { id: 'hospedagem' }, { id: 'parceiros' }],
-  manual: [{ id: 'cronograma' }, { id: 'jogos' }, { id: 'contato' }],
+  manual: [
+    {
+      id: 'cronograma',
+      parts: n => n.tag === 'article' && hasClass(n, 'timeline-step'),
+      anchorOf: node => closest(node, n => hasClass(n, 'timeline-group'))?.attrs.id
+    },
+    { id: 'jogos' },
+    { id: 'contato' }
+  ],
   bus: [
     { id: 'main', select: n => n.tag === 'section' && hasClass(n, 'bus-hero') },
     { id: 'como-reservar', parts: n => n.tag === 'li' && hasClass(n, 'bus-flow__step') },
@@ -67,10 +75,11 @@ function sections(root, page) {
       ? findAll(section, config.parts).map(node => ({ node, title: findFirst(node, n => isHeading(n) || n.tag === 'strong') }))
       : findAll(section, n => n.tag === 'h3').map(title => ({ node: title.parent, title }));
     parts.forEach(({ node, title }, i) => {
-      const owner = closest(node, n => n !== section && n.attrs.id && closest(n, x => x === section));
+      // Âncora da parte: a regra da seção (anchorOf), senão o id do próprio nó, senão o id da seção.
+      const anchor = config.anchorOf?.(node) || node.attrs.id || config.id;
       out.push(entry({
-        id: `${page}-sec-${config.id}-${i + 1}`, page, kind: 'section', anchor: `#${owner ? owner.attrs.id : config.id}`,
-        title: textOf(title || node), text: clip(textOf(node, { skip: n => n === title }))
+        id: `${page}-sec-${config.id}-${i + 1}`, page, kind: 'section', anchor: `#${anchor}`,
+        title: textOf(title || node).replace(/\s*:\s*$/, ''), text: clip(textOf(node, { skip: n => n === title }))
       }));
     });
     return out;
