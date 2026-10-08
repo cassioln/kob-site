@@ -1037,6 +1037,7 @@ for (const width of [390, 1440]) {
   test(`Os 21 avisos obedecem às falas mapeadas, inclusive ao voltar (${width}px)`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
     await page.emulateMedia({ reducedMotion: 'reduce' });
+    if (width <= 768) await page.clock.install();
     await page.goto('/manual-de-bordo.html');
     await page.locator('#loadLivePlayerBtn').click();
     await readyPlayer(page);
@@ -1060,6 +1061,13 @@ for (const width of [390, 1440]) {
     await expect(notice).toBeHidden();
     await pauseAtLiveTime(page, 3271.88);
     await expect(notice).toBeVisible();
+    if (width <= 768) {
+      await page.locator('#livePlayerWrapper').scrollIntoViewIfNeeded();
+      await page.mouse.move(0, 0);
+      await page.clock.runFor(100);
+      await page.clock.fastForward(60000);
+      await expect(page.locator('.live-notice-pill')).toBeVisible();
+    }
     await pauseAtLiveTime(page, 3506);
     await expect(notice).toBeHidden();
   });
@@ -1414,6 +1422,8 @@ test('Mobile preserva recolhimento e apoios não encobrem o convite e o assunto'
   await page.locator('.live-notice-pill').click();
   await expect(page.locator('.live-notice-support')).toBeVisible();
   await expect(page.locator('#liveChapterNote')).toBeFocused();
+  // End the reopened reading cycle before checking expiry at the topic boundary.
+  await finishNoticeCycle(page);
   await pauseAtLiveTime(page, 1852);
   await expect(page.locator('.live-notice-pill')).toBeHidden();
   await expect(page.locator('#liveChapterNotice')).toBeHidden();
