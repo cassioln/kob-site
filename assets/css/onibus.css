@@ -452,7 +452,6 @@
   padding: 16px 20px;
   background: #061e33;
   border: 1px solid rgba(41, 195, 245, 0.28);
-  border-left: 3px solid var(--sunset-gold);
   border-radius: 4px;
   box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.5);
 }
@@ -812,10 +811,12 @@
 
 .bus-stepper__bar {
   height: 100%;
-  width: 25%;
+  width: 100%;
   background: linear-gradient(90deg, var(--action), var(--sunset-gold));
   border-radius: var(--r-pill);
-  transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: scaleX(0.33);
+  transform-origin: left center;
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .bus-stepper__list {
@@ -4109,6 +4110,10 @@
    Acessibilidade: Redução de movimento nas animações do Checkout
    ========================================================================== */
 @media (prefers-reduced-motion: reduce) {
+
+  .bus-stepper__bar {
+    transition: none;
+  }
 
   .bus-stepper__badge,
   .bus-stepper__item.is-active .bus-stepper__badge,

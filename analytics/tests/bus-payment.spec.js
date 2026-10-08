@@ -763,9 +763,21 @@ test('exibe o bloco e nome do grupo na confirmação apenas quando groupName est
 });
 
 test('navegação do wizard: voltar e avançar mantém dados e validações', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/onibus.html');
 
+  const progress = page.locator('#bus-stepper-bar');
+  async function expectProgress(fraction) {
+    await expect.poll(() => progress.evaluate(bar => {
+      const track = bar.parentElement;
+      return bar.getBoundingClientRect().width / track.getBoundingClientRect().width;
+    })).toBeCloseTo(fraction, 2);
+    const layoutWidths = await progress.evaluate(bar => [bar.offsetWidth, bar.parentElement.offsetWidth]);
+    expect(layoutWidths[0]).toBe(layoutWidths[1]);
+  }
+
   // Step 1
+  await expectProgress(0.33);
   await page.getByLabel('Nome completo (contato principal)').fill('Carlos Silva');
   await page.getByLabel('CPF do contato principal').fill(primaryCpf);
   await page.locator('#primary-birth').fill('20/10/1985');
@@ -775,10 +787,12 @@ test('navegação do wizard: voltar e avançar mantém dados e validações', as
 
   // Step 2
   await expect(page.locator('[data-wizard-step="2"]')).toBeVisible();
+  await expectProgress(0.66);
 
   // Voltar para Step 1
   await page.getByRole('button', { name: /voltar ao contato/i }).click();
   await expect(page.locator('[data-wizard-step="1"]')).toBeVisible();
+  await expectProgress(0.33);
   await expect(page.getByLabel('Nome completo (contato principal)')).toHaveValue('Carlos Silva');
 
   // Avançar para Step 2 de novo
@@ -797,6 +811,7 @@ test('navegação do wizard: voltar e avançar mantém dados e validações', as
   // Avançar para Step 3 (Revisão)
   await page.locator('#btn-group-next').click();
   await expect(page.locator('[data-wizard-step="3"]')).toBeVisible();
+  await expectProgress(1);
   await expect(page.locator('#review-passengers-list')).toContainText('CARLOS SILVA');
   await expect(page.locator('#review-passengers-list')).toContainText('FERNANDA SILVA');
   await expect(page.locator('#review-children-row')).toBeHidden();
@@ -804,5 +819,6 @@ test('navegação do wizard: voltar e avançar mantém dados e validações', as
   // Voltar de Step 3 para Step 2
   await page.getByRole('button', { name: /voltar e editar grupo/i }).click();
   await expect(page.locator('[data-wizard-step="2"]')).toBeVisible();
+  await expectProgress(0.66);
   await expect(page.locator('#added-passengers-list')).toContainText('FERNANDA SILVA');
 });
