@@ -476,6 +476,8 @@
     var sidebarGroups = Array.prototype.slice.call(sidebarList.querySelectorAll('.checklist-group'));
     var sidebarToggles = Array.prototype.slice.call(sidebarList.querySelectorAll('.checklist-group__toggle'));
     var navSlideFrame = null;
+    var sidebarScrollTarget = null;
+    var sidebarReduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
     function keepActiveSidebarTabVisible(tab) {
       if (!sidebarNav || !tab) return;
@@ -490,7 +492,7 @@
         var max = Math.max(0, sidebarNav.scrollWidth - sidebarNav.clientWidth);
         sidebarNav.scrollTo({
           left: Math.max(0, Math.min(centered, max)),
-          behavior: 'smooth'
+          behavior: sidebarReduceMotion.matches ? 'auto' : 'smooth'
         });
       });
     }
@@ -535,36 +537,65 @@
           var bodyRect = sidebarBody.getBoundingClientRect();
           var groupRect = targetGroup.getBoundingClientRect();
           var targetTop = sidebarBody.scrollTop + (groupRect.top - bodyRect.top) - 10;
+          var maxScrollTop = Math.max(0, sidebarBody.scrollHeight - sidebarBody.clientHeight);
+          sidebarScrollTarget = Math.max(0, Math.min(targetTop, maxScrollTop));
+          if (Math.abs(sidebarBody.scrollTop - sidebarScrollTarget) <= 2) sidebarScrollTarget = null;
           sidebarBody.scrollTo({
-            top: Math.max(0, targetTop),
-            behavior: 'smooth'
+            top: Math.max(0, Math.min(targetTop, maxScrollTop)),
+            behavior: sidebarReduceMotion.matches ? 'auto' : 'smooth'
           });
         }
       });
     });
 
-    // Scrollspy dentro da Sidebar
+    // Keep a clicked tab selected during its smooth scroll; manual scrolling takes over.
     var sidebarScrollSpyFrame = null;
-    if (sidebarBody && sidebarGroups.length) {
-      sidebarBody.addEventListener('scroll', function () {
-        if (sidebarScrollSpyFrame) return;
-        sidebarScrollSpyFrame = requestAnimationFrame(function () {
-          sidebarScrollSpyFrame = null;
-          var bodyRect = sidebarBody.getBoundingClientRect();
-          var currentGroupId = '1';
-          var bestDistance = Infinity;
-
-          sidebarGroups.forEach(function (group) {
-            var rect = group.getBoundingClientRect();
-            var diff = (rect.top - bodyRect.top);
-            if (diff <= 60 && Math.abs(diff) < bestDistance) {
-              bestDistance = Math.abs(diff);
-              currentGroupId = group.getAttribute('data-group-id') || '1';
-            }
-          });
-
-          setActiveSidebarGroup(currentGroupId);
+    function updateSidebarScrollSpy() {
+      if (!sidebarBody || !sidebarGroups.length) return;
+      if (sidebarScrollTarget !== null) {
+        if (Math.abs(sidebarBody.scrollTop - sidebarScrollTarget) > 2) return;
+        sidebarScrollTarget = null;
+      }
+      var bodyTop = sidebarBody.getBoundingClientRect().top;
+      var currentGroup = sidebarGroups[0];
+      var maxScrollTop = Math.max(0, sidebarBody.scrollHeight - sidebarBody.clientHeight);
+      // The final section may be too short to reach the heading activation line.
+      if (maxScrollTop > 0 && sidebarBody.scrollTop >= maxScrollTop - 2) {
+        currentGroup = sidebarGroups[sidebarGroups.length - 1];
+      } else {
+        sidebarGroups.forEach(function (group) {
+          if (group.getBoundingClientRect().top <= bodyTop + 60) currentGroup = group;
         });
+      }
+      setActiveSidebarGroup(currentGroup.getAttribute('data-group-id') || '1');
+    }
+
+    function scheduleSidebarScrollSpy() {
+      if (sidebarScrollSpyFrame) return;
+      sidebarScrollSpyFrame = requestAnimationFrame(function () {
+        sidebarScrollSpyFrame = null;
+        updateSidebarScrollSpy();
+      });
+    }
+
+    function cancelSidebarScrollTarget() {
+      if (sidebarScrollTarget !== null && sidebarBody) {
+        sidebarBody.scrollTo({ top: sidebarBody.scrollTop, behavior: 'instant' });
+      }
+      sidebarScrollTarget = null;
+    }
+
+    if (sidebarBody && sidebarGroups.length) {
+      sidebarBody.addEventListener('scroll', scheduleSidebarScrollSpy, { passive: true });
+      ['wheel', 'touchstart', 'pointerdown'].forEach(function (eventName) {
+        sidebarBody.addEventListener(eventName, cancelSidebarScrollTarget, { passive: true });
+      });
+      sidebarBody.addEventListener('keydown', function (event) {
+        if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '].includes(event.key)) cancelSidebarScrollTarget();
+      });
+      window.addEventListener('resize', function () {
+        cancelSidebarScrollTarget();
+        scheduleSidebarScrollSpy();
       }, { passive: true });
     }
 
@@ -590,6 +621,8 @@
         }
         btn.setAttribute('aria-label', label);
         btn.setAttribute('title', label);
+        cancelSidebarScrollTarget();
+        scheduleSidebarScrollSpy();
       });
     });
 
