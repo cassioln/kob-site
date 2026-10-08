@@ -25,7 +25,7 @@
   .site-search-trigger__label, .site-search-trigger__kbd { display: none; }
 }
 
-html.site-search-open { overflow: hidden; }
+html.site-search-open { overflow: hidden; scrollbar-gutter: stable; }
 
 .site-search {
   width: min(680px, 92vw);
@@ -133,12 +133,14 @@ html.site-search-open { overflow: hidden; }
 
 @keyframes site-search-in { from { opacity: 0; transform: translateY(16px) scale(0.98); } to { opacity: 1; transform: none; } }
 @keyframes site-search-tear { from { transform: translateY(-6px); } to { transform: none; } }
-@keyframes site-search-out { to { opacity: 0; transform: translateY(12px) scale(0.98); } }
+@keyframes site-search-out { to { opacity: 0; transform: translateY(16px) scale(0.98); } }
 @keyframes site-search-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes site-search-fade-out { from { opacity: 1; } to { opacity: 0; } }
 .site-search[open] .site-search__ticket { animation: site-search-in 260ms var(--ease-expo, cubic-bezier(0.16, 1, 0.3, 1)); }
 .site-search[open] .site-search__body { animation: site-search-tear 260ms 40ms var(--ease-expo, cubic-bezier(0.16, 1, 0.3, 1)) both; }
 .site-search[open]::backdrop { animation: site-search-fade 160ms ease; }
 .site-search.is-closing .site-search__ticket { animation: site-search-out 160ms ease forwards; }
+.site-search.is-closing::backdrop { animation: site-search-fade-out 160ms ease forwards; }
 
 @media (max-width: 640px) {
   .site-search { width: 100vw; height: 100dvh; margin: 0; }
@@ -148,6 +150,11 @@ html.site-search-open { overflow: hidden; }
   .site-search__hints { display: none; }
   .site-search__close { display: inline-flex; align-items: center; }
   .site-search__option { padding: 12px 8px; }
+  /* Touch targets: every control in the ticket is at least 44px tall (close and WhatsApp already are). */
+  .site-search__field,
+  .site-search__option,
+  .site-search__try-term,
+  .site-search__retry { min-height: 44px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

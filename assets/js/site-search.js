@@ -35,13 +35,14 @@ const COPY = {
 };
 const copy = COPY[lang] || COPY.pt;
 const platform = navigator.userAgentData?.platform || navigator.platform || navigator.userAgent || '';
-const shortcutLabel = /Mac|iPhone|iPad|iPod/i.test(platform) ? '⌘ K' : 'Ctrl K';
+const isApple = /Mac|iPhone|iPad|iPod/i.test(platform);
+const shortcutLabel = isApple ? '⌘ K' : 'Ctrl K';
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 const SVG = 'http://www.w3.org/2000/svg';
 
 let dialog; let input; let list; let body; let synonymLine; let status; let stateEl;
-let prepared = null; let featured = []; let loading = null; let opener = null;
-let options = []; let activeIndex = -1;
+let prepared = null; let featured = []; let loading = null; let loadFailed = false; let opener = null;
+let options = []; let activeIndex = -1; let closeTimer = null;
 
 function el(tag, props = {}, ...children) {
   const node = document.createElement(tag);
@@ -95,6 +96,14 @@ function build() {
       status));
   input.addEventListener('input', render);
   input.addEventListener('keydown', onKeydown);
+  // Esc from any control in the ticket closes it and stops there: page-level Esc handlers (cookie banner,
+  // menu drawer) never see it, and a type="search" field does not just clear itself.
+  dialog.addEventListener('keydown', event => {
+    if (event.key !== 'Escape' || event.isComposing) return;
+    event.preventDefault();
+    event.stopPropagation();
+    requestClose();
+  });
   dialog.addEventListener('cancel', event => { event.preventDefault(); requestClose(); });
   dialog.addEventListener('close', onClose);
   dialog.addEventListener('click', event => { if (event.target === dialog) requestClose(); });
@@ -112,34 +121,55 @@ function load() {
     const config = synonyms[lang] || synonyms.pt;
     prepared = prepareIndex(index.entries, config);
     featured = config.featured;
+    loadFailed = false;
+  }).catch(error => {
+    loadFailed = true;
+    throw error;
   }).finally(() => { loading = null; });
   return loading;
 }
 
 export async function open(from = document.activeElement) {
   if (!dialog) build();
+  cancelPendingClose();
   if (dialog.open) return;
   opener = from instanceof HTMLElement && from !== document.body ? from : null;
   document.documentElement.classList.add('site-search-open');
   dialog.showModal();
   input.focus();
   input.select();
+  const pending = prepared ? null : load();
   render();
-  if (prepared) return;
-  try { await load(); if (dialog.open) render(); } catch { if (dialog.open) renderError(); }
+  if (!pending) return;
+  try { await pending; } catch { /* render() shows the error state */ }
+  if (dialog.open) render();
+}
+
+function cancelPendingClose() {
+  clearTimeout(closeTimer);
+  closeTimer = null;
+  dialog.classList.remove('is-closing');
 }
 
 function requestClose() {
-  if (!dialog?.open || dialog.classList.contains('is-closing')) return;
+  if (!dialog?.open || closeTimer) return;
   if (reducedMotion.matches) { dialog.close(); return; }
   dialog.classList.add('is-closing');
-  setTimeout(() => { dialog.classList.remove('is-closing'); dialog.close(); }, 160);
+  const timer = setTimeout(() => {
+    if (timer !== closeTimer) return; // stale: the ticket was reopened or closed another way
+    closeTimer = null;
+    dialog.classList.remove('is-closing');
+    dialog.close();
+  }, 160);
+  closeTimer = timer;
 }
 
 function onClose() {
+  if (dialog.open) return; // late "close" event (it is async) from a session already reopened
+  cancelPendingClose();
   document.documentElement.classList.remove('site-search-open');
   input.setAttribute('aria-expanded', 'false');
-  if (opener?.isConnected) opener.focus();
+  if (opener?.isConnected) opener.focus({ preventScroll: true });
   opener = null;
 }
 
@@ -154,6 +184,7 @@ function setStatus(text) { status.textContent = text; }
 function render() {
   synonymLine.hidden = true;
   if (!prepared) {
+    if (loadFailed && !loading) { renderError(); return; }
     showState(el('p', { class: 'site-search__lead', text: copy.loading }));
     renderOptions([]);
     setStatus(copy.loading);
@@ -197,14 +228,24 @@ function renderEmpty(query) {
 
 function renderError() {
   renderOptions([]);
-  showState(el('div', { class: 'site-search__empty site-search__error' }, el('p', { text: copy.error }), el('button', {
-    type: 'button', class: 'site-search__retry', text: copy.retry,
-    onclick: async () => {
-      render();
-      try { await load(); render(); input.focus(); } catch { renderError(); }
-    }
-  })));
+  const retry = el('button', { type: 'button', class: 'site-search__retry', text: copy.retry, onclick: retryLoad });
+  showState(el('div', { class: 'site-search__empty site-search__error' }, el('p', { text: copy.error }), retry));
   setStatus(copy.error);
+  return retry;
+}
+
+async function retryLoad() {
+  const attempt = load();
+  render();
+  try {
+    await attempt;
+  } catch {
+    if (dialog.open) renderError().focus();
+    return;
+  }
+  if (!dialog.open) return;
+  render();
+  input.focus();
 }
 
 function highlightInto(node, text, terms) {
@@ -245,6 +286,7 @@ function setActive(index, scroll = true) {
 }
 
 function onKeydown(event) {
+  if (event.isComposing) return;
   if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
     if (!options.length) return;
     event.preventDefault();
@@ -253,10 +295,6 @@ function onKeydown(event) {
   } else if (event.key === 'Enter' && activeIndex >= 0) {
     event.preventDefault();
     activate(activeIndex);
-  } else if (event.key === 'Escape') {
-    // A type="search" field with text would only clear itself on Esc; Esc always closes the ticket.
-    event.preventDefault();
-    requestClose();
   }
 }
 
@@ -264,6 +302,7 @@ function activate(index) {
   const item = options[index];
   if (!item) return;
   const { href, samePage } = buildResultUrl(item.entry, window.location, lang);
+  opener = null; // the destination takes over: returning focus to the opener would scroll back to it
   dialog.close();
   if (samePage) goToAnchor(item.entry.anchor);
   else window.location.assign(href);
@@ -288,11 +327,12 @@ function init() {
   for (const kbd of document.querySelectorAll('[data-site-search-kbd]')) kbd.textContent = shortcutLabel;
   // Capture phase + stopPropagation: the global search owns ⌘K/Ctrl+K, ahead of older page shortcuts (FAQ box).
   document.addEventListener('keydown', event => {
-    if (!(event.metaKey || event.ctrlKey) || event.altKey || event.shiftKey || String(event.key).toLowerCase() !== 'k') return;
+    const platformKey = isApple ? event.metaKey && !event.ctrlKey : event.ctrlKey && !event.metaKey;
+    if (!platformKey || event.altKey || event.shiftKey || String(event.key).toLowerCase() !== 'k') return;
     event.preventDefault();
     event.stopPropagation();
-    if (dialog?.open) requestClose();
-    else open(document.activeElement);
+    if (dialog?.open && !closeTimer) requestClose();
+    else open(document.activeElement); // also cancels a close still animating
   }, true);
 }
 
