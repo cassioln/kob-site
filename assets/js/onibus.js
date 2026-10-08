@@ -630,7 +630,7 @@
     if (currentWizardStep === 3) percentage = 100;
 
     if (stepperBar) {
-      stepperBar.style.width = percentage + '%';
+      stepperBar.style.transform = 'scaleX(' + (percentage / 100) + ')';
     }
 
     stepItems.forEach(function (item) {
