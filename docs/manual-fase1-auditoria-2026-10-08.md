@@ -49,4 +49,6 @@ O assistente #23 permanece uma Fase 2 independente. Congelar o formulário não 
 - Revisão visual local do atendimento em desktop e mobile e da política EN em mobile. Sem envio de mensagens, inscrição de contatos ou ativação do formulário.
 - Regressão ampla: 333 aprovados, 1 ignorado (formulário congelado), 5 falhas iniciais. Quatro expectativas de links foram corrigidas e os 4 casos passaram novamente; um timeout de inicialização da live no servidor local não se reproduziu na execução isolada (caso mobile PT/EN/ES aprovado em 18 s). Sem alterar o player por causa do timeout.
 - Teste de pipeline/PII `@code`: aprovado, com integração simulada.
-- CI e publicação: pendentes na criação do PR; evidências finais serão registradas nas issues e no PR antes de encerrá-las.
+- CI e publicação: PR #53 integrado à main (`4b2931afa8680825a4297e1264d14ac6f9e1d7c1`), [CI aprovado](https://github.com/cassioln/kob-site/actions/runs/37819643928) e [deploy Locaweb concluído](https://github.com/cassioln/kob-site/actions/runs/37819996005) em 08/10/2026.
+- Produção: Manual PT/EN/ES, políticas PT/EN/ES, JS de cookies e sitemap retornam HTTP 200 e correspondem byte a byte aos arquivos validados. Canais de atendimento conferidos no navegador; endpoint legado retorna POST 503 `service_disabled`, GET 405 e OPTIONS 204, todos com `Cache-Control: no-store`.
+- Issues #21, #22 e épico #15 encerrados com critérios atualizados e evidências. #23 permanece uma Fase 2 opcional. Não houve envio de mensagens, cadastro de assinantes ou reativação do formulário.

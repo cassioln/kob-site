@@ -25,8 +25,8 @@
 - [x] Registrar a auditoria operacional; manter a Sender existente sem cadastro novo no site, coerente com o formulário congelado.
 - [x] Regerar o índice da busca global se conteúdo indexado mudar.
 - [x] Executar testes de servidor, analytics/PII, manual, checklist, live, consentimento e i18n; verificar teclado, sem JavaScript, storage bloqueado, redução de movimento e larguras 320/375/768/1440.
-- [ ] Abrir e anexar PR; validar CI, integrar à main e conferir deploy e rotas de produção nos três idiomas.
-- [ ] Atualizar critérios e comentários de #21/#22/#15 com evidências e exclusões explícitas; encerrar somente após comprovação.
+- [x] Abrir e anexar PR; validar CI, integrar à main e conferir deploy e rotas de produção nos três idiomas. PR #53, CI `37819643928`, deploy `37819996005`: aprovados. Manual/políticas/cookies/sitemap publicados e iguais aos arquivos validados; endpoint congelado confirmado em produção.
+- [x] Atualizar critérios e comentários de #21/#22/#15 com evidências e exclusões explícitas; encerrar somente após comprovação. Issues encerradas em 08/10/2026; #23 segue opcional e independente.
 
 ## Referências verificadas
 
