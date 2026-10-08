@@ -22,11 +22,15 @@ export function searchText(text) {
 
 export function normalizeSearch(text) { return searchText(text).normalized; }
 
+export function transcriptFor(chapter, lang = 'pt') {
+  return chapter.transcripts[lang] || chapter.transcripts.pt;
+}
+
 export function matchChapter(chapter, query, lang = 'pt') {
   const tokens = normalizeSearch(query).split(' ').filter(Boolean);
   if (!tokens.length) return true;
   const index = normalizeSearch([chapter.time, chapter.titles[lang], chapter.titles.pt,
-    chapter.keywords, chapter.transcript, chapter.notice?.[lang]].join(' '));
+    chapter.keywords, transcriptFor(chapter, lang), chapter.notice?.[lang]].join(' '));
   return tokens.every(token => index.includes(token));
 }
 

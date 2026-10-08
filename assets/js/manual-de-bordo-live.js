@@ -1,5 +1,5 @@
-import { CHAPTERS, LIVE_VIDEO_ID, LIVE_DURATION, GROUP_INVITE_URL } from './manual-de-bordo-live-data.js?v=20261007-charter-notice';
-import { normalizeSearch, matchChapter, highlightParts, excerpt } from './manual-de-bordo-live-search.js?v=20261005-topic-player';
+import { CHAPTERS, LIVE_VIDEO_ID, LIVE_DURATION, GROUP_INVITE_URL } from './manual-de-bordo-live-data.js?v=20261007-transcript-i18n';
+import { normalizeSearch, matchChapter, highlightParts, excerpt, transcriptFor } from './manual-de-bordo-live-search.js?v=20261007-transcript-i18n';
 
 import { topicAt, topicProgress, seekInTopic, isNoticeDue, isGroupInviteDue, mobileNoticeAt } from './manual-de-bordo-live-timeline.js?v=20261007-notice-auto-collapse';
 import { initLiveGuideHelp } from './manual-de-bordo-live-help.js?v=20261005-mobile-live';
@@ -529,7 +529,7 @@ function initLive() {
       if (row.hidden) continue;
       count++;
       highlighted(title, chapter.titles[lang], query);
-      const text = hasQuery ? excerpt(chapter.transcript, query) : '';
+      const text = hasQuery ? excerpt(transcriptFor(chapter, lang), query) : '';
       snippet.hidden = !text;
       if (text) {
         const body = document.createElement('span');

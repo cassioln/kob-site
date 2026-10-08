@@ -1608,7 +1608,7 @@ document.documentElement.classList.add('js');
         interna: {
           cabin: 'Cabine interna',
           img: '/assets/images/cabins/cabine-interna.avif',
-          alt: 'Cabine interna do MSC Música com duas camas de solteiro, penteadeira e iluminação aconchegante',
+          alt: 'Cabine interna do MSC Musica com duas camas de solteiro, penteadeira e iluminação aconchegante',
           tour: 'https://virtual-tours.msccruises.com/MSC-Musica/en-gl/index.html?sc=scene_inside',
           title: 'O conforto e a elegância de que você precisa',
           lead: 'A opção mais econômica para desfrutar do seu cruzeiro, com todo o conforto a bordo.',
@@ -1628,7 +1628,7 @@ document.documentElement.classList.add('js');
         janela: {
           cabin: 'Cabine janela',
           img: '/assets/images/cabins/cabine-janela.avif',
-          alt: 'Cabine janela do MSC Música com vista para o mar e luz natural entrando pela janela',
+          alt: 'Cabine janela do MSC Musica com vista para o mar e luz natural entrando pela janela',
           tour: 'https://virtual-tours.msccruises.com/MSC-Musica/en-gl/index.html?sc=scene_ocean_view',
           title: 'Aprecie a vista do oceano de sua cabine',
           lead: 'Confortável e elegante, com janela para o mar.',
@@ -1649,7 +1649,7 @@ document.documentElement.classList.add('js');
         varanda: {
           cabin: 'Cabine varanda',
           img: '/assets/images/cabins/cabine-varanda.avif',
-          alt: 'Cabine varanda do MSC Música com sacada privativa de frente para o mar',
+          alt: 'Cabine varanda do MSC Musica com sacada privativa de frente para o mar',
           tour: 'https://virtual-tours.msccruises.com/MSC-Musica/en-gl/index.html?sc=scene_balcony',
           title: 'Relaxe com o sol e a brisa do mar',
           lead: 'Aproveite o conforto da sua varanda privativa.',
@@ -1669,7 +1669,7 @@ document.documentElement.classList.add('js');
         easy: {
           cabin: 'Pacote Easy · 12x R$ 58,88 por pessoa',
           img: '/assets/images/drinks/pacote-easy.webp',
-          alt: 'Seleção de bebidas do Pacote Easy servidas a bordo do MSC Música',
+          alt: 'Seleção de bebidas do Pacote Easy servidas a bordo do MSC Musica',
           title: 'Um cruzeiro tranquilo, com bebida o dia inteiro',
           lead: 'Desfrute de uma ampla seleção de bebidas ao longo do dia. Disponível em bares, buffets e restaurantes principais selecionados.',
           groups: [{
@@ -1689,7 +1689,7 @@ document.documentElement.classList.add('js');
         premium: {
           cabin: 'Pacote Premium Extra · 12x R$ 86,29 por pessoa',
           img: '/assets/images/drinks/pacote-premium.webp',
-          alt: 'Bebidas premium do Pacote Premium servidas a bordo do MSC Música',
+          alt: 'Bebidas premium do Pacote Premium servidas a bordo do MSC Musica',
           title: 'Bebidas de primeira qualidade em todo o navio',
           lead: 'Torne cada momento especial. Disponível em bares, bufês, restaurantes principais, restaurantes de especialidades selecionados e em ilhas privativas.',
           groups: [{
@@ -1711,7 +1711,7 @@ document.documentElement.classList.add('js');
         naoalcoolico: {
           cabin: 'Não alcoólico · 12x R$ 51,25 por pessoa',
           img: '/assets/images/drinks/pacote-nao-alcoolico.webp',
-          alt: 'Bebidas sem álcool do Pacote Não Alcoólico servidas a bordo do MSC Música',
+          alt: 'Bebidas sem álcool do Pacote Não Alcoólico servidas a bordo do MSC Musica',
           title: 'Revigorante, sem álcool, para adultos',
           lead: 'Perfeito para quem prefere opções sem álcool. Disponível em bares, buffets e restaurantes principais selecionados.',
           groups: [{

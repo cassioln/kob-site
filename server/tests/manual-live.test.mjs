@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { CHAPTERS } from '../../assets/js/manual-de-bordo-live-data.js';
-import { normalizeSearch, matchChapter, excerpt, highlightParts } from '../../assets/js/manual-de-bordo-live-search.js';
+import { normalizeSearch, matchChapter, excerpt, highlightParts, transcriptFor } from '../../assets/js/manual-de-bordo-live-search.js';
 
 const expected = [1453,1502,1535,2190,2544,2654,2996,3094,3814,4009,4102,4509,4657,833,913,1009,1036,1250,1345,1702,1765,1852,1963,2041,2161,2276,2339,2368,2423,2715,2894,3154,3213,3506,3766,3942,4265,4389,4456,4481,4712].sort((a,b)=>a-b);
 test('41 assuntos cronológicos com conversão exata dos tempos e títulos PT/EN/ES', () => {
@@ -12,13 +12,25 @@ test('41 assuntos cronológicos com conversão exata dos tempos e títulos PT/EN
 });
 test('busca usa a fala fornecida e separa os avisos das informações divergentes', () => {
   const bags=CHAPTERS.find(c=>c.seconds===4456);
-  assert.match(bags.transcript,/3 malas/); assert.match(bags.notice.pt,/diverge/); assert.equal(bags.faqId,'faq-o08');
+  assert.match(bags.transcripts.pt,/3 malas/); assert.match(bags.notice.pt,/diverge/); assert.equal(bags.faqId,'faq-o08');
   const items=CHAPTERS.find(c=>c.seconds===4481);
-  assert.doesNotMatch(items.transcript,/chapinha sem certificação/);
+  assert.doesNotMatch(items.transcripts.pt,/chapinha sem certificação/);
   const partners=CHAPTERS.find(c=>c.seconds===1036);
-  assert.doesNotMatch(partners.transcript,/Moedas & Co|Jogue & Vista/); assert.match(partners.transcript,/Fácil Shopping/);
+  assert.doesNotMatch(partners.transcripts.pt,/Moedas & Co|Jogue & Vista/); assert.match(partners.transcripts.pt,/Fácil Shopping/);
   for(const [term,seconds] of [['Encounter',3814],['favoritos',4009],['Ludopedia',4102],['BoardGameGeek',4102],['premiações',4657]])assert.ok(matchChapter(CHAPTERS.find(c=>c.seconds===seconds),term));
-  const child=CHAPTERS.find(c=>c.seconds===4389); assert.match(child.transcript,/refeições/);
+  const child=CHAPTERS.find(c=>c.seconds===4389); assert.match(child.transcripts.pt,/refeições/);
+});
+test('cada capítulo traz a fala em PT, EN e ES, e a busca mostra o trecho no idioma da página',()=>{
+  for(const c of CHAPTERS){
+    for(const l of ['pt','en','es'])assert.ok(c.transcripts[l]?.trim(),`${c.id} sem ${l}`);
+    assert.notEqual(c.transcripts.en,c.transcripts.pt,c.id); assert.notEqual(c.transcripts.es,c.transcripts.pt,c.id);
+    for(const name of ['Royal Trip','MSC Musica','Concais','Encounter','Board Game Guru','Doremi Club','Fácil Shopping'])
+      if(c.transcripts.pt.includes(name))for(const l of ['en','es'])assert.ok(c.transcripts[l].includes(name),`${c.id} ${l} perdeu ${name}`);
+  }
+  const parking=CHAPTERS.find(c=>c.seconds===1765);
+  assert.ok(matchChapter(parking,'parking lot','en')); assert.match(excerpt(transcriptFor(parking,'en'),'parking lot'),/parking lot/);
+  assert.ok(matchChapter(parking,'estacionamiento','es')); assert.match(excerpt(transcriptFor(parking,'es'),'auto'),/auto/);
+  assert.equal(transcriptFor({transcripts:{pt:'só PT'}},'en'),'só PT');
 });
 test('consultas de vários termos ignoram acentos, caixa e pontuação, inclusive em EN/ES',()=>{
   assert.equal(normalizeSearch(' ÁGUA—chá / CAFÉ! '),'agua cha cafe');

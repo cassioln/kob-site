@@ -211,8 +211,8 @@ test('No mobile o assunto fica sobre o vídeo e controles e Assuntos logo abaixo
   await expect(nextLabel.locator('span')).toHaveCSS('animation-name', 'live-label-marquee');
 });
 
-for (const [lang, term, title, label] of [['en', 'luggage', 'Luggage', 'Portuguese transcript'], ['es', 'equipaje', 'Equipaje', 'portugués']]) {
-  test(`Capítulos e busca localizados em ${lang}, transcrição identificada como português`, async ({ page }) => {
+for (const [lang, term, title, translatedTerm] of [['en', 'luggage', 'Luggage', 'parking lot'], ['es', 'equipaje', 'Equipaje', 'estacionamiento oficial']]) {
+  test(`Capítulos e busca localizados em ${lang}, com trecho da transcrição traduzido`, async ({ page }) => {
     await page.goto(`/${lang}/manual-de-bordo.html`);
     await openTopics(page);
     await page.locator('#liveSearchInput').fill(term);
@@ -220,8 +220,11 @@ for (const [lang, term, title, label] of [['en', 'luggage', 'Luggage', 'Portugue
     await expect(result).not.toHaveCount(0);
     await expect(result.filter({ hasText: title }).first()).toBeVisible();
     await expect(page.locator('.live-source-note')).toContainText(lang === 'en' ? 'Portuguese' : 'portugués');
+    await expect(page.locator('.live-source-note')).toContainText(lang === 'en' ? 'transcript excerpts are translated' : 'transcripción están');
+    await page.locator('#liveSearchInput').fill(translatedTerm);
+    await expect(page.locator('.live-chapter-item:not([hidden]) .live-chapter-item__snippet:not([hidden])').first()).toContainText(translatedTerm);
     await page.locator('#liveSearchInput').fill('Wise');
-    await expect(page.locator('.live-chapter-item__snippet:not([hidden])')).toContainText('Wise');
+    await expect(page.locator('.live-chapter-item:not([hidden]) .live-chapter-item__snippet:not([hidden])')).toContainText('Wise');
     await expect(page.locator('#liveModal')).toHaveCount(0);
   });
 }
