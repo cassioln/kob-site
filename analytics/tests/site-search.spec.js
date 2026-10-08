@@ -381,6 +381,8 @@ for (const [path, lang, faqInput, caption] of FAQ_BOXES) {
     await page.route(/https:\/\/.*youtube(?:-nocookie)?\.com\/.*/, route => route.fulfill({ contentType: 'text/html', body: '<html></html>' }));
     await visit(page, path);
     const button = page.locator('.faq-search__spotlight');
+    // Read the label only after the module has written the platform shortcut (the HTML default is "⌘ K").
+    await expect(button).toHaveAttribute('aria-keyshortcuts', /\+K$/);
     const shortcut = await button.textContent();
     expect(shortcut).toMatch(/^(⌘ K|Ctrl K)$/);
     await expect(button).toHaveAccessibleName(`${TEXT[lang].faqButton} (${shortcut})`);
