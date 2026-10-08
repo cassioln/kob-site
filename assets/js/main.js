@@ -2875,10 +2875,6 @@ document.documentElement.classList.add('js');
     if (search) {
       search.addEventListener('input', filterQuestions);
       document.addEventListener('keydown', function (event) {
-        if ((event.metaKey || event.ctrlKey) && event.key.toLocaleLowerCase('pt-BR') === 'k') {
-          event.preventDefault();
-          search.focus();
-        }
         if (event.key === 'Escape' && document.activeElement === search && search.value) {
           search.value = '';
           filterQuestions();

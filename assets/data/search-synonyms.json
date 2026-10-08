@@ -1,0 +1,98 @@
+{
+  "pt": {
+    "stopwords": ["as", "os", "de", "da", "do", "das", "dos", "em", "no", "na", "nos", "nas", "um", "uma", "para", "pra", "por", "com", "que", "se", "eu", "meu", "minha", "posso", "como", "qual", "quais", "sobre", "tem", "quero", "queria", "saber", "preciso", "precisa", "gostaria", "onde", "quando", "fica", "ficam", "devo", "existe", "ha", "esta", "estao", "voce", "voces", "quanto", "quanta", "quantos", "quantas", "custa", "custam", "meus", "minhas", "seu", "seus", "sua", "suas", "nosso", "nossos", "nossa", "nossas"],
+    "groups": [
+      ["mala", "malas", "bagagem", "bagagens", "franquia"],
+      ["onibus", "busao", "fretado", "traslado", "transfer"],
+      ["gravida", "gravidas", "gestante", "gestantes", "gestacao", "gravidez"],
+      ["wifi", "internet"],
+      ["bebida", "bebidas", "drink", "drinks", "alcool"],
+      ["cabine", "cabines", "quarto", "camarote"],
+      ["crianca", "criancas", "filho", "filhos", "infantil", "kids"],
+      ["bebe", "bebes", "colo"],
+      ["documento", "documentos", "rg", "cnh", "passaporte", "identidade"],
+      ["dinheiro", "dolar", "dolares", "cartao", "pagamento", "gastos"],
+      ["remedio", "remedios", "medicamento", "medicamentos"],
+      ["jogo", "jogos", "boardgame", "tabuleiro"],
+      ["estacionamento", "carro"],
+      ["horario", "horarios", "hora"],
+      ["roupa", "roupas", "traje", "vestimenta"],
+      ["festa", "festas", "fantasia"],
+      ["seguro", "seguros"],
+      ["proibido", "proibidos", "proibe"],
+      ["hotel", "hoteis", "hospedagem"],
+      ["preco", "precos", "valor", "valores", "tarifa", "tarifas"]
+    ],
+    "featured": [
+      { "label": "Documentos para embarcar", "page": "manual", "anchor": "#faq-o03" },
+      { "label": "Horários e ponto do fretado", "page": "bus", "anchor": "#embarque" },
+      { "label": "Limite de bagagem", "page": "manual", "anchor": "#faq-o08" },
+      { "label": "Pacotes de bebidas", "page": "manual", "anchor": "#faq-o30" },
+      { "label": "Assistir à live completa", "page": "manual", "anchor": "#live-833", "time": "00:13:53" }
+    ]
+  },
+  "en": {
+    "stopwords": ["an", "the", "of", "to", "in", "on", "for", "and", "or", "is", "are", "do", "does", "can", "my", "what", "how", "which", "about", "with", "want", "need", "know", "where", "when", "there", "should", "will", "get", "you", "it", "be", "much", "many", "cost", "costs", "our", "your"],
+    "groups": [
+      ["luggage", "baggage", "suitcase", "suitcases", "bag", "bags"],
+      ["bus", "charter", "shuttle", "transfer", "busao"],
+      ["pregnant", "pregnancy"],
+      ["wifi", "internet"],
+      ["drink", "drinks", "beverage", "beverages", "alcohol"],
+      ["cabin", "cabins", "room", "stateroom"],
+      ["kid", "kids", "child", "children"],
+      ["baby", "babies", "infant"],
+      ["document", "documents", "id", "passport", "rg", "cnh"],
+      ["money", "cash", "dollar", "dollars", "card", "payment"],
+      ["medicine", "medication", "medications"],
+      ["game", "games", "boardgame"],
+      ["parking", "car"],
+      ["time", "times", "schedule", "hours"],
+      ["clothes", "clothing", "dress", "outfit"],
+      ["party", "parties", "costume"],
+      ["insurance"],
+      ["prohibited", "banned", "forbidden", "prohibits"],
+      ["hotel", "hotels", "accommodation"],
+      ["price", "prices", "fare", "fares", "rate", "rates"]
+    ],
+    "featured": [
+      { "label": "Documents for boarding", "page": "manual", "anchor": "#faq-o03" },
+      { "label": "Charter bus times and meeting point", "page": "bus", "anchor": "#embarque" },
+      { "label": "Luggage allowance", "page": "manual", "anchor": "#faq-o08" },
+      { "label": "Drink packages", "page": "manual", "anchor": "#faq-o30" },
+      { "label": "Watch the full live session", "page": "manual", "anchor": "#live-833", "time": "00:13:53" }
+    ]
+  },
+  "es": {
+    "stopwords": ["el", "la", "los", "las", "un", "una", "de", "del", "en", "al", "por", "para", "con", "que", "se", "mi", "como", "cual", "cuales", "puedo", "sobre", "hay", "quiero", "saber", "necesito", "necesita", "donde", "cuando", "debo", "existe", "estan", "esta", "son", "tu", "usted", "es", "cuanto", "cuanta", "cuantos", "cuantas", "cuesta", "cuestan", "mis", "tus", "su", "sus", "nuestro", "nuestros", "nuestra", "nuestras"],
+    "groups": [
+      ["maleta", "maletas", "equipaje", "valija", "valijas"],
+      ["bus", "autobus", "charter", "traslado", "busao"],
+      ["embarazada", "embarazadas", "embarazo"],
+      ["wifi", "internet"],
+      ["bebida", "bebidas", "trago", "tragos", "alcohol"],
+      ["camarote", "camarotes", "cabina", "habitacion", "habitaciones"],
+      ["nino", "ninos", "hijo", "hijos", "infantil"],
+      ["bebe", "bebes"],
+      ["documento", "documentos", "pasaporte", "rg", "cnh", "identidad"],
+      ["dinero", "dolar", "dolares", "tarjeta", "pago"],
+      ["medicamento", "medicamentos", "remedio", "remedios"],
+      ["juego", "juegos"],
+      ["estacionamiento", "auto", "coche", "carro"],
+      ["horario", "horarios", "hora"],
+      ["ropa", "vestimenta", "traje"],
+      ["fiesta", "fiestas", "disfraz"],
+      ["seguro"],
+      ["prohibido", "prohibidos", "prohibe"],
+      ["hotel", "hoteles", "alojamiento", "hospedaje"],
+      ["precio", "precios", "valor", "tarifa", "tarifas"]
+    ],
+    "featured": [
+      { "label": "Documentos para embarcar", "page": "manual", "anchor": "#faq-o03" },
+      { "label": "Horarios y punto del bus chárter", "page": "bus", "anchor": "#embarque" },
+      { "label": "Límite de equipaje", "page": "manual", "anchor": "#faq-o08" },
+      { "label": "Paquetes de bebidas", "page": "manual", "anchor": "#faq-o30" },
+      { "label": "Ver la live completa", "page": "manual", "anchor": "#live-833", "time": "00:13:53" }
+    ]
+  }
+}

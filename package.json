@@ -7,6 +7,7 @@
     "test": "npm run test:server && npm run test:analytics && npm run test:analytics:pii",
     "test:ci": "npm run validate:analytics && npm run test:server && node --test analytics/tests/live-notice-timing.test.mjs && playwright test --config=playwright.ci.config.mjs --reporter=list,github",
     "test:server": "node --test server/tests/*.test.mjs",
+    "build:search-index": "node scripts/build-search-index.mjs",
     "test:analytics": "playwright test",
     "test:analytics:pii": "playwright test --config=playwright.live.config.mjs --grep @code",
     "test:analytics:live": "playwright test --config=playwright.live.config.mjs",

@@ -69,13 +69,15 @@
     href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap"
     rel="stylesheet">
   <link rel="preload" href="/assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
-  <link rel="stylesheet" href="/assets/css/main.css?v=20261006-bus-footer-fix">
-  <link rel="stylesheet" href="/assets/css/onibus.css?v=20261006-bus-footer-fix">
+  <link rel="stylesheet" href="/assets/css/main.css?v=20261008-busca">
+  <link rel="stylesheet" href="/assets/css/site-search.css?v=20261008-busca-2">
+  <link rel="stylesheet" href="/assets/css/onibus.css?v=20261008-busca">
   <link rel="stylesheet" href="/assets/css/footer-sponsors.css?v=20261007-sponsors-marquee">
   <link rel="stylesheet" href="/assets/css/cookie-consent.css?v=20260820-fix-contrast">
   <script defer src="/assets/js/cookie-consent.js?v=20260713-5"></script>
   <script defer src="/assets/js/footer-sponsors.js?v=20261007-sponsors-marquee"></script>
   <script defer src="/assets/js/onibus.js?v=20261003-live-content"></script>
+  <script type="module" src="/assets/js/site-search.js?v=20261008-busca-2"></script>
 </head>
 
 <body class="bus-page">
@@ -87,6 +89,13 @@
       <img src="/assets/images/brand/kriativos-on-board-logo.webp" alt="Kriativos On Board" width="2930" height="1796">
     </a>
     <div class="bus-header__right">
+      <button type="button" class="site-search-trigger" data-site-search-open aria-haspopup="dialog"
+        aria-keyshortcuts="Meta+K Control+K" aria-label="Buscar en el sitio">
+        <svg class="site-search-trigger__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4 4"></path></svg>
+        <span class="site-search-trigger__label">Buscar</span>
+        <kbd class="site-search-trigger__kbd" data-site-search-kbd aria-hidden="true">⌘ K</kbd>
+      </button>
       <nav class="lang-switch" aria-label="Idioma / Language">
         <a href="https://busao.kriativosonboard.com.br/" class="lang-switch__item" hreflang="pt-BR" lang="pt-BR">PT</a>
         <a href="https://busao.kriativosonboard.com.br/en/" class="lang-switch__item" hreflang="en" lang="en">EN</a>
@@ -188,7 +197,7 @@
       </div>
     </section>
 
-    <section class="bus-intro" aria-labelledby="how-title">
+    <section id="como-reservar" class="bus-intro" aria-labelledby="how-title">
       <div class="container">
         <div class="bus-section-heading">
           <p class="eyebrow">Cómo reservar</p>
@@ -236,7 +245,7 @@
       </div>
     </section>
 
-    <section class="bus-checkout" aria-labelledby="form-title">
+    <section id="passageiros" class="bus-checkout" aria-labelledby="form-title">
       <div class="container">
         <!-- Cabeçalho da etapa: o texto acompanha o passo atual (cadastro →
              pagamento → confirmação). O JS troca o conteúdo; estes valores são
@@ -924,7 +933,7 @@
       </div>
     </section>
 
-    <section class="bus-reassurance" aria-labelledby="conditions-title">
+    <section id="condicoes" class="bus-reassurance" aria-labelledby="conditions-title">
       <div class="container bus-reassurance__inner">
         <div class="bus-reassurance__head">
           <h2 id="conditions-title">Antes de pagar, conoce las condiciones.</h2>
@@ -980,7 +989,7 @@
             </div>
           </article>
 
-          <article class="bus-reassurance__card">
+          <article id="embarque" class="bus-reassurance__card">
             <div class="bus-reassurance__icon bus-reassurance__icon--route" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                 stroke-linejoin="round">

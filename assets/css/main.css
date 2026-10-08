@@ -11168,17 +11168,6 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
   color: rgba(255, 255, 255, 0.7);
 }
 
-.faq-search kbd {
-  padding: 4px 7px;
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  border-radius: 5px;
-  color: rgba(255, 255, 255, 0.72);
-  background: rgba(255, 255, 255, 0.08);
-  font-family: var(--font-body);
-  font-size: 0.68rem;
-  line-height: 1;
-}
-
 .faq-search small {
   min-height: 1.4em;
   color: rgba(255, 255, 255, 0.68);
@@ -11623,10 +11612,6 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
 
   .faq-search {
     padding: 20px;
-  }
-
-  .faq-search kbd {
-    display: none;
   }
 
   .faq-search__field {

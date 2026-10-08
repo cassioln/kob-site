@@ -246,7 +246,8 @@
   <!-- Fontes da marca (banner KOB): Gobold Extra2 = display, Chantal = acento manuscrito -->
   <link rel="preload" href="/assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
 
-  <link rel="stylesheet" href="/assets/css/main.css?v=20261005-ui-final">
+  <link rel="stylesheet" href="/assets/css/main.css?v=20261008-busca">
+  <link rel="stylesheet" href="/assets/css/site-search.css?v=20261008-busca-2">
   <link rel="stylesheet" href="/assets/css/cookie-consent.css?v=20260820-fix-contrast">
   <script defer src="/assets/js/cookie-consent.js?v=20260713-5"></script>
 </head>
@@ -403,6 +404,13 @@
       <a class="nav__link--fold1" href="https://manualdebordo.kriativosonboard.com.br/en/">Onboard Guide</a>
     </nav>
     <div class="nav__right">
+      <button type="button" class="site-search-trigger" data-site-search-open aria-haspopup="dialog"
+        aria-keyshortcuts="Meta+K Control+K" aria-label="Search the site">
+        <svg class="site-search-trigger__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4 4"></path></svg>
+        <span class="site-search-trigger__label">Search</span>
+        <kbd class="site-search-trigger__kbd" data-site-search-kbd aria-hidden="true">⌘ K</kbd>
+      </button>
       <div class="lang-switch" role="group" aria-label="Language selector">
         <a href="/" class="lang-switch__btn" hreflang="pt-BR" title="Português (Brasil)">PT</a>
         <span class="lang-switch__sep" aria-hidden="true">|</span>
@@ -2481,15 +2489,16 @@
               make your next move.</p>
           </div>
           <label class="faq-search" for="faq-search">
-            <span>What would you like to know?</span>
+            <span id="faq-search-label">What would you like to know?</span>
             <span class="faq-search__field">
               <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <circle cx="11" cy="11" r="6.5"></circle>
                 <path d="m16 16 4 4"></path>
               </svg>
               <input id="faq-search" type="search" placeholder="Search: documents, drinks, games…" autocomplete="off"
-                aria-describedby="faq-search-status">
-              <kbd aria-hidden="true">⌘ K</kbd>
+                aria-labelledby="faq-search-label" aria-describedby="faq-search-status">
+              <button type="button" class="faq-search__spotlight" data-site-search-open data-site-search-kbd
+                aria-label="Search the whole site">⌘ K</button>
             </span>
             <small id="faq-search-status" aria-live="polite">34 answers organized by category</small>
           </label>
@@ -2514,43 +2523,43 @@
                 <h3>Boarding, <span class="u-nowrap">Check-In</span> & Documents</h3>
               </div>
               <div class="faq__list">
-                <details>
+                <details id="faq-h01">
                   <summary>What are the boarding date and times?<span aria-hidden="true"></span></summary>
                   <div>Boarding is on November 20 (Friday) at the Port of Santos, with a reference check-in window of 9 AM to 3 PM. Disembarkation is on November 23 (Monday), starting at 7 AM. These times are for reference: follow the arrival window and instructions on your booking voucher and MSC's announcements on board.</div>
                 </details>
-                <details>
+                <details id="faq-h02">
                   <summary>What do I need to have with me at boarding?</summary>
                   <div>Bring your printed boarding voucher and your original ID in good condition, with a photo that allows identification. For Brazilian citizens on this domestic itinerary, MSC accepts the RG (Brazilian ID card), CNH (Brazilian driver's license), passport and other civil documents listed in its official rules, and does not require the RG to have been issued less than ten years ago. The digital CNH must be opened in the official app; photos, screenshots and copies, even certified ones, do not replace the document. We also recommend bringing the physical document. For minors, check with Royal Trip which documents and consent forms are required depending on who is traveling with them. Foreign guests must confirm with the agency the documents that apply to their nationality.</div>
                 </details>
-                <details>
+                <details id="faq-h03">
                   <summary>When can I check in?</summary>
                   <div>Royal Trip handles the group's check-in. After the announcement in the WhatsApp group, the person responsible for each cabin should message Júnior/Royal Trip privately to request the official vouchers and luggage labels. Check the details of every passenger and print the documents before boarding.</div>
                 </details>
-                <details>
+                <details id="faq-h04">
                   <summary>Do I need to be vaccinated to board?</summary>
                   <div>Check the current health requirements for your sailing with Royal Trip and MSC. Don't rely on old vaccination or antigen-test rules as current instructions: requirements may change depending on the health situation, the destination and the authorities. Follow the official guidance you receive for your boarding.</div>
                 </details>
-                <details>
+                <details id="faq-h05">
                   <summary>How do I check my luggage, and when?</summary>
                   <div>Dropping off your luggage is the first thing to do when you arrive at the port. If you're driving, luggage drop-off is very close to the parking lot.</div>
                 </details>
-                <details>
+                <details id="faq-h06">
                   <summary>Is there transportation to the port?</summary>
                   <div>Yes! We offer an official round-trip charter bus between Barra Funda (São Paulo), at Rua Tagipuru, near no. 552, and the Port of Santos. Bus 1: meet at 6:00 AM, departure at 6:30 AM (confirmed). Bus 2: meet at 6:40 AM, departure at 7:20 AM, subject to a minimum number of passengers; if the minimum isn't reached, a full refund will be issued via Pix (Brazil's instant payment system). The return from the port on Monday (Nov 23) is scheduled for 10:30 AM. <a href="https://busao.kriativosonboard.com.br/en/" target="_blank" rel="noopener">See the charter bus and book your seat.</a></div>
                 </details>
-                <details>
+                <details id="faq-h07">
                   <summary>How do I handle parking?</summary>
                   <div>You need to book a parking spot in advance to avoid it being full. Details on the Concais parking lot and hotel suggestions are here on the site, in the <a href="#hospedagem">Transportation &amp; Accommodation section</a>.</div>
                 </details>
-                <details>
+                <details id="faq-h08">
                   <summary>Who is Royal Trip?</summary>
                   <div>Royal Trip is the event's official partner travel agency, with more than 14 years in air and sea travel, plus themed cruises, corporate events and weddings on ships. CNPJ 16.957.402/0001-19.</div>
                 </details>
-                <details>
+                <details id="faq-h09">
                   <summary>What is the MSC Musica's itinerary?</summary>
                   <div>Departure from Santos (SP) on Nov 20, bound for Búzios (RJ), returning to Santos on Nov 23.</div>
                 </details>
-                <details>
+                <details id="faq-h10">
                   <summary>Can pregnant guests or babies sail on the cruise?</summary>
                   <div>MSC does not allow travel if a pregnancy reaches 24 weeks at any point during the cruise. Pregnant guests below that limit must present a medical certificate stating gestational age, expected due date, and confirmation of a low-risk pregnancy and fitness to travel, with the doctor's CRM (Brazilian medical license number), signature and stamp. Let Royal Trip know in advance so they can forward the documents and review your booking. Babies can join this mini-cruise, but they must be listed on the cabin booking; confirm fares and fees with the agency.</div>
                 </details>
@@ -2562,39 +2571,39 @@
                 <h3>Onboard Experience & Gaming</h3>
               </div>
               <div class="faq__list">
-                <details>
+                <details id="faq-h11">
                   <summary>Will there be a room for playing games?</summary>
                   <div>Yes! The Crystal Lounge is the planned venue for Kriativos On Board. We'll confirm the room and hours in the group and in the event schedule. Tables are open and shared on a rotating basis among participants.</div>
                 </details>
-                <details>
+                <details id="faq-h12">
                   <summary>Which games will be available?</summary>
                   <div>The official game library is organized in the Board Game Guru app. You'll find hundreds of modern games from our partners, and Encounter's game teachers will be there to teach you the rules. You can also bring your own games!</div>
                 </details>
-                <details>
+                <details id="faq-h13">
                   <summary>How does the games app work, and how do I enter the giveaways?</summary>
                   <div>We use the official Board Game Guru app (available for Android and iOS). In the app, open the Kriativos On Board page and confirm your early check-in by tapping "Eu vou" ("I'm going"). This step is essential to enter the giveaways of games and exclusive prizes on board! In the app you can also browse the game library, see which game teachers teach each title and register in advance the games you'll bring on board (with direct import from Ludopedia or BoardGameGeek).</div>
                 </details>
-                <details>
+                <details id="faq-h14">
                   <summary>Can I bring my own games and prototypes?</summary>
                   <div>Yes! You can bring as many games as you like, plus prototypes and new releases to play with the community.</div>
                 </details>
-                <details>
+                <details id="faq-h15">
                   <summary>Can I take games to other areas of the ship?</summary>
                   <div>Yes, to any area except the restaurants (the tables are for meals). The game is your responsibility: when you take it out of the room, leave your name and cabin number so it can be checked when you return it.</div>
                 </details>
-                <details>
+                <details id="faq-h16">
                   <summary>Until what time is the game room open?</summary>
                   <div>The idea is to play a lot during the day and at night. The room's hours will be confirmed in the group and in the schedule. On Sunday night, we'll let you know the deadline for returning games and clearing the tables for the final inventory.</div>
                 </details>
-                <details>
+                <details id="faq-h17">
                   <summary>How does Wi-Fi work, and how do we communicate on board?</summary>
                   <div>MSC's satellite internet package is purchased separately for browsing the external internet. When you connect to the ship's internal Wi-Fi network, you can use the MSC for Me app and its free chat. Add "Kriativo" to your profile name or nickname so your friends can find you! During the port call in Búzios, there may be 4G/5G signal from Brazilian carriers, depending on coverage and your location. Check the day of the port call in your booking's official itinerary.</div>
                 </details>
-                <details>
+                <details id="faq-h18">
                   <summary>Is the safety drill mandatory?</summary>
                   <div>Yes. Complete the mandatory procedure MSC indicates for your boarding; the crew will tell you the place, time and steps, including instructions in the app. Watching a video or opening the app alone doesn't fulfill every requirement.</div>
                 </details>
-                <details>
+                <details id="faq-h19">
                   <summary>How is a board game cruise different from other events?</summary>
                   <div>Kriativos On Board combines the love of games with a complete vacation at sea. You enjoy full board, cabin accommodation, the leisure of a luxury ocean liner and a space dedicated to games, according to the event schedule, to play and make lifelong friends.</div>
                 </details>
@@ -2606,43 +2615,43 @@
                 <h3>Food, Drinks & Cabins</h3>
               </div>
               <div class="faq__list">
-                <details>
+                <details id="faq-h20">
                   <summary>What's included in my booking?</summary>
                   <div>Accommodation in your chosen category and full board (breakfast, lunch and dinner), plus water, tea and coffee at the buffet restaurants, subject to availability.</div>
                 </details>
-                <details>
+                <details id="faq-h21">
                   <summary>Is food unlimited on the ship?</summary>
                   <div>Yes. The main restaurants (buffet) serve daily meals: breakfast, lunch and dinner. If you can't make the served dinner time, you can eat at these buffets.</div>
                 </details>
-                <details>
+                <details id="faq-h22">
                   <summary>How does dinner work on the ship?</summary>
                   <div>The main restaurant serves à la carte dinner in pre-assigned sittings, shown on your cruise card, with a starter, main course and dessert. Arrive on time: the 15-minute grace period refers to kitchen orders. If you miss your sitting, check the buffet and pizzeria options; the pizzeria usually runs almost 24 hours. Check the times in MSC's daily schedule.</div>
                 </details>
-                <details>
+                <details id="faq-h23">
                   <summary>Can I sit at the same dinner table as friends from other cabins?</summary>
                   <div>You can ask. Tables for the à la carte dinner are assigned at check-in. To bring family and friends from other cabins to the same table for the cruise, go to the restaurant's maître d' right after boarding on the first day (Friday afternoon) with all the cabin numbers and ask to combine tables. The staff will confirm whether there's still room at dinner.</div>
                 </details>
-                <details>
+                <details id="faq-h24">
                   <summary>Do I have to buy a drink package?</summary>
                   <div>No, it's optional. If someone in the cabin buys a package, the other guests must follow MSC's rules: adults with the same package and children/teens with the Non-Alcoholic package for kids, according to their age group. Babies don't need a package. Confirm with Royal Trip the conditions that apply to your cabin and the deadline to buy.</div>
                 </details>
-                <details>
+                <details id="faq-h25">
                   <summary>What drink packages are available for adults?</summary>
                   <div>Non-Alcoholic, Easy and Premium Extra. Easy and Premium Extra include a maximum of 15 alcoholic drinks per person per day; MSC's daily period runs from 6 AM to 6 AM the next day. Confirm with Royal Trip the prices, discounts, installments and conditions available at the time of purchase.</div>
                 </details>
-                <details>
+                <details id="faq-h26">
                   <summary>Do I get a minibar in the cabin with the Premium package?</summary>
                   <div>All MSC Musica cabins have a minibar, but minibar items are NOT included in any drink package (not even Premium Extra) and are charged separately to your cabin account. Tip: you can pick up canned or bottled drinks at the bars included in your package and keep them in your cabin's minibar to enjoy whenever you like.</div>
                 </details>
-                <details>
+                <details id="faq-h27">
                   <summary>What does the cabin provide, and what should I pack?</summary>
                   <div>Cabins provide bed linen, towels, liquid soap, shampoo, a hair dryer, TV, air conditioning and a safe; check with the agency which amenities your booked category includes. What you MUST bring: toothbrush and toothpaste, hair conditioner, sunscreen and a compatible plug adapter, if needed. Also remember to pack comfortable clothes for game time, smart casual attire for the à la carte dinner (tank tops and flip-flops are not allowed), white clothes for the White Party and themed/neon pieces for the 80s Night!</div>
                 </details>
-                <details>
+                <details id="faq-h28">
                   <summary>Do I need formal wear for dinner?</summary>
                   <div>No. For dinner, wear smart casual attire; the main restaurant doesn't allow tank tops or flip-flops. Check the ship's guidance for each venue and evening.</div>
                 </details>
-                <details>
+                <details id="faq-h29">
                   <summary>How do I pay for onboard spending? Can I use US dollars?</summary>
                   <div>Onboard purchases are charged to the account linked to your cabin card (Cruise Card). Confirm with MSC or at reception which payment methods are accepted to link or settle this account, the currency and whether deposits are possible. If you'll use an international credit card, enable international use and bring the physical card.</div>
                 </details>
@@ -2654,23 +2663,23 @@
                 <h3>Insurance, Health & Rules</h3>
               </div>
               <div class="faq__list">
-                <details>
+                <details id="faq-h30">
                   <summary>Is travel insurance mandatory?</summary>
                   <div>Insurance is optional and recommended for unexpected events and medical expenses. The approximate price is R$ 112 per person; confirm the policy and terms with Royal Trip before buying.</div>
                 </details>
-                <details>
+                <details id="faq-h31">
                   <summary>Is there a kids' club or children's activities on the ship?</summary>
                   <div>Yes! MSC's Doremi Club offers supervised activities for children and teens by age group. Hours are usually long, around 9 AM to 11 PM, and should be checked in the daily schedule on board. Potty-trained children can stay with the youth staff; children who still wear diapers can use the spaces with their parents or guardians.</div>
                 </details>
-                <details>
+                <details id="faq-h32">
                   <summary>I take medication that needs refrigeration. What should I do?</summary>
                   <div>Let Royal Trip know in advance, through a private channel, so they can forward your request to MSC and confirm the arrangements. Don't count on the cabin minibar keeping the temperature your medication requires, and carry your medication in your hand luggage.</div>
                 </details>
-                <details>
+                <details id="faq-h33">
                   <summary>What can't I bring on board?</summary>
                   <div>MSC prohibits weapons, illegal drugs, flammable materials and heating appliances such as clothes irons. Hair dryers and hair straighteners are allowed. Drones may be carried if stored in the cabin, but using them on board is prohibited. For food, MSC allows commercially packaged dry snacks as an exception; check the full official list and the conditions for special needs.</div>
                 </details>
-                <details>
+                <details id="faq-h34">
                   <summary>What parties will there be on the ship?</summary>
                   <div>We'll have two unforgettable theme nights: the classic White Party (bring something white) and the 80s Night (retro style, accessories and neon colors to celebrate on Sunday night). Themed outfits aren't mandatory, but they make the experience on board even more fun! Check times and venues in the schedule.</div>
                 </details>
@@ -2990,7 +2999,8 @@
     </svg>
   </a>
 
-  <script src="/assets/js/main.js?v=20261007-faq-sync"></script>
+  <script src="/assets/js/main.js?v=20261008-busca"></script>
+  <script type="module" src="/assets/js/site-search.js?v=20261008-busca-2"></script>
 </body>
 
 </html>

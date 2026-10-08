@@ -45,19 +45,21 @@
     rel="stylesheet">
   <link rel="preload" href="/assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
 
-  <link rel="stylesheet" href="/assets/css/main.css?v=20261005-ui-final">
-  <link rel="stylesheet" href="/assets/css/manual-de-bordo.css?v=20261007-mobile-invite-compact">
+  <link rel="stylesheet" href="/assets/css/main.css?v=20261008-busca">
+  <link rel="stylesheet" href="/assets/css/site-search.css?v=20261008-busca-2">
+  <link rel="stylesheet" href="/assets/css/manual-de-bordo.css?v=20261008-busca">
   <link rel="stylesheet" href="/assets/css/footer-sponsors.css?v=20261007-sponsors-marquee">
   <link rel="stylesheet" href="/assets/css/cookie-consent.css?v=20260820-fix-contrast">
 
   <script defer src="/assets/js/cookie-consent.js?v=20260713-5"></script>
   <script defer src="/assets/js/footer-sponsors.js?v=20261007-sponsors-marquee"></script>
-  <script defer src="/assets/js/manual-de-bordo.js?v=20261007-checklist-scrollspy"></script>
+  <script defer src="/assets/js/manual-de-bordo.js?v=20261008-busca"></script>
 
-  <script type="module" src="/assets/js/manual-de-bordo-live.js?v=20261008-live-copy"></script>
+  <script type="module" src="/assets/js/manual-de-bordo-live.js?v=20261008-busca-live"></script>
   <script type="module" src="/assets/js/manual-de-bordo-checklist.js?v=20261005-topic-player"></script>
   <script type="module" src="/assets/js/manual-de-bordo-routing.js?v=20261006-manual-domain"></script>
   <script type="module" src="/assets/js/manual-games-carousel.js?v=20261006-manual-carousel"></script>
+  <script type="module" src="/assets/js/site-search.js?v=20261008-busca-2"></script>
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -146,6 +148,13 @@
         <a href="#contato" class="guide-header__nav-link">Contact</a>
       </nav>
       <div class="guide-header__actions">
+        <button type="button" class="site-search-trigger" data-site-search-open aria-haspopup="dialog"
+          aria-keyshortcuts="Meta+K Control+K" aria-label="Search the site">
+          <svg class="site-search-trigger__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4 4"></path></svg>
+          <span class="site-search-trigger__label">Search</span>
+          <kbd class="site-search-trigger__kbd" data-site-search-kbd aria-hidden="true">⌘ K</kbd>
+        </button>
         <nav class="lang-switch" aria-label="Language selector">
           <a href="https://manualdebordo.kriativosonboard.com.br/" class="lang-switch__item" hreflang="pt-BR" lang="pt-BR">PT</a>
           <span class="lang-switch__item is-active" aria-current="page">EN</span>
@@ -797,16 +806,17 @@
             </p>
           </div>
           <label class="faq-search" for="faqSearchInput">
-            <span>What do you need to know?</span>
+            <span id="faqSearchLabel">What do you need to know?</span>
             <span class="faq-search__field">
               <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <circle cx="11" cy="11" r="6.5"></circle>
                 <path d="m16 16 4 4"></path>
               </svg>
               <input id="faqSearchInput" type="search" placeholder="E.g., documents, luggage, internet, games…" autocomplete="off"
-                aria-describedby="faq-search-status">
+                aria-labelledby="faqSearchLabel" aria-describedby="faq-search-status">
               <button type="button" class="faq-search-clear" id="faqClearBtn" title="Clear search" aria-label="Clear search">Clear</button>
-              <kbd aria-hidden="true">⌘ K</kbd>
+              <button type="button" class="faq-search__spotlight" data-site-search-open data-site-search-kbd
+                aria-label="Search the whole site">⌘ K</button>
             </span>
             <small id="faq-search-status" aria-live="polite"><span id="faqResultsCount">42</span> answers organized by topic</small>
           </label>
