@@ -594,7 +594,7 @@ for(const [lang,path,home,charter,prefix] of [
   await page.locator('#navToggle').click();
   await expect(page.locator('#drawer .guide-menu-desktop').first()).toBeHidden();
   await expect(page.locator('#drawer .guide-menu-mobile')).toBeVisible();
-  await expect(page.locator('#drawer .guide-menu-mobile')).toHaveAttribute('href','#transporte');
+  await expect(page.locator('#drawer .guide-menu-mobile')).toHaveAttribute('href',`https://busao.kriativosonboard.com.br${prefix}/`);
   await page.setViewportSize({width:600,height:844});
   await expect(page.locator('.guide-header__home-link')).toHaveCount(0);
  });

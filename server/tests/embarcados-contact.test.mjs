@@ -30,34 +30,40 @@ test('embarcados-contact: rejeita GET com status 405', () => {
   assert.equal(res.body.ok, false);
 });
 
-test('embarcados-contact: rejeita submissão vazia com status 422 e mapa de validação', () => {
+test('embarcados-contact: formulário congelado retorna 503 sem coletar dados', () => {
   const res = runPhpEndpoint('POST', {});
-  assert.equal(res.code, 422);
+  assert.equal(res.code, 503);
   assert.equal(res.body.ok, false);
-  assert.ok(res.body.validation.name);
-  assert.ok(res.body.validation.email);
-  assert.ok(res.body.validation.message);
+  assert.equal(res.body.error, 'service_disabled');
 });
 
-test('embarcados-contact: aceita submissão válida com status 200', () => {
+test('embarcados-contact: não promete envio nem inscrição mesmo com dados válidos', () => {
   const res = runPhpEndpoint('POST', {
     name: 'Kriativo a Bordo',
     email: 'kriativo@exemplo.com.br',
     whatsapp: '11988887777',
     topic: 'Jogos no Crystal Lounge',
-    message: 'Gostaria de tirar uma dúvida sobre levar jogos próprios.'
+    message: 'Gostaria de tirar uma dúvida sobre levar jogos próprios.',
+    newsletter: { email: true, whatsapp: true }
   });
-  assert.equal(res.code, 200);
-  assert.equal(res.body.ok, true);
-  assert.ok(res.body.message.includes('sucesso'));
+  assert.equal(res.code, 503);
+  assert.equal(res.body.ok, false);
+  assert.equal(res.body.error, 'service_disabled');
+  assert.equal(res.body.contact_url, 'https://api.whatsapp.com/send?phone=5513981580498');
+  assert.equal(res.body.message, undefined);
 });
 
-test('embarcados-contact: protege contra bots via honeypot retornando 200 silencioso', () => {
+test('embarcados-contact: honeypot também não simula envio', () => {
   const res = runPhpEndpoint('POST', {
     website: 'http://spambot.evil.org',
     name: 'Bot',
     email: 'bot@spam.com'
   });
-  assert.equal(res.code, 200);
-  assert.equal(res.body.ok, true);
+  assert.equal(res.code, 503);
+  assert.equal(res.body.ok, false);
+});
+
+test('embarcados-contact: OPTIONS não processa submissão', () => {
+  const res = runPhpEndpoint('OPTIONS');
+  assert.equal(res.code, 204);
 });

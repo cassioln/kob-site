@@ -420,14 +420,14 @@ test.describe('Internacionalização e Validação de Páginas /en/ e /es/', () 
     await page.goto('/en/');
     const privacyEn = page.locator('.footer__privacy-controls a[href*="politica-de-privacidade"]');
     const cookieEn = page.locator('.footer__privacy-controls a[href*="politica-de-cookies"]');
-    await expect(privacyEn).toHaveAttribute('href', '/politica-de-privacidade.html');
+    await expect(privacyEn).toHaveAttribute('href', 'https://kriativosonboard.com.br/en/politica-de-privacidade.html');
     await expect(cookieEn).toHaveAttribute('href', '/politica-de-cookies.html');
 
     // Valida links no rodapé de /es/
     await page.goto('/es/');
     const privacyEs = page.locator('.footer__privacy-controls a[href*="politica-de-privacidade"]');
     const cookieEs = page.locator('.footer__privacy-controls a[href*="politica-de-cookies"]');
-    await expect(privacyEs).toHaveAttribute('href', '/politica-de-privacidade.html');
+    await expect(privacyEs).toHaveAttribute('href', 'https://kriativosonboard.com.br/es/politica-de-privacidade.html');
     await expect(cookieEs).toHaveAttribute('href', '/politica-de-cookies.html');
 
     // Valida links no ônibus /en/onibus.html
@@ -435,7 +435,7 @@ test.describe('Internacionalização e Validação de Páginas /en/ e /es/', () 
     const transportBusEn = page.locator('.bus-footer__nav a[href*="termos-de-transporte"]');
     const privacyBusEn = page.locator('.bus-footer__nav a[href*="politica-de-privacidade"]');
     await expect(transportBusEn).toHaveAttribute('href', '/termos-de-transporte.html');
-    await expect(privacyBusEn).toHaveAttribute('href', '/politica-de-privacidade.html');
+    await expect(privacyBusEn).toHaveAttribute('href', 'https://kriativosonboard.com.br/en/politica-de-privacidade.html');
 
     // Valida clique no seletor de idioma do ônibus salva localStorage
     await page.evaluate(() => {
