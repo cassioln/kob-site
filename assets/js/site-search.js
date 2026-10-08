@@ -323,13 +323,27 @@ export function goToAnchor(anchor) {
 
 const scrollBehavior = () => (reducedMotion.matches ? 'auto' : 'smooth');
 
-const INTERRUPTS = ['wheel', 'touchstart', 'keydown', 'pointerdown'];
+// Input that scrolls the page by itself: the wheel, a touch drag, a scrolling key outside a field. A click
+// (the cookie banner, the question itself) or a shortcut is not the person leaving the destination.
+const SCROLL_KEYS = new Set(['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' ']);
+function onScrollIntent(callback) {
+  const onKey = event => {
+    if (SCROLL_KEYS.has(event.key) && !event.target.closest?.('input, textarea, select, [contenteditable]')) callback();
+  };
+  window.addEventListener('wheel', callback, { capture: true, passive: true });
+  window.addEventListener('touchmove', callback, { capture: true, passive: true });
+  window.addEventListener('keydown', onKey, true);
+  return () => {
+    window.removeEventListener('wheel', callback, true);
+    window.removeEventListener('touchmove', callback, true);
+    window.removeEventListener('keydown', onKey, true);
+  };
+}
 
 // Scrolls the target to its scroll-margin line (block "start": the manual's own hash handler scrolls the same
 // way, so they agree). A home FAQ block still slides 24px into place (main.css .reveal), so that entrance is
 // finished first, without the slide. If layout above still moves while the smooth scroll runs, a small drift
-// is corrected, instantly, once it ends. Any wheel, touch, key or click first means the person is scrolling on
-// their own: the correction is dropped.
+// is corrected, instantly, once it ends. If the person scrolls on their own first, the correction is dropped.
 let cancelSettle = () => {};
 function bringIntoView(target) {
   cancelSettle();
@@ -346,14 +360,14 @@ function bringIntoView(target) {
     if (Math.abs(drift) > 2 && Math.abs(drift) < 64) target.scrollIntoView({ block: 'start', behavior: 'instant' });
   };
   const timer = setTimeout(() => cancelSettle(), 6000);
+  const stopWatching = onScrollIntent(() => cancelSettle());
   cancelSettle = () => {
     clearTimeout(timer);
     window.removeEventListener('scrollend', settle);
-    for (const type of INTERRUPTS) window.removeEventListener(type, cancelSettle, true);
+    stopWatching();
     cancelSettle = () => {};
   };
   window.addEventListener('scrollend', settle);
-  for (const type of INTERRUPTS) window.addEventListener(type, cancelSettle, { capture: true, passive: true });
 }
 
 const glowTimers = new WeakMap();
@@ -399,19 +413,18 @@ function arrive() {
 
 // A link from another page: the page changes at once, but the layout above the target still grows while
 // images and fonts load (hundreds of px on phones), so the scroll waits for load + fonts, 3 s at most. It is
-// skipped if the person already moved (wheel, touch, key, click) or the hash changed meanwhile.
+// skipped if the person already scrolled on their own or the hash changed meanwhile.
 function arriveFromLink() {
   const land = prepare();
   if (!land) return;
   if (document.readyState === 'complete') { requestAnimationFrame(land); return; }
   const hash = window.location.hash;
   let moved = false;
-  const onMove = () => { moved = true; };
-  for (const type of INTERRUPTS) window.addEventListener(type, onMove, { capture: true, passive: true });
+  const stopWatching = onScrollIntent(() => { moved = true; });
   const loaded = new Promise(resolve => window.addEventListener('load', resolve, { once: true }))
     .then(() => document.fonts?.ready);
   Promise.race([loaded, new Promise(resolve => setTimeout(resolve, 3000))]).then(() => {
-    for (const type of INTERRUPTS) window.removeEventListener(type, onMove, true);
+    stopWatching();
     if (!moved && window.location.hash === hash) requestAnimationFrame(land);
   });
 }

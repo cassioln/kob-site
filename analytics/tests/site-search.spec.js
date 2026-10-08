@@ -16,7 +16,11 @@ const home = page => visit(page, '/');
 // The trigger's <kbd> names the platform key ("⌘ K" on Apple, "Ctrl K" elsewhere). The page decides the
 // platform from its user agent (the Desktop Chrome profile reports Windows), so tests press exactly that key
 // instead of ControlOrMeta, which follows the host OS.
-const shortcutKey = async page => ((await page.locator('[data-site-search-kbd]').first().textContent()).includes('⌘') ? 'Meta' : 'Control');
+// The module writes the platform label at init (until then the HTML says "⌘ K"), so wait for it first.
+const shortcutKey = async page => {
+  await expect(page.locator('[data-site-search-open]').first()).toHaveAttribute('aria-keyshortcuts', /\+K$/);
+  return (await page.locator('[data-site-search-kbd]').first().textContent()).includes('⌘') ? 'Meta' : 'Control';
+};
 const pressShortcut = async (page, extra = '') => page.keyboard.press(`${await shortcutKey(page)}+${extra}k`);
 const settled = page => page.waitForFunction(() => document.querySelector('.site-search__ticket')
   .getAnimations({ subtree: true }).every(animation => animation.playState === 'finished'));
@@ -249,8 +253,11 @@ test('ao fechar, o fundo também some com fade', async ({ page }) => {
   await home(page);
   await pressShortcut(page);
   await expect(dialog(page)).toBeVisible();
-  await page.keyboard.press('Escape');
-  const backdrop = await dialog(page).evaluate(node => getComputedStyle(node, '::backdrop').animationName);
+  // Esc and the read in the same task: on a busy machine the 160 ms close could end before a separate read.
+  const backdrop = await dialog(page).evaluate(node => {
+    node.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }));
+    return getComputedStyle(node, '::backdrop').animationName;
+  });
   expect(backdrop).toBe('site-search-fade-out');
 });
 
@@ -496,8 +503,12 @@ for (const [path, width] of [['/', 390], ['/en/', 390], ['/es/', 390], ['/', 768
 // A link from another page: the page changes at once (question open, tab selected); the scroll waits for
 // the load, and is skipped if the person has already moved meanwhile.
 test('link de outra página abre a aba de bebidas na hora e rola até ela', async ({ page }) => {
-  await visit(page, '/#panel-bebidas');
-  await expect(page.locator('#tab-bebidas')).toHaveAttribute('aria-selected', 'true');
+  // Slow images hold the load event: the tab must be selected before it, the scroll may wait for it.
+  await page.route(/\/assets\/images\//, async route => { await new Promise(resolve => setTimeout(resolve, 2500)); await route.continue(); });
+  await page.addInitScript(() => localStorage.setItem('cookie_consent_status', 'denied'));
+  await page.goto('/#panel-bebidas', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('#tab-bebidas')).toHaveAttribute('aria-selected', 'true', { timeout: 1500 });
+  expect(await page.evaluate(() => document.readyState)).not.toBe('complete');
   await expect(page.locator('#panel-bebidas')).toBeVisible();
   await expect(page.locator('#tab-bebidas')).toBeFocused();
   await expectBelowHeader(page, '.value-tabs', '#nav');
@@ -523,6 +534,17 @@ test('rolar enquanto a página carrega não é desfeito pela chegada', async ({ 
   await page.waitForFunction(() => document.readyState === 'complete', null, { timeout: 10000 });
   await page.waitForTimeout(1000);
   expect(await page.evaluate(() => window.__landings)).toBe(0);
+});
+
+test('clicar durante o carregamento (ex.: banner de cookies) não cancela a chegada', async ({ page }) => {
+  await page.route(/\/assets\/images\//, async route => { await new Promise(resolve => setTimeout(resolve, 2500)); await route.continue(); });
+  await page.addInitScript(() => localStorage.setItem('cookie_consent_status', 'denied'));
+  await page.goto('/#faq-h23', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('#faq-h23')).toHaveAttribute('open', '');
+  // A plain click somewhere (as on the cookie banner): pointerdown + click, no scrolling.
+  await page.evaluate(() => { for (const type of ['pointerdown', 'mousedown', 'pointerup', 'mouseup', 'click']) document.body.dispatchEvent(new MouseEvent(type, { bubbles: true })); });
+  await expect(page.locator('#faq-h23 summary')).toBeFocused({ timeout: 8000 });
+  await expectBelowHeader(page, '#faq-h23', '#nav');
 });
 
 // The settle step only corrects a small drift: scrolling away right after arriving is not undone.
