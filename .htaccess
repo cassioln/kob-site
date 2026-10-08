@@ -193,6 +193,7 @@ RewriteRule ^php/mercadopago-webhook\.php$    - [F,L]
   AddType application/javascript .js
   AddType video/mp4 .mp4
   AddType video/webm .webm
+  AddType application/json .json
 </IfModule>
 
 # ---- Cabecalhos de seguranca ----
@@ -222,6 +223,7 @@ RewriteRule ^php/mercadopago-webhook\.php$    - [F,L]
 </IfModule>
 
 # ---- Compressao ----
+# application/json: o indice da busca global (assets/data/search-index.*.json, ~105 KB por idioma, ~32 KB comprimido).
 <IfModule mod_deflate.c>
-  AddOutputFilterByType DEFLATE text/html text/css application/javascript image/svg+xml
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript image/svg+xml application/json
 </IfModule>
