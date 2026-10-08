@@ -483,11 +483,41 @@ for (const path of ['/', '/en/', '/es/']) {
   });
 }
 
+// Phones and tablets: the FAQ topic bar sticks under the home bar, and the question must land below both.
+for (const [path, width] of [['/', 390], ['/en/', 390], ['/es/', 390], ['/', 768]]) {
+  test(`chegada na home não fica sob a barra de temas do FAQ (${path} @${width})`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 844 });
+    await visit(page, `${path}#faq-h23`);
+    await expect(page.locator('#faq-h23')).toHaveAttribute('open', '');
+    await expectBelowHeader(page, '#faq-h23', '#faq .faq__nav');
+  });
+}
+
+// The settle step only corrects a small drift: scrolling away right after arriving is not undone.
+test('rolar logo depois de chegar não puxa a página de volta para a pergunta', async ({ page }) => {
+  await home(page);
+  await page.evaluate(() => { location.hash = '#faq-h23'; });
+  await expectBelowHeader(page, '#faq-h23', '#nav');
+  // Arrive again with the question already in place (as goToAnchor does for a repeated result): no scroll runs.
+  await page.evaluate(() => { history.replaceState(null, '', location.pathname); location.hash = '#faq-h23'; });
+  await page.mouse.move(640, 400);
+  await page.mouse.wheel(0, 900);
+  await page.waitForTimeout(1200);
+  expect(await page.evaluate(() => document.getElementById('faq-h23').getBoundingClientRect().top)).toBeLessThan(-300);
+});
+
 for (const path of ['/manual-de-bordo.html', '/en/manual-de-bordo.html', '/es/manual-de-bordo.html']) {
-  test(`chegada no manual por URL abre a pergunta (${path})`, async ({ page }) => {
+  test(`chegada no manual abre a pergunta e limpa o filtro do FAQ (${path})`, async ({ page }) => {
     await mockYouTube(page);
-    await visit(page, `${path}#faq-o08`);
-    await expect(page.locator('#faq-o08')).toHaveAttribute('open', '');
+    await visit(page, path);
+    await page.locator('#faqSearchInput').fill('xyzqwk');
+    await expect(page.locator('#faq-o08')).toBeHidden();
+    await page.evaluate(() => { location.hash = '#faq-o08'; });
+    const item = page.locator('#faq-o08');
+    await expect(item).toHaveAttribute('open', '');
+    await expect(item).toBeVisible();
+    await expect(page.locator('#faqSearchInput')).toHaveValue('');
+    await expect(item).toHaveClass(/site-search-arrival/);
     await expectBelowHeader(page, '#faq-o08', '.guide-header');
   });
 

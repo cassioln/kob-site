@@ -324,17 +324,31 @@ export function goToAnchor(anchor) {
 const scrollBehavior = () => (reducedMotion.matches ? 'auto' : 'smooth');
 
 // Scrolls the target to its scroll-margin line (block "start": the manual's own hash handler scrolls the same
-// way, so they agree). Layout above can still settle while a smooth scroll runs (the home hero right after
-// load), so when the scroll ends the target is put back on the line, instantly, once.
+// way, so they agree). Layout above can still settle while a smooth scroll runs (the home FAQ's 24px reveal
+// right after load), so when that scroll ends a small drift is corrected, instantly, once. Any wheel, touch,
+// key or click first means the person is scrolling on their own: the correction is dropped.
+let cancelSettle = () => {};
 function bringIntoView(target) {
+  cancelSettle();
   target.scrollIntoView({ block: 'start', behavior: scrollBehavior() });
   const settle = () => {
-    const line = parseFloat(getComputedStyle(target).scrollMarginTop) || 0;
-    if (Math.abs(target.getBoundingClientRect().top - line) > 2) target.scrollIntoView({ block: 'start', behavior: 'auto' });
+    cancelSettle();
+    const drift = target.getBoundingClientRect().top - (parseFloat(getComputedStyle(target).scrollMarginTop) || 0);
+    if (Math.abs(drift) > 2 && Math.abs(drift) < 64) target.scrollIntoView({ block: 'start', behavior: 'instant' });
   };
-  window.addEventListener('scrollend', settle, { once: true });
-  setTimeout(() => window.removeEventListener('scrollend', settle), 2500);
+  const interrupts = ['wheel', 'touchstart', 'keydown', 'pointerdown'];
+  const timer = setTimeout(() => cancelSettle(), 2500);
+  cancelSettle = () => {
+    clearTimeout(timer);
+    window.removeEventListener('scrollend', settle);
+    for (const type of interrupts) window.removeEventListener(type, cancelSettle, true);
+    cancelSettle = () => {};
+  };
+  window.addEventListener('scrollend', settle);
+  for (const type of interrupts) window.addEventListener(type, cancelSettle, { capture: true, passive: true });
 }
+
+const glowTimers = new WeakMap();
 
 // Arrival by hash, from a result or a shared link: a FAQ question opens (clearing the box's filter if it hid
 // it), scrolls in, takes focus and glows; a tab panel (home prices: cabins | drinks) is selected through its tab.
@@ -345,7 +359,7 @@ function arrive() {
   if (!target) return;
   if (target.getAttribute('role') === 'tabpanel') {
     const tab = document.querySelector(`[role="tab"][aria-controls="${CSS.escape(id)}"]`);
-    if (target.hidden) tab?.click();
+    if (tab && tab.getAttribute('aria-selected') !== 'true') tab.click();
     requestAnimationFrame(() => {
       bringIntoView(target);
       tab?.focus({ preventScroll: true });
@@ -362,10 +376,11 @@ function arrive() {
   requestAnimationFrame(() => {
     bringIntoView(target);
     target.querySelector('summary')?.focus({ preventScroll: true });
+    clearTimeout(glowTimers.get(target));
     target.classList.remove('site-search-arrival');
     void target.offsetWidth; // restart the glow when the same question is reached twice
     target.classList.add('site-search-arrival');
-    setTimeout(() => target.classList.remove('site-search-arrival'), 2000);
+    glowTimers.set(target, setTimeout(() => target.classList.remove('site-search-arrival'), 2000));
   });
 }
 
@@ -392,7 +407,10 @@ function init() {
     else open(document.activeElement); // also cancels a close still animating
   }, true);
   window.addEventListener('hashchange', arrive);
-  arrive();
+  // A link from another page: the layout above the target still grows while images and fonts load (hundreds
+  // of px on phones), so the arrival waits for the page to settle; the browser's own jump covers the wait.
+  if (document.readyState === 'complete') arrive();
+  else window.addEventListener('load', () => { (document.fonts?.ready || Promise.resolve()).then(arrive); }, { once: true });
 }
 
 init();

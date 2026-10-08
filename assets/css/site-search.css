@@ -149,6 +149,10 @@ html.site-search-open { overflow: hidden; scrollbar-gutter: stable; }
    107px wide), plus the price tabs above a price panel; the busão header (sticky; 100px desktop, 62px on
    phones). The manual's targets already have their own scroll-margin (manual-de-bordo.css). */
 #faq details[id^="faq-h"] { scroll-margin-top: 120px; }
+/* Up to 900px the FAQ topic bar sticks below the home bar too (main.css: top 106px, ~73px tall). */
+@media (max-width: 900px) {
+  #faq details[id^="faq-h"] { scroll-margin-top: 192px; }
+}
 .value-panel[role="tabpanel"] { scroll-margin-top: 210px; }
 #como-reservar.bus-intro,
 #passageiros.bus-checkout,

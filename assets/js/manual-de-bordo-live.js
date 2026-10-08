@@ -966,6 +966,8 @@ function initLive() {
     if (!chapter) return;
     linkedChapter = chapter;
     showLinkedChapter();
+    // With the video already on, the title and topic bar must follow what plays: jump there too.
+    if (iframe) playAt(chapter.seconds);
   });
   document.addEventListener('kob:live-seek', event => {
     const chapter = CHAPTERS.find(item => item.seconds === Number(event.detail?.seconds));
