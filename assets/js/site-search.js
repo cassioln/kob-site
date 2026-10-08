@@ -478,7 +478,9 @@ function adaptHeaderTrigger() {
 
   function queue() { if (frame === null) frame = requestAnimationFrame(update); }
   new ResizeObserver(queue).observe(row);
-  new MutationObserver(queue).observe(trigger.closest('header'), { attributes: true, attributeFilter: ['data-scrolled'] });
+  new MutationObserver(queue).observe(trigger.closest('header'), {
+    attributes: true, attributeFilter: ['data-scrolled'], childList: true, subtree: true
+  });
   document.fonts.ready.then(queue);
   queue();
 }

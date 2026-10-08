@@ -48,6 +48,20 @@
     padding: 12px 0;
   }
 
+  .bus-page .drawer [data-drawer-manual] .header-manual-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 12px 0;
+    padding: 12px 16px;
+    min-height: 44px;
+    color: #ffffff;
+    background: var(--party-purple, #71206c);
+    font: 700 1rem/1.2 var(--font-body);
+    text-decoration: none;
+  }
+
   .bus-drawer-backdrop {
     display: block;
     position: fixed;
