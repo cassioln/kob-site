@@ -1,6 +1,6 @@
-import { CHAPTERS, LIVE_DURATION, GROUP_INVITE_CUES, GROUP_INVITE_DURATION } from './manual-de-bordo-live-data.js?v=20261007-transcript-i18n';
+import { CHAPTERS, LIVE_DURATION, GROUP_INVITE_CUES, GROUP_INVITE_DURATION } from './manual-de-bordo-live-data.js?v=20261008-live-copy';
 
-import { SUPPORT_NOTICES } from './manual-de-bordo-live-support.js?v=20261006-live-copy';
+import { SUPPORT_NOTICES } from './manual-de-bordo-live-support.js?v=20261008-live-copy';
 
 export function topicAt(seconds) {
   return CHAPTERS.findLast(topic => topic.seconds <= Number(seconds)) || CHAPTERS[0];

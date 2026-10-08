@@ -87,7 +87,7 @@ export const CHAPTERS = [
     "notice": {
       "pt": "A documentação de menores depende de quem os acompanha. Confirme o caso com a Royal Trip.",
       "en": "Travel consent for minors depends on who accompanies them. Check your case with Royal Trip.",
-      "es": "La autorización de menores depende de quién los acompaña. Confirme su caso con Royal Trip."
+      "es": "La autorización de menores depende de quién los acompaña. Confirma tu caso con Royal Trip."
     },
     "faqId": "faq-o04"
   },
@@ -97,13 +97,13 @@ export const CHAPTERS = [
     "seconds": 1345,
     "titles": {
       "pt": "Vouchers, check-in e etiquetas",
-      "en": "Vouchers, check-in and luggage labels",
+      "en": "Vouchers, check-in and luggage tags",
       "es": "Vouchers, check-in y etiquetas"
     },
     "keywords": "voucher vouchers checkin check-in etiquetas impressão junior whatsapp PDF privado labels label check in imprimir",
     "transcripts": {
       "pt": "Como funciona o Check-in e Voucher:\nDiferente dos anos anteriores na Costa Cruzeiros onde o hóspede precisava preencher o check-in online, na MSC a Royal Trip faz todo o procedimento interno!\nO Júnior emitirá e liberará os vouchers com QR Code e as etiquetas de bagagem de cada cabine. Quando ele avisar no grupo do WhatsApp, cada responsável o chama no privado para receber o documento em PDF. Basta imprimir e levar no porto junto ao documento oficial.",
-      "en": "How check-in and vouchers work:\nUnlike previous years with Costa Cruises, when guests had to complete online check-in themselves, with MSC Royal Trip handles the whole process internally!\nJúnior will issue and release the vouchers with QR codes and the luggage labels for each cabin. When he announces it in the WhatsApp group, the person responsible for each cabin messages him privately to receive the PDF. Just print it and bring it to the port along with your official ID.",
+      "en": "How check-in and vouchers work:\nUnlike previous years with Costa Cruises, when guests had to complete online check-in themselves, with MSC Royal Trip handles the whole process internally!\nJúnior will issue and release the vouchers with QR codes and the luggage tags for each cabin. When he announces it in the WhatsApp group, the person responsible for each cabin messages him privately to receive the PDF. Just print it and bring it to the port along with your official ID.",
       "es": "Cómo funcionan el check-in y el voucher:\nA diferencia de los años anteriores con Costa Cruceros, cuando el huésped tenía que hacer el check-in en línea, ¡con MSC, Royal Trip hace todo el procedimiento internamente!\nJúnior emitirá y entregará los vouchers con código QR y las etiquetas de equipaje de cada camarote. Cuando avise en el grupo de WhatsApp, el responsable de cada camarote le escribe por privado para recibir el documento en PDF. Solo tienes que imprimirlo y llevarlo al puerto junto con tu documento oficial."
     }
   },
@@ -215,8 +215,8 @@ export const CHAPTERS = [
     "noticeSeconds": 1860.159,
     "notice": {
       "pt": "Confirme moeda, cartões aceitos e parcelamento com a agência/MSC antes de contar com essas condições.",
-      "en": "Confirm currency, accepted cards and instalments with the agency/MSC before relying on these terms.",
-      "es": "Confirme moneda, tarjetas aceptadas y cuotas con la agencia/MSC antes de contar con esas condiciones."
+      "en": "Confirm currency, accepted cards and installments with the agency/MSC before relying on these terms.",
+      "es": "Confirma moneda, tarjetas aceptadas y cuotas con la agencia/MSC antes de contar con esas condiciones."
     },
     "faqId": "faq-o34"
   },
@@ -239,7 +239,7 @@ export const CHAPTERS = [
     "notice": {
       "pt": "13h/14h é uma previsão: aguarde o anúncio da MSC.",
       "en": "1–2 pm is an estimate: wait for the MSC announcement.",
-      "es": "13h/14h es una previsión: espere el anuncio de MSC."
+      "es": "13h/14h es una previsión: espera el anuncio de MSC."
     },
     "faqId": "faq-o15"
   },
@@ -249,7 +249,7 @@ export const CHAPTERS = [
     "seconds": 2041,
     "titles": {
       "pt": "Encontro, kits e mural de programação",
-      "en": "Meet-up, welcome kits and programme board",
+      "en": "Meet-up, welcome kits and program board",
       "es": "Encuentro, kits y mural de programación"
     },
     "keywords": "crystal lounge crachá cordão moeda pulseira sacola fácil shopping kits mural cronograma welcome kit badge bracelet schedule programa bolsa",
@@ -262,7 +262,7 @@ export const CHAPTERS = [
     "notice": {
       "pt": "Crystal Lounge e 16h/16h30 são previstos; confirme sala e horário no grupo.",
       "en": "Crystal Lounge and 4–4:30 pm are provisional; confirm the venue and time in the group.",
-      "es": "Crystal Lounge y 16h/16h30 son previstos; confirme sala y hora en el grupo."
+      "es": "Crystal Lounge y 16h/16h30 son previstos; confirma sala y hora en el grupo."
     },
     "faqId": "faq-o17"
   },
@@ -341,7 +341,7 @@ export const CHAPTERS = [
     "notice": {
       "pt": "Confirme tarifas e taxas do bebê com a agência; não presuma gratuidade pela idade.",
       "en": "Confirm baby fares and fees with the agency; age alone does not guarantee free travel.",
-      "es": "Confirme tarifas y tasas del bebé con la agencia; no suponga gratuidad por la edad."
+      "es": "Confirma tarifas y tasas del bebé con la agencia; no supongas gratuidad por la edad."
     },
     "faqId": "faq-o06"
   },
@@ -387,7 +387,7 @@ export const CHAPTERS = [
     "notice": {
       "pt": "Consulte as regras MSC atuais para limites e ocupantes da cabine.",
       "en": "Check the current MSC rules for limits and cabin occupants.",
-      "es": "Consulte las reglas MSC actuales para límites y ocupantes del camarote."
+      "es": "Consulta las reglas MSC actuales para límites y ocupantes del camarote."
     },
     "faqId": "faq-o30"
   },
@@ -456,7 +456,7 @@ export const CHAPTERS = [
     "notice": {
       "pt": "Confira o dia da escala na reserva. O sinal de celular depende da cobertura.",
       "en": "Check the port-call day on your booking. Mobile signal depends on coverage.",
-      "es": "Revise el día de la escala en su reserva. La señal móvil depende de la cobertura."
+      "es": "Revisa el día de la escala en tu reserva. La señal móvil depende de la cobertura."
     },
     "faqId": "faq-o32"
   },
@@ -568,7 +568,7 @@ export const CHAPTERS = [
     "seconds": 3506,
     "titles": {
       "pt": "Restaurantes de especialidades",
-      "en": "Speciality restaurants",
+      "en": "Specialty restaurants",
       "es": "Restaurantes de especialidades"
     },
     "keywords": "restaurantes especialidades kaito sushi butchers butcher cut carne japonês cobrado pago restaurant specialty paid japonés carnes especialidades",
@@ -581,7 +581,7 @@ export const CHAPTERS = [
     "notice": {
       "pt": "Confirme a operação dos restaurantes nesta saída e os preços a bordo.",
       "en": "Confirm which restaurants operate on this departure and their onboard prices.",
-      "es": "Confirme los restaurantes operativos en esta salida y sus precios a bordo."
+      "es": "Confirma los restaurantes operativos en esta salida y sus precios a bordo."
     },
     "faqId": "faq-o35"
   },
@@ -614,10 +614,10 @@ export const CHAPTERS = [
     "seconds": 3814,
     "titles": {
       "pt": "Guru e inscrição manual nos sorteios",
-      "en": "Guru and manual raffle registration",
+      "en": "Guru and manual giveaway registration",
       "es": "Guru e inscripción manual en sorteos"
     },
-    "keywords": "Guru sorteio eu vou app Encounter manual monitor inscrição raffle registration manual sorteos inscripcion monitor",
+    "keywords": "Guru sorteio eu vou app Encounter manual monitor inscrição giveaway giveaways raffle registration manual sorteos inscripcion monitor",
     "transcripts": {
       "pt": "olhando lá. E falando em aplicativo, nós temos uma novidade esse ano que é o guru, né? Então, para quem ainda não baixou o guru, gente, fica a dica, porque você precisa estar já com o eu embarcado lá, eu vou, entendeu? Você já precisa baixar o guru e colocar eu vou. Por quê? Porque além de você saber tudo sobre o evento, você também vai saber os jogos que vão ter a bordo, né? Eu não sei ainda se tá tudo atualizado, jogos que você tem a bordo e também quando você coloca lá eu vou, né? Você consegue ver o acervo aqui. Então você consegue ver quem sabe ensinar, eh, quais jogos você tem interesse em jogar. Então você vai colocar um tiquezinho lá de de tem o interesse, né? Tem um videinho aqui. Ah, tem um vídeo. Mas antes eu gostaria de falar que é super importante porque os sorteios vai ser feito a partir do aplicativo quem tiver logado lá. Se você, ah, eu não tenho esse aplicativo, não vou baixar, você tem que pedir por um monitor da Encounter fazer o seu check no seu nome, né? Ele consegue fazer adicionar aos sorteios, né, para você poder participar, mesmo que você não baixe, tá bom? Então, é importante, se você não baixar, pedir para um eh monitor poder fazer o seu incluir na lista dos sorteios para você eh conseguir participar. Vamos ver se entra. E aí, criativos, tudo bem? Meu nome é Bruno, eu sou criador do app Board Game Guru e eu vou estar embarcado com vocês no Criativos Onard. Eu vim aqui hoje",
       "en": "…looking there. And speaking of apps, we have something new this year, which is Guru. So, for anyone who hasn't downloaded Guru yet, here's the tip, everyone, because you already need to be marked as on board there, “Eu vou” (“I'm going”), got it? You need to download Guru and tap “Eu vou”. Why? Because besides knowing everything about the event, you'll also know which games will be on board. I don't know yet if everything is up to date, the games on board, and also once you tap “Eu vou” there, you can see the game library here. So you can see who knows how to teach and which games you're interested in playing. You'll put a little check mark there to show you're interested. There's a short video here. Oh, there's a video. But first I'd like to say it's super important, because the giveaways will be run through the app, for whoever is logged in there. If you go, “Oh, I don't have this app, I'm not going to download it,” you have to ask an Encounter game teacher to check you in under your name. They can add you to the giveaways so you can take part, even if you don't download it, OK? So it's important: if you don't download it, ask a game teacher to add you to the giveaway list so you can take part. Let's see if it plays. Hi, Kriativos, how's it going? My name is Bruno, I'm the creator of the Board Game Guru app, and I'll be on board with you at Kriativos On Board. I came here today",
@@ -634,7 +634,7 @@ export const CHAPTERS = [
       "en": "How to confirm attendance in Guru",
       "es": "Cómo confirmar “Yo voy” en Guru"
     },
-    "keywords": "board game guru Eu vou Encounter sorteios inscrição manual favorito favoritos ludopedia boardgamegeek BGG compartilhar monitores acervo jogos protótipos favoritos jogos compartir premios raffle draws games library",
+    "keywords": "board game guru Eu vou Encounter sorteios inscrição manual favorito favoritos ludopedia boardgamegeek BGG compartilhar monitores acervo jogos protótipos favoritos jogos compartir premios giveaway giveaways raffle draws games library",
     "transcripts": {
       "pt": "Apresentação de Bruno Oliveira (criador do app Board Game Guru):\nO app oficial para a gestão de jogos e sorteios a bordo do Kriativos On Board 2026. Disponível para Android e iOS.\n- Check-in Antecipado (\"Eu vou\"): Todos os participantes devem baixar o app, acessar o banner do evento e clicar em \"Eu vou\" para validar a presença. Este check-in é obrigatório para participar dos sorteios de brindes e jogos a bordo! (Caso alguém não consiga baixar, deve solicitar ao monitor da Encounter para inserir o nome na lista).",
       "en": "Presentation by Bruno Oliveira (creator of the Board Game Guru app):\nThe official app for managing games and giveaways on board Kriativos On Board 2026. Available for Android and iOS.\n- Early check-in (\"Eu vou\" / \"I'm going\"): All participants must download the app, open the event banner and tap \"Eu vou\" to confirm attendance. This check-in is required to take part in the giveaways of prizes and games on board! (If someone can't download it, they should ask the Encounter game teacher to add their name to the list.)",
@@ -647,7 +647,7 @@ export const CHAPTERS = [
     "seconds": 4009,
     "titles": {
       "pt": "Acervo, monitores e jogos favoritos",
-      "en": "Game library, teachers and favourites",
+      "en": "Game library, teachers and favorites",
       "es": "Ludoteca, monitores y favoritos"
     },
     "keywords": "acervo filtros número jogadores monitor coração favoritar Guru games library filters players teachers favorites juegos favoritos monitores",
@@ -694,7 +694,7 @@ export const CHAPTERS = [
     "notice": {
       "pt": "A fala sobre cobertura e moeda é ambígua. Confira a apólice e a oferta atuais com a Royal Trip.",
       "en": "The spoken coverage amount and currency are ambiguous. Check the current policy and offer with Royal Trip.",
-      "es": "La cobertura y la moneda citadas son ambiguas. Consulte la póliza y la oferta actuales con Royal Trip."
+      "es": "La cobertura y la moneda citadas son ambiguas. Consulta la póliza y la oferta actuales con Royal Trip."
     },
     "faqId": "faq-o36"
   },
@@ -717,7 +717,7 @@ export const CHAPTERS = [
     "notice": {
       "pt": "Confirme as condições do clubinho com a equipe; serviços como Baby Care têm regras próprias.",
       "en": "Confirm kids-club conditions with the crew; services such as Baby Care have separate rules.",
-      "es": "Confirme las condiciones con el equipo; servicios como Baby Care tienen reglas propias."
+      "es": "Confirma las condiciones con el equipo; servicios como Baby Care tienen reglas propias."
     },
     "faqId": "faq-o38"
   },
@@ -740,7 +740,7 @@ export const CHAPTERS = [
     "notice": {
       "pt": "A franquia falada diverge da MSC. Por pessoa: duas malas de até 23 kg cada e duas peças de mão de até 10 kg cada. Por cabine: no máximo 100 kg e/ou oito volumes. Confira as dimensões e demais condições no guia.",
       "en": "The spoken allowance differs from MSC. Per person: two suitcases of up to 23 kg each and two pieces of hand luggage of up to 10 kg each. Per cabin: no more than 100 kg and/or eight pieces. Check dimensions and other conditions in the guide.",
-      "es": "La franquicia mencionada difiere de MSC. Por persona: dos maletas de hasta 23 kg cada una y dos piezas de mano de hasta 10 kg cada una. Por cabina: un máximo de 100 kg y/o ocho piezas. Consulta las dimensiones y demás condiciones en la guía."
+      "es": "La franquicia mencionada difiere de MSC. Por persona: dos maletas de hasta 23 kg cada una y dos piezas de mano de hasta 10 kg cada una. Por camarote: un máximo de 100 kg y/o ocho piezas. Consulta las dimensiones y demás condiciones en la guía."
     },
     "faqId": "faq-o08"
   },
@@ -763,7 +763,7 @@ export const CHAPTERS = [
     "notice": {
       "pt": "Use a lista MSC atual: secador e chapinha são permitidos; transportar drone e usá-lo a bordo são situações diferentes.",
       "en": "Use the current MSC list: hairdryers and straighteners are allowed; carrying a drone differs from using it onboard.",
-      "es": "Use la lista MSC actual: secadores y planchas de pelo están permitidos; transportar un dron no es lo mismo que usarlo a bordo."
+      "es": "Usa la lista MSC actual: secadores y planchas de pelo están permitidos; transportar un dron no es lo mismo que usarlo a bordo."
     },
     "faqId": "faq-o10"
   },

@@ -4,10 +4,10 @@ export const SUPPORT_DURATION = 12;
 export const SUPPORT_NOTICES = [
   {
     id: 'support-01', cueSeconds: [1741.760],
-    emphasis: { pt: 'Vai usar a Cometa?', en: 'Travelling with Cometa?', es: '¿Viajas con Cometa?' },
+    emphasis: { pt: 'Vai usar a Cometa?', en: 'Traveling with Cometa?', es: '¿Viajas con Cometa?' },
     texts: {
       pt: 'Vai usar a Cometa? Consulte os transfers e confira rota, data, horários e ponto de chegada.',
-      en: 'Travelling with Cometa? Check the transfers, route, date, departure times and arrival point.',
+      en: 'Traveling with Cometa? Check the transfers, route, date, departure times and arrival point.',
       es: '¿Viajas con Cometa? Consulta los traslados y comprueba ruta, fecha, horarios y punto de llegada.'
     },
     action: {
@@ -85,7 +85,7 @@ export const SUPPORT_NOTICES = [
     texts: {
       pt: 'Ainda quer contratar um pacote? Peça à Royal Trip a oferta vigente e confirme preço, prazo e condições da sua cabine.',
       en: 'Still want to buy a package? Ask Royal Trip for the current offer and confirm prices, deadlines and conditions for your cabin.',
-      es: '¿Quieres contratar un paquete? Pide a Royal Trip la oferta vigente y confirma precio, plazo y condiciones de tu cabina.'
+      es: '¿Quieres contratar un paquete? Pide a Royal Trip la oferta vigente y confirma precio, plazo y condiciones de tu camarote.'
     },
     action: {
       href: 'https://api.whatsapp.com/send?phone=5513981580498',
