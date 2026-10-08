@@ -1,6 +1,6 @@
 {
   "pt": {
-    "stopwords": ["as", "os", "de", "da", "do", "das", "dos", "em", "no", "na", "nos", "nas", "um", "uma", "para", "pra", "por", "com", "que", "se", "eu", "meu", "minha", "posso", "como", "qual", "quais", "sobre", "tem", "quero", "queria", "saber", "preciso", "precisa", "gostaria", "onde", "quando", "fica", "ficam", "devo", "existe", "ha", "esta", "estao", "voce", "voces", "quanto", "quanta", "quantos", "quantas", "custa", "custam"],
+    "stopwords": ["as", "os", "de", "da", "do", "das", "dos", "em", "no", "na", "nos", "nas", "um", "uma", "para", "pra", "por", "com", "que", "se", "eu", "meu", "minha", "posso", "como", "qual", "quais", "sobre", "tem", "quero", "queria", "saber", "preciso", "precisa", "gostaria", "onde", "quando", "fica", "ficam", "devo", "existe", "ha", "esta", "estao", "voce", "voces", "quanto", "quanta", "quantos", "quantas", "custa", "custam", "meus", "minhas", "seu", "seus", "sua", "suas", "nosso", "nossos", "nossa", "nossas"],
     "groups": [
       ["mala", "malas", "bagagem", "bagagens", "franquia"],
       ["onibus", "busao", "fretado", "traslado", "transfer"],
@@ -19,7 +19,9 @@
       ["roupa", "roupas", "traje", "vestimenta"],
       ["festa", "festas", "fantasia"],
       ["seguro", "seguros"],
-      ["proibido", "proibidos", "proibe"]
+      ["proibido", "proibidos", "proibe"],
+      ["hotel", "hoteis", "hospedagem"],
+      ["preco", "precos", "valor", "valores", "tarifa", "tarifas"]
     ],
     "featured": [
       { "label": "Documentos para embarcar", "page": "manual", "anchor": "#faq-o03" },
@@ -30,7 +32,7 @@
     ]
   },
   "en": {
-    "stopwords": ["an", "the", "of", "to", "in", "on", "for", "and", "or", "is", "are", "do", "does", "can", "my", "what", "how", "which", "about", "with", "want", "need", "know", "where", "when", "there", "should", "will", "get", "you", "it", "be", "much", "many", "cost", "costs"],
+    "stopwords": ["an", "the", "of", "to", "in", "on", "for", "and", "or", "is", "are", "do", "does", "can", "my", "what", "how", "which", "about", "with", "want", "need", "know", "where", "when", "there", "should", "will", "get", "you", "it", "be", "much", "many", "cost", "costs", "our", "your"],
     "groups": [
       ["luggage", "baggage", "suitcase", "suitcases", "bag", "bags"],
       ["bus", "charter", "shuttle", "transfer", "busao"],
@@ -49,7 +51,9 @@
       ["clothes", "clothing", "dress", "outfit"],
       ["party", "parties", "costume"],
       ["insurance"],
-      ["prohibited", "banned", "forbidden", "prohibits"]
+      ["prohibited", "banned", "forbidden", "prohibits"],
+      ["hotel", "hotels", "accommodation"],
+      ["price", "prices", "fare", "fares", "rate", "rates"]
     ],
     "featured": [
       { "label": "Documents for boarding", "page": "manual", "anchor": "#faq-o03" },
@@ -60,14 +64,14 @@
     ]
   },
   "es": {
-    "stopwords": ["el", "la", "los", "las", "un", "una", "de", "del", "en", "al", "por", "para", "con", "que", "se", "mi", "como", "cual", "cuales", "puedo", "sobre", "hay", "quiero", "saber", "necesito", "necesita", "donde", "cuando", "debo", "existe", "estan", "esta", "son", "tu", "usted", "es", "cuanto", "cuanta", "cuantos", "cuantas", "cuesta", "cuestan"],
+    "stopwords": ["el", "la", "los", "las", "un", "una", "de", "del", "en", "al", "por", "para", "con", "que", "se", "mi", "como", "cual", "cuales", "puedo", "sobre", "hay", "quiero", "saber", "necesito", "necesita", "donde", "cuando", "debo", "existe", "estan", "esta", "son", "tu", "usted", "es", "cuanto", "cuanta", "cuantos", "cuantas", "cuesta", "cuestan", "mis", "tus", "su", "sus", "nuestro", "nuestros", "nuestra", "nuestras"],
     "groups": [
       ["maleta", "maletas", "equipaje", "valija", "valijas"],
       ["bus", "autobus", "charter", "traslado", "busao"],
       ["embarazada", "embarazadas", "embarazo"],
       ["wifi", "internet"],
       ["bebida", "bebidas", "trago", "tragos", "alcohol"],
-      ["camarote", "camarotes", "cabina", "habitacion"],
+      ["camarote", "camarotes", "cabina", "habitacion", "habitaciones"],
       ["nino", "ninos", "hijo", "hijos", "infantil"],
       ["bebe", "bebes"],
       ["documento", "documentos", "pasaporte", "rg", "cnh", "identidad"],
@@ -79,7 +83,9 @@
       ["ropa", "vestimenta", "traje"],
       ["fiesta", "fiestas", "disfraz"],
       ["seguro"],
-      ["prohibido", "prohibidos", "prohibe"]
+      ["prohibido", "prohibidos", "prohibe"],
+      ["hotel", "hoteles", "alojamiento", "hospedaje"],
+      ["precio", "precios", "valor", "tarifa", "tarifas"]
     ],
     "featured": [
       { "label": "Documentos para embarcar", "page": "manual", "anchor": "#faq-o03" },

@@ -177,3 +177,15 @@ test('URLs entre subdomínios em produção e caminhos locais', () => {
   assert.equal(currentPageFrom({ hostname: 'localhost', pathname: '/en/manual-de-bordo.html' }), 'manual');
   assert.equal(currentPageFrom({ hostname: 'kriativosonboard.com.br', pathname: '/es/' }), 'home');
 });
+
+test('perguntas comuns acham resposta: hotel, preço, possessivos e plural do sinônimo', () => {
+  const cases = {
+    pt: ['hotel', 'preço do ônibus', 'preço estacionamento', 'meus documentos', 'minhas malas'],
+    en: ['bus price', 'parking price', 'hotel', 'my documents'],
+    es: ['precio del bus', 'mis documentos', 'mis maletas', 'habitaciones', 'hotel']
+  };
+  for (const [lang, queries] of Object.entries(cases)) {
+    for (const q of queries) assert.ok(search(prepared[lang], q).results.length > 0, `${lang}: ${q}`);
+  }
+  assert.ok(titles(search(prepared.pt, 'hotel')).some(t => /ibis|novotel|hospedagem/i.test(t)), JSON.stringify(titles(search(prepared.pt, 'hotel'))));
+});
