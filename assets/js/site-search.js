@@ -220,9 +220,11 @@ function renderEmpty(query) {
     type: 'button', class: 'site-search__try-term', text: term,
     onclick: () => { input.value = term; input.focus(); render(); }
   })));
-  const whatsapp = el('a', {
-    class: 'site-search__whatsapp', target: '_blank', rel: 'noopener', text: copy.whatsapp,
-    href: `https://api.whatsapp.com/send?phone=5513981580498&text=${encodeURIComponent(copy.whatsappText)}`
+  // A button, not a link: GA4's enhanced measurement records a link's href as link_url, and the WhatsApp URL
+  // carries the phone and the message (analytics/pii-denylist.yaml). The URL only exists at click time.
+  const whatsapp = el('button', {
+    type: 'button', class: 'site-search__whatsapp', text: copy.whatsapp,
+    onclick: () => window.open(`https://api.whatsapp.com/send?phone=5513981580498&text=${encodeURIComponent(copy.whatsappText)}`, '_blank', 'noopener')
   });
   showState(el('div', { class: 'site-search__empty' }, el('strong', { text: copy.none(query) }), el('p', { text: copy.tryLead }), tries, whatsapp));
   setStatus(copy.none(query));

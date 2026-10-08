@@ -114,7 +114,14 @@ test('consulta com HTML vira texto e o vazio oferece WhatsApp', async ({ page })
   await expect(dialog(page).locator('img')).toHaveCount(0);
   await input(page).fill('xyzqwk');
   await expect(page.locator('.site-search__empty strong')).toHaveText('Nada sobre “xyzqwk” no site.');
-  await expect(page.locator('.site-search__whatsapp')).toHaveAttribute('href', /api\.whatsapp\.com\/send\?phone=5513981580498/);
+  // No href in the page (GA4 would log it): the WhatsApp URL, phone and message, is opened only on click.
+  const whatsapp = page.locator('.site-search__whatsapp');
+  await expect(whatsapp).not.toHaveAttribute('href', /./);
+  expect(await dialog(page).evaluate(node => node.innerHTML)).not.toMatch(/api\.whatsapp\.com|phone=/);
+  await page.context().route(/api\.whatsapp\.com/, route => route.fulfill({ contentType: 'text/html', body: '<html></html>' }));
+  const [popup] = await Promise.all([page.waitForEvent('popup'), whatsapp.click()]);
+  await popup.waitForURL(/api\.whatsapp\.com\/send\?phone=5513981580498&text=/);
+  await popup.close();
   await page.locator('.site-search__try-term', { hasText: 'bagagem' }).click();
   await expect(input(page)).toHaveValue('bagagem');
   await expect(options(page).first()).toContainText(/bagagem/i);

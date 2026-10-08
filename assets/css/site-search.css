@@ -133,7 +133,7 @@ html.site-search-open { overflow: hidden; scrollbar-gutter: stable; }
 .site-search__try { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
 .site-search__try-term,
 .site-search__retry { min-height: 36px; padding: 0 12px; border: 1px solid rgba(255, 255, 255, 0.24); border-radius: 6px; background: rgba(255, 255, 255, 0.08); color: #fff; font: 600 0.8rem var(--font-body); cursor: pointer; }
-.site-search__whatsapp { display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 8px; background: #25d366; color: #05391b; font-size: 0.84rem; font-weight: 800; text-decoration: none; }
+.site-search__whatsapp { display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border: 0; border-radius: 8px; background: #25d366; color: #05391b; font: 800 0.84rem var(--font-body); text-decoration: none; cursor: pointer; }
 .site-search__try-term:focus-visible,
 .site-search__retry:focus-visible,
 .site-search__whatsapp:focus-visible,
