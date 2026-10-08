@@ -221,6 +221,23 @@ test.describe('Página Manual de Bordo (embarcados) — Portal do Passageiro Con
     await expect(prepToggle).toHaveAttribute('aria-expanded', 'true');
   });
 
+  for (const { lang, collapse, expand } of [
+    { lang: 'en', collapse: 'Collapse Preparation section', expand: 'Expand Preparation section' },
+    { lang: 'es', collapse: 'Plegar sección Preparación', expand: 'Desplegar sección Preparación' }
+  ]) {
+    test(`FAQ ${lang.toUpperCase()}: botão da seção alterna o rótulo acessível`, async ({ page }) => {
+      await page.goto(`/${lang}/manual-de-bordo.html`);
+      const prepToggle = page.locator('#faq-preparacao .faq__panel-toggle');
+      await expect(prepToggle).toHaveAttribute('aria-label', collapse);
+      await prepToggle.click();
+      await expect(prepToggle).toHaveAttribute('aria-expanded', 'false');
+      await expect(prepToggle).toHaveAttribute('aria-label', expand);
+      await expect(prepToggle).toHaveAttribute('title', expand);
+      await prepToggle.click();
+      await expect(prepToggle).toHaveAttribute('aria-label', collapse);
+    });
+  }
+
   test('Live: busca de capítulos e controle da fachada do player', async ({ page }) => {
     await page.goto('/manual-de-bordo.html');
 
@@ -292,8 +309,8 @@ test.describe('Página Manual de Bordo (embarcados) — Portal do Passageiro Con
     await searchInput.fill('luggage');
     const resultsCount = page.locator('#faqResultsCount');
     await expect(resultsCount).not.toHaveText('0');
-    await expect(page.locator('.faq-category-btn[data-category="jogos"]')).toHaveText(/Games & activities/);
-    await expect(page.locator('.faq-category-btn[data-category="vida-a-bordo"]')).toHaveText(/During the cruise/);
+    await expect(page.locator('.faq-category-btn[data-category="jogos"]')).toHaveText(/Games & Activities/);
+    await expect(page.locator('.faq-category-btn[data-category="vida-a-bordo"]')).toHaveText(/During the Cruise/);
     await expect(page.locator('#duvidas .checklist-item__tag').filter({ hasText: 'Life on board' })).toHaveCount(0);
     await expect(page.locator('.checklist-item__tag').filter({ hasText: 'Conditional' })).toHaveCount(0);
     await expect(page.locator('button[data-open-support-modal]')).toHaveCount(0);

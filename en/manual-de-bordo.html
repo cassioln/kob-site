@@ -55,7 +55,7 @@
   <script defer src="/assets/js/footer-sponsors.js?v=20261007-sponsors-marquee"></script>
   <script defer src="/assets/js/manual-de-bordo.js?v=20261008-busca"></script>
 
-  <script type="module" src="/assets/js/manual-de-bordo-live.js?v=20261008-busca"></script>
+  <script type="module" src="/assets/js/manual-de-bordo-live.js?v=20261008-busca-live"></script>
   <script type="module" src="/assets/js/manual-de-bordo-checklist.js?v=20261005-topic-player"></script>
   <script type="module" src="/assets/js/manual-de-bordo-routing.js?v=20261006-manual-domain"></script>
   <script type="module" src="/assets/js/manual-games-carousel.js?v=20261006-manual-carousel"></script>
@@ -78,10 +78,42 @@
           "mainEntity": [
             {
               "@type": "Question",
-              "name": "How do I check my terminal arrival window and port of call schedule?",
+              "name": "How do I check my terminal arrival window and the port-of-call day?",
               "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "Kriativos On Board takes place November 20–23, 2026, on MSC Musica, departing and returning to Santos with a call in Búzios. Check the day and time of the call, arrival window, and boarding instructions on your booking itinerary and voucher. Do not use the bus charter schedule as the ship's boarding time."
+                "text": "Kriativos On Board takes place November 20–23, 2026, on MSC Musica, departing from and returning to Santos, with a port of call in Búzios. Check the day and time of the port of call, your terminal arrival window and the boarding instructions in your booking's itinerary and voucher. Don't use the charter bus schedule as the ship's schedule."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Who requests the cabin vouchers, when and through which channel?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Royal Trip handles issuing the group check-in. When Júnior announces it in the official group, the person responsible for the cabin should message him privately to receive the vouchers and luggage tags as PDFs. Check the details of all passengers and print the documents. Follow the agency's announcements; there's no confirmed release date."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Which document should I bring? Is an old RG or a digital CNH accepted?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "For Brazilians on this domestic itinerary, MSC accepts the RG (Brazilian ID card), the CNH (Brazilian driver's license), a passport and other civil documents allowed under its official rules, as long as the ID is valid and has a recognizable photo. For this itinerary, MSC doesn't require an RG issued less than ten years ago. A digital CNH must be opened in the official app; screenshots, photos and copies don't replace the document. Preferably, also bring the physical document and keep your voucher and ID at hand."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "What is MSC's luggage allowance?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Per person: two bags of up to 23 kg each, measuring up to 90 × 75 × 43 cm, and two carry-on pieces of up to 10 kg each, measuring up to 56 × 45 × 25 cm. Per cabin, the total can't exceed 100 kg and/or eight pieces. Also check your ticket and the specific limits for flights and ground transportation."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How does the official KOB charter bus work?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "The charter bus runs round trip between Barra Funda, in São Paulo, and the Port of Santos. The meeting point is on Rua Tagipuru, near No. 552, behind the Memorial da América Latina. Bus 1: meet at 6:00 AM, departure at 6:30 AM, grace period until 6:40 AM. Bus 2: meet at 6:40 AM, departure at 7:20 AM, grace period until 7:30 AM. Arrive at the meeting time; the grace period isn't a new departure time. Check which bus is assigned to your booking."
               }
             }
           ]
@@ -767,10 +799,10 @@
         <header class="faq-manual__head">
           <div class="faq-manual__title">
             <p class="faq-manual__script">Frequently Asked Questions</p>
-            <h2 id="faq-title">Questions from <span>confirmed guests.</span></h2>
+            <h2 id="faq-title">Questions from <span>Confirmed Guests.</span></h2>
             <p class="lead">
-              Find answers to prepare for your journey and make the most of KOB. For private cabin questions or personal
-              inquiries, contact Royal Trip directly.
+              Find the guidance you need to prepare for your trip and make the most of KOB. For your cabin details or an
+              individual situation, contact Royal Trip through a private channel.
             </p>
           </div>
           <label class="faq-search" for="faqSearchInput">
@@ -780,19 +812,19 @@
                 <circle cx="11" cy="11" r="6.5"></circle>
                 <path d="m16 16 4 4"></path>
               </svg>
-              <input id="faqSearchInput" type="search" placeholder="e.g., documents, luggage, internet, games…" autocomplete="off"
+              <input id="faqSearchInput" type="search" placeholder="E.g., documents, luggage, internet, games…" autocomplete="off"
                 aria-labelledby="faqSearchLabel" aria-describedby="faq-search-status">
               <button type="button" class="faq-search-clear" id="faqClearBtn" title="Clear search" aria-label="Clear search">Clear</button>
               <button type="button" class="faq-search__spotlight" data-site-search-open data-site-search-kbd
                 aria-label="Search the whole site">⌘ K</button>
             </span>
-            <small id="faq-search-status" aria-live="polite"><span id="faqResultsCount">42</span> questions organized by category</small>
+            <small id="faq-search-status" aria-live="polite"><span id="faqResultsCount">42</span> answers organized by topic</small>
           </label>
         </header>
 
         <div class="faq" style="--faq-progress: 0%">
           <nav class="faq__nav" aria-label="FAQ categories">
-            <span class="faq__nav-eyebrow">Consultation route</span>
+            <span class="faq__nav-eyebrow">Browse by topic</span>
             <span class="faq__nav-track" aria-hidden="true"><i></i></span>
             <a class="faq-category-btn faq__nav-item is-active" href="#faq-preparacao" data-category="preparacao" data-faq-nav="" aria-current="true">
               Preparation <span class="faq__nav-count">11</span>
@@ -801,24 +833,24 @@
               Arrival <span class="faq__nav-count">5</span>
             </a>
             <a class="faq-category-btn faq__nav-item" href="#faq-jogos" data-category="jogos" data-faq-nav="">
-              Games &amp; activities <span class="faq__nav-count">8</span>
+              Games &amp; Activities <span class="faq__nav-count">8</span>
             </a>
             <a class="faq-category-btn faq__nav-item" href="#faq-vida-a-bordo" data-category="vida-a-bordo" data-faq-nav="">
-              During the cruise <span class="faq__nav-count">15</span>
+              During the Cruise <span class="faq__nav-count">15</span>
             </a>
             <a class="faq-category-btn faq__nav-item" href="#faq-desembarque" data-category="desembarque" data-faq-nav="">
               Disembarkation <span class="faq__nav-count">3</span>
             </a>
 
-            <div class="faq-tools" aria-label="FAQ view controls">
-              <button type="button" class="faq-tool-btn" data-faq-action="expand-all">Expand all</button>
-              <button type="button" class="faq-tool-btn" data-faq-action="collapse-all">Collapse all</button>
+            <div class="faq-tools" aria-label="FAQ tools">
+              <button type="button" class="faq-tool-btn" data-faq-action="expand-all">Expand All</button>
+              <button type="button" class="faq-tool-btn" data-faq-action="collapse-all">Collapse All</button>
             </div>
           </nav>
 
           <div class="faq__panels">
             <div class="faq-empty-state" id="faqEmptyState">
-              No questions found. Try searching for other keywords or <a href="#contato">contact our team</a>.
+              We couldn't find that question. Try another term or <a href="#contato">talk to the team</a>.
             </div>
 
             <div class="faq__panel" id="faq-preparacao" data-category="preparacao">
@@ -832,256 +864,264 @@
               </div>
               <div class="faq-list" id="faq-list-preparacao">
               <details class="faq-item" id="faq-o01" data-category="preparacao">
-            <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">How do I check my terminal arrival window and port of call
-                schedule?</span>
-              <span class="faq-item__summary-meta">
-                <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true">
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </span>
-            </summary>
-            <div class="faq-item__content">
-              <p class="faq-item__text">
-                Kriativos On Board takes place November 20–23, 2026, on MSC Musica, departing and returning to Santos
-                with a call in Búzios. Check the day and time of the call, arrival window, and boarding instructions on
-                your booking itinerary and voucher. Do not use the bus charter schedule as the ship's boarding time.
-              </p>
-              <div class="faq-item__meta">
-                <span>Source: Booking itinerary</span>
-              </div>
-            </div>
-          </details>
+                <summary class="faq-item__summary">
+                  <span class="faq-item__summary-title">How do I check my terminal arrival window and the
+                    port-of-call day?</span>
+                  <span class="faq-item__summary-meta">
+                    <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </span>
+                </summary>
+                <div class="faq-item__content">
+                  <p class="faq-item__text">
+                    Kriativos On Board takes place November 20–23, 2026, on MSC Musica, departing from and returning
+                    to Santos, with a port of call in Búzios. Check the day and time of the port of call, your
+                    terminal arrival window and the boarding instructions in your booking's itinerary and voucher.
+                    Don't use the charter bus schedule as the ship's schedule.
+                  </p>
+                  <div class="faq-item__meta">
+                    <span>Source: Booking Itinerary</span>
+                  </div>
+                </div>
+              </details>
 
               <details class="faq-item" id="faq-o02" data-category="preparacao">
-            <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">Who requests cabin vouchers, when, and through which channel?</span>
-              <span class="faq-item__summary-meta">
-                <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true">
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </span>
-            </summary>
-            <div class="faq-item__content">
-              <p class="faq-item__text">
-                Royal Trip manages group check-in issuance. When announced in the group chat, the cabin lead should
-                contact Júnior privately to receive vouchers and luggage tags in PDF format. Verify passenger details
-                and
-                print documents. There is no guaranteed release date; follow travel agency announcements.
-              </p>
-            </div>
-          </details>
+                <summary class="faq-item__summary">
+                  <span class="faq-item__summary-title">Who requests the cabin vouchers, when and through which
+                    channel?</span>
+                  <span class="faq-item__summary-meta">
+                    <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </span>
+                </summary>
+                <div class="faq-item__content">
+                  <p class="faq-item__text">
+                    Royal Trip handles issuing the group check-in. When Júnior announces it in the official group, the
+                    person responsible for the cabin should message him privately to receive the vouchers and luggage
+                    tags as PDFs. Check the details of all passengers and print the documents. Follow the agency's
+                    announcements; there's no confirmed release date.
+                  </p>
+                </div>
+              </details>
 
               <details class="faq-item" id="faq-o03" data-category="preparacao">
-            <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">Which identification document should I bring? Is digital ID
-                accepted?</span>
-              <span class="faq-item__summary-meta">
-                <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true">
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </span>
-            </summary>
-            <div class="faq-item__content">
-              <p class="faq-item__text">
-                For Brazilian citizens on this domestic route, MSC accepts RG, CNH, passport, and other recognized civil
-                documents in good condition with a recognizable photo. Digital driver's licenses must be opened within
-                the
-                official government app (screenshots/copies are not accepted). Bringing physical documents is strongly
-                recommended. Foreign travelers should bring valid passports.
-              </p>
-              <div class="faq-item__meta">
-                <span>Source: MSC Documents [S02]</span>
-              </div>
-            </div>
-          </details>
+                <summary class="faq-item__summary">
+                  <span class="faq-item__summary-title">Which document should I bring? Is an old RG or a digital CNH
+                    accepted?</span>
+                  <span class="faq-item__summary-meta">
+                    <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </span>
+                </summary>
+                <div class="faq-item__content">
+                  <p class="faq-item__text">
+                    For Brazilians on this domestic itinerary, MSC accepts the RG (Brazilian ID card), the CNH
+                    (Brazilian driver's license), a passport and other civil documents allowed under its official
+                    rules, as long as the ID is valid and has a recognizable photo. For this itinerary, MSC doesn't
+                    require an RG issued less than ten years ago. A digital CNH must be opened in the official app;
+                    screenshots, photos and copies don't replace the document. Preferably, also bring the physical
+                    document and keep your voucher and ID at hand.
+                  </p>
+                  <div class="faq-item__meta">
+                    <span>Source: MSC Documents [S02]</span>
+                  </div>
+                </div>
+              </details>
 
               <details class="faq-item" id="faq-o04" data-category="preparacao">
-            <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">What documentation is required for minors and foreign
-                passengers?</span>
-              <span class="faq-item__summary-meta">
-                <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true">
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </span>
-            </summary>
-            <div class="faq-item__content">
-              <p class="faq-item__text">
-                Confirm specific requirements with Royal Trip based on age, accompanying guardians, nationality, and
-                residency status. Obtain official notarized authorization forms where required in advance. Do not submit
-                personal ID copies through public forms.
-              </p>
-              <div class="faq-item__meta">
-                <span>Source: MSC Documents [S02]</span>
-              </div>
-            </div>
-          </details>
+                <summary class="faq-item__summary">
+                  <span class="faq-item__summary-title">What documents do I need for minors or foreign passengers?</span>
+                  <span class="faq-item__summary-meta">
+                    <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </span>
+                </summary>
+                <div class="faq-item__content">
+                  <p class="faq-item__text">
+                    Confirm with Royal Trip the documents and authorizations that apply based on the passenger's age,
+                    the guardians traveling with the minor, nationality and residence. Ask for the correct form when
+                    an authorization is required, and have everything ready before the trip. Don't send personal
+                    documents through the public questions form.
+                  </p>
+                  <div class="faq-item__meta">
+                    <span>Source: MSC Documents [S02]</span>
+                  </div>
+                </div>
+              </details>
 
               <details class="faq-item" id="faq-o05" data-category="preparacao">
-            <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">I am pregnant: what medical clearance is required?</span>
-              <span class="faq-item__summary-meta">
-                <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true">
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </span>
-            </summary>
-            <div class="faq-item__content">
-              <p class="faq-item__text">
-                MSC does not permit travel if pregnancy reaches 24 weeks at any point during the cruise. Below this
-                limit, MSC requires an official medical certificate confirming fitness to travel and low-risk pregnancy,
-                stating gestational age and estimated delivery date, signed and stamped by an authorized physician.
-                Notify Royal Trip in advance.
-              </p>
-              <div class="faq-item__meta">
-                <span>Source: MSC Health &amp; Accessibility Policy [S03]</span>
-              </div>
-            </div>
-          </details>
+                <summary class="faq-item__summary">
+                  <span class="faq-item__summary-title">I'm pregnant: what arrangements and medical certificate
+                    should I send to the agency?</span>
+                  <span class="faq-item__summary-meta">
+                    <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </span>
+                </summary>
+                <div class="faq-item__content">
+                  <p class="faq-item__text">
+                    MSC doesn't allow travel if the pregnancy reaches 24 weeks at any point during the cruise. Below
+                    that limit, it requires a medical certificate stating fitness to travel and a low-risk pregnancy,
+                    with the gestational age, the estimated due date, the doctor's CRM (Brazilian medical license
+                    number), signature and stamp. Let Royal Trip know in advance so they can forward the documents and
+                    review your booking.
+                  </p>
+                  <div class="faq-item__meta">
+                    <span>Source: Official MSC Accessibility and Health Rules [S03]</span>
+                  </div>
+                </div>
+              </details>
 
               <details class="faq-item" id="faq-o06" data-category="preparacao">
-            <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">How do I verify baby registration and request a crib?</span>
-              <span class="faq-item__summary-meta">
-                <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true">
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </span>
-            </summary>
-            <div class="faq-item__content">
-              <p class="faq-item__text">
-                All guests, including infants, must be included in the cabin booking. Minicruises permit
-                infants under MSC regulations. Confirm fares, port taxes, crib availability, and policies with Royal
-                Trip; do not assume automatic free admission.
-              </p>
-              <div class="faq-item__meta">
-                <span>Source: MSC Children Policy [S08]</span>
-              </div>
-            </div>
-          </details>
+                <summary class="faq-item__summary">
+                  <span class="faq-item__summary-title">How do I check that my baby is included in the cabin and
+                    request a crib?</span>
+                  <span class="faq-item__summary-meta">
+                    <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </span>
+                </summary>
+                <div class="faq-item__content">
+                  <p class="faq-item__text">
+                    All passengers, including babies, must be listed on the cabin booking. The mini-cruise allows
+                    babies to take part according to MSC rules for this cruise length. Confirm fares, fees, crib
+                    availability and other conditions with Royal Trip; don't assume it's free or that a fare applies
+                    automatically by age.
+                  </p>
+                  <div class="faq-item__meta">
+                    <span>Source: MSC Children [S08]</span>
+                  </div>
+                </div>
+              </details>
 
               <details class="faq-item" id="faq-o07" data-category="preparacao">
-            <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">Do I need COVID-19 vaccine or test certificates?</span>
-              <span class="faq-item__summary-meta">
-                <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true">
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </span>
-            </summary>
-            <div class="faq-item__content">
-              <p class="faq-item__text">
-                Check current sanitary protocols with Royal Trip and MSC closer to departure. Health regulations depend
-                on
-                maritime authorities and destination requirements. Always follow official guidelines issued for your
-                specific sailing.
-              </p>
-              <div class="faq-item__meta">
-                <span>Source: MSC Travel Requirements [S02/S03]</span>
-              </div>
-            </div>
-          </details>
+                <summary class="faq-item__summary">
+                  <span class="faq-item__summary-title">Do I need to show a Covid-19 vaccination or test?</span>
+                  <span class="faq-item__summary-meta">
+                    <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </span>
+                </summary>
+                <div class="faq-item__content">
+                  <p class="faq-item__text">
+                    Check with Royal Trip and MSC the health requirements in effect for your sailing. Don't treat the
+                    old two-dose or antigen-test rules as current instructions. Requirements may change depending on
+                    the health situation, the destination and decisions by the authorities; follow the official
+                    guidance you receive for your boarding.
+                  </p>
+                  <div class="faq-item__meta">
+                    <span>Source: MSC Documents/Accessibility [S02/S03]</span>
+                  </div>
+                </div>
+              </details>
 
               <details class="faq-item" id="faq-o08" data-category="preparacao">
-            <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">What is the official MSC luggage allowance?</span>
-              <span class="faq-item__summary-meta">
-                <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true">
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </span>
-            </summary>
-            <div class="faq-item__content">
-              <p class="faq-item__text">
-                Per passenger: up to two checked bags of max 23 kg (50 lbs) each (max dimensions 90 × 75 × 43 cm) and up
-                to two carry-on pieces of max 10 kg (22 lbs) each (max dimensions 56 × 45 × 25 cm). Total luggage per
-                cabin must not exceed 100 kg or 8 bags. Also verify separate flight or bus limits if applicable.
-              </p>
-              <div class="faq-item__meta">
-                <span>Source: Official MSC Baggage Policy [S01]</span>
-              </div>
-            </div>
-          </details>
+                <summary class="faq-item__summary">
+                  <span class="faq-item__summary-title">What is MSC's luggage allowance?</span>
+                  <span class="faq-item__summary-meta">
+                    <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </span>
+                </summary>
+                <div class="faq-item__content">
+                  <p class="faq-item__text">
+                    Per person: two bags of up to 23 kg each, measuring up to 90 × 75 × 43 cm, and two carry-on pieces
+                    of up to 10 kg each, measuring up to 56 × 45 × 25 cm. Per cabin, the total can't exceed 100 kg
+                    and/or eight pieces. Also check your ticket and the specific limits for flights and ground
+                    transportation.
+                  </p>
+                  <div class="faq-item__meta">
+                    <span>Source: Official MSC Luggage Rules [S01]</span>
+                  </div>
+                </div>
+              </details>
 
               <details class="faq-item" id="faq-o09" data-category="preparacao">
-            <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">How do I drop off luggage and what stays with me?</span>
-              <span class="faq-item__summary-meta">
-                <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true">
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </span>
-            </summary>
-            <div class="faq-item__content">
-              <p class="faq-item__text">
-                Affix agency-issued MSC tags to all checked bags before arriving at the terminal. Keep identification,
-                travel vouchers, medications, valuables, and essential clothing in your carry-on luggage, as checked
-                bags
-                are delivered to cabins later in the day.
-              </p>
-              <div class="faq-item__meta">
-                <span>Source: MSC Baggage Guidelines [S01]</span>
-              </div>
-            </div>
-          </details>
+                <summary class="faq-item__summary">
+                  <span class="faq-item__summary-title">How do I check my bags and what stays with me?</span>
+                  <span class="faq-item__summary-meta">
+                    <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </span>
+                </summary>
+                <div class="faq-item__content">
+                  <p class="faq-item__text">
+                    Attach the tags you received from the agency to your checked bags and follow the staff's
+                    directions at the terminal. Keep documents, valuables, medications and essentials in your
+                    carry-on: your bags may reach the cabin later.
+                  </p>
+                  <div class="faq-item__meta">
+                    <span>Source: MSC Luggage [S01]</span>
+                  </div>
+                </div>
+              </details>
 
               <details class="faq-item" id="faq-o10" data-category="preparacao">
-            <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">What items are prohibited? Are hair dryers, straighteners, or drones
-                allowed?</span>
-              <span class="faq-item__summary-meta">
-                <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true">
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </span>
-            </summary>
-            <div class="faq-item__content">
-              <p class="faq-item__text">
-                MSC prohibits weapons, illegal substances, inflammable items, and heat appliances like clothing irons.
-                Hair dryers and hair straighteners are permitted. Drones may be brought on board if stored securely in
-                the cabin, but flight from the ship is strictly prohibited. Commercially packaged dry snacks are
-                generally
-                allowed.
-              </p>
-              <div class="faq-item__meta">
-                <span>Source: MSC Baggage Policy [S01]</span>
-              </div>
-            </div>
-          </details>
+                <summary class="faq-item__summary">
+                  <span class="faq-item__summary-title">What's prohibited? Can I bring a hair dryer, flat iron or
+                    drone?</span>
+                  <span class="faq-item__summary-meta">
+                    <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </span>
+                </summary>
+                <div class="faq-item__content">
+                  <p class="faq-item__text">
+                    MSC prohibits weapons, illegal drugs, flammable materials and heating appliances such as clothes
+                    irons. Hair dryers and flat irons are allowed. Drones may be carried if stored in your cabin, but
+                    using them on board is prohibited; ashore, local rules apply. For food, MSC makes an exception for
+                    packaged, industrially processed dry foods; check the full official list and the conditions for
+                    special needs.
+                  </p>
+                  <div class="faq-item__meta">
+                    <span>Source: MSC Luggage [S01]</span>
+                  </div>
+                </div>
+              </details>
 
               <details class="faq-item" id="faq-o11" data-category="preparacao">
-            <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">What amenities does the cabin provide and what should I
-                bring?</span>
-              <span class="faq-item__summary-meta">
-                <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true">
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </span>
-            </summary>
-            <div class="faq-item__content">
-              <p class="faq-item__text">
-                Cabins include bed linens, towels, body wash, shampoo, hair dryer, TV, air conditioning, and safe. Bring
-                personal toiletries such as toothbrush, toothpaste, and hair conditioner, plus sunscreen and compatible
-                power plug adapters. Cabin minibars do not guarantee temperatures suitable for storing medicines.
-              </p>
-              <div class="faq-item__meta">
-                <span>Source: MSC Musica specifications [S07]</span>
-              </div>
-            </div>
-          </details>
+                <summary class="faq-item__summary">
+                  <span class="faq-item__summary-title">What does the cabin provide and what should I bring?</span>
+                  <span class="faq-item__summary-meta">
+                    <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </span>
+                </summary>
+                <div class="faq-item__content">
+                  <p class="faq-item__text">
+                    The cabin provides bed linens, towels, liquid soap, shampoo, a hair dryer, TV, air conditioning
+                    and a safe. Bring your personal toiletries, including a toothbrush, toothpaste and conditioner,
+                    plus sunscreen and a compatible plug adapter if needed. Check the equipment and amenities of your
+                    booked category with the agency. The minibar doesn't guarantee suitable refrigeration for
+                    medications.
+                  </p>
+                  <div class="faq-item__meta">
+                    <span>Source: MSC Musica [S07]</span>
+                  </div>
+                </div>
+              </details>
 
               </div>
             </div>
@@ -1097,124 +1137,127 @@
               </div>
               <div class="faq-list" id="faq-list-chegada">
               <details class="faq-item" id="faq-o12" data-category="chegada">
-            <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">How does the official KOB bus charter work?</span>
-              <span class="faq-item__summary-meta">
-                <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true">
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </span>
-            </summary>
-            <div class="faq-item__content">
-              <p class="faq-item__text">
-                The charter operates round-trip between Barra Funda (São Paulo) and the Port of Santos. Meeting point:
-                Rua
-                Tagipuru, near nº 552. Bus 1: meet 06:00, depart 06:30, tolerance 06:40. Bus 2: meet 06:40, depart
-                07:20, tolerance 07:30. Arrive on time; tolerance is not a second departure time.
-              </p>
-              <p class="faq-item__text">
-                Bus 1 is confirmed. Bus 2 depends on minimum passenger threshold with full refund via Pix if not
-                reached.
-                Return from Santos on Nov 23 is scheduled for 10:30.
-              </p>
-            </div>
-          </details>
+                <summary class="faq-item__summary">
+                  <span class="faq-item__summary-title">How does the official KOB charter bus work?</span>
+                  <span class="faq-item__summary-meta">
+                    <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </span>
+                </summary>
+                <div class="faq-item__content">
+                  <p class="faq-item__text">
+                    The charter bus runs round trip between Barra Funda, in São Paulo, and the Port of Santos. The
+                    meeting point is on Rua Tagipuru, near No. 552, behind the Memorial da América Latina. Bus 1: meet
+                    at 6:00 AM, departure at 6:30 AM, grace period until 6:40 AM. Bus 2: meet at 6:40 AM, departure at
+                    7:20 AM, grace period until 7:30 AM. Arrive at the meeting time; the grace period isn't a new
+                    departure time. Check which bus is assigned to your booking.
+                  </p>
+                  <p class="faq-item__text">
+                    Bus 1 is confirmed. Bus 2 and any other buses depend on a minimum number of passengers; if it
+                    isn't reached, the operation provides for a full refund via Pix (Brazil's instant payment system).
+                    The return from the Port of Santos on Nov 23 is scheduled for 10:30 AM. Check the current terms on
+                    the official charter bus page.
+                  </p>
+                </div>
+              </details>
 
               <details class="faq-item" id="faq-o13" data-category="chegada">
-            <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">Arriving by plane: Is there KOB airport transfer from GRU or
-                CGH?</span>
-              <span class="faq-item__summary-meta">
-                <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true">
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </span>
-            </summary>
-            <div class="faq-item__content">
-              <p class="faq-item__text">
-                The KOB charter departs strictly from Barra Funda, not from airports. Travelers flying into Guarulhos
-                (GRU) or Congonhas (CGH) can consult regular commercial bus services (such as Viação Cometa) to Santos
-                bus
-                station, then take local transport to Concais. Allow generous time for holiday traffic.
-              </p>
-              <div class="faq-item__meta">
-                <span>Source: Viação Cometa [S10]</span>
-              </div>
-            </div>
-          </details>
+                <summary class="faq-item__summary">
+                  <span class="faq-item__summary-title">I'm flying in. Is there a KOB bus at Congonhas or Guarulhos?</span>
+                  <span class="faq-item__summary-meta">
+                    <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </span>
+                </summary>
+                <div class="faq-item__content">
+                  <p class="faq-item__text">
+                    The KOB charter bus leaves from Barra Funda, not from the airports. If you'll rely on road
+                    transportation to Santos, Guarulhos may be an option; Congonhas and Viracopos are also
+                    alternatives. Before buying or planning your route, check with the airline and Viação Cometa about
+                    routes, final destination, schedules and availability for the date. If you arrive at the Santos
+                    bus terminal (Rodoviária de Santos), plan an extra transfer to Concais. Allow extra time for
+                    traffic, lines and the holiday; the times mentioned are estimates.
+                  </p>
+                  <div class="faq-item__meta">
+                    <span>Source: Viação Cometa [S10]</span>
+                  </div>
+                </div>
+              </details>
 
               <details class="faq-item" id="faq-o14" data-category="chegada">
-            <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">Driving by car: How does port parking work?</span>
-              <span class="faq-item__summary-meta">
-                <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true">
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </span>
-            </summary>
-            <div class="faq-item__content">
-              <p class="faq-item__text">
-                Official terminal parking is operated directly by Concais in Santos with advance online reservation
-                recommended (concais.com.br). Check rates and access guidelines directly with the terminal. Follow
-                signage
-                for passenger drop-off upon arrival.
-              </p>
-              <div class="faq-item__meta">
-                <span>Source: Concais Terminal [concais.com.br]</span>
-              </div>
-            </div>
-          </details>
+                <summary class="faq-item__summary">
+                  <span class="faq-item__summary-title">I'm driving. What should I do about parking?</span>
+                  <span class="faq-item__summary-meta">
+                    <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </span>
+                </summary>
+                <div class="faq-item__content">
+                  <p class="faq-item__text">
+                    The official Concais parking can be reserved in advance. Check availability, rates, the access
+                    address and instructions directly with the terminal before you leave (concais.com.br). When you
+                    arrive, follow the staff's directions for checking your bags.
+                  </p>
+                  <div class="faq-item__meta">
+                    <span>Source: Concais</span>
+                  </div>
+                </div>
+              </details>
 
               <details class="faq-item" id="faq-o15" data-category="chegada">
-            <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">Can I access my cabin immediately after boarding?</span>
-              <span class="faq-item__summary-meta">
-                <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true">
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </span>
-            </summary>
-            <div class="faq-item__content">
-              <p class="faq-item__text">
-                Cabins may still be undergoing turnover and cleaning. Readiness may be around 13:00/14:00; wait for the
-                announcement over the ship’s public address system. Enjoy the lunch buffet while waiting and
-                keep essentials with you.
-              </p>
-            </div>
-          </details>
+                <summary class="faq-item__summary">
+                  <span class="faq-item__summary-title">Can I use my cabin as soon as I board?</span>
+                  <span class="faq-item__summary-meta">
+                    <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </span>
+                </summary>
+                <div class="faq-item__content">
+                  <p class="faq-item__text">
+                    Cabins may still be getting ready. They may be released around 1:00 or 2:00 PM; wait for MSC's
+                    announcement. While you wait, check out the buffet options and keep what you need with you until
+                    your bags arrive. Go by the announcement the ship actually makes.
+                  </p>
+                </div>
+              </details>
 
               <details class="faq-item" id="faq-o16" data-category="chegada">
-            <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">Is the onboard safety drill mandatory?</span>
-              <span class="faq-item__summary-meta">
-                <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true">
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </span>
-            </summary>
-            <div class="faq-item__content">
-              <p class="faq-item__text">
-                Yes. International maritime safety regulations mandate that all embarking passengers complete the safety
-                muster drill as instructed by MSC crew and in-cabin guides.
-              </p>
-              <div class="faq-item__meta">
-                <span>Source: MSC Safety Operations</span>
-              </div>
-            </div>
-          </details>
+                <summary class="faq-item__summary">
+                  <span class="faq-item__summary-title">Is the safety drill mandatory?</span>
+                  <span class="faq-item__summary-meta">
+                    <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </span>
+                </summary>
+                <div class="faq-item__content">
+                  <p class="faq-item__text">
+                    Yes. Complete the mandatory procedure MSC indicates for your boarding. The crew will share the
+                    location, time and steps, including instructions in the app. Don't assume that watching a video or
+                    opening the app, on its own, covers all your obligations.
+                  </p>
+                  <div class="faq-item__meta">
+                    <span>Source: MSC Onboard Instructions</span>
+                  </div>
+                </div>
+              </details>
 
               </div>
             </div>
 
             <div class="faq__panel" id="faq-jogos" data-category="jogos">
               <div class="faq__panel-head">
-                <h3>Games &amp; activities</h3>
-                <button type="button" class="faq__panel-toggle" aria-expanded="true" aria-controls="faq-list-jogos" aria-label="Collapse Games & activities section" title="Collapse Games & activities section">
+                <h3>Games &amp; Activities</h3>
+                <button type="button" class="faq__panel-toggle" aria-expanded="true" aria-controls="faq-list-jogos" aria-label="Collapse Games &amp; Activities section" title="Collapse Games &amp; Activities section">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <polyline points="18 15 12 9 6 15"></polyline>
                   </svg>
@@ -1222,163 +1265,176 @@
               </div>
               <div class="faq-list" id="faq-list-jogos">
               <details class="faq-item" id="faq-o17" data-category="jogos">
-            <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">Where and when do I pick up my welcome kit? What does it
-                include?</span>
-              <span class="faq-item__summary-meta">
-                <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true">
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </span>
-            </summary>
-            <div class="faq-item__content">
-              <p class="faq-item__text">
-                Welcome kit pickup is scheduled for 16:00/16:30 on day one at Crystal Lounge (location subject to final
-                confirmation). The kit includes an event lanyard, wristband, collectible metal coin, and a board game
-                tote bag from Fácil Shopping.
-              </p>
-            </div>
-          </details>
+                <summary class="faq-item__summary">
+                  <span class="faq-item__summary-title">Where and when do I pick up my kit? What's in it?</span>
+                  <span class="faq-item__summary-meta">
+                    <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </span>
+                </summary>
+                <div class="faq-item__content">
+                  <p class="faq-item__text">
+                    The meet-up and kit pickup are planned for 4:00/4:30 PM on the first day at the Crystal Lounge;
+                    the room and time will be confirmed in the official group. The kit includes a badge/lanyard, a
+                    wristband, a collectible commemorative coin and a sturdy tote bag from Fácil Shopping. Check the
+                    announcements before heading to the meet-up.
+                  </p>
+                </div>
+              </details>
 
               <details class="faq-item" id="faq-o18" data-category="jogos">
-            <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">Where can I find the gaming schedule and official notices?</span>
-              <span class="faq-item__summary-meta">
-                <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true">
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </span>
-            </summary>
-            <div class="faq-item__content">
-              <p class="faq-item__text">
-                Look for the bulletin board at the entrance of the gaming lounge and follow the official group messaging
-                channel. MSC's daily program also lists general ship activities.
-              </p>
-            </div>
-          </details>
+                <summary class="faq-item__summary">
+                  <span class="faq-item__summary-title">Where do I find the event schedule and announcements?</span>
+                  <span class="faq-item__summary-meta">
+                    <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </span>
+                </summary>
+                <div class="faq-item__content">
+                  <p class="faq-item__text">
+                    Look for the bulletin board at the entrance to the game room and follow the event's official
+                    group. MSC's daily program lists the ship's services and activities. Check these channels for
+                    changes and confirmations; this guide covers preparation and doesn't replace onboard
+                    announcements.
+                  </p>
+                </div>
+              </details>
 
               <details class="faq-item" id="faq-o19" data-category="jogos">
-            <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">How do I verify lounge hours and Sunday return deadlines?</span>
-              <span class="faq-item__summary-meta">
-                <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true">
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </span>
-            </summary>
-            <div class="faq-item__content">
-              <p class="faq-item__text">
-                Crystal Lounge offers open seating during daytime and evening gaming blocks. There is no promise of 24h
-                uninterrupted gaming. On Sunday, we will announce the game return cutoff for final inventory.
-              </p>
-            </div>
-          </details>
+                <summary class="faq-item__summary">
+                  <span class="faq-item__summary-title">How do I confirm the room, the table hours and the Sunday
+                    return deadline?</span>
+                  <span class="faq-item__summary-meta">
+                    <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </span>
+                </summary>
+                <div class="faq-item__content">
+                  <p class="faq-item__text">
+                    The Crystal Lounge is the space planned for KOB. The room still depends on MSC's confirmation.
+                    Extended gaming hours are expected during the day and at night, according to the event schedule.
+                    Tables are open to everyone, on a rotating basis. On Sunday, we'll announce the deadline for
+                    returning the game library titles and clearing the tables for the final inventory.
+                  </p>
+                </div>
+              </details>
 
               <details class="faq-item" id="faq-o20" data-category="jogos">
-            <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">How do I register on Board Game Guru and connect with
-                monitors?</span>
-              <span class="faq-item__summary-meta">
-                <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true">
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </span>
-            </summary>
-            <div class="faq-item__content">
-              <p class="faq-item__text">
-                Board Game Guru is the official event companion app (iOS/Android). Open the KOB 2026 page and click ‘I’m
-                going’ to enter prize raffles and view the available games library.
-              </p>
-            </div>
-          </details>
+                <summary class="faq-item__summary">
+                  <span class="faq-item__summary-title">How do I register my attendance on Guru and find games and
+                    game teachers?</span>
+                  <span class="faq-item__summary-meta">
+                    <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </span>
+                </summary>
+                <div class="faq-item__content">
+                  <p class="faq-item__text">
+                    Board Game Guru is the event's app for games and giveaways, available for Android and iOS. Open
+                    the Kriativos On Board page and tap ‘I’m going’. You can also browse titles, filters, game
+                    teachers who explain rules and games shared by attendees. The app's official website is
+                    boardgameguru.app.
+                  </p>
+                </div>
+              </details>
 
               <details class="faq-item" id="faq-o21" data-category="jogos">
-            <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">I cannot use the app. Can I still participate in raffles?</span>
-              <span class="faq-item__summary-meta">
-                <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true">
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </span>
-            </summary>
-            <div class="faq-item__content">
-              <p class="faq-item__text">
-                Yes. Approach the Encounter monitor desk in the gaming lounge to request manual registration on the
-                participant list. Lack of app access will not exclude you from raffle participation.
-              </p>
-            </div>
-          </details>
+                <summary class="faq-item__summary">
+                  <span class="faq-item__summary-title">I can't use the app. Can I take part in the giveaways?</span>
+                  <span class="faq-item__summary-meta">
+                    <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </span>
+                </summary>
+                <div class="faq-item__content">
+                  <p class="faq-item__text">
+                    Look for the Encounter team to request manual inclusion on the list and confirm your registration.
+                    To enter the giveaways, tap ‘I’m going’ or register your attendance with the game teachers. Follow
+                    the official group for the rules and times as they're announced.
+                  </p>
+                </div>
+              </details>
 
               <details class="faq-item" id="faq-o22" data-category="jogos">
-            <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">Can I bring personal games and prototypes, bookmark titles, and
-                share my collection?</span>
-              <span class="faq-item__summary-meta">
-                <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true">
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </span>
-            </summary>
-            <div class="faq-item__content">
-              <p class="faq-item__text">
-                Yes! Register games you bring in the Guru app (importable from Ludopedia or BGG). Favorite games you
-                wish
-                to play to help monitors plan tables. Mark personal games clearly and respect baggage limits.
-              </p>
-            </div>
-          </details>
+                <summary class="faq-item__summary">
+                  <span class="faq-item__summary-title">Can I bring games and prototypes, favorite titles and share
+                    my collection?</span>
+                  <span class="faq-item__summary-meta">
+                    <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </span>
+                </summary>
+                <div class="faq-item__content">
+                  <p class="faq-item__text">
+                    Yes. Register the games you plan to bring in the app, including by importing them from Ludopedia
+                    or BoardGameGeek, and favorite the titles you want to play to help the game teachers plan. Label
+                    your games and stay within your baggage allowance. Those who share the most games may receive
+                    prizes and surprises; we'll announce the criteria in the official group. Prototypes can be shared,
+                    but a formal activity depends on the event schedule.
+                  </p>
+                </div>
+              </details>
 
               <details class="faq-item" id="faq-o23" data-category="jogos">
-            <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">How do I borrow games and can I play them outside the lounge?</span>
-              <span class="faq-item__summary-meta">
-                <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true">
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </span>
-            </summary>
-            <div class="faq-item__content">
-              <p class="faq-item__text">
-                Follow monitor instructions for checkout. If taking a game outside Crystal Lounge, register your name
-                and
-                cabin number with the desk. Please keep games in permitted relaxation areas and do not occupy dining
-                restaurant tables for gaming.
-              </p>
-            </div>
-          </details>
+                <summary class="faq-item__summary">
+                  <span class="faq-item__summary-title">How do I check out games, and can I use them outside the
+                    room?</span>
+                  <span class="faq-item__summary-meta">
+                    <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </span>
+                </summary>
+                <div class="faq-item__content">
+                  <p class="faq-item__text">
+                    Follow the game teachers' instructions for checkout, care and return. When you take a game from
+                    the game library outside the room, register your name and cabin with the team for tracking; the
+                    title is your responsibility. Use permitted areas and don't take up restaurant tables with games.
+                    Return everything by the deadline announced for the inventory.
+                  </p>
+                </div>
+              </details>
 
               <details class="faq-item" id="faq-o24" data-category="jogos">
-            <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">I booked solo or want to join a table: how do I find players?</span>
-              <span class="faq-item__summary-meta">
-                <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true">
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </span>
-            </summary>
-            <div class="faq-item__content">
-              <p class="faq-item__text">
-                Ask Encounter monitors in the gaming lounge to match you with players and introduce you to games. You do
-                not need to arrive with a pre-formed group.
-              </p>
-            </div>
-          </details>
+                <summary class="faq-item__summary">
+                  <span class="faq-item__summary-title">I've booked and want to join a table: how do I find game
+                    teachers and activities?</span>
+                  <span class="faq-item__summary-meta">
+                    <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </span>
+                </summary>
+                <div class="faq-item__content">
+                  <p class="faq-item__text">
+                    Look for the Encounter game teachers to pick games, learn rules and find people to play with. On
+                    Guru, you can also see who knows each title. Check the bulletin board for activities and
+                    tournaments as they're confirmed. You don't need to arrive with a group already formed.
+                  </p>
+                </div>
+              </details>
 
               </div>
             </div>
 
             <div class="faq__panel" id="faq-vida-a-bordo" data-category="vida-a-bordo">
               <div class="faq__panel-head">
-                <h3>During the cruise</h3>
-                <button type="button" class="faq__panel-toggle" aria-expanded="true" aria-controls="faq-list-vida-a-bordo" aria-label="Collapse During the cruise section" title="Collapse During the cruise section">
+                <h3>During the Cruise</h3>
+                <button type="button" class="faq__panel-toggle" aria-expanded="true" aria-controls="faq-list-vida-a-bordo" aria-label="Collapse During the Cruise section" title="Collapse During the Cruise section">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <polyline points="18 15 12 9 6 15"></polyline>
                   </svg>
@@ -1386,330 +1442,340 @@
               </div>
               <div class="faq-list" id="faq-list-vida-a-bordo">
               <details class="faq-item" id="faq-o25" data-category="vida-a-bordo">
-            <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">What should I wear? Is formal gala attire required?</span>
-              <span class="faq-item__summary-meta">
-                <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true">
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </span>
-            </summary>
-            <div class="faq-item__content">
-              <p class="faq-item__text">
-                Bring comfortable casual clothes for daytime gaming and a light sweater for breezy decks and AC. Dinner
-                in the main dining room is smart casual (sleeveless tank tops and flip-flops are restricted). Tuxedos or
-                formal gala gowns are not required.
-              </p>
-            </div>
-          </details>
+                <summary class="faq-item__summary">
+                  <span class="faq-item__summary-title">What should I wear? Do I need formal attire?</span>
+                  <span class="faq-item__summary-meta">
+                    <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </span>
+                </summary>
+                <div class="faq-item__content">
+                  <p class="faq-item__text">
+                    Bring comfortable clothes and shoes for the day and for gaming, plus a light jacket for the wind
+                    and the air conditioning. For dinner, wear neat casual or smart casual; the main restaurant
+                    doesn't allow tank tops or flip-flops. Check the ship's guidance for each venue and night. You
+                    don't need a suit or a formal gown.
+                  </p>
+                </div>
+              </details>
 
               <details class="faq-item" id="faq-o26" data-category="vida-a-bordo">
-            <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">How do I prepare for theme parties?</span>
-              <span class="faq-item__summary-meta">
-                <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true">
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </span>
-            </summary>
-            <div class="faq-item__content">
-              <p class="faq-item__text">
-                The White Party (Festa do Branco) is a cruise tradition; bring white clothing if you wish to join. For
-                KOB's
-                Sunday night farewell, the announced theme is 80s Retro (neon and vintage accessories). Costume
-                participation is completely optional.
-              </p>
-            </div>
-          </details>
+                <summary class="faq-item__summary">
+                  <span class="faq-item__summary-title">How do I prepare for the themes and check party times and
+                    locations?</span>
+                  <span class="faq-item__summary-meta">
+                    <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </span>
+                </summary>
+                <div class="faq-item__content">
+                  <p class="faq-item__text">
+                    The White Party is on the schedule; bring something white if you'd like to join. For the KOB
+                    closing on Sunday night, the theme is the 80s, with retro pieces, neon and accessories. Themed
+                    outfits are optional. Confirm times and locations in the schedule; a private space for a costume
+                    party depends on the ship's authorization.
+                  </p>
+                </div>
+              </details>
 
               <details class="faq-item" id="faq-o27" data-category="vida-a-bordo">
-            <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">Where do I check meal times and alternatives to my assigned dinner
-                shift?</span>
-              <span class="faq-item__summary-meta">
-                <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true">
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </span>
-            </summary>
-            <div class="faq-item__content">
-              <p class="faq-item__text">
-                Full-board meals are included in the buffet and main dining rooms. The buffet provides extended hours
-                including pizza and snacks; exact operating hours appear in the MSC daily ship program. Specialty dining
-                incurs separate charges.
-              </p>
-              <div class="faq-item__meta">
-                <span>Source: MSC Musica Dining Guidelines</span>
-              </div>
-            </div>
-          </details>
+                <summary class="faq-item__summary">
+                  <span class="faq-item__summary-title">Where can I check meal times and alternatives to my dinner
+                    seating?</span>
+                  <span class="faq-item__summary-meta">
+                    <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </span>
+                </summary>
+                <div class="faq-item__content">
+                  <p class="faq-item__text">
+                    Your booking includes full board as purchased, with meals at the buffet and the main restaurant.
+                    There are pizza options at extended hours, close to 24 hours a day, but the confirmed hours for
+                    each service appear in the MSC daily program. Don't assume the entire buffet runs nonstop.
+                    Specialty restaurants and extras are charged separately.
+                  </p>
+                </div>
+              </details>
 
               <details class="faq-item" id="faq-o28" data-category="vida-a-bordo">
-            <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">How does my dinner shift work? What if I arrive late?</span>
-              <span class="faq-item__summary-meta">
-                <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true">
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </span>
-            </summary>
-            <div class="faq-item__content">
-              <p class="faq-item__text">
-                Your Cruise Card indicates your assigned main dining room shift and table number. Arrive promptly;
-                kitchen
-                orders allow a 15-minute window before courses advance. If you miss your seating, the buffet provides
-                casual dining alternatives.
-              </p>
-            </div>
-          </details>
+                <summary class="faq-item__summary">
+                  <span class="faq-item__summary-title">How does my dinner seating work? What if I'm late?</span>
+                  <span class="faq-item__summary-meta">
+                    <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </span>
+                </summary>
+                <div class="faq-item__content">
+                  <p class="faq-item__text">
+                    Check your Cruise Card for the seating and table assigned for the main restaurant. Arrive on time:
+                    the 15-minute grace period refers to kitchen orders. If you miss your seating, check the buffet
+                    and pizzeria alternatives in the daily program. The times mentioned are examples and don't replace
+                    the seating on your booking.
+                  </p>
+                </div>
+              </details>
 
               <details class="faq-item" id="faq-o29" data-category="vida-a-bordo">
-            <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">Can I dine together with friends in other cabins?</span>
-              <span class="faq-item__summary-meta">
-                <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true">
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </span>
-            </summary>
-            <div class="faq-item__content">
-              <p class="faq-item__text">
-                Immediately after boarding, speak with the restaurant maître d' providing the cabin numbers of your
-                travel group to request table consolidation. The dining team will confirm whether there is room.
-              </p>
-            </div>
-          </details>
+                <summary class="faq-item__summary">
+                  <span class="faq-item__summary-title">Can I have dinner with friends from other cabins?</span>
+                  <span class="faq-item__summary-meta">
+                    <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </span>
+                </summary>
+                <div class="faq-item__content">
+                  <p class="faq-item__text">
+                    Right after boarding, find the restaurant's maître d' with the numbers of the cabins that want to
+                    sit together and ask for the tables to be combined. The team will confirm whether there's still
+                    room at dinner.
+                  </p>
+                </div>
+              </details>
 
               <details class="faq-item" id="faq-o30" data-category="vida-a-bordo">
-            <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">How do beverage packages work and what are the daily limits?</span>
-              <span class="faq-item__summary-meta">
-                <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true">
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </span>
-            </summary>
-            <div class="faq-item__content">
-              <p class="faq-item__text">
-                Drink packages are optional. Options include Non-Alcoholic, Easy, and Premium Extra. If booked, all
-                adults
-                sharing a cabin must contract the same package; minors must have the corresponding child package.
-                Alcoholic
-                packages include up to 15 alcoholic beverages per 24-hour cycle (6:00 to 6:00 next day).
-              </p>
-              <div class="faq-item__meta">
-                <span>Source: MSC Beverage Policies [S04]</span>
-              </div>
-            </div>
-          </details>
+                <summary class="faq-item__summary">
+                  <span class="faq-item__summary-title">I've already chosen a package: how do I check the cabin
+                    rules and the daily limit?</span>
+                  <span class="faq-item__summary-meta">
+                    <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </span>
+                </summary>
+                <div class="faq-item__content">
+                  <p class="faq-item__text">
+                    It's optional. The options mentioned are Non-Alcoholic, Easy and Premium Extra; confirm the
+                    packages available for your sailing. If one adult purchases a package, the other adults in the
+                    cabin must follow the same package rule; children and teens follow the non-alcoholic option for
+                    their age, with exceptions for babies according to MSC. Easy and Premium Extra include up to 15
+                    alcoholic drinks per person from 6:00 AM to 6:00 AM the next day. Confirm price, deadline,
+                    discounts and installment options with Royal Trip.
+                  </p>
+                  <div class="faq-item__meta">
+                    <span>Source: MSC Package Rules [S04]</span>
+                  </div>
+                </div>
+              </details>
 
               <details class="faq-item" id="faq-o31" data-category="vida-a-bordo">
-            <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">Is the cabin minibar included in beverage packages?</span>
-              <span class="faq-item__summary-meta">
-                <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true">
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </span>
-            </summary>
-            <div class="faq-item__content">
-              <p class="faq-item__text">
-                No. Items consumed directly from the in-cabin minibar are billed separately to your account and are not
-                included in standard packages.
-              </p>
-              <div class="faq-item__meta">
-                <span>Source: MSC Beverage Terms [S04/S06]</span>
-              </div>
-            </div>
-          </details>
+                <summary class="faq-item__summary">
+                  <span class="faq-item__summary-title">Is the minibar included in Premium Extra?</span>
+                  <span class="faq-item__summary-meta">
+                    <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </span>
+                </summary>
+                <div class="faq-item__content">
+                  <p class="faq-item__text">
+                    No. Having a minibar in your cabin doesn't mean its products are part of the drink package: items
+                    consumed from the minibar are charged separately. You can store drinks picked up at the bars as
+                    allowed by your package; check whether the service will be available and how it works.
+                  </p>
+                  <div class="faq-item__meta">
+                    <span>Source: MSC Package Terms [S04/S06]</span>
+                  </div>
+                </div>
+              </details>
 
               <details class="faq-item" id="faq-o32" data-category="vida-a-bordo">
-            <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">How do I purchase Wi-Fi internet? Does mobile signal work in
-                Búzios?</span>
-              <span class="faq-item__summary-meta">
-                <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true">
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </span>
-            </summary>
-            <div class="faq-item__content">
-              <p class="faq-item__text">
-                Satellite internet packages are purchased separately per device and are locked to the specific hardware
-                registered upon activation (cannot be transferred or shared). In Búzios, Brazilian mobile cellular
-                signal
-                may be available depending on carrier and location.
-              </p>
-              <div class="faq-item__meta">
-                <span>Source: MSC Onboard Services [S06]</span>
-              </div>
-            </div>
-          </details>
+                <summary class="faq-item__summary">
+                  <span class="faq-item__summary-title">How do I buy internet access? Can I transfer or share it?
+                    Will my phone work in Búzios?</span>
+                  <span class="faq-item__summary-meta">
+                    <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </span>
+                </summary>
+                <div class="faq-item__content">
+                  <p class="faq-item__text">
+                    Internet access beyond the ship's network is purchased separately. MSC packages are personal and
+                    tied to the activated devices; choose how many devices you plan to use, since replacing a device
+                    that's already registered isn't allowed. Don't count on transferring or sharing an individual
+                    package. In Búzios, there may be signal from Brazilian carriers, depending on coverage and
+                    location. Check the port-of-call day in your booking and your carrier's terms.
+                  </p>
+                  <div class="faq-item__meta">
+                    <span>Source: Official MSC Terms [S06]</span>
+                  </div>
+                </div>
+              </details>
 
               <details class="faq-item" id="faq-o33" data-category="vida-a-bordo">
-            <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">Can I use the MSC for Me app and chat without an internet
-                package?</span>
-              <span class="faq-item__summary-meta">
-                <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true">
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </span>
-            </summary>
-            <div class="faq-item__content">
-              <p class="faq-item__text">
-                Yes. Connect to the ship's internal Wi-Fi network without purchasing internet to use MSC for Me features
-                and internal chat (for guests 16+). Adding "Kriativo" to your display name helps friends find you.
-              </p>
-              <div class="faq-item__meta">
-                <span>Source: MSC for Me [S05]</span>
-              </div>
-            </div>
-          </details>
+                <summary class="faq-item__summary">
+                  <span class="faq-item__summary-title">Can I use MSC for Me and the chat without an internet
+                    package?</span>
+                  <span class="faq-item__summary-meta">
+                    <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </span>
+                </summary>
+                <div class="faq-item__content">
+                  <p class="faq-item__text">
+                    Connect to the ship's internal Wi-Fi to use the available MSC for Me features. The onboard chat
+                    doesn't require an external internet package; MSC lists the service for guests over 16. Add
+                    ‘Kriativo’ to your name or nickname so your friends can find you more easily. Check which features
+                    are available on MSC Musica and follow the onboard instructions.
+                  </p>
+                  <div class="faq-item__meta">
+                    <span>Source: MSC for Me [S05]</span>
+                  </div>
+                </div>
+              </details>
 
               <details class="faq-item" id="faq-o34" data-category="vida-a-bordo">
-            <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">How do I settle onboard expenses? Are international cards
-                accepted?</span>
-              <span class="faq-item__summary-meta">
-                <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true">
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </span>
-            </summary>
-            <div class="faq-item__content">
-              <p class="faq-item__text">
-                Purchases on board are charged to your Cruise Card. Link a physical credit/debit card (including enabled
-                international cards) or settle with a cash deposit at reception. Check currency and activation
-                requirements
-                with your bank prior to boarding.
-              </p>
-              <div class="faq-item__meta">
-                <span>Source: MSC Onboard Account</span>
-              </div>
-            </div>
-          </details>
+                <summary class="faq-item__summary">
+                  <span class="faq-item__summary-title">How do I pay for onboard expenses? Are Wise/Nomad and
+                    installments accepted?</span>
+                  <span class="faq-item__summary-meta">
+                    <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </span>
+                </summary>
+                <div class="faq-item__content">
+                  <p class="faq-item__text">
+                    Onboard purchases are recorded on the account linked to your Cruise Card. Confirm with
+                    MSC/reception which methods are accepted to link or pay this account, the currency and any
+                    deposits. If you plan to use an international card, check that it's enabled and accepted, and
+                    bring the physical card. Wise, Nomad and installments may be available, but confirm availability,
+                    criteria and conditions before counting on them. The cabin price in Brazilian reais and the
+                    currency for onboard spending are separate matters.
+                  </p>
+                </div>
+              </details>
 
               <details class="faq-item" id="faq-o35" data-category="vida-a-bordo">
-            <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">How do I book specialty restaurants on this sailing?</span>
-              <span class="faq-item__summary-meta">
-                <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true">
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </span>
-            </summary>
-            <div class="faq-item__content">
-              <p class="faq-item__text">
-                Specialty venues such as Kaito Sushi Bar operate separately from full board. MSC lists Butcher’s Cut
-                debuting on MSC Musica in late 2026. Verify operational restaurants and reserve a table directly on
-                board.
-              </p>
-              <div class="faq-item__meta">
-                <span>Source: MSC Musica specifications [S07]</span>
-              </div>
-            </div>
-          </details>
+                <summary class="faq-item__summary">
+                  <span class="faq-item__summary-title">How do I check which specialty restaurants are operating and
+                    book them on this sailing?</span>
+                  <span class="faq-item__summary-meta">
+                    <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </span>
+                </summary>
+                <div class="faq-item__content">
+                  <p class="faq-item__text">
+                    They're extra services, separate from full board. Kaito Sushi Bar and Butcher’s Cut are options
+                    that have been mentioned; MSC lists Butcher’s Cut on MSC Musica with a planned start in November
+                    2026. Confirm which restaurants will be operating on your sailing, how to book and the onboard
+                    prices.
+                  </p>
+                  <div class="faq-item__meta">
+                    <span>Source: MSC Musica [S07]</span>
+                  </div>
+                </div>
+              </details>
 
               <details class="faq-item" id="faq-o36" data-category="vida-a-bordo">
-            <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">What should I check regarding travel insurance coverage?</span>
-              <span class="faq-item__summary-meta">
-                <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true">
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </span>
-            </summary>
-            <div class="faq-item__content">
-              <p class="faq-item__text">
-                Travel insurance is recommended to cover unforeseen cancellations or onboard medical assistance. Request
-                the official policy from Royal Trip and check coverage limits, currencies, deductibles, and deadlines
-                before purchasing.
-              </p>
-              <div class="faq-item__meta">
-                <span>Source: Royal Trip Insurance Policy</span>
-              </div>
-            </div>
-          </details>
+                <summary class="faq-item__summary">
+                  <span class="faq-item__summary-title">What should I check in the insurance offer and policy?</span>
+                  <span class="faq-item__summary-meta">
+                    <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </span>
+                </summary>
+                <div class="faq-item__content">
+                  <p class="faq-item__text">
+                    Insurance is optional and recommended for unforeseen events and private medical expenses. The
+                    approximate price is R$ 112.00 per person, with a cancellation condition covering 29 reasons, and
+                    it must be purchased up to twenty days before boarding. Ask Royal Trip for the current policy and
+                    offer, and confirm price, deadline, coverage, exclusions, currency and assistance before
+                    purchasing.
+                  </p>
+                </div>
+              </details>
 
               <details class="faq-item" id="faq-o37" data-category="vida-a-bordo">
-            <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">My medication requires refrigeration or special needs. What should I
-                do?</span>
-              <span class="faq-item__summary-meta">
-                <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true">
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </span>
-            </summary>
-            <div class="faq-item__content">
-              <p class="faq-item__text">
-                Inform Royal Trip in advance via private message so requests can be forwarded to MSC medical staff. Do
-                not
-                rely on the cabin minibar for precise temperature storage. Keep medicines in your carry-on luggage.
-              </p>
-              <div class="faq-item__meta">
-                <span>Source: MSC Special Needs [S03]</span>
-              </div>
-            </div>
-          </details>
+                <summary class="faq-item__summary">
+                  <span class="faq-item__summary-title">My medication needs refrigeration, or I need an
+                    accommodation. What should I do?</span>
+                  <span class="faq-item__summary-meta">
+                    <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </span>
+                </summary>
+                <div class="faq-item__content">
+                  <p class="faq-item__text">
+                    Let Royal Trip know in advance, through a private channel, so they can forward your need to MSC
+                    and confirm the arrangements. Don't assume the cabin minibar keeps the temperature your medication
+                    requires. Pack your medications and personal instructions in your carry-on. Don't send
+                    prescriptions, medical reports or diagnoses through the general questions form.
+                  </p>
+                  <div class="faq-item__meta">
+                    <span>Source: MSC Accessibility [S03] + Royal Trip</span>
+                  </div>
+                </div>
+              </details>
 
               <details class="faq-item" id="faq-o38" data-category="vida-a-bordo">
-            <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">How does the kids club work? Does staff change diapers or provide
-                meals?</span>
-              <span class="faq-item__summary-meta">
-                <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true">
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </span>
-            </summary>
-            <div class="faq-item__content">
-              <p class="faq-item__text">
-                MSC offers kids clubs organized by age groups. Children wearing diapers must be accompanied by a
-                guardian
-                during general recreation activities, as youth counselors do not provide diaper changing or meals.
-                Confirm specific services with youth staff on board.
-              </p>
-              <div class="faq-item__meta">
-                <span>Source: MSC Children Guidelines [S08]</span>
-              </div>
-            </div>
-          </details>
+                <summary class="faq-item__summary">
+                  <span class="faq-item__summary-title">How does the kids club work? Does the staff change diapers
+                    or provide meals?</span>
+                  <span class="faq-item__summary-meta">
+                    <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </span>
+                </summary>
+                <div class="faq-item__content">
+                  <p class="faq-item__text">
+                    MSC offers kids' activities by age group; hours and sign-up should be checked on board. The Doremi
+                    Club runs from about 9:00 AM to 11:00 PM. Children in diapers must be accompanied, since kids club
+                    activities don't include diaper changes or meals. Confirm these conditions with the MSC Musica
+                    youth staff: services like Baby Care have their own rules and shouldn't be confused with the kids
+                    club. Plan the child's care and meals with their parent or guardian.
+                  </p>
+                  <div class="faq-item__meta">
+                    <span>Source: MSC Children [S08]</span>
+                  </div>
+                </div>
+              </details>
 
               <details class="faq-item" id="faq-o42" data-category="vida-a-bordo">
-            <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">Are water, tea, and coffee complimentary? Will we have the Aqua
-                system?</span>
-              <span class="faq-item__summary-meta">
-                <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true">
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </span>
-            </summary>
-            <div class="faq-item__content">
-              <p class="faq-item__text">
-                Water dispensers, hot water, tea, and drip coffee are available in the buffet restaurant during service
-                hours. The Aqua reusable bottle system availability on MSC Musica should be confirmed with the ship
-                crew.
-              </p>
-            </div>
-          </details>
+                <summary class="faq-item__summary">
+                  <span class="faq-item__summary-title">Are water, tea and coffee free? Will we have the Aqua
+                    system?</span>
+                  <span class="faq-item__summary-meta">
+                    <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </span>
+                </summary>
+                <div class="faq-item__content">
+                  <p class="faq-item__text">
+                    The buffet offers water, tea and coffee dispensers, subject to the service's operating hours. The
+                    Aqua system may offer refillable bottles for guests with a package. Confirm availability and
+                    conditions on MSC Musica for this sailing with MSC; don't count on an included bottle without that
+                    confirmation.
+                  </p>
+                </div>
+              </details>
 
               </div>
             </div>
@@ -1725,69 +1791,71 @@
               </div>
               <div class="faq-list" id="faq-list-desembarque">
               <details class="faq-item" id="faq-o39" data-category="desembarque">
-            <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">What time must I vacate my cabin on Monday morning?</span>
-              <span class="faq-item__summary-meta">
-                <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true">
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </span>
-            </summary>
-            <div class="faq-item__content">
-              <p class="faq-item__text">
-                Cabins must be vacated early to prepare for the subsequent sailing. Follow the exact time specified in
-                the
-                onboard disembarkation program delivered to your cabin on the final evening.
-              </p>
-              <div class="faq-item__meta">
-                <span>Source: MSC Disembarkation Policy</span>
-              </div>
-            </div>
-          </details>
+                <summary class="faq-item__summary">
+                  <span class="faq-item__summary-title">How long can I stay in my cabin on Monday?</span>
+                  <span class="faq-item__summary-meta">
+                    <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </span>
+                </summary>
+                <div class="faq-item__content">
+                  <p class="faq-item__text">
+                    The cabin must be vacated early so the next cruise can be prepared. Follow the time MSC announces
+                    on board; 10:00 AM is only a reference and doesn't guarantee you can use the cabin until then.
+                    Plan breakfast, luggage and documents for disembarkation.
+                  </p>
+                  <div class="faq-item__meta">
+                    <span>Source: MSC On Board</span>
+                  </div>
+                </div>
+              </details>
 
               <details class="faq-item" id="faq-o40" data-category="desembarque">
-            <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">How do I pack and collect luggage for disembarkation?</span>
-              <span class="faq-item__summary-meta">
-                <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true">
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </span>
-            </summary>
-            <div class="faq-item__content">
-              <p class="faq-item__text">
-                Follow MSC color-coded luggage tags and instructions provided in your cabin. Leave checked luggage
-                outside
-                your door by the indicated hour on Sunday night. Retrieve luggage in the terminal customs hall in
-                Santos.
-              </p>
-              <div class="faq-item__meta">
-                <span>Source: MSC Baggage Guidelines [S01]</span>
-              </div>
-            </div>
-          </details>
+                <summary class="faq-item__summary">
+                  <span class="faq-item__summary-title">How do I organize my luggage for disembarkation?</span>
+                  <span class="faq-item__summary-meta">
+                    <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </span>
+                </summary>
+                <div class="faq-item__content">
+                  <p class="faq-item__text">
+                    Follow the disembarkation instructions and tags provided by MSC, including the procedure for
+                    collecting your bags. Pack what you need for the last night and the following morning in your
+                    carry-on. Make sure you have all your bags at the terminal and review the meeting instructions for
+                    your transportation.
+                  </p>
+                  <div class="faq-item__meta">
+                    <span>Source: MSC Luggage [S01]</span>
+                  </div>
+                </div>
+              </details>
 
               <details class="faq-item" id="faq-o41" data-category="desembarque">
-            <summary class="faq-item__summary">
-              <span class="faq-item__summary-title">Should companions join official groups? Whom should I
-                contact?</span>
-              <span class="faq-item__summary-meta">
-                <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" aria-hidden="true">
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </span>
-            </summary>
-            <div class="faq-item__content">
-              <p class="faq-item__text">
-                Add travel companions and cabin family members to the official broadcast group to receive event
-                announcements. Contact the cabin lead or our team to request invitation links. For
-                booking/vouchers, message Royal Trip privately.
-              </p>
-            </div>
-          </details>
+                <summary class="faq-item__summary">
+                  <span class="faq-item__summary-title">Do all companions need to be in the group? Who should I
+                    contact?</span>
+                  <span class="faq-item__summary-meta">
+                    <svg class="faq-item__icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </span>
+                </summary>
+                <div class="faq-item__content">
+                  <p class="faq-item__text">
+                    Add your cabin companions and family members to the official group so they receive the
+                    announcements. Ask the person in charge, through the channel already shared, to add them; the
+                    charter bus group is a separate channel for those who booked that transportation. For vouchers,
+                    cabin details and bookings, message Júnior/Royal Trip privately. For games, the event schedule and
+                    the kit, talk to our team and the game teachers.
+                  </p>
+                </div>
+              </details>
 
               </div>
             </div>

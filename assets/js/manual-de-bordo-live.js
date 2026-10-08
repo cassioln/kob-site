@@ -1,12 +1,12 @@
-import { CHAPTERS, LIVE_VIDEO_ID, LIVE_DURATION, GROUP_INVITE_URL } from './manual-de-bordo-live-data.js?v=20261007-transcript-i18n';
+import { CHAPTERS, LIVE_VIDEO_ID, LIVE_DURATION, GROUP_INVITE_URL } from './manual-de-bordo-live-data.js?v=20261008-live-copy';
 import { normalizeSearch, matchChapter, highlightParts, excerpt, transcriptFor } from './manual-de-bordo-live-search.js?v=20261007-transcript-i18n';
 
-import { topicAt, topicProgress, seekInTopic, isNoticeDue, isGroupInviteDue, mobileNoticeAt } from './manual-de-bordo-live-timeline.js?v=20261007-notice-reading-complete';
+import { topicAt, topicProgress, seekInTopic, isNoticeDue, isGroupInviteDue, mobileNoticeAt } from './manual-de-bordo-live-timeline.js?v=20261008-live-copy';
 import { initLiveGuideHelp } from './manual-de-bordo-live-help.js?v=20261005-mobile-live';
 import { initLiveMarkers } from './manual-de-bordo-live-markers.js?v=20261005-mobile-live';
 import { initLiveControlMarquee, initLiveNoticeMarquee, initLivePulse } from './manual-de-bordo-live-marquee.js?v=20261007-notice-reading-complete';
 import { initLiveTopicTransition } from './manual-de-bordo-live-topic.js?v=20261005-mobile-live';
-import { supportAt } from './manual-de-bordo-live-support.js?v=20261006-live-copy';
+import { supportAt } from './manual-de-bordo-live-support.js?v=20261008-live-copy';
 
 const lang = document.documentElement.lang.slice(0, 2);
 const copy = {

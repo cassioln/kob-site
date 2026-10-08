@@ -78,7 +78,9 @@ test('frase longa tolera uma palavra sem par quando há 3 ou mais termos', () =>
 
 test('pergunta em espanhol sem ruído do verbo "es"', () => {
   const pack = search(prepared.es, 'que es el paquete de bebidas');
-  assert.ok(pack.results.some(x => x.entry.page === 'manual' && x.entry.kind === 'faq' && /bebidas/i.test(x.entry.title)), JSON.stringify(titles(pack)));
+  // The top results are about drink packages, and the manual's package FAQ is among them.
+  assert.ok(pack.results.slice(0, 3).every(x => /paquete|bebida/i.test(`${x.entry.title} ${x.entry.text}`)), JSON.stringify(titles(pack)));
+  assert.ok(pack.results.some(x => x.entry.page === 'manual' && x.entry.kind === 'faq' && /paquete/i.test(x.entry.title)), JSON.stringify(titles(pack)));
   const bus = search(prepared.es, 'cual es el horario del autobus');
   assert.ok(bus.results.some(x => x.entry.kind !== 'live'), JSON.stringify(titles(bus)));
 });
@@ -115,11 +117,12 @@ test('plural encontra o singular nos 3 idiomas', () => {
   assert.ok(singularOnly(limites, 'limite', 'limites'));
   assert.ok(singularOnly(search(prepared.pt, 'navios'), 'navio', 'navios'));
   assert.ok(singularOnly(search(prepared.en, 'passengers'), 'passenger', 'passengers'));
-  // Only 2 ES entries contain "permiso(s)"; the old 4 results included typo noise ("premios").
+  // Few ES entries contain "permiso(s)" (1 since the Lote 3 retranslation); results once included typo noise ("premios").
   const permisos = search(prepared.es, 'permisos');
   const ids = permisos.results.map(x => x.entry.id);
   const withWord = read('assets/data/search-index.es.json').entries.filter(e => /\bpermisos?\b/i.test(`${e.title} ${e.keywords} ${e.text}`));
-  assert.ok(withWord.length >= 2 && withWord.every(e => ids.includes(e.id)), JSON.stringify(ids));
+  assert.ok(withWord.length >= 1 && withWord.every(e => ids.includes(e.id)), JSON.stringify(ids));
+  assert.equal(ids.length, withWord.length, JSON.stringify(ids));
   assert.ok(singularOnly(permisos, 'permiso', 'permisos'));
 });
 
