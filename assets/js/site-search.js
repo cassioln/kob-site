@@ -311,7 +311,7 @@ function activate(index) {
 }
 
 export function goToAnchor(anchor) {
-  if (!anchor) { window.scrollTo({ top: 0, behavior: reducedMotion.matches ? 'auto' : 'smooth' }); return; }
+  if (!anchor) { window.scrollTo({ top: 0, behavior: scrollBehavior() }); return; }
   if (anchor.startsWith('#live-')) {
     history.replaceState(null, '', anchor);
     document.dispatchEvent(new CustomEvent('kob:live-seek', { detail: { seconds: Number(anchor.slice(6)) } }));
@@ -319,6 +319,54 @@ export function goToAnchor(anchor) {
   }
   if (window.location.hash === anchor) history.replaceState(null, '', window.location.pathname + window.location.search);
   window.location.hash = anchor;
+}
+
+const scrollBehavior = () => (reducedMotion.matches ? 'auto' : 'smooth');
+
+// Scrolls the target to its scroll-margin line (block "start": the manual's own hash handler scrolls the same
+// way, so they agree). Layout above can still settle while a smooth scroll runs (the home hero right after
+// load), so when the scroll ends the target is put back on the line, instantly, once.
+function bringIntoView(target) {
+  target.scrollIntoView({ block: 'start', behavior: scrollBehavior() });
+  const settle = () => {
+    const line = parseFloat(getComputedStyle(target).scrollMarginTop) || 0;
+    if (Math.abs(target.getBoundingClientRect().top - line) > 2) target.scrollIntoView({ block: 'start', behavior: 'auto' });
+  };
+  window.addEventListener('scrollend', settle, { once: true });
+  setTimeout(() => window.removeEventListener('scrollend', settle), 2500);
+}
+
+// Arrival by hash, from a result or a shared link: a FAQ question opens (clearing the box's filter if it hid
+// it), scrolls in, takes focus and glows; a tab panel (home prices: cabins | drinks) is selected through its tab.
+function arrive() {
+  let id = '';
+  try { id = decodeURIComponent(window.location.hash.slice(1)); } catch { return; }
+  const target = id && document.getElementById(id);
+  if (!target) return;
+  if (target.getAttribute('role') === 'tabpanel') {
+    const tab = document.querySelector(`[role="tab"][aria-controls="${CSS.escape(id)}"]`);
+    if (target.hidden) tab?.click();
+    requestAnimationFrame(() => {
+      bringIntoView(target);
+      tab?.focus({ preventScroll: true });
+    });
+    return;
+  }
+  if (!/^faq-[ho]\d{2}$/.test(id) || target.tagName !== 'DETAILS') return;
+  const filter = target.closest('section')?.querySelector('input[type="search"]');
+  if (filter?.value) {
+    filter.value = '';
+    filter.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+  target.open = true;
+  requestAnimationFrame(() => {
+    bringIntoView(target);
+    target.querySelector('summary')?.focus({ preventScroll: true });
+    target.classList.remove('site-search-arrival');
+    void target.offsetWidth; // restart the glow when the same question is reached twice
+    target.classList.add('site-search-arrival');
+    setTimeout(() => target.classList.remove('site-search-arrival'), 2000);
+  });
 }
 
 function init() {
@@ -343,6 +391,8 @@ function init() {
     if (dialog?.open && !closeTimer) requestClose();
     else open(document.activeElement); // also cancels a close still animating
   }, true);
+  window.addEventListener('hashchange', arrive);
+  arrive();
 }
 
 init();

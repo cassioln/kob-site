@@ -425,7 +425,8 @@ for (const width of [320, 390]) {
   });
 }
 
-for (const width of [1321, 1366]) {
+// 1321/1366: the scrolled bar keeps an icon-only button; 1680: the full button and "Confira o" are back.
+for (const width of [1321, 1366, 1680]) {
   test(`homes: menu e lupa cabem a ${width}px, no topo e rolado`, async ({ page }) => {
     await page.setViewportSize({ width, height: 800 });
     for (const path of ['/', '/en/', '/es/']) {
@@ -434,6 +435,10 @@ for (const width of [1321, 1366]) {
       await expectHeaderFits(page, '.nav__right', `${path} @${width} topo`);
       await scrollHomeNav(page);
       await expectHeaderFits(page, '.nav__right', `${path} @${width} rolado`);
+      const trigger = page.locator('.nav__right .site-search-trigger');
+      // On the navy scrolled bar the button turns white like its neighbours.
+      await expect(trigger).toHaveCSS('color', 'rgb(255, 255, 255)');
+      await expect(trigger.locator('.site-search-trigger__label')).toBeVisible({ visible: width >= 1680 });
     }
   });
 }
@@ -446,4 +451,103 @@ for (const path of ['/onibus.html', '/en/onibus.html', '/es/onibus.html']) {
     await page.setViewportSize({ width: 390, height: 900 });
     expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBe(0);
   });
+}
+
+// ---------- Chegada no destino ----------
+
+const mockYouTube = page => page.route(/https:\/\/.*youtube(?:-nocookie)?\.com\/.*/, route => route.fulfill({ contentType: 'text/html', body: '<html><body>Mock video</body></html>' }));
+
+// The target is on screen and not under the header that stays on top (fixed or sticky).
+async function expectBelowHeader(page, target, header) {
+  await expect.poll(async () => page.evaluate(([targetSel, headerSel]) => {
+    const top = document.querySelector(targetSel).getBoundingClientRect().top;
+    const bar = document.querySelector(headerSel).getBoundingClientRect().bottom;
+    return top >= bar - 1 && top < window.innerHeight / 2;
+  }, [target, header]), { message: `${target} abaixo de ${header}` }).toBe(true);
+}
+
+for (const path of ['/', '/en/', '/es/']) {
+  test(`chegada na home abre a pergunta e limpa o filtro do FAQ (${path})`, async ({ page }) => {
+    await visit(page, path);
+    await page.locator('#faq-search').fill('xyzqwk');
+    await expect(page.locator('#faq-h23')).toBeHidden();
+    await page.evaluate(() => { location.hash = '#faq-h23'; });
+    const item = page.locator('#faq-h23');
+    await expect(item).toHaveAttribute('open', '');
+    await expect(item).toBeVisible();
+    await expect(page.locator('#faq-search')).toHaveValue('');
+    await expect(item).toHaveClass(/site-search-arrival/);
+    await expect(item.locator('summary')).toBeFocused();
+    await expectBelowHeader(page, '#faq-h23', '#nav');
+    await expect(item).not.toHaveClass(/site-search-arrival/, { timeout: 4000 });
+  });
+}
+
+for (const path of ['/manual-de-bordo.html', '/en/manual-de-bordo.html', '/es/manual-de-bordo.html']) {
+  test(`chegada no manual por URL abre a pergunta (${path})`, async ({ page }) => {
+    await mockYouTube(page);
+    await visit(page, `${path}#faq-o08`);
+    await expect(page.locator('#faq-o08')).toHaveAttribute('open', '');
+    await expectBelowHeader(page, '#faq-o08', '.guide-header');
+  });
+
+  test(`#live-1250 vindo de outra página pré-seleciona o capítulo e Assistir começa nele (${path})`, async ({ page }) => {
+    await mockYouTube(page);
+    await visit(page, `${path}#live-1250`);
+    await expect(page.locator('#heroLiveCinema')).toBeInViewport();
+    await page.locator('#loadLivePlayerBtn').click();
+    await expect(page.locator('#livePlayerContainer iframe')).toHaveAttribute('src', /[?&]start=1250(&|$)/);
+  });
+}
+
+test('resultado da live na mesma página toca no minuto', async ({ page }) => {
+  await mockYouTube(page);
+  await visit(page, '/manual-de-bordo.html');
+  await pressShortcut(page);
+  await input(page).fill('estacionamento concais');
+  const live = options(page).filter({ hasText: 'Estacionamento no Concais' });
+  await expect(live.locator('.site-search__dest-name')).toHaveText('29:25');
+  await live.click();
+  await expect(dialog(page)).toBeHidden();
+  await expect(page.locator('#livePlayerContainer iframe')).toHaveAttribute('src', /[?&]start=1765(&|$)/);
+  await expect(page).toHaveURL(/#live-1765$/);
+  await expect(page.locator('#heroLiveCinema')).toBeInViewport();
+});
+
+test('resultado de FAQ na mesma página abre a pergunta sem recarregar', async ({ page }) => {
+  await home(page);
+  await page.evaluate(() => { window.__noReload = true; });
+  await pressShortcut(page);
+  await input(page).fill('vacinado');
+  await options(page).filter({ hasText: 'Preciso estar vacinado' }).click();
+  await expect(page.locator('#faq-h04')).toHaveAttribute('open', '');
+  await expect(page.locator('#faq-h04 summary')).toBeFocused();
+  expect(await page.evaluate(() => window.__noReload)).toBe(true);
+});
+
+// Drink packages live in the hidden second tab of #valores: the result selects that tab before scrolling.
+// The card titles are uppercase; a case-sensitive regex keeps the FAQ answers that mention the package out.
+for (const path of ['/', '/en/', '/es/']) {
+  test(`resultado de pacote de bebidas abre a aba de bebidas (${path})`, async ({ page }) => {
+    await visit(page, path);
+    await expect(page.locator('#panel-bebidas')).toBeHidden();
+    await pressShortcut(page);
+    await input(page).fill('premium extra');
+    await options(page).filter({ hasText: /PREMIUM EXTRA/ }).first().click();
+    await expect(page.locator('#tab-bebidas')).toHaveAttribute('aria-selected', 'true');
+    await expect(page.locator('#panel-bebidas')).toBeVisible();
+    await expect(page.locator('#panel-cabines')).toBeHidden();
+    await expect(page.locator('#tab-bebidas')).toBeFocused();
+    await expectBelowHeader(page, '.value-tabs', '#nav');
+  });
+}
+
+for (const path of ['/onibus.html', '/en/onibus.html', '/es/onibus.html']) {
+  for (const width of [1280, 390]) {
+    test(`link para #embarque no busão para abaixo do header fixo (${path} @${width})`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 800 });
+      await visit(page, `${path}#embarque`);
+      await expectBelowHeader(page, '.bus-reassurance #embarque', '.bus-header');
+    });
+  }
 }

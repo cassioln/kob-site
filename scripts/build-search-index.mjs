@@ -19,7 +19,9 @@ const SECTIONS = {
       id: 'valores',
       parts: n => n.tag === 'article' && hasClass(n, 'price-card'),
       // Cabines têm nome (price-card__cabin); pacotes de bebida só têm o tipo (price-card__type).
-      title: node => findFirst(node, n => hasClass(n, 'price-card__cabin')) || findFirst(node, n => hasClass(n, 'price-card__type'))
+      title: node => findFirst(node, n => hasClass(n, 'price-card__cabin')) || findFirst(node, n => hasClass(n, 'price-card__type')),
+      // Cada card aponta para a sua aba (cabines | bebidas): a chegada seleciona a aba antes de rolar.
+      anchorOf: node => closest(node, n => n.attrs.role === 'tabpanel')?.attrs.id
     },
     { id: 'hospedagem' },
     { id: 'parceiros' }

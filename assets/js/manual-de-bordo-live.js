@@ -948,9 +948,37 @@ function initLive() {
     updateProgress(seconds);
     revealControls();
   });
+  // Site search: `#live-<seconds>` (a link from another page) points the cinema at that chapter and "Watch"
+  // starts there; `kob:live-seek` (a result on this page) plays it right away.
+  const chapterFromHash = () => {
+    const match = /^#live-(\d+)$/.exec(window.location.hash);
+    return match ? CHAPTERS.find(chapter => chapter.seconds === Number(match[1])) || null : null;
+  };
+  let linkedChapter = chapterFromHash();
+  const showLinkedChapter = () => {
+    if (!linkedChapter) return;
+    select(linkedChapter, false);
+    cinema.scrollIntoView({ block: 'center' });
+  };
+  showLinkedChapter();
+  window.addEventListener('hashchange', () => {
+    const chapter = chapterFromHash();
+    if (!chapter) return;
+    linkedChapter = chapter;
+    showLinkedChapter();
+  });
+  document.addEventListener('kob:live-seek', event => {
+    const chapter = CHAPTERS.find(item => item.seconds === Number(event.detail?.seconds));
+    if (!chapter) return;
+    linkedChapter = chapter;
+    select(chapter, false);
+    cinema.scrollIntoView({ block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    playAt(chapter.seconds);
+  });
   byId('loadLivePlayerBtn').addEventListener('click', () => {
-    select(CHAPTERS[0], false);
-    playAt(CHAPTERS[0].seconds);
+    const start = linkedChapter || CHAPTERS[0];
+    select(start, false);
+    playAt(start.seconds);
   });
   byId('liveRetryBtn').addEventListener('click', () => {
     const position = ready && player?.getCurrentTime ? Number(player.getCurrentTime()) : pendingSeconds;

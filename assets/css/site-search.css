@@ -31,7 +31,7 @@
 /* Home, scrolled desktop bar: menu + manual link + "Garantir minha vaga" already filled the row (the logo
    collapsed below ~1455px), and the full button pushed the reserve button off the screen. Until there is
    room for everything, logo included (~1680px), the button keeps only its icon and the manual link drops
-   its "Confira o", which leaves the row no heavier than it was before the search. */
+   its "Confira o", so the reserve button stays on screen (EN still squeezes the logo a little more). */
 @media (min-width: 1321px) and (max-width: 1679px) {
   .nav[data-scrolled="true"] .site-search-trigger { width: 44px; min-height: 44px; padding: 0; justify-content: center; }
   .nav[data-scrolled="true"] .site-search-trigger__label,
@@ -144,6 +144,22 @@ html.site-search-open { overflow: hidden; scrollbar-gutter: stable; }
 .site-search__status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 .site-search-arrival { outline: 3px solid var(--sunset-gold, #ffc20e); outline-offset: 4px; border-radius: 10px; }
+
+/* Search destinations land below the header that stays on screen: the home bar (fixed; 73px on phones,
+   107px wide), plus the price tabs above a price panel; the busão header (sticky; 100px desktop, 62px on
+   phones). The manual's targets already have their own scroll-margin (manual-de-bordo.css). */
+#faq details[id^="faq-h"] { scroll-margin-top: 120px; }
+.value-panel[role="tabpanel"] { scroll-margin-top: 210px; }
+#como-reservar.bus-intro,
+#passageiros.bus-checkout,
+#condicoes.bus-reassurance,
+.bus-reassurance #embarque { scroll-margin-top: 116px; }
+@media (max-width: 640px) {
+  #como-reservar.bus-intro,
+  #passageiros.bus-checkout,
+  #condicoes.bus-reassurance,
+  .bus-reassurance #embarque { scroll-margin-top: 78px; }
+}
 
 @keyframes site-search-in { from { opacity: 0; transform: translateY(16px) scale(0.98); } to { opacity: 1; transform: none; } }
 @keyframes site-search-tear { from { transform: translateY(-6px); } to { transform: none; } }
