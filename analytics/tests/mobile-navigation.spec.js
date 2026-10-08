@@ -11,15 +11,13 @@ for (const locale of locales) {
     test(`${surface} ${locale.active}: idiomas no menu mobile, foco e retorno ao desktop`, {
       tag: locale.active === 'PT' ? '@smoke' : []
     }, async ({ page }) => {
-      page.on('pageerror', error => console.log('DIAGNOSTIC ERROR', error.message));
-      page.on('requestfailed', request => { if (request.url().includes('127.0.0.1') && /\.(css|js)/.test(request.url())) console.log('DIAGNOSTIC REQUEST', request.url(), request.failure()); });
       await page.setViewportSize({ width: 375, height: 812 });
       await page.goto(`/${locale.prefix}${surface}.html`);
-      console.log('DIAGNOSTIC STATE', await page.evaluate(() => ({width:innerWidth,ready:document.readyState,body:document.body.className,styles:[...document.styleSheets].map(s=>({href:s.href,length:(()=>{try{return s.cssRules.length;}catch{return 'external';}})()})),languageHost:document.querySelector('.lang-switch').parentElement.className}))); 
       const drawer = page.locator('#drawer');
       const toggle = page.locator('#navToggle');
       const language = drawer.locator('.lang-switch');
       await expect(page.locator('header .lang-switch')).toHaveCount(0);
+      if (surface === 'onibus') await expect(page.locator('header .header-manual-link')).toHaveCount(0);
       await expect(toggle).toBeVisible();
       await expect(drawer).toHaveAttribute('aria-hidden', 'true');
 
@@ -29,6 +27,12 @@ for (const locale of locales) {
       await expect(language).toBeVisible();
       await expect(language.locator('.lang-switch__item')).toHaveCount(3);
       await expect(language.locator('[aria-current="page"]')).toHaveText(locale.active);
+      if (surface === 'onibus') {
+        const manual = drawer.locator('.header-manual-link');
+        await expect(manual).toBeVisible();
+        await expect(manual).toHaveAttribute('href', `https://manualdebordo.kriativosonboard.com.br/${locale.prefix}`);
+        await expect(drawer.locator('a[href*="manualdebordo.kriativosonboard.com.br"]')).toHaveCount(1);
+      }
       for (const target of locales.filter(target => target.active !== locale.active)) {
         const destination = surface === 'onibus'
           ? `https://busao.kriativosonboard.com.br/${target.prefix}`
@@ -37,7 +41,6 @@ for (const locale of locales) {
           .toHaveAttribute('href', destination);
       }
       for (const button of await language.locator('.lang-switch__item').all()) {
-        console.log('DIAGNOSTIC BUTTON', await button.evaluate(el=>({className:el.className,parent:el.parentElement.outerHTML,font:getComputedStyle(el).font,minWidth:getComputedStyle(el).minWidth,display:getComputedStyle(el).display,width:el.getBoundingClientRect().width})));
         const box = await button.boundingBox();
         expect(box.width).toBeGreaterThanOrEqual(44);
         expect(box.height).toBeGreaterThanOrEqual(44);
@@ -63,6 +66,7 @@ for (const locale of locales) {
       await page.setViewportSize({ width: 1440, height: 900 });
       await expect(drawer).toHaveAttribute('data-open', 'false');
       await expect(page.locator('header .lang-switch')).toBeVisible();
+      if (surface === 'onibus') await expect(page.locator('header .header-manual-link')).toBeVisible();
       await expect(page.locator('header [aria-current="page"]')).toHaveText(locale.active);
       await expect(toggle).toBeHidden();
       await expect(page.locator('#main')).not.toHaveAttribute('inert', '');

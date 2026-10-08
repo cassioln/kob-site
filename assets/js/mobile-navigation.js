@@ -11,11 +11,19 @@
 
   var headerHost = language.parentElement;
   var headerNext = language.nextElementSibling;
+  var manualLink = document.querySelector('.bus-header .header-manual-link');
+  var manualHost = document.querySelector('[data-drawer-manual]');
+  var manualHeaderHost = manualLink && manualLink.parentElement;
+  var manualHeaderNext = manualLink && manualLink.nextElementSibling;
   var mobile = window.matchMedia('(max-width: 767px)');
   var inertStates = new Map();
   var previousOverflow = '';
 
-  function placeLanguage() {
+  function placeHeaderControls() {
+    if (manualLink && manualHost) {
+      if (mobile.matches) manualHost.appendChild(manualLink);
+      else manualHeaderHost.insertBefore(manualLink, manualHeaderNext);
+    }
     if (mobile.matches) languageHost.appendChild(language);
     else headerHost.insertBefore(language, headerNext);
   }
@@ -50,10 +58,10 @@
   }
 
   toggle.hidden = false;
-  placeLanguage();
+  placeHeaderControls();
   mobile.addEventListener('change', function () {
     closeDrawer(false);
-    placeLanguage();
+    placeHeaderControls();
   });
   window.addEventListener('resize', function () {
     if (!toggle.getClientRects().length) closeDrawer(false);

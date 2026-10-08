@@ -468,8 +468,7 @@ for (const width of [320, 390, 800, 1024, 1320]) {
         expect(buttonBox.height).toBeCloseTo(menuBox.height, 1);
         if (width >= 390) await expect(trigger.locator('.site-search-trigger__label')).toBeVisible();
         if (width === 320 && container === '.bus-header__right') {
-          await expect(trigger.locator('.site-search-trigger__label')).toBeHidden();
-          expect(buttonBox.width).toBeCloseTo(buttonBox.height, 1);
+          await expect(trigger.locator('.site-search-trigger__label')).toBeVisible();
         }
       } else await expect(trigger).not.toHaveAttribute('data-search-compact');
       if (container !== '.nav__right') continue;
