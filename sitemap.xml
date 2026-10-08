@@ -93,7 +93,31 @@
   </url>
   <url>
     <loc>https://kriativosonboard.com.br/politica-de-privacidade.html</loc>
-    <lastmod>2026-08-27</lastmod>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://kriativosonboard.com.br/politica-de-privacidade.html" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://kriativosonboard.com.br/en/politica-de-privacidade.html" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://kriativosonboard.com.br/es/politica-de-privacidade.html" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://kriativosonboard.com.br/politica-de-privacidade.html" />
+    <lastmod>2026-10-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://kriativosonboard.com.br/en/politica-de-privacidade.html</loc>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://kriativosonboard.com.br/politica-de-privacidade.html" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://kriativosonboard.com.br/en/politica-de-privacidade.html" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://kriativosonboard.com.br/es/politica-de-privacidade.html" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://kriativosonboard.com.br/politica-de-privacidade.html" />
+    <lastmod>2026-10-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://kriativosonboard.com.br/es/politica-de-privacidade.html</loc>
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://kriativosonboard.com.br/politica-de-privacidade.html" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://kriativosonboard.com.br/en/politica-de-privacidade.html" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://kriativosonboard.com.br/es/politica-de-privacidade.html" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://kriativosonboard.com.br/politica-de-privacidade.html" />
+    <lastmod>2026-10-08</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>

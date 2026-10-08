@@ -7,6 +7,43 @@
   var PREFERENCES_KEY = 'cookie_consent_preferences';
   var COOKIE_MAX_AGE = 31536000;
   var SERVICE_GA4 = 'google-analytics-4';
+  var locale = document.documentElement.lang.split('-')[0];
+  var messages = {
+    pt: {
+      partial: 'Opcional · parcialmente ativa', enabled: 'Opcional · ativada', disabled: 'Opcional · desativada',
+      summary: 'Voltar ao resumo', customize: 'Personalizar cookies',
+      savedAnalytics: 'Preferências salvas. Google Analytics 4 foi autorizado.',
+      savedNecessary: 'Preferências salvas. Apenas cookies necessários serão usados.',
+      keptAnalytics: 'Sua preferência por cookies de análise foi mantida.',
+      accepted: 'Cookies de análise aceitos. Sua preferência foi salva.',
+      keptNecessary: 'Sua preferência por apenas cookies necessários foi mantida.',
+      denied: 'Apenas cookies necessários serão usados. Sua preferência foi salva.',
+      kept: 'Preferência de cookies mantida.'
+    },
+    en: {
+      partial: 'Optional · partially enabled', enabled: 'Optional · enabled', disabled: 'Optional · disabled',
+      summary: 'Back to summary', customize: 'Customize cookies',
+      savedAnalytics: 'Preferences saved. Google Analytics 4 is allowed.',
+      savedNecessary: 'Preferences saved. Only necessary cookies will be used.',
+      keptAnalytics: 'Your analytics cookie preference was kept.',
+      accepted: 'Analytics cookies accepted. Your preference was saved.',
+      keptNecessary: 'Your preference for necessary cookies only was kept.',
+      denied: 'Only necessary cookies will be used. Your preference was saved.',
+      kept: 'Cookie preference kept.'
+    },
+    es: {
+      partial: 'Opcional · parcialmente activada', enabled: 'Opcional · activada', disabled: 'Opcional · desactivada',
+      summary: 'Volver al resumen', customize: 'Personalizar cookies',
+      savedAnalytics: 'Preferencias guardadas. Google Analytics 4 está autorizado.',
+      savedNecessary: 'Preferencias guardadas. Solo se usarán cookies necesarias.',
+      keptAnalytics: 'Se mantuvo tu preferencia de cookies de análisis.',
+      accepted: 'Cookies de análisis aceptadas. Tu preferencia fue guardada.',
+      keptNecessary: 'Se mantuvo tu preferencia de usar solo cookies necesarias.',
+      denied: 'Solo se usarán cookies necesarias. Tu preferencia fue guardada.',
+      kept: 'Preferencia de cookies mantenida.'
+    }
+  };
+  var copy = messages[locale] || messages.pt;
   var banner = document.querySelector('[data-cookie-consent]');
 
   if (!banner) return;
@@ -253,11 +290,11 @@
 
     if (!analyticsCategoryStatus) return;
     if (analyticsCategoryToggle.indeterminate) {
-      analyticsCategoryStatus.textContent = 'Opcional · parcialmente ativa';
+      analyticsCategoryStatus.textContent = copy.partial;
     } else if (analyticsCategoryToggle.checked) {
-      analyticsCategoryStatus.textContent = 'Opcional · ativada';
+      analyticsCategoryStatus.textContent = copy.enabled;
     } else {
-      analyticsCategoryStatus.textContent = 'Opcional · desativada';
+      analyticsCategoryStatus.textContent = copy.disabled;
     }
   }
 
@@ -277,7 +314,7 @@
     preferencesPanel.hidden = !expanded;
     customizeButton.setAttribute('aria-expanded', expanded ? 'true' : 'false');
     banner.dataset.preferencesState = expanded ? 'open' : 'closed';
-    if (customizeLabel) customizeLabel.textContent = expanded ? 'Voltar ao resumo' : 'Personalizar cookies';
+    if (customizeLabel) customizeLabel.textContent = expanded ? copy.summary : copy.customize;
 
     if (expanded) syncControlsFromState(getConsentState());
     if (expanded && focusTitle && preferencesTitle) {
@@ -352,16 +389,16 @@
 
     if (source === 'custom') {
       announce(state.analytics
-        ? 'Preferências salvas. Google Analytics 4 foi autorizado.'
-        : 'Preferências salvas. Apenas cookies necessários serão usados.');
+        ? copy.savedAnalytics
+        : copy.savedNecessary);
     } else if (state.analytics) {
       announce(previousState.status === 'accepted'
-        ? 'Sua preferência por cookies de análise foi mantida.'
-        : 'Cookies de análise aceitos. Sua preferência foi salva.');
+        ? copy.keptAnalytics
+        : copy.accepted);
     } else {
       announce(previousState.status === 'denied'
-        ? 'Sua preferência por apenas cookies necessários foi mantida.'
-        : 'Apenas cookies necessários serão usados. Sua preferência foi salva.');
+        ? copy.keptNecessary
+        : copy.denied);
     }
 
     closeCookieBanner();
@@ -424,7 +461,7 @@
     }
 
     if (getConsentState().status) {
-      announce('Preferência de cookies mantida.');
+      announce(copy.kept);
       closeCookieBanner();
     } else {
       denyConsent();

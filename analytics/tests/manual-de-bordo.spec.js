@@ -347,7 +347,8 @@ test.describe('Página Manual de Bordo (embarcados) — Portal do Passageiro Con
   test('Formulário de contato permanece desativado', async ({ page }) => {
     await page.goto('/manual-de-bordo.html');
     await expect(page.locator('button[data-open-support-modal]')).toHaveCount(0);
-    await expect(page.locator('#supportModal')).toHaveAttribute('aria-hidden', 'true');
+    await expect(page.locator('#supportModal')).toHaveCount(0);
+    await expect(page.locator('#supportForm')).toHaveCount(0);
   });
 
   test('A gaveta de assuntos sobrepõe o vídeo sem mudar suas dimensões', async ({ page }) => {
