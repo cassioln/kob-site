@@ -67,13 +67,16 @@ export function prepareIndex(entries, { groups = [], stopwords = [] } = {}) {
 function candidates(prepared, token) {
   if (prepared.cache.has(token)) return prepared.cache.get(token);
   const out = new Map();
-  const limit = fuzzyLimit(token.length);
   for (const word of prepared.vocabulary) {
-    let score = 0;
-    if (word === token) score = 1;
-    else if (token.length >= 3 && word.startsWith(token)) score = 0.8;
-    else if (limit && Math.abs(word.length - token.length) <= limit && damerauLevenshtein(token, word, limit) <= limit) score = 0.55;
-    if (score) out.set(word, score);
+    if (word === token) out.set(word, 1);
+    else if (token.length >= 3 && word.startsWith(token)) out.set(word, 0.8);
+  }
+  // Typo tolerance is only for words the index does not have: a real word is never "corrected" into another.
+  const limit = out.size ? 0 : fuzzyLimit(token.length);
+  if (limit) {
+    for (const word of prepared.vocabulary) {
+      if (Math.abs(word.length - token.length) <= limit && damerauLevenshtein(token, word, limit) <= limit) out.set(word, 0.55);
+    }
   }
   if (prepared.cache.size > 300) prepared.cache.clear();
   prepared.cache.set(token, out);
@@ -96,16 +99,26 @@ function rank(prepared, perToken, phrase, allowMissing) {
     const used = new Set();
     for (const { direct, viaSynonym } of perToken) {
       let best = 0;
+      let bestSynonym = null; // reported only when a synonym, not the typed word, gave this token its best score
       for (const [field, weight] of Object.entries(FIELD_WEIGHT)) {
         const set = item.fields[field];
-        for (const [word, score] of direct) if (set.has(word)) { matched.add(word); best = Math.max(best, score * weight); }
-        for (const [word, score] of viaSynonym) if (set.has(word)) { matched.add(word); used.add(word); best = Math.max(best, score * weight); }
+        for (const [word, score] of direct) {
+          if (!set.has(word)) continue;
+          matched.add(word);
+          if (score * weight > best) { best = score * weight; bestSynonym = null; }
+        }
+        for (const [word, score] of viaSynonym) {
+          if (!set.has(word)) continue;
+          matched.add(word);
+          if (score * weight > best) { best = score * weight; bestSynonym = word; }
+        }
       }
       if (!best && ++missing > allowMissing) break;
+      if (bestSynonym) used.add(bestSynonym);
       total += best;
     }
     if (missing > allowMissing) continue;
-    if (phrase && item.titleNorm.includes(phrase)) total += 1.5;
+    if (phrase && ` ${item.titleNorm} `.includes(` ${phrase} `)) total += 1.5;
     scored.push({ entry: item.entry, score: total * item.kindWeight, order: item.order, matched: [...matched], used });
   }
   return scored;

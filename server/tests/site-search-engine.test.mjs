@@ -72,6 +72,54 @@ test('pergunta em frase acha a resposta (PT e EN)', () => {
 test('frase longa tolera uma palavra sem par quando há 3 ou mais termos', () => {
   const r = search(prepared.pt, 'como faço para levar meu carro estacionamento concais');
   assert.ok(r.results.length >= 1, JSON.stringify(r.tokens));
+  assert.match(r.results[0].entry.title, /estacionamento|carro/i);
+  assert.equal(search(prepared.pt, 'bagagem xyzqwk abcdef').results.length, 0);
+});
+
+test('pergunta em espanhol sem ruído do verbo "es"', () => {
+  const pack = search(prepared.es, 'que es el paquete de bebidas');
+  assert.ok(pack.results.some(x => x.entry.page === 'manual' && x.entry.kind === 'faq' && /bebidas/i.test(x.entry.title)), JSON.stringify(titles(pack)));
+  const bus = search(prepared.es, 'cual es el horario del autobus');
+  assert.ok(bus.results.some(x => x.entry.kind !== 'live'), JSON.stringify(titles(bus)));
+});
+
+test('perguntas de preço acham o assunto, não palavras parecidas', () => {
+  assert.match(search(prepared.pt, 'quanto custa o estacionamento').results[0].entry.title, /estacionamento/i);
+  assert.ok(titles(search(prepared.es, 'cuanto cuesta el estacionamiento')).some(t => /estacionamiento/i.test(t)));
+  assert.ok(titles(search(prepared.en, 'how much does parking cost')).some(t => /parking/i.test(t)));
+});
+
+test('palavras só de pergunta viram consulta vazia nos 3 idiomas', () => {
+  assert.deepEqual(search(prepared.pt, 'quanto custa').tokens, []);
+  assert.deepEqual(search(prepared.es, 'cuanto cuesta es').tokens, []);
+  assert.deepEqual(search(prepared.en, 'how much does it cost to be').tokens, []);
+});
+
+test('palavra que existe no índice não é "corrigida" para outra', () => {
+  const cases = [['pt', 'porto', ['ponto', 'perto', 'parto', 'porta']], ['pt', 'festa', ['feita', 'nesta', 'desta']],
+    ['es', 'playa', ['plaza']], ['en', 'party', ['part']]];
+  for (const [lang, q, neighbors] of cases) {
+    const matched = search(prepared[lang], q).results.flatMap(x => x.matched);
+    assert.ok(!matched.some(w => neighbors.includes(w)), `${q}: ${JSON.stringify([...new Set(matched)])}`);
+  }
+});
+
+test('"são" continua sendo termo de busca (São Paulo)', () => {
+  const r = search(prepared.pt, 'são paulo');
+  assert.deepEqual(r.tokens, ['sao', 'paulo']);
+  assert.match(r.results[0].entry.title, /São Paulo/);
+});
+
+test('sinônimo só é informado quando foi a melhor correspondência', () => {
+  const r = search(prepared.pt, 'documentos');
+  assert.ok(r.results[0].matched.some(w => w.startsWith('documento')));
+  assert.ok(!r.synonymsUsed.includes('rg') && !r.synonymsUsed.includes('cnh'), JSON.stringify(r.synonymsUsed));
+});
+
+test('bônus de frase só vale para palavras inteiras do título', () => {
+  const whole = search(prepared.pt, 'bagagem').results[0].score;
+  const fragment = search(prepared.pt, 'bagag').results[0].score;
+  assert.ok(whole - fragment >= 1.5, `${whole} vs ${fragment}`);
 });
 
 test('stopwords não gastam o limite de 8 palavras', () => {
