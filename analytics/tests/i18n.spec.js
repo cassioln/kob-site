@@ -446,7 +446,7 @@ test.describe('Internacionalização e Validação de Páginas /en/ e /es/', () 
     expect(savedPref).toBe('es');
   });
 
-  test('Seletor de idioma mobile está posicionado fora do menu sanduíche diretamente no header', async ({ page }) => {
+  test('Seletor de idioma mobile aparece no header durante a primeira dobra', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
     await page.goto('/');
 
@@ -475,7 +475,7 @@ test.describe('Internacionalização e Validação de Páginas /en/ e /es/', () 
 });
 
 for (const [lang, path] of [['pt', '/'], ['en', '/en/'], ['es', '/es/']]) {
-  test(`Manual no drawer e idiomas alinhados ao menu no celular e tablet (${lang})`, async ({ page }) => {
+  test(`Manual no drawer e idiomas da primeira dobra para o menu no celular e tablet (${lang})`, async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto(`${path}?lang=${lang}`);
     await expect(page.locator('.hero')).toHaveAttribute('data-intro', 'done');
@@ -487,29 +487,38 @@ for (const [lang, path] of [['pt', '/'], ['en', '/en/'], ['es', '/es/']]) {
         await expect(page.locator('.nav__right .header-manual-link')).toBeHidden();
         const toggle = page.locator('#navToggle');
         await expect(toggle).toBeVisible();
-        const languages = page.locator('.nav__right .lang-switch--mobile');
-        await expect(languages).toBeVisible();
-        await expect(languages.locator('[aria-current="page"]')).toHaveText(lang.toUpperCase());
-        const styles = await toggle.evaluate(el => {
-          const s = getComputedStyle(el); return { radius: s.borderRadius, border: s.borderWidth };
-        });
-        // Seletor em pílula: mesma altura, raio e borda do menu, logo à sua esquerda.
-        // Mede os dois no mesmo quadro, pois o header pode ainda estar deslizando.
-        const [pill, menu] = await page.evaluate(() => ['.nav__right .lang-switch--mobile', '#navToggle']
-          .map(selector => document.querySelector(selector).getBoundingClientRect().toJSON()));
-        expect(pill.height).toBeCloseTo(menu.height, 1); expect(pill.y).toBeCloseTo(menu.y, 1);
-        expect(pill.x).toBeGreaterThanOrEqual(0); expect(pill.x + pill.width).toBeLessThanOrEqual(menu.x);
-        await expect(languages).toHaveCSS('border-radius', styles.radius);
-        await expect(languages).toHaveCSS('border-width', styles.border);
-        // Cada idioma mantém o alvo de toque mínimo (WCAG 2.5.8, 24×24).
-        for (const button of await languages.locator('a').all()) {
-          const box = await button.boundingBox();
-          expect(box.width).toBeGreaterThanOrEqual(24); expect(box.height).toBeGreaterThanOrEqual(24);
-          expect(box.x).toBeGreaterThanOrEqual(pill.x); expect(box.x + box.width).toBeLessThanOrEqual(pill.x + pill.width);
+        const languages = page.locator('.lang-switch--mobile');
+        if (destination === '#top') {
+          await expect(languages).toBeVisible();
+          await expect(languages.locator('[aria-current="page"]')).toHaveText(lang.toUpperCase());
+          const styles = await toggle.evaluate(el => {
+            const s = getComputedStyle(el); return { radius: s.borderRadius, border: s.borderWidth };
+          });
+          // Seletor em pílula: mesma altura, raio e borda do menu, logo à sua esquerda.
+          // Mede os dois no mesmo quadro, pois o header pode ainda estar deslizando.
+          const [pill, menu] = await page.evaluate(() => ['.nav__right .lang-switch--mobile', '#navToggle']
+            .map(selector => document.querySelector(selector).getBoundingClientRect().toJSON()));
+          expect(pill.height).toBeCloseTo(menu.height, 1); expect(pill.y).toBeCloseTo(menu.y, 1);
+          expect(pill.x).toBeGreaterThanOrEqual(0); expect(pill.x + pill.width).toBeLessThanOrEqual(menu.x);
+          await expect(languages).toHaveCSS('border-radius', styles.radius);
+          await expect(languages).toHaveCSS('border-width', styles.border);
+          // Cada idioma mantém o alvo de toque mínimo (WCAG 2.5.8, 24×24).
+          for (const button of await languages.locator('a').all()) {
+            const box = await button.boundingBox();
+            expect(box.width).toBeGreaterThanOrEqual(24); expect(box.height).toBeGreaterThanOrEqual(24);
+            expect(box.x).toBeGreaterThanOrEqual(pill.x); expect(box.x + box.width).toBeLessThanOrEqual(pill.x + pill.width);
+          }
+        } else {
+          await expect(page.locator('.nav__right .lang-switch--mobile')).toHaveCount(0);
+          await expect(page.locator('#drawer .lang-switch--mobile')).toHaveCount(1);
         }
         await toggle.click();
         const drawer = page.locator('#drawer');
         await expect(drawer).toHaveAttribute('aria-hidden', 'false');
+        if (destination === '#navio') {
+          await expect(languages).toBeVisible();
+          await expect(languages.locator('[aria-current="page"]')).toHaveText(lang.toUpperCase());
+        }
         await expect(drawer.locator('nav a[href*="manualdebordo"]')).toHaveCount(0);
         const manual = drawer.locator('.drawer__actions .header-manual-link');
         const reserve = drawer.locator('[data-analytics-cta-id="drawer_reserve"]');

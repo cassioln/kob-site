@@ -1454,63 +1454,6 @@
   }
 
   // --------------------------------------------------------------------------
-  // MENU SANDUÍCHE / DRAWER DE NAVEGAÇÃO (IGUAL À HOME)
-  // --------------------------------------------------------------------------
-  function initDrawer() {
-    var drawer = document.getElementById('drawer');
-    var toggle = document.getElementById('navToggle');
-    var closeBtn = document.getElementById('drawerClose');
-    var backdrop = document.getElementById('guideDrawerBackdrop');
-    if (!drawer || !toggle) return;
-
-    function openDrawer() {
-      drawer.dataset.open = 'true';
-      drawer.setAttribute('aria-hidden', 'false');
-      drawer.removeAttribute('inert');
-      toggle.setAttribute('aria-expanded', 'true');
-      if (backdrop) {
-        backdrop.dataset.open = 'true';
-        backdrop.setAttribute('aria-hidden', 'false');
-      }
-      document.body.style.overflow = 'hidden';
-      setInert(true);
-      if (closeBtn) closeBtn.focus();
-    }
-
-    function closeDrawer() {
-      drawer.dataset.open = 'false';
-      drawer.setAttribute('aria-hidden', 'true');
-      drawer.setAttribute('inert', '');
-      toggle.setAttribute('aria-expanded', 'false');
-      if (backdrop) {
-        backdrop.dataset.open = 'false';
-        backdrop.setAttribute('aria-hidden', 'true');
-      }
-      document.body.style.overflow = '';
-      setInert(false);
-      toggle.focus();
-    }
-
-    function setInert(on) {
-      ['main', 'header.guide-header', 'footer'].forEach(function (sel) {
-        var el = document.querySelector(sel);
-        if (!el) return;
-        if (on) el.setAttribute('inert', ''); else el.removeAttribute('inert');
-      });
-    }
-
-    toggle.addEventListener('click', openDrawer);
-    if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
-    if (backdrop) backdrop.addEventListener('click', closeDrawer);
-    drawer.querySelectorAll('a').forEach(function (a) {
-      a.addEventListener('click', closeDrawer);
-    });
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && drawer.dataset.open === 'true') closeDrawer();
-    });
-  }
-
-  // --------------------------------------------------------------------------
   // INICIALIZAÇÃO GERAL
   // --------------------------------------------------------------------------
   document.addEventListener('DOMContentLoaded', function () {
@@ -1523,7 +1466,6 @@
     initFAQ();
     initFAQTools();
     initSupportModal();
-    initDrawer();
     initNavSpy();
   });
 })();

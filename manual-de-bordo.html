@@ -83,15 +83,16 @@
   <link rel="preload" href="/assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
 
   <!-- Estilos Globais e Específicos -->
-  <link rel="stylesheet" href="/assets/css/main.css?v=20261008-busca">
-  <link rel="stylesheet" href="/assets/css/site-search.css?v=20261008-busca-2">
+  <link rel="stylesheet" href="/assets/css/main.css?v=20261008-mobile-language">
+  <link rel="stylesheet" href="/assets/css/site-search.css?v=20261008-mobile-language">
   <link rel="stylesheet" href="/assets/css/manual-de-bordo.css?v=20261008-busca">
   <link rel="stylesheet" href="/assets/css/footer-sponsors.css?v=20261007-sponsors-marquee">
   <link rel="stylesheet" href="/assets/css/cookie-consent.css?v=20260820-fix-contrast">
+  <link rel="stylesheet" href="/assets/css/mobile-navigation.css?v=20261008-mobile-language">
 
   <script defer src="/assets/js/cookie-consent.js?v=20261008-i18n"></script>
   <script defer src="/assets/js/footer-sponsors.js?v=20261007-sponsors-marquee"></script>
-  <script defer src="/assets/js/manual-de-bordo.js?v=20261008-busca"></script>
+  <script defer src="/assets/js/manual-de-bordo.js?v=20261008-mobile-language"></script>
 
   <script type="module" src="/assets/js/manual-de-bordo-live.js?v=20261008-busca-live"></script>
 
@@ -162,6 +163,7 @@
       ]
     }
   </script>
+  <script defer src="/assets/js/mobile-navigation.js?v=20261008-mobile-language"></script>
 </head>
 
 <body class="guide-page">
@@ -212,10 +214,10 @@
     </div>
   </header>
 
-  <div class="guide-drawer-backdrop" id="guideDrawerBackdrop" aria-hidden="true"></div>
+  <div class="guide-drawer-backdrop" id="guideDrawerBackdrop" data-navigation-backdrop aria-hidden="true"></div>
 
   <!-- DRAWER MANUAL DE BORDO -->
-  <div class="drawer" id="drawer" data-open="false" aria-hidden="true" inert="">
+  <div class="drawer" id="drawer" data-open="false" role="dialog" aria-modal="true" aria-label="Menu do Manual de Bordo" aria-hidden="true" inert="">
     <div class="drawer__head">
       <span class="nav__brand">
         <img src="/assets/images/brand/kriativos-on-board-menu.png" alt="KOB — Kriativos On Board" width="300"
@@ -226,6 +228,10 @@
           <path d="M6 6l12 12M18 6L6 18"></path>
         </svg>
       </button>
+    </div>
+    <div class="drawer__language">
+      <span>Idioma</span>
+      <div data-drawer-language></div>
     </div>
     <nav aria-label="Navegação pelo Manual de Bordo">
       <a class="guide-menu-desktop" href="https://kriativosonboard.com.br/">Site oficial do evento</a>

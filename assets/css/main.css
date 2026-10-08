@@ -826,6 +826,29 @@ h4 {
   display: none;
 }
 
+.drawer__home-language {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  gap: 10px;
+  padding: 12px 0 20px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--line-soft);
+  color: var(--ink-soft);
+  font: 700 .875rem/1.4 var(--font-body);
+}
+
+.drawer__home-language[hidden] {
+  display: none;
+}
+
+.drawer__home-language .lang-switch--mobile .lang-switch__btn {
+  flex: 1;
+  min-width: 44px;
+  height: 44px;
+  font-size: 1rem;
+}
+
 /* No desktop, o seletor mobile fica estritamente oculto */
 @media (min-width: 1321px) {
   .nav__right .lang-switch--mobile {

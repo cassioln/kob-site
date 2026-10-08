@@ -106,15 +106,17 @@
     href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap"
     rel="stylesheet">
   <link rel="preload" href="/assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
-  <link rel="stylesheet" href="/assets/css/main.css?v=20261008-busca">
-  <link rel="stylesheet" href="/assets/css/site-search.css?v=20261008-busca-2">
+  <link rel="stylesheet" href="/assets/css/main.css?v=20261008-mobile-language">
+  <link rel="stylesheet" href="/assets/css/site-search.css?v=20261008-mobile-language">
   <link rel="stylesheet" href="/assets/css/onibus.css?v=20261008-stepper-transform">
   <link rel="stylesheet" href="/assets/css/footer-sponsors.css?v=20261007-sponsors-marquee">
   <link rel="stylesheet" href="/assets/css/cookie-consent.css?v=20260820-fix-contrast">
+  <link rel="stylesheet" href="/assets/css/mobile-navigation.css?v=20261008-mobile-language">
   <script defer src="/assets/js/cookie-consent.js?v=20261008-i18n"></script>
   <script defer src="/assets/js/footer-sponsors.js?v=20261007-sponsors-marquee"></script>
   <script defer src="/assets/js/onibus.js?v=20261008-stepper-transform"></script>
   <script type="module" src="/assets/js/site-search.js?v=20261008-busca-2"></script>
+  <script defer src="/assets/js/mobile-navigation.js?v=20261008-mobile-language"></script>
 </head>
 
 <body class="bus-page">
@@ -139,8 +141,38 @@
         <a href="https://busao.kriativosonboard.com.br/es/" class="lang-switch__item" hreflang="es" lang="es">ES</a>
       </nav>
       <a class="btn header-manual-link" href="https://manualdebordo.kriativosonboard.com.br/"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 7v14M3 3h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5v16h-5a4 4 0 0 0-4 2 4 4 0 0 0-4-2H3Z"/></svg><span>Manual de bordo</span></a>
+      <button type="button" class="nav__toggle" id="navToggle" aria-label="Abrir menu" aria-expanded="false" aria-controls="drawer" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M3 6h18M3 12h18M3 18h18"></path>
+        </svg>
+      </button>
     </div>
   </header>
+
+
+  <div class="bus-drawer-backdrop" data-navigation-backdrop aria-hidden="true"></div>
+  <div class="drawer" id="drawer" data-open="false" role="dialog" aria-modal="true" aria-label="Menu do fretado" aria-hidden="true" inert>
+    <div class="drawer__head">
+      <span class="nav__brand">
+        <img src="/assets/images/brand/kriativos-on-board-menu.png" alt="KOB — Kriativos On Board" width="300" height="192">
+      </span>
+      <button type="button" class="drawer__close" id="drawerClose" aria-label="Fechar menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M6 6l12 12M18 6L6 18"></path>
+        </svg>
+      </button>
+    </div>
+    <div class="drawer__language">
+      <span>Idioma</span>
+      <div data-drawer-language></div>
+    </div>
+    <nav aria-label="Menu do fretado">
+      <a href="#passageiros">Cadastro e reserva</a>
+      <a href="#embarque">Ponto de encontro e horários</a>
+      <a href="https://manualdebordo.kriativosonboard.com.br/">Manual de Bordo</a>
+      <a href="https://kriativosonboard.com.br/">Site oficial do KOB</a>
+    </nav>
+  </div>
 
   <main id="main">
     <section class="bus-hero" aria-labelledby="page-title">

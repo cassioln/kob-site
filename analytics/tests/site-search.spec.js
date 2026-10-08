@@ -465,20 +465,47 @@ for (const width of [320, 390]) {
   });
 }
 
-// 1321/1366: the scrolled bar keeps an icon-only button; 1680: the full button and "Confira o" are back.
-for (const width of [1321, 1366, 1680]) {
+// Busca de 58 px: lupa sozinha nas menores, texto nas médias, atalho nas grandes.
+test('hero: busca e idiomas compartilham cores e hover', async ({ page }) => {
+  await page.setViewportSize({ width: 1920, height: 900 });
+  for (const path of ['/', '/en/', '/es/']) {
+    await visit(page, path);
+    const trigger = page.locator('.nav__right .site-search-trigger');
+    const languages = page.locator('.nav__right .lang-switch:not(.lang-switch--mobile)');
+    await expect(trigger).toHaveCSS('color', 'rgb(255, 255, 255)');
+    await expect(trigger).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+    await expect(trigger).toHaveCSS('border-color', 'rgba(255, 255, 255, 0.25)');
+    await languages.hover();
+    await expect(languages).toHaveCSS('background-color', 'rgba(255, 255, 255, 0.06)');
+    await trigger.hover();
+    await expect(trigger).toHaveCSS('background-color', 'rgba(255, 255, 255, 0.06)');
+    await expect(trigger).toHaveCSS('border-color', 'rgba(255, 255, 255, 0.45)');
+  }
+});
+
+for (const width of [1321, 1366, 1680, 1920, 2560]) {
   test(`homes: menu e lupa cabem a ${width}px, no topo e rolado`, async ({ page }) => {
     await page.setViewportSize({ width, height: 800 });
     for (const path of ['/', '/en/', '/es/']) {
       await visit(page, path);
       await expect(page.locator('#nav')).toHaveAttribute('data-scrolled', 'false');
+      await expect(page.locator('.nav__right .site-search-trigger')).toHaveCSS('min-height', '38px');
       await expectHeaderFits(page, '.nav__right', `${path} @${width} topo`);
       await scrollHomeNav(page);
       await expectHeaderFits(page, '.nav__right', `${path} @${width} rolado`);
       const trigger = page.locator('.nav__right .site-search-trigger');
+      const box = await trigger.boundingBox();
+      expect(box.height).toBe(58);
+      for (const neighbour of ['.header-manual-link', '.btn--primary']) {
+        expect((await page.locator(`.nav__right > ${neighbour}`).boundingBox()).height).toBeCloseTo(box.height, 1);
+      }
+      if (width < 1680) expect(box.width).toBeCloseTo(box.height, 1);
+      else if (width < 1920) expect(box.width).toBe(140);
+      else expect(box.width).toBeGreaterThanOrEqual(176);
       // On the navy scrolled bar the button turns white like its neighbours.
       await expect(trigger).toHaveCSS('color', 'rgb(255, 255, 255)');
       await expect(trigger.locator('.site-search-trigger__label')).toBeVisible({ visible: width >= 1680 });
+      await expect(trigger.locator('.site-search-trigger__kbd')).toBeVisible({ visible: width >= 1920 });
     }
   });
 }
