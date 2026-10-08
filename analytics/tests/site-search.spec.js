@@ -48,7 +48,8 @@ test('"mala" mostra resultados de bagagem, sinônimo e destino', async ({ page }
   // The typed word ranks first (home FAQ "…levar na mala?"); the synonym brings the manual's luggage answer.
   await expect(options(page).first()).toContainText(/mala/i);
   const luggage = options(page).filter({ hasText: 'Qual é o limite de bagagem da MSC?' });
-  await expect(luggage.locator('.site-search__dest-name')).toHaveText('Manual');
+  await expect(luggage.locator('.site-search__dest-label')).toHaveText('Manual de Bordo');
+  await expect(luggage.locator('.site-search__dest-name')).toHaveText('Dúvidas');
   await expect(options(page).first()).toHaveAttribute('aria-selected', 'true');
   await expect(page.locator('#site-search-status')).toContainText(/resultados?/);
 });
@@ -337,9 +338,9 @@ const PAGES = [
   ['/onibus.html', 'pt', '.bus-header__right'], ['/en/onibus.html', 'en', '.bus-header__right'], ['/es/onibus.html', 'es', '.bus-header__right']
 ];
 const TEXT = {
-  pt: { label: 'Buscar no site', placeholder: 'O que você procura?', where: 'Pesquisa no site', faqButton: 'Buscar no site inteiro' },
-  en: { label: 'Search the site', placeholder: 'What are you looking for?', where: 'Search the site', faqButton: 'Search the whole site' },
-  es: { label: 'Buscar en el sitio', placeholder: '¿Qué estás buscando?', where: 'Buscar en el sitio', faqButton: 'Buscar en todo el sitio' }
+  pt: { label: 'Buscar no site', placeholder: 'O que você procura?', where: 'Pesquisa no site', faqButton: 'Buscar no site inteiro', pages: /^(Kriativos On Board|Busão Kriativo|Manual de Bordo|Live de Embarque)$/ },
+  en: { label: 'Search the site', placeholder: 'What are you looking for?', where: 'Search the site', faqButton: 'Search the whole site', pages: /^(Kriativos On Board|Busão Kriativo|Onboard Guide|Boarding Live)$/ },
+  es: { label: 'Buscar en el sitio', placeholder: '¿Qué estás buscando?', where: 'Buscar en el sitio', faqButton: 'Buscar en todo el sitio', pages: /^(Kriativos On Board|Busão Kriativo|Guía de a bordo|Charla de embarque)$/ }
 };
 
 for (const [path, lang, container] of PAGES) {
@@ -362,6 +363,11 @@ for (const [path, lang, container] of PAGES) {
     await expect(page.locator('#site-search-results [role="option"]')).toHaveCount(5);
     await page.locator('.site-search__input').fill('bus');
     await expect(page.locator('#site-search-results [role="option"]').first()).toBeVisible();
+    // Every destination names its page (in this language) and a section.
+    for (const dest of await page.locator('#site-search-results .site-search__dest').all()) {
+      await expect(dest.locator('.site-search__dest-label')).toHaveText(TEXT[lang].pages);
+      await expect(dest.locator('.site-search__dest-name')).not.toBeEmpty();
+    }
     expect(errors).toEqual([]);
   });
 }
