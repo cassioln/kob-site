@@ -21,3 +21,7 @@ Sempre que o usuário solicitar uma alteração (seja de conteúdo, textos, layo
    - Manter termos de marca intactos (ex.: "Kriativos On Board", "KOB", nomes próprios).
    - Validar testes automatizados para cobrir todos os idiomas afetados.
 
+
+## Índice da busca global
+
+Depois de alterar o FAQ, as seções indexadas (home, busão, manual) ou os dados da live, rode `npm run build:search-index` e commite `assets/data/search-index.*.json`. O teste `server/tests/search-index.test.mjs` falha no CI se o índice ficar desatualizado. Sinônimos, palavras ignoradas e "Mais procurados" ficam em `assets/data/search-synonyms.json`, nos 3 idiomas.
