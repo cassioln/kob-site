@@ -175,3 +175,5 @@ Ajustes feitos durante a implementação, depois das revisões de cada etapa:
   - na home rolada, entre 1321 e 1679 px, a lupa fica só com o ícone e o link do manual perde o "Confira o", para o botão de reserva caber;
   - no busão e no manual, até 480 px, a lupa tem 32 px. Isso atende o WCAG 2.5.8 AA, e 44 px não cabem a 320 px;
   - o selo "⌘ K" do FAQ some até 620 px, como o `kbd` que ele substituiu.
+- **Onde fica a chegada:** fica em `site-search.js` nas 9 páginas, não no `main.js`. No manual, ela convive com o `checkHashTarget` do `manual-de-bordo.js`, e os dois rolam para o mesmo ponto.
+- **WhatsApp do estado vazio:** é um botão que abre a conversa no clique. Um link exporia telefone e mensagem no `link_url` do GA4 (`analytics/pii-denylist.yaml`).

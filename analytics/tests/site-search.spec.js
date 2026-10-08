@@ -268,6 +268,21 @@ test('ao fechar, o fundo também some com fade', async ({ page }) => {
   expect(backdrop).toBe('site-search-fade-out');
 });
 
+test('clique no fundo fecha; arrastar do campo até o fundo não fecha', async ({ page }) => {
+  await home(page);
+  await pressShortcut(page);
+  await input(page).fill('bagagem');
+  const box = await input(page).boundingBox();
+  // Drag-select the query and let go outside the ticket.
+  await page.mouse.move(box.x + box.width - 4, box.y + box.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(8, 8, { steps: 4 });
+  await page.mouse.up();
+  await expect(dialog(page)).toBeVisible();
+  await page.mouse.click(8, 8);
+  await expect(dialog(page)).toBeHidden();
+});
+
 test('Esc e Enter durante a composição (IME) não fecham nem abrem', async ({ page }) => {
   await home(page);
   await pressShortcut(page);
@@ -561,6 +576,17 @@ test('clicar durante o carregamento (ex.: banner de cookies) não cancela a cheg
   await page.evaluate(() => { for (const type of ['pointerdown', 'mousedown', 'pointerup', 'mouseup', 'click']) document.body.dispatchEvent(new MouseEvent(type, { bubbles: true })); });
   await expect(page.locator('#faq-h23 summary')).toBeFocused({ timeout: 8000 });
   await expectBelowHeader(page, '#faq-h23', '#nav');
+});
+
+test('chegada numa etapa recolhida do cronograma abre a etapa', async ({ page }) => {
+  await mockYouTube(page);
+  await visit(page, '/manual-de-bordo.html');
+  const group = page.locator('#cronograma-embarque');
+  await group.locator('.timeline-group__toggle').click();
+  await expect(group).toHaveClass(/is-collapsed/);
+  await page.evaluate(() => { location.hash = '#cronograma-embarque'; });
+  await expect(group).not.toHaveClass(/is-collapsed/);
+  await expect(group.locator('.timeline-group__toggle')).toHaveAttribute('aria-expanded', 'true');
 });
 
 // The settle step only corrects a small drift: scrolling away right after arriving is not undone.

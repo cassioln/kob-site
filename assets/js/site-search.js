@@ -107,7 +107,10 @@ function build() {
   });
   dialog.addEventListener('cancel', event => { event.preventDefault(); requestClose(); });
   dialog.addEventListener('close', onClose);
-  dialog.addEventListener('click', event => { if (event.target === dialog) requestClose(); });
+  // A click on the backdrop closes; a drag that started inside the ticket (selecting the query) does not.
+  let pressedBackdrop = false;
+  dialog.addEventListener('pointerdown', event => { pressedBackdrop = event.target === dialog; });
+  dialog.addEventListener('click', event => { if (event.target === dialog && pressedBackdrop) requestClose(); });
   document.body.append(dialog);
 }
 
@@ -208,7 +211,7 @@ function render() {
 function renderFeatured() {
   showState(el('p', { class: 'site-search__lead', text: copy.featured }));
   renderOptions(featured.map(item => ({
-    entry: { page: item.page, anchor: item.anchor, kind: item.anchor.startsWith('#live-') ? 'live' : 'faq', time: item.time || null, title: item.label },
+    entry: { page: item.page, anchor: item.anchor, kind: item.anchor.startsWith('#live-') ? 'live' : (item.anchor.startsWith('#faq-') ? 'faq' : 'section'), time: item.time || null, title: item.label },
     title: item.label, snippet: '', terms: ''
   })));
   setStatus('');
@@ -375,8 +378,9 @@ function bringIntoView(target) {
 const glowTimers = new WeakMap();
 
 // Arrival by hash, from a result or a shared link, in two steps. prepare() changes the page right away: a tab
-// panel (home prices: cabins | drinks) gets its tab selected; a FAQ question opens, clearing the box's filter if
-// it hid it. It returns land(), which scrolls there, moves focus and, for a question, glows.
+// panel (home prices: cabins | drinks) gets its tab selected; a collapsed schedule stage opens; a FAQ question
+// opens, clearing the box's filter if it hid it. It returns land(), which scrolls there, moves focus and, for a
+// question, glows.
 function prepare() {
   let id = '';
   try { id = decodeURIComponent(window.location.hash.slice(1)); } catch { return null; }
@@ -389,6 +393,11 @@ function prepare() {
       bringIntoView(target);
       tab?.focus({ preventScroll: true });
     };
+  }
+  if (target.classList.contains('timeline-group')) {
+    // A schedule stage the person collapsed: open it through its own toggle (it also updates its label).
+    if (target.classList.contains('is-collapsed')) target.querySelector('.timeline-group__toggle')?.click();
+    return null; // the browser's jump to the stage heading is enough
   }
   if (!/^faq-[ho]\d{2}$/.test(id) || target.tagName !== 'DETAILS') return null;
   const filter = target.closest('section')?.querySelector('input[type="search"]');
@@ -432,6 +441,11 @@ function arriveFromLink() {
 }
 
 function init() {
+  // Without <dialog> support (old browsers) the search stays out of the page instead of half-working.
+  if (typeof HTMLDialogElement !== 'function' || typeof HTMLDialogElement.prototype.showModal !== 'function') {
+    for (const trigger of document.querySelectorAll('[data-site-search-open]')) trigger.hidden = true;
+    return;
+  }
   for (const trigger of document.querySelectorAll('[data-site-search-open]')) {
     trigger.setAttribute('aria-keyshortcuts', shortcutKeys);
     trigger.addEventListener('click', event => { event.preventDefault(); open(trigger); });

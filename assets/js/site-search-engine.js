@@ -1,9 +1,8 @@
 import { normalizeSearch, searchText } from './manual-de-bordo-live-search.js?v=20261007-transcript-i18n';
 
-
 const FIELD_WEIGHT = { title: 3, keywords: 2, text: 1 };
 const KIND_WEIGHT = { section: 0.9, checklist: 0.85, live: 0.8 };
-const FAQ_WEIGHT = { manual: 1, home: 0.95, bus: 0.95 };
+const FAQ_WEIGHT = { manual: 1, home: 0.95 };
 const MAX_TOKENS = 8;
 const HOSTS = { home: 'kriativosonboard.com.br', bus: 'busao.kriativosonboard.com.br', manual: 'manualdebordo.kriativosonboard.com.br' };
 const LOCAL_FILES = { home: '', bus: 'onibus.html', manual: 'manual-de-bordo.html' };

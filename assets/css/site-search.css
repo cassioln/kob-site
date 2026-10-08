@@ -194,7 +194,6 @@ html.site-search-open { overflow: hidden; scrollbar-gutter: stable; }
 @media (prefers-reduced-motion: reduce) {
   .site-search[open] .site-search__ticket,
   .site-search[open] .site-search__body { animation: site-search-fade 120ms linear; }
-  .site-search.is-closing .site-search__ticket { animation: none; }
 }
 
 .faq-search__spotlight {
