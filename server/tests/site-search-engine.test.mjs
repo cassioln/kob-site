@@ -61,6 +61,25 @@ test('texto colado longo não trava e usa no máximo 8 palavras', () => {
   assert.ok(r.tokens.length <= 8);
 });
 
+test('pergunta em frase acha a resposta (PT e EN)', () => {
+  const pt = search(prepared.pt, 'quero saber qual o limite de bagagem do navio');
+  assert.ok(pt.results.length > 0, JSON.stringify(pt.tokens));
+  assert.match(pt.results[0].entry.title, /bagagem/i);
+  const en = search(prepared.en, 'i want to know where the luggage limit is');
+  assert.ok(titles(en).some(t => /luggage/i.test(t)), JSON.stringify(en.tokens));
+});
+
+test('frase longa tolera uma palavra sem par quando há 3 ou mais termos', () => {
+  const r = search(prepared.pt, 'como faço para levar meu carro estacionamento concais');
+  assert.ok(r.results.length >= 1, JSON.stringify(r.tokens));
+});
+
+test('stopwords não gastam o limite de 8 palavras', () => {
+  const r = search(prepared.pt, 'de da do das dos em no na nos bagagem');
+  assert.deepEqual(r.tokens, ['bagagem']);
+  assert.ok(r.results.length > 0);
+});
+
 test('EN e ES usam o próprio idioma', () => {
   assert.ok(titles(search(prepared.en, 'luggage')).some(t => /luggage/i.test(t)));
   assert.ok(titles(search(prepared.en, 'suitcase')).some(t => /luggage/i.test(t)));

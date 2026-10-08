@@ -1,6 +1,6 @@
 {
   "pt": {
-    "stopwords": ["as", "os", "de", "da", "do", "das", "dos", "em", "no", "na", "nos", "nas", "um", "uma", "para", "pra", "por", "com", "que", "se", "eu", "meu", "minha", "posso", "como", "qual", "quais", "sobre", "tem"],
+    "stopwords": ["as", "os", "de", "da", "do", "das", "dos", "em", "no", "na", "nos", "nas", "um", "uma", "para", "pra", "por", "com", "que", "se", "eu", "meu", "minha", "posso", "como", "qual", "quais", "sobre", "tem", "quero", "queria", "saber", "preciso", "precisa", "gostaria", "onde", "quando", "fica", "ficam", "devo", "existe", "ha", "sao", "esta", "estao", "voce", "voces"],
     "groups": [
       ["mala", "malas", "bagagem", "bagagens", "franquia"],
       ["onibus", "busao", "fretado", "traslado", "transfer"],
@@ -30,7 +30,7 @@
     ]
   },
   "en": {
-    "stopwords": ["an", "the", "of", "to", "in", "on", "for", "and", "or", "is", "are", "do", "does", "can", "my", "what", "how", "which", "about", "with"],
+    "stopwords": ["an", "the", "of", "to", "in", "on", "for", "and", "or", "is", "are", "do", "does", "can", "my", "what", "how", "which", "about", "with", "want", "need", "know", "where", "when", "there", "should", "will", "get", "you"],
     "groups": [
       ["luggage", "baggage", "suitcase", "suitcases", "bag", "bags"],
       ["bus", "charter", "shuttle", "transfer", "busao"],
@@ -60,7 +60,7 @@
     ]
   },
   "es": {
-    "stopwords": ["el", "la", "los", "las", "un", "una", "de", "del", "en", "al", "por", "para", "con", "que", "se", "mi", "como", "cual", "cuales", "puedo", "sobre", "hay"],
+    "stopwords": ["el", "la", "los", "las", "un", "una", "de", "del", "en", "al", "por", "para", "con", "que", "se", "mi", "como", "cual", "cuales", "puedo", "sobre", "hay", "quiero", "saber", "necesito", "necesita", "donde", "cuando", "debo", "existe", "estan", "esta", "son", "tu", "usted"],
     "groups": [
       ["maleta", "maletas", "equipaje", "valija", "valijas"],
       ["bus", "autobus", "charter", "traslado", "busao"],

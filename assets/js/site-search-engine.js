@@ -81,8 +81,34 @@ function candidates(prepared, token) {
 }
 
 function tokenize(prepared, query) {
-  const all = words(query).filter(t => t.length > 1 || /\d/.test(t)).slice(0, MAX_TOKENS);
-  return all.filter(t => !prepared.stopwords.has(t));
+  return words(query)
+    .filter(t => (t.length > 1 || /\d/.test(t)) && !prepared.stopwords.has(t))
+    .slice(0, MAX_TOKENS);
+}
+
+// allowMissing = 0 is strict AND; 1 lets an entry miss one token (it adds 0 to the score).
+function rank(prepared, perToken, phrase, allowMissing) {
+  const scored = [];
+  for (const item of prepared.items) {
+    let total = 0;
+    let missing = 0;
+    const matched = new Set();
+    const used = new Set();
+    for (const { direct, viaSynonym } of perToken) {
+      let best = 0;
+      for (const [field, weight] of Object.entries(FIELD_WEIGHT)) {
+        const set = item.fields[field];
+        for (const [word, score] of direct) if (set.has(word)) { matched.add(word); best = Math.max(best, score * weight); }
+        for (const [word, score] of viaSynonym) if (set.has(word)) { matched.add(word); used.add(word); best = Math.max(best, score * weight); }
+      }
+      if (!best && ++missing > allowMissing) break;
+      total += best;
+    }
+    if (missing > allowMissing) continue;
+    if (phrase && item.titleNorm.includes(phrase)) total += 1.5;
+    scored.push({ entry: item.entry, score: total * item.kindWeight, order: item.order, matched: [...matched], used });
+  }
+  return scored;
 }
 
 export function search(prepared, query, { limit = 20 } = {}) {
@@ -101,26 +127,8 @@ export function search(prepared, query, { limit = 20 } = {}) {
     return { direct, viaSynonym };
   });
   const phrase = normalizeSearch(query);
-  const scored = [];
-  for (const item of prepared.items) {
-    let total = 0;
-    const matched = new Set();
-    const used = new Set();
-    let complete = true;
-    for (const { direct, viaSynonym } of perToken) {
-      let best = 0;
-      for (const [field, weight] of Object.entries(FIELD_WEIGHT)) {
-        const set = item.fields[field];
-        for (const [word, score] of direct) if (set.has(word)) { matched.add(word); best = Math.max(best, score * weight); }
-        for (const [word, score] of viaSynonym) if (set.has(word)) { matched.add(word); used.add(word); best = Math.max(best, score * weight); }
-      }
-      if (!best) { complete = false; break; }
-      total += best;
-    }
-    if (!complete) continue;
-    if (phrase && item.titleNorm.includes(phrase)) total += 1.5;
-    scored.push({ entry: item.entry, score: total * item.kindWeight, order: item.order, matched: [...matched], used });
-  }
+  let scored = rank(prepared, perToken, phrase, 0);
+  if (!scored.length && tokens.length >= 3) scored = rank(prepared, perToken, phrase, 1);
   scored.sort((a, b) => b.score - a.score || a.order - b.order);
   const results = scored.slice(0, limit);
   const synonymsUsed = [...new Set(results.slice(0, 8).flatMap(r => [...r.used]))]
