@@ -9,6 +9,51 @@ const LOCAL_FILES = { home: '', bus: 'onibus.html', manual: 'manual-de-bordo.htm
 
 const words = text => normalizeSearch(text).split(' ').filter(Boolean);
 
+// Where a result leads, as the ticket shows it: the page's name on top and the section's short name below
+// (the live shows its minute). Section keys come from the anchor; "Mais procurados" use the same rule.
+const DESTINATIONS = {
+  pt: {
+    pages: { home: 'Kriativos On Board', bus: 'Busão Kriativo', manual: 'Manual de Bordo' }, live: 'Live de Embarque',
+    sections: {
+      home: { faq: 'Dúvidas', navio: 'O navio', incluso: 'O que inclui', itinerario: 'Itinerário', valores: 'Valores', hospedagem: 'Hospedagem', parceiros: 'Parceiros' },
+      manual: { faq: 'Dúvidas', checklist: 'Checklist', cronograma: 'Cronograma', jogos: 'Jogos', contato: 'Contato' },
+      bus: { main: 'Visão geral', 'como-reservar': 'Como reservar', condicoes: 'Condições', embarque: 'Embarque' }
+    }
+  },
+  en: {
+    pages: { home: 'Kriativos On Board', bus: 'Busão Kriativo', manual: 'Onboard Guide' }, live: 'Boarding Live',
+    sections: {
+      home: { faq: 'FAQ', navio: 'The Ship', incluso: "What's Included", itinerario: 'Itinerary', valores: 'Pricing', hospedagem: 'Accommodation', parceiros: 'Partners' },
+      manual: { faq: 'FAQ', checklist: 'Checklist', cronograma: 'Schedule', jogos: 'Games', contato: 'Contact' },
+      bus: { main: 'Overview', 'como-reservar': 'How to Book', condicoes: 'Conditions', embarque: 'Boarding' }
+    }
+  },
+  es: {
+    pages: { home: 'Kriativos On Board', bus: 'Busão Kriativo', manual: 'Guía de a bordo' }, live: 'Charla de embarque',
+    sections: {
+      home: { faq: 'Preguntas', navio: 'El barco', incluso: 'Qué incluye', itinerario: 'Itinerario', valores: 'Precios', hospedagem: 'Hospedaje', parceiros: 'Aliados' },
+      manual: { faq: 'Dudas', checklist: 'Checklist', cronograma: 'Cronograma', jogos: 'Juegos', contato: 'Contacto' },
+      bus: { main: 'Resumen', 'como-reservar': 'Cómo reservar', condicoes: 'Condiciones', embarque: 'Embarque' }
+    }
+  }
+};
+
+export function sectionKey({ anchor = '' } = {}) {
+  const id = anchor.replace(/^#/, '');
+  if (/^faq-[ho]\d{2}$/.test(id)) return 'faq';
+  if (!id) return 'main';
+  if (id.startsWith('cronograma')) return 'cronograma'; // a stage of the schedule
+  if (id.startsWith('panel-')) return 'valores'; // a price tab (cabins | drinks)
+  return id;
+}
+
+export function destinationFor(entry, lang = 'pt') {
+  const names = DESTINATIONS[lang] || DESTINATIONS.pt;
+  if (entry.anchor?.startsWith('#live-')) return { label: names.live, name: String(entry.time || '').replace(/^00:/, '') };
+  return { label: names.pages[entry.page] || '', name: names.sections[entry.page]?.[sectionKey(entry)] || '' };
+}
+
+
 export function damerauLevenshtein(a, b, max = Infinity) {
   if (a === b) return 0;
   if (Math.abs(a.length - b.length) > max) return max + 1;
