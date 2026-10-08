@@ -2,7 +2,9 @@
 const VOID = new Set(['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'source', 'track', 'wbr']);
 const RAW = new Set(['script', 'style']);
 const SKIP_TEXT = new Set(['script', 'style', 'svg', 'template']);
-const BLOCK = new Set(['address', 'article', 'aside', 'blockquote', 'dd', 'details', 'div', 'dl', 'dt', 'figcaption', 'figure', 'footer', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 'label', 'li', 'main', 'nav', 'ol', 'p', 'section', 'small', 'summary', 'table', 'td', 'th', 'tr', 'ul']);
+// Formatação inline que pode cortar uma palavra ao meio (ex.: <b>A</b><i>B</i> → "AB"); qualquer outro
+// elemento (span, strong, small, div…) separa o texto com espaço antes e depois.
+const INLINE = new Set(['a', 'abbr', 'b', 'bdi', 'bdo', 'cite', 'code', 'em', 'i', 'kbd', 'mark', 'q', 's', 'sub', 'sup', 'u', 'wbr']);
 const ENTITIES = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ', mdash: '—', ndash: '–', hellip: '…', laquo: '«', raquo: '»', ldquo: '“', rdquo: '”', lsquo: '‘', rsquo: '’', middot: '·', copy: '©', reg: '®', trade: '™', times: '×', rarr: '→', larr: '←' };
 
 export function decodeEntities(text) {
@@ -64,12 +66,14 @@ export function textOf(node, { skip } = {}) {
   const parts = [];
   (function walk(n) {
     if (n.tag === '#text') { parts.push(n.text); return; }
-    if (SKIP_TEXT.has(n.tag) || (skip && n !== node && skip(n))) return;
-    if (n.tag === 'br') { parts.push(' '); return; }
+    if (SKIP_TEXT.has(n.tag) || n.attrs['aria-hidden'] === 'true' || (skip && n !== node && skip(n))) return;
+    const separate = !INLINE.has(n.tag);
+    if (separate) parts.push(' ');
     for (const child of n.children) walk(child);
-    if (BLOCK.has(n.tag)) parts.push(' ');
+    if (separate) parts.push(' ');
   })(node);
-  return parts.join('').replace(/\s+/g, ' ').trim();
+  // O espaço inserido entre elementos não pode separar a pontuação ("229 ,00", "confirmado .", "( x )").
+  return parts.join('').replace(/\s+/g, ' ').replace(/ ([,.;:!?)\]])/g, '$1').replace(/([([]) /g, '$1').trim();
 }
 
 export function findAll(node, pred, out = []) {

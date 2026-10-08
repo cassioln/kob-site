@@ -32,10 +32,24 @@ test('atributos com aspas duplas, simples, sem aspas e booleanos', () => {
   assert.ok(!hasClass(div, 'c'));
 });
 
-test('blocos ganham espaço entre si, inline não', () => {
+test('elementos ganham espaço antes e depois; só a formatação inline cola', () => {
   assert.equal(textOf(parseHtml('<p>A</p><p>B</p>')), 'A B');
   assert.equal(textOf(parseHtml('<b>A</b><i>B</i>')), 'AB');
   assert.equal(textOf(parseHtml('<li>A</li><li>B<br>C</li>')), 'A B C');
+  assert.equal(textOf(parseHtml('<strong>A</strong><small>B</small>')), 'A B');
+  assert.equal(textOf(parseHtml('<span>A</span><span>B</span>')), 'A B');
+  assert.equal(textOf(parseHtml('Intro<p>Para</p>')), 'Intro Para');
+  assert.equal(textOf(parseHtml('pal<a href="#">avra</a> <em>x</em>y')), 'palavra xy');
+});
+
+test('o espaço entre elementos não separa pontuação do texto', () => {
+  assert.equal(textOf(parseHtml('<span>229<span>,00</span></span>')), '229,00');
+  assert.equal(textOf(parseHtml('<p><strong>100% confirmado</strong>. Depois (<span>x</span>)!</p>')), '100% confirmado. Depois (x)!');
+});
+
+test('subárvores aria-hidden="true" ficam fora do texto', () => {
+  assert.equal(textOf(parseHtml('<li><span aria-hidden="true">01</span>Texto</li>')), 'Texto');
+  assert.equal(textOf(parseHtml('<div><p>Visível</p><div aria-hidden="true"><p>Duplicado</p></div></div>')), 'Visível');
 });
 
 test('closest sobe pelos ancestrais e fechamento sem par é ignorado', () => {
