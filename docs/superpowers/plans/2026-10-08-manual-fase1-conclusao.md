@@ -32,4 +32,4 @@
 
 - LGPD: https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm (art. 19 trata confirmação/acesso e diz 15 dias, sem qualificá-los como úteis).
 - Política da Sender: https://www.sender.net/privacy-policy/ (Sender atua como operador dos dados de assinantes).
-- Formularios e newsletter atuais estão no modal do manual, sem integração real com Sender no código. Endpoint legado ignora resultado de `mail()` e devolve sucesso: será congelado de forma efetiva.
+- Antes desta entrega, o modal continha formulário e opt-in sem integração real com Sender; o endpoint ignorava o resultado de `mail()` e devolvia sucesso. Nesta entrega, modal/formulário foram congelados e o endpoint passou a retornar 503 sem ler ou encaminhar dados.
