@@ -29,6 +29,13 @@ async function readyPlayer(page) {
   await page.evaluate(() => { const player = window.__liveMock.instances.at(-1); player.events.onReady({ target: player }); });
 }
 
+async function finishNoticeCycle(page) {
+  const ticker = page.locator('.live-notice-ticker');
+  await expect(ticker).toHaveCSS('animation-name', 'live-notice-marquee');
+  await ticker.evaluate(el => el.dispatchEvent(new AnimationEvent('animationend', { animationName: 'live-notice-marquee' })));
+  await expect(page.locator('.live-notice-pill')).toBeVisible();
+}
+
 // Advance the mock to the mapped utterance, independent of the topic start.
 async function playIntoTopic(page, seconds) {
   await page.evaluate(seconds => { window.__liveMock.seconds = seconds; }, seconds);
@@ -958,7 +965,7 @@ for (const width of [390, 1440]) {
   });
 }
 
-test('No mobile o aviso usa uma faixa no topo do vídeo e pode ser recolhido', async ({ page }) => {
+test('No mobile o aviso usa uma faixa no topo e se recolhe após um ciclo', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/manual-de-bordo.html');
   await openTopics(page);
@@ -976,16 +983,17 @@ test('No mobile o aviso usa uma faixa no topo do vídeo e pode ser recolhido', a
   expect(box.y + box.height).toBeLessThan(video.y + video.height / 2);
   const controls = await page.locator('#liveCustomControls').boundingBox();
   expect(controls.y).toBeGreaterThanOrEqual(box.y + box.height);
-  await page.locator('.live-chapter-notice__collapse').click();
+  await finishNoticeCycle(page);
   await expect(notice).toBeHidden();
   const pill = page.locator('.live-notice-pill');
   await expect(pill).toBeVisible();
   await expect(pill).toContainText('Atualização');
   await expect(pill.locator('span')).toBeHidden();
   await expect(pill).toHaveCSS('border-radius', '50%');
-  await expect(pill).toHaveCSS('color', 'rgb(255, 255, 255)');
-  await expect(pill).toHaveCSS('background-color', 'rgb(255, 194, 14)');
-  await expect(pill).toBeFocused();
+  await expect(pill).toHaveCSS('animation-name', 'live-action-pulse');
+  await expect(pill).toHaveCSS('color', 'rgb(114, 82, 0)');
+  await expect(pill).toHaveCSS('background-color', 'rgb(245, 252, 255)');
+  await expect(pill.locator('svg')).toHaveAttribute('stroke-width', '1.8');
   // Measure the video again: Playwright may scroll the page to click "−".
   const pillBox = await pill.boundingBox();
   const videoNow = await page.locator('#livePlayerWrapper').boundingBox();
@@ -995,7 +1003,7 @@ test('No mobile o aviso usa uma faixa no topo do vídeo e pode ser recolhido', a
   await pill.click();
   await expect(notice).toBeVisible();
   await expect(pill).toBeHidden();
-  await expect(page.locator('.live-chapter-notice__collapse')).toBeFocused();
+  await expect(page.locator('#liveChapterNote')).toBeFocused();
 });
 
 test('No desktop o aviso aguarda a fala específica de cada assunto', async ({ page }) => {
@@ -1029,6 +1037,7 @@ for (const width of [390, 1440]) {
   test(`Os 21 avisos obedecem às falas mapeadas, inclusive ao voltar (${width}px)`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
     await page.emulateMedia({ reducedMotion: 'reduce' });
+    if (width <= 768) await page.clock.install();
     await page.goto('/manual-de-bordo.html');
     await page.locator('#loadLivePlayerBtn').click();
     await readyPlayer(page);
@@ -1052,6 +1061,13 @@ for (const width of [390, 1440]) {
     await expect(notice).toBeHidden();
     await pauseAtLiveTime(page, 3271.88);
     await expect(notice).toBeVisible();
+    if (width <= 768) {
+      await page.locator('#livePlayerWrapper').scrollIntoViewIfNeeded();
+      await page.mouse.move(0, 0);
+      await page.clock.runFor(100);
+      await page.clock.fastForward(60000);
+      await expect(page.locator('.live-notice-pill')).toBeVisible();
+    }
     await pauseAtLiveTime(page, 3506);
     await expect(notice).toBeHidden();
   });
@@ -1204,7 +1220,7 @@ for (const width of [390, 1440]) {
     const support = page.locator('.live-notice-support');
     for (const approved of SUPPORT_NOTICES) for (const start of approved.cueSeconds) {
       await pauseAtLiveTime(page, start - .001);
-      await expect(support).toHaveCount(0);
+      if (width > 768) await expect(support).toHaveCount(0);
       await pauseAtLiveTime(page, start);
       await expect(support).toBeVisible();
       await expect(support).toHaveAttribute('data-support-id', approved.id);
@@ -1215,11 +1231,11 @@ for (const width of [390, 1440]) {
       if (approved.action.href) await expect(page.locator('.live-support-link')).toHaveAttribute('href', approved.action.href);
       else await expect(page.locator(`#liveChapterNoteAction [data-live-faq="${approved.action.faqId}"]`)).toBeVisible();
       await pauseAtLiveTime(page, start + 12);
-      await expect(support).toHaveCount(0);
+      if (width > 768) await expect(support).toHaveCount(0);
       await pauseAtLiveTime(page, start + 1);
       await expect(support).toBeVisible();
       await pauseAtLiveTime(page, start - 1);
-      await expect(support).toHaveCount(0);
+      if (width > 768) await expect(support).toHaveCount(0);
     }
     await pauseAtLiveTime(page, 1674);
     await expect(page.locator('#liveChapterNotice')).toHaveAttribute('data-notice-kind', 'support');
@@ -1227,9 +1243,10 @@ for (const width of [390, 1440]) {
     await expect(page.locator('#liveChapterNoteAction [data-live-faq="faq-o12"]')).toHaveCount(0);
     await expect(page.locator('.live-support-link')).toBeVisible();
     await pauseAtLiveTime(page, 2593);
-    await expect(page.locator('#liveChapterNotice')).toHaveAttribute('data-notice-kind', 'mixed');
-    await expect(page.locator('.live-notice-update')).toBeVisible();
-    await expect(page.locator('#liveChapterNoteAction [data-live-faq="faq-o30"]')).toBeVisible();
+    await expect(page.locator('#liveChapterNotice')).toHaveAttribute('data-notice-kind', width <= 768 ? 'support' : 'mixed');
+    if (width > 768) await expect(page.locator('.live-notice-update')).toBeVisible();
+    else await expect(page.locator('.live-notice-update')).toBeHidden();
+    if (width > 768) await expect(page.locator('#liveChapterNoteAction [data-live-faq="faq-o30"]')).toBeVisible();
     await pauseAtLiveTime(page, 1717);
     await expect(page.locator('#liveChapterNotice')).toBeHidden();
     await pauseAtLiveTime(page, 1742);
@@ -1237,11 +1254,16 @@ for (const width of [390, 1440]) {
     await expect(page.locator('.live-notice-update')).toHaveCount(0);
     await expect(page.locator('#liveChapterNoteAction [data-live-faq="faq-o13"]')).toHaveCount(0);
     await pauseAtLiveTime(page, 1754);
-    await expect(page.locator('#liveChapterNotice')).toBeHidden();
-    await expect(page.locator('.live-support-link')).toHaveCount(0);
+    if (width > 768) {
+      await expect(page.locator('#liveChapterNotice')).toBeHidden();
+      await expect(page.locator('.live-support-link')).toHaveCount(0);
+    } else {
+      await expect(page.locator('#liveChapterNotice')).toBeVisible();
+      await expect(support).toHaveAttribute('data-support-id', 'support-01');
+    }
     for (const rejected of [1034.839, 1291.600, 1358.400, 2124.839, 2166.079, 2444.599, 3008.559, 3162.760, 3985.920, 4523.280]) {
       await pauseAtLiveTime(page, rejected);
-      await expect(support).toHaveCount(0);
+      if (width > 768) await expect(support).toHaveCount(0);
     }
   });
 }
@@ -1352,6 +1374,7 @@ test('Apoio interno usa o popover e mantém o vídeo e a URL', async ({ page }) 
 });
 
 test('Mobile preserva recolhimento e apoios não encobrem o convite e o assunto', { tag: '@smoke' }, async ({ page }) => {
+  test.setTimeout(60000); // Six localized layouts plus replacement/reopening in one scenario.
   for (const lang of ['pt', 'en', 'es']) for (const width of [320, 390]) {
     await page.setViewportSize({ width, height: 1000 });
     await page.goto(`/${lang === 'pt' ? '' : `${lang}/`}manual-de-bordo.html`);
@@ -1383,19 +1406,28 @@ test('Mobile preserva recolhimento e apoios não encobrem o convite e o assunto'
     const a = await actions.boundingBox(), invite = await page.locator('#liveGroupInvite').boundingBox();
     return a.y + a.height <= invite.y;
   }).toBe(true);
-  await page.locator('.live-chapter-notice__collapse').click();
+  await finishNoticeCycle(page);
   await expect(page.locator('.live-notice-pill span')).toHaveText('Apoio');
+  await expect(page.locator('.live-notice-pill')).toHaveCSS('color', 'rgb(7, 101, 140)');
   await pauseAtLiveTime(page, 2593);
-  await expect(page.locator('.live-notice-pill span')).toHaveText('Atualização · Apoio');
+  await expect(page.locator('#liveChapterNotice')).toBeVisible();
+  await expect(page.locator('.live-notice-pill')).toBeHidden();
+  await expect(page.locator('.live-notice-support')).toBeVisible();
   await pauseAtLiveTime(page, 1779);
-  await expect(page.locator('.live-notice-pill span')).toHaveText('Apoio');
+  await expect(page.locator('.live-notice-support')).toHaveAttribute('data-support-id', 'support-02');
+  await finishNoticeCycle(page);
+  await pauseAtLiveTime(page, 1791);
+  // The support remains available after its original 12-second display window.
+  await expect(page.locator('.live-notice-pill')).toBeVisible();
   await page.locator('.live-notice-pill').click();
   await expect(page.locator('.live-notice-support')).toBeVisible();
-  await expect(page.locator('.live-chapter-notice__collapse')).toBeFocused();
-  await page.locator('.live-chapter-notice__collapse').click();
-  await pauseAtLiveTime(page, 1791);
+  await expect(page.locator('#liveChapterNote')).toBeFocused();
+  // End the reopened reading cycle before checking expiry at the topic boundary.
+  await finishNoticeCycle(page);
+  await pauseAtLiveTime(page, 1852);
   await expect(page.locator('.live-notice-pill')).toBeHidden();
-  await expect(page.locator('#livePlayPauseBtn')).toBeFocused();
+  await expect(page.locator('#liveChapterNotice')).toBeHidden();
+
 });
 
 for (const [lang, path, details] of [
@@ -1417,7 +1449,8 @@ for (const [lang, path, details] of [
     await expect(action).toHaveText(details);
     await expect(ticker).toHaveCSS('animation-name', 'live-notice-marquee');
     await expect(ticker).toHaveCSS('animation-direction', 'normal');
-    await expect(page.locator('.live-notice-repeat')).toHaveAttribute('aria-hidden', 'true');
+    await expect(ticker).toHaveCSS('animation-iteration-count', '1');
+    await expect(page.locator('.live-chapter-notice__collapse')).toHaveCount(0);
     expect(await ticker.evaluate(el => parseFloat(getComputedStyle(el).animationDuration))).toBeGreaterThanOrEqual(8);
     for (const width of [320, 390, 768]) {
       await page.setViewportSize({ width, height: 900 });
@@ -1427,8 +1460,7 @@ for (const [lang, path, details] of [
         const text = await viewport.boundingBox();
         const button = await action.boundingBox();
         const lower = await page.locator('#liveLowerThird').boundingBox();
-        const collapse = await page.locator('.live-chapter-notice__collapse').boundingBox();
-        return collapse.y <= strip.y + 1 && Math.abs(collapse.x + collapse.width - strip.x - strip.width) < 1 && strip.height <= 36 && strip.y >= video.y && strip.y + strip.height < lower.y &&
+        return strip.height <= 36 && strip.y >= video.y && strip.y + strip.height < lower.y &&
           text.x + text.width <= button.x && button.x + button.width <= strip.x + strip.width;
       }).toBe(true);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
@@ -1438,10 +1470,94 @@ for (const [lang, path, details] of [
     await expect(ticker).toHaveCSS('animation-play-state', 'paused');
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await expect(ticker).toHaveCSS('animation-name', 'none');
-    await expect(page.locator('.live-notice-repeat')).toBeHidden();
+    await expect(page.locator('.live-notice-repeat')).toHaveCount(0);
     await expect(viewport).toHaveCSS('overflow-x', 'auto');
     // Keyboard focus opens the help before a pointer click; avoid clicking its backdrop.
     await action.focus();
     await expect(page.locator('#liveGuidePopover')).toBeVisible();
   });
 }
+
+
+test('Um ciclo real recolhe o aviso e a reabertura mantém o mesmo conteúdo', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/manual-de-bordo.html');
+  await page.locator('#loadLivePlayerBtn').click();
+  await readyPlayer(page);
+  await pauseAtLiveTime(page, 1319);
+  await page.mouse.move(0, 0);
+  await page.locator('#livePlayerWrapper').scrollIntoViewIfNeeded();
+  const ticker = page.locator('.live-notice-ticker');
+  await expect(ticker).toHaveCSS('animation-play-state', 'running');
+  const duration = await ticker.evaluate(el => parseFloat(getComputedStyle(el).animationDuration));
+  await expect(page.locator('.live-notice-pill')).toBeVisible({ timeout: Math.ceil(duration * 1000) + 2000 });
+  await expect(page.locator('#liveChapterNotice')).toBeHidden();
+  await page.locator('.live-notice-pill').click();
+  await expect(page.locator('#liveChapterNotice')).toBeVisible();
+  await expect(page.locator('#liveChapterNote')).toContainText('documentação de menores');
+  await expect(ticker).toHaveCSS('animation-play-state', 'paused');
+});
+
+for (const width of [390, 1440]) {
+  test(`Pulsação da gravação respeita visibilidade e redução de movimento: ${width}`, async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/manual-de-bordo.html');
+    const play = page.locator('#loadLivePlayerBtn');
+    await play.scrollIntoViewIfNeeded();
+    await page.mouse.move(0, 0);
+    await expect(play).toHaveCSS('animation-name', 'live-action-pulse');
+    await expect(play).toHaveCSS('animation-play-state', 'running');
+    const centered = await page.evaluate(() => {
+      const play = document.querySelector('#loadLivePlayerBtn').getBoundingClientRect();
+      const wrapper = document.querySelector('#livePlayerWrapper').getBoundingClientRect();
+      return Math.abs(play.x + play.width / 2 - wrapper.x - wrapper.width / 2);
+    });
+    expect(centered).toBeLessThan(1);
+    await page.evaluate(() => scrollTo(0, document.body.scrollHeight));
+    await expect(play).toHaveCSS('animation-play-state', 'paused');
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await expect(play).toHaveCSS('animation-name', 'none');
+    await expect(page.locator('iframe')).toHaveCount(0);
+  });
+}
+
+
+for (const lang of ['pt', 'en', 'es']) {
+  test(`Aviso mobile termina a leitura ao cruzar o fim do assunto: ${lang}`, async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.goto(`/${lang === 'pt' ? '' : lang + '/'}manual-de-bordo.html`);
+    await page.locator('#loadLivePlayerBtn').click();
+    await readyPlayer(page);
+    await pauseAtLiveTime(page, 1763);
+    await expect(page.locator('.live-notice-support')).toHaveAttribute('data-support-id', 'support-10');
+    const original = await page.locator('.live-notice-ticker').textContent();
+    // This utterance starts just three seconds before the topic ends.
+    await pauseAtLiveTime(page, 1765);
+    await expect(page.locator('#liveCustomTopic')).toContainText(lang === 'pt' ? 'Estacionamento' : lang === 'en' ? 'Parking' : 'Estacionamiento');
+    await expect(page.locator('#liveChapterNotice')).toBeVisible();
+    await expect(page.locator('.live-notice-ticker')).toHaveText(original);
+    await page.locator('.live-notice-ticker').evaluate(el => el.dispatchEvent(new AnimationEvent('animationend', { animationName: 'live-notice-marquee' })));
+    await expect(page.locator('#liveChapterNotice')).toBeHidden();
+    await expect(page.locator('.live-notice-pill')).toBeHidden();
+    // A fresh notice in the new topic still appears normally.
+    await pauseAtLiveTime(page, 1779);
+    await expect(page.locator('.live-notice-support')).toHaveAttribute('data-support-id', 'support-02');
+    await expect(page.locator('#liveChapterNotice')).toBeVisible();
+  });
+}
+
+
+test('Navegação explícita troca de assunto sem carregar o aviso anterior', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/manual-de-bordo.html');
+  await page.locator('#loadLivePlayerBtn').click();
+  await readyPlayer(page);
+  await pauseAtLiveTime(page, 1763);
+  await expect(page.locator('#liveChapterNotice')).toBeVisible();
+  await page.locator('#liveNextChapterBtn').click();
+  await expect(page.locator('#liveChapterNotice')).toBeHidden();
+  await expect(page.locator('.live-notice-pill')).toBeHidden();
+});

@@ -1,10 +1,10 @@
 import { CHAPTERS, LIVE_VIDEO_ID, LIVE_DURATION, GROUP_INVITE_URL } from './manual-de-bordo-live-data.js?v=20261007-transcript-i18n';
 import { normalizeSearch, matchChapter, highlightParts, excerpt, transcriptFor } from './manual-de-bordo-live-search.js?v=20261007-transcript-i18n';
 
-import { topicAt, topicProgress, seekInTopic, isNoticeDue, isGroupInviteDue } from './manual-de-bordo-live-timeline.js?v=20261007-transcript-i18n';
+import { topicAt, topicProgress, seekInTopic, isNoticeDue, isGroupInviteDue, mobileNoticeAt } from './manual-de-bordo-live-timeline.js?v=20261007-notice-reading-complete';
 import { initLiveGuideHelp } from './manual-de-bordo-live-help.js?v=20261005-mobile-live';
 import { initLiveMarkers } from './manual-de-bordo-live-markers.js?v=20261005-mobile-live';
-import { initLiveControlMarquee, initLiveNoticeMarquee } from './manual-de-bordo-live-marquee.js?v=20261007-mobile-notice-ticker';
+import { initLiveControlMarquee, initLiveNoticeMarquee, initLivePulse } from './manual-de-bordo-live-marquee.js?v=20261007-notice-reading-complete';
 import { initLiveTopicTransition } from './manual-de-bordo-live-topic.js?v=20261005-mobile-live';
 import { supportAt } from './manual-de-bordo-live-support.js?v=20261006-live-copy';
 
@@ -16,7 +16,7 @@ const copy = {
     videoTitle: 'Live de embarque · Kriativos On Board 2026', apiError: 'Não foi possível sincronizar os assuntos. O vídeo ainda pode ser assistido aqui ou pelo link no YouTube.', previousTopic: 'Assunto anterior', nextTopic: 'Próximo assunto', play: 'Reproduzir', pause: 'Pausar', progress: 'Progresso do assunto', remaining: 'Restante', closeGuide: 'Fechar orientação',
     videoError: 'O YouTube não conseguiu reproduzir este vídeo. Tente novamente ou abra o trecho no YouTube.', fullscreenError: 'Não foi possível ampliar. Você pode abrir o vídeo no YouTube.', expand: 'Ampliar vídeo', exit: 'Sair da tela cheia',
     previousShort: 'Anterior', nextShort: 'Próximo', fullLive: 'Live completa', searchHint: 'Buscar na live', loading: 'Carregando vídeo…',
-    noticePill: 'Atualização', showNotice: 'Mostrar atualização', collapseNotice: 'Recolher aviso',
+    noticePill: 'Atualização', showNotice: 'Mostrar atualização',
     groupQrPrompt: 'Clique aqui para', groupQrHint: 'ou acesse pelo QR Code', groupQrAction: 'ENTRAR NO GRUPO', groupQrAlt: 'QR code para entrar no grupo oficial do WhatsApp',
     groupInvite: 'Clique aqui para entrar no grupo', groupInviteLabel: 'Entrar no grupo oficial do WhatsApp (abre em nova aba)',
     supportPill: 'Apoio', showSupport: 'Mostrar apoio da live', opensNewTab: 'abre em nova aba'
@@ -27,7 +27,7 @@ const copy = {
     videoTitle: 'Boarding live recording · Kriativos On Board 2026', apiError: 'Topic synchronisation is unavailable. You can still watch here or open the video on YouTube.', previousTopic: 'Previous topic', nextTopic: 'Next topic', play: 'Play', pause: 'Pause', progress: 'Topic progress', remaining: 'Remaining', closeGuide: 'Close guidance',
     videoError: 'YouTube could not play this video. Try again or open this topic on YouTube.', fullscreenError: 'Full screen is unavailable. You can open the video on YouTube.', expand: 'Expand video', exit: 'Exit full screen',
     previousShort: 'Previous', nextShort: 'Next', fullLive: 'Full recording', searchHint: 'Search the recording', loading: 'Loading video…',
-    noticePill: 'Update', showNotice: 'Show update', collapseNotice: 'Collapse notice',
+    noticePill: 'Update', showNotice: 'Show update',
     groupQrPrompt: 'Click here to', groupQrHint: 'or scan the QR code', groupQrAction: 'JOIN THE GROUP', groupQrAlt: 'QR code to join the official WhatsApp group',
     groupInvite: 'Click here to join the group', groupInviteLabel: 'Join the official WhatsApp group (opens in a new tab)',
     supportPill: 'Help', showSupport: 'Show recording help', opensNewTab: 'opens in a new tab'
@@ -38,7 +38,7 @@ const copy = {
     videoTitle: 'Charla de embarque · Kriativos On Board 2026', apiError: 'No se pudieron sincronizar los temas. Puedes seguir viendo aquí o abrir el vídeo en YouTube.', previousTopic: 'Tema anterior', nextTopic: 'Siguiente tema', play: 'Reproducir', pause: 'Pausar', progress: 'Progreso del tema', remaining: 'Restante', closeGuide: 'Cerrar orientación',
     videoError: 'YouTube no pudo reproducir el vídeo. Inténtalo de nuevo o abre este tema en YouTube.', fullscreenError: 'No se pudo ampliar. Puedes abrir el vídeo en YouTube.', expand: 'Ampliar vídeo', exit: 'Salir de pantalla completa',
     previousShort: 'Anterior', nextShort: 'Siguiente', fullLive: 'Charla completa', searchHint: 'Busca en la charla', loading: 'Cargando vídeo…',
-    noticePill: 'Actualización', showNotice: 'Mostrar actualización', collapseNotice: 'Recoger aviso',
+    noticePill: 'Actualización', showNotice: 'Mostrar actualización',
     groupQrPrompt: 'Haz clic aquí para', groupQrHint: 'o escanea el código QR', groupQrAction: 'ENTRAR AL GRUPO', groupQrAlt: 'Código QR para entrar al grupo oficial de WhatsApp',
     groupInvite: 'Haz clic aquí para entrar al grupo', groupInviteLabel: 'Entrar al grupo oficial de WhatsApp (se abre en una pestaña nueva)',
     supportPill: 'Ayuda', showSupport: 'Mostrar ayuda de la charla', opensNewTab: 'se abre en una pestaña nueva'
@@ -98,7 +98,7 @@ function initLive() {
   const noticeTicker = document.createElement('div');
   noticeTicker.className = 'live-notice-ticker';
   note.append(noticeTicker);
-  const noticeMarquee = initLiveNoticeMarquee(note, noticeTicker, noticeGroup);
+  const noticeMarquee = initLiveNoticeMarquee(note, noticeTicker, noticeGroup, collapseNotice);
   const updateDimensions = () => {
     const controls = byId('liveCustomControls');
     const topic = byId('liveCustomTopic');
@@ -295,53 +295,73 @@ function initLive() {
     }, 300);
   }
   // Mobile notices use a compact ticker at the top of the video.
-  const noticeCollapse = document.createElement('button');
-  noticeCollapse.type = 'button';
-  noticeCollapse.className = 'live-chapter-notice__collapse';
-  noticeCollapse.setAttribute('aria-label', copy.collapseNotice);
-  noticeCollapse.setAttribute('aria-controls', noticeGroup.id);
-  noticeCollapse.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 15 6-6 6 6"/></svg>';
-  noticeGroup.append(noticeCollapse);
   const noticePill = document.createElement('button');
   noticePill.type = 'button';
   noticePill.className = 'live-notice-pill';
   noticePill.hidden = true;
   noticePill.setAttribute('aria-label', copy.showNotice);
   noticePill.setAttribute('aria-controls', noticeGroup.id);
-  noticePill.innerHTML = '<svg class="live-notice-pill__icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M12 4v10M12 20h.01"/></svg><span></span>';
+  noticePill.innerHTML = '<span></span>';
   noticePill.querySelector('span').textContent = copy.noticePill;
   wrapper.append(noticePill);
+  initLivePulse([byId('loadLivePlayerBtn'), noticePill]);
+  let collapseTimer;
   let noticeCollapsed = false;
   let activeNoticeId = null;
   let noticeRenderKey;
   let lastPlaybackSeconds = 0;
+  let lastNoticeSeconds = 0;
+  let mobileReadingNotice = null;
+  let noticeFinishing = false;
+  function resetNoticeReading() {
+    clearTimeout(collapseTimer);
+    noticeFinishing = false;
+    mobileReadingNotice = null;
+    activeNoticeId = null;
+    noticeRenderKey = undefined;
+    noticeCollapsed = false;
+    noticeMarquee.stop();
+    noticeGroup.classList.remove('is-notice-exiting');
+  }
   function syncNotice() {
     // Without an API clock, keep the update available in search and the guide only.
-    const due = ready && !apiFailed && isNoticeDue(selected, lastPlaybackSeconds);
-    const support = ready && !apiFailed ? supportAt(lastPlaybackSeconds) : null;
+    let mobileNotice = ready && !apiFailed && mobile.matches ? mobileNoticeAt(selected, lastPlaybackSeconds) : null;
+    const elapsed = lastPlaybackSeconds - lastNoticeSeconds;
+    lastNoticeSeconds = lastPlaybackSeconds;
+    if (mobileNotice) {
+      mobileReadingNotice = { ...mobileNotice, chapter: selected };
+      mobileNotice = mobileReadingNotice;
+    } else if (mobile.matches && ready && !apiFailed && !noticeCollapsed && elapsed >= 0 &&
+      (noticeMarquee.isReading() || noticeFinishing)) {
+      // A natural topic boundary must not cut off an unfinished reading cycle.
+      mobileNotice = mobileReadingNotice;
+    } else mobileReadingNotice = null;
+    const noticeChapter = mobileNotice?.chapter || selected;
+    const due = mobile.matches ? Boolean(mobileNotice?.update) : ready && !apiFailed && isNoticeDue(selected, lastPlaybackSeconds);
+    const support = mobile.matches ? mobileNotice?.support : ready && !apiFailed ? supportAt(lastPlaybackSeconds) : null;
     const visibleNotice = due || support;
     const inviteDue = ready && !apiFailed && isGroupInviteDue(lastPlaybackSeconds);
     const inviteChanged = groupInvite.hidden === Boolean(inviteDue);
     if (!inviteDue && document.activeElement === groupInvite) playPause.focus({ preventScroll: true });
     groupInvite.hidden = !inviteDue;
-    const nextNoticeId = visibleNotice ? `${due ? selected.id : ''}:${support?.id || ''}` : null;
+    const nextNoticeId = mobile.matches ? mobileNotice?.key || null : visibleNotice ? `${due ? selected.id : ''}:${support?.id || ''}` : null;
     if (activeNoticeId !== nextNoticeId) {
       if (activeNoticeId) {
         if (byId('liveGuidePopover')?.contains(document.activeElement)) playPause.focus({ preventScroll: true });
         guideHelp.hide();
       }
-      if (nextNoticeId && noticeCollapsed) {
-        noticePill.classList.remove('is-new');
-        void noticePill.offsetWidth;
-        noticePill.classList.add('is-new');
-      }
+      clearTimeout(collapseTimer);
+      noticeFinishing = false;
+      noticeGroup.classList.remove('is-notice-exiting');
+      noticeMarquee.stop();
+      noticeCollapsed = false;
       activeNoticeId = nextNoticeId;
     }
-    const renderKey = `${selected?.id || ''}:${Boolean(due)}:${support?.id || ''}`;
+    const renderKey = `${mobile.matches}:${noticeChapter?.id || ''}:${nextNoticeId}`;
     const renderChanged = noticeRenderKey !== renderKey;
     if (renderChanged) {
-      if (noticeGroup.contains(document.activeElement) && document.activeElement !== noticeCollapse) playPause.focus({ preventScroll: true });
-      renderNotice(selected, due, support);
+      if (noticeGroup.contains(document.activeElement)) playPause.focus({ preventScroll: true });
+      renderNotice(noticeChapter, due, support);
       noticeRenderKey = renderKey;
     }
     noticeGroup.hidden = !visibleNotice;
@@ -349,21 +369,37 @@ function initLive() {
     wrapper.classList.toggle('is-notice-due', Boolean(visibleNotice));
     wrapper.classList.toggle('is-notice-collapsed', noticeCollapsed);
     noticePill.hidden = !(mobile.matches && noticeCollapsed && visibleNotice);
-    noticeCollapse.setAttribute('aria-expanded', String(!noticeCollapsed));
     noticePill.setAttribute('aria-expanded', String(!noticeCollapsed));
     if (renderChanged || inviteChanged) updateDimensions();
+    if (renderChanged && visibleNotice && mobile.matches) noticeMarquee.start();
   }
-  noticeCollapse.addEventListener('click', () => {
-    noticeCollapsed = true;
-    syncNotice();
-    updateDimensions();
-    noticePill.focus({ preventScroll: true });
-  });
+  function collapseNotice() {
+    if (!mobile.matches || !activeNoticeId || noticeCollapsed) return;
+    const key = activeNoticeId;
+    noticeFinishing = true;
+    noticeGroup.classList.add('is-notice-exiting');
+    collapseTimer = setTimeout(() => {
+      if (key !== activeNoticeId) return;
+      const restoreFocus = noticeGroup.contains(document.activeElement);
+      noticeCollapsed = true;
+      noticeFinishing = false;
+      noticeGroup.classList.remove('is-notice-exiting');
+      syncNotice();
+      updateDimensions();
+      if (restoreFocus) (noticePill.hidden ? playPause : noticePill).focus({ preventScroll: true });
+    }, matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 180);
+  }
   noticePill.addEventListener('click', () => {
+    clearTimeout(collapseTimer);
+    noticeFinishing = false;
+    noticeGroup.classList.remove('is-notice-exiting');
     noticeCollapsed = false;
     syncNotice();
     updateDimensions();
-    noticeCollapse.focus({ preventScroll: true });
+    // Return keyboard focus to the text, keeping it still for comfortable reading.
+    note.tabIndex = 0;
+    note.focus({ preventScroll: true });
+    noticeMarquee.start();
   });
   mobile.addEventListener('change', syncNotice);
   const sheetGrab = document.createElement('div');
@@ -449,6 +485,12 @@ function initLive() {
     icon.setAttribute('width', '14');
     icon.setAttribute('height', '14');
     noticeSymbol.replaceChildren(icon);
+    noticePill.querySelector('svg')?.remove();
+    const pillIcon = icon.cloneNode(true);
+    pillIcon.setAttribute('width', '18');
+    pillIcon.setAttribute('height', '18');
+    noticePill.prepend(pillIcon);
+    noticePill.dataset.noticeKind = noticeGroup.dataset.noticeKind;
     noticeMarquee.refresh();
     noticePill.setAttribute('aria-label', support && !updateDue ? copy.showSupport : copy.showNotice);
   }
@@ -834,6 +876,7 @@ function initLive() {
     }
   }
   function playAt(seconds = 0) {
+    resetNoticeReading();
     pendingSeconds = seconds;
     if (ready && player) {
       current = null;
@@ -897,6 +940,7 @@ function initLive() {
     if (!selected || !ready) return;
     topicTransition.cancel();
     const seconds = seekInTopic(selected, progress.value, player.getDuration?.());
+    resetNoticeReading();
     player.seekTo(seconds, true);
     updateProgress(seconds);
     revealControls();

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { CHAPTERS, GROUP_INVITE_CUES, GROUP_INVITE_DURATION, LIVE_DURATION } from '../../assets/js/manual-de-bordo-live-data.js';
-import { isNoticeDue, isGroupInviteDue, topicBounds } from '../../assets/js/manual-de-bordo-live-timeline.js';
+import { isNoticeDue, isGroupInviteDue, topicBounds, topicAt, mobileNoticeAt } from '../../assets/js/manual-de-bordo-live-timeline.js';
 import { SUPPORT_NOTICES, SUPPORT_DURATION, supportAt } from '../../assets/js/manual-de-bordo-live-support.js';
 
 test('Every update has a mapped utterance inside its own topic', () => {
@@ -100,4 +100,26 @@ test('Support follows each approved utterance with an exclusive end and reversib
   for (const time of [NaN, Infinity, -1, 1034.839, 1291.600, 1358.400, 2124.839, 2166.079, 2444.599, 3008.559, 3162.760, 3985.920, 4523.280]) {
     assert.equal(supportAt(time), null, String(time));
   }
+});
+
+
+test('Mobile retains the latest notice only inside its topic, including backward seeks', () => {
+  const airport = topicAt(1742);
+  assert.equal(mobileNoticeAt(airport, 1741), null);
+  assert.equal(mobileNoticeAt(airport, 1742).support.id, 'support-01');
+  assert.equal(mobileNoticeAt(airport, 1755).support.id, 'support-01');
+  assert.equal(mobileNoticeAt(airport, 1763).support.id, 'support-10');
+  assert.equal(mobileNoticeAt(airport, 1750).support.id, 'support-01');
+  assert.equal(mobileNoticeAt(airport, topicBounds(airport).end), null);
+  assert.equal(mobileNoticeAt(topicAt(topicBounds(airport).end), topicBounds(airport).end), null);
+  const excursion = topicAt(2593);
+  assert.equal(mobileNoticeAt(excursion, 2590).update, true);
+  assert.equal(mobileNoticeAt(excursion, 2593).support.id, 'support-15');
+  const charter = topicAt(1674);
+  assert.notEqual(mobileNoticeAt(charter, 1564).key, mobileNoticeAt(charter, 1674).key);
+  const minors = topicAt(1319);
+  assert.equal(mobileNoticeAt(minors, 1319).update, true);
+  assert.equal(mobileNoticeAt(minors, 1318), null);
+  assert.equal(mobileNoticeAt(null, 1319), null);
+  assert.equal(mobileNoticeAt(minors, NaN), null);
 });

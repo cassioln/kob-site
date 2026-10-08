@@ -33,48 +33,89 @@ export function initLiveControlMarquee(buttons) {
   return { refresh };
 }
 
-/** A single accessible copy of the notice; animate only actual mobile overflow. */
-export function initLiveNoticeMarquee(viewport, text, notice) {
+/** One reading cycle. Interaction, hidden tabs and offscreen video pause it. */
+export function initLiveNoticeMarquee(viewport, text, notice, onComplete) {
   const mobile = matchMedia('(max-width: 768px)');
-  const repeat = document.createElement('span');
-  repeat.className = 'live-notice-repeat';
-  repeat.setAttribute('aria-hidden', 'true');
-  let frame;
-  let onscreen = true;
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  let frame, timer, startedAt, remaining = 0;
+  let onscreen = true, active = false, restart = false, signature;
+  function pauseTimer() {
+    if (startedAt !== undefined) remaining -= performance.now() - startedAt;
+    startedAt = undefined;
+    clearTimeout(timer);
+  }
+  function complete() {
+    if (!active) return;
+    active = false;
+    pauseTimer();
+    onComplete();
+  }
   function syncPlayback() {
-    text.style.animationPlayState = document.hidden || !onscreen ? 'paused' : 'running';
+    const paused = document.hidden || !onscreen || notice.matches(':hover, :focus-within');
+    text.style.animationPlayState = paused ? 'paused' : 'running';
+    pauseTimer();
+    if (active && mobile.matches && !paused && !viewport.classList.contains('is-scrolling')) {
+      startedAt = performance.now();
+      timer = setTimeout(complete, Math.max(0, remaining));
+    }
   }
   function refresh() {
     if (frame !== undefined) return;
     frame = requestAnimationFrame(() => {
       frame = undefined;
-      repeat.remove();
-      const originalWidth = text.scrollWidth;
-      const overflowing = mobile.matches && viewport.clientWidth > 0 && originalWidth > viewport.clientWidth + 1;
-      if (overflowing) {
-        repeat.textContent = Array.from(text.children)
-          .filter(message => !message.hidden)
-          .map(message => message.classList.contains('live-notice-update')
-            ? message.querySelector('.live-notice-body').textContent : message.textContent)
-          .join(' · ');
-        text.append(repeat);
-      }
-      const travel = originalWidth + 32;
+      const width = text.scrollWidth;
+      const nextSignature = `${mobile.matches}:${reduced.matches}:${width}:${viewport.clientWidth}`;
+      const overflowing = mobile.matches && viewport.clientWidth > 0 && width > viewport.clientWidth + 1;
       viewport.classList.toggle('is-overflowing', overflowing);
-      viewport.style.setProperty('--live-label-travel', `${-travel}px`);
-      viewport.style.setProperty('--live-label-duration', `${Math.max(8, travel / 36)}s`);
       if (overflowing) viewport.tabIndex = 0;
       else viewport.removeAttribute('tabindex');
+      if (!restart && signature === nextSignature) return;
+      signature = nextSignature;
+      restart = false;
+      pauseTimer();
+      viewport.classList.remove('is-scrolling');
+      // Restart only for new content, reopening or changed dimensions, not clock ticks.
+      void text.offsetWidth;
+      viewport.style.setProperty('--live-label-travel', `${-width}px`);
+      viewport.style.setProperty('--live-label-duration', `${Math.max(8, width / 36)}s`);
+      remaining = Math.max(8000, text.textContent.length / 14 * 1000);
+      viewport.classList.toggle('is-scrolling', active && overflowing && !reduced.matches);
+      syncPlayback();
     });
   }
+  function start() { active = true; restart = true; refresh(); }
+  function stop() { active = false; pauseTimer(); viewport.classList.remove('is-scrolling'); }
+  text.addEventListener('animationend', event => {
+    if (event.target === text && event.animationName === 'live-notice-marquee') complete();
+  });
+  for (const event of ['pointerenter', 'pointerleave', 'focusin']) notice.addEventListener(event, syncPlayback);
+  notice.addEventListener('focusout', () => queueMicrotask(syncPlayback));
   if ('ResizeObserver' in window) new ResizeObserver(refresh).observe(viewport);
   else window.addEventListener('resize', refresh, { passive: true });
   if ('IntersectionObserver' in window) {
     new IntersectionObserver(([entry]) => { onscreen = entry.isIntersecting; syncPlayback(); }).observe(notice);
   }
   mobile.addEventListener('change', refresh);
+  reduced.addEventListener('change', refresh);
   document.fonts?.ready.then(refresh);
   document.addEventListener('visibilitychange', syncPlayback);
-  refresh();
-  return { refresh };
+  return { refresh, start, stop, isReading: () => active };
+}
+
+/** Pulses retain their existing placement and stop while hidden or offscreen. */
+export function initLivePulse(buttons) {
+  const visible = new Map(buttons.map(button => [button, false]));
+  function sync() {
+    for (const button of buttons) button.style.setProperty('--live-pulse-state',
+      !document.hidden && visible.get(button) ? 'running' : 'paused');
+  }
+  document.addEventListener('visibilitychange', sync);
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(entries => {
+      for (const entry of entries) visible.set(entry.target, entry.isIntersecting);
+      sync();
+    });
+    buttons.forEach(button => observer.observe(button));
+  } else buttons.forEach(button => visible.set(button, true));
+  sync();
 }
