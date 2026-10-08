@@ -440,6 +440,49 @@ function arriveFromLink() {
   });
 }
 
+function adaptHeaderTrigger() {
+  const trigger = document.querySelector('header [data-site-search-open]');
+  const menu = document.getElementById('navToggle');
+  if (!trigger || !menu) return;
+  const row = trigger.parentElement.parentElement;
+  const label = trigger.querySelector('.site-search-trigger__label');
+  const context = document.createElement('canvas').getContext('2d');
+  if (!label || !context || typeof ResizeObserver !== 'function') return;
+  let frame = null;
+
+  function update() {
+    frame = null;
+    if (!menu.getClientRects().length) {
+      delete trigger.dataset.searchCompact;
+      delete trigger.dataset.searchLabel;
+      trigger.style.removeProperty('--search-menu-size');
+      return;
+    }
+    const size = `${Math.round(menu.getBoundingClientRect().height)}px`;
+    trigger.dataset.searchCompact = 'true';
+    if (trigger.style.getPropertyValue('--search-menu-size') !== size) trigger.style.setProperty('--search-menu-size', size);
+    const rowStyle = getComputedStyle(row);
+    const controls = [...row.children].filter(child => child.getClientRects().length && getComputedStyle(child).visibility !== 'hidden');
+    const occupied = controls.reduce((total, child) => total + child.getBoundingClientRect().width, 0);
+    const gap = parseFloat(rowStyle.columnGap) || 0;
+    const available = row.clientWidth - (parseFloat(rowStyle.paddingLeft) || 0) - (parseFloat(rowStyle.paddingRight) || 0)
+      - occupied - gap * Math.max(0, controls.length - 1) + trigger.getBoundingClientRect().width;
+    const style = getComputedStyle(trigger);
+    context.font = getComputedStyle(label).font;
+    const labelWidth = context.measureText(label.textContent).width;
+    const needed = trigger.querySelector('svg').getBoundingClientRect().width + labelWidth + (parseFloat(style.columnGap) || 0)
+      + 2 * parseFloat(style.getPropertyValue('--search-label-padding')) + parseFloat(style.borderLeftWidth) + parseFloat(style.borderRightWidth);
+    const showLabel = available >= needed + 2;
+    if (trigger.dataset.searchLabel !== String(showLabel)) trigger.dataset.searchLabel = String(showLabel);
+  }
+
+  function queue() { if (frame === null) frame = requestAnimationFrame(update); }
+  new ResizeObserver(queue).observe(row);
+  new MutationObserver(queue).observe(trigger.closest('header'), { attributes: true, attributeFilter: ['data-scrolled'] });
+  document.fonts.ready.then(queue);
+  queue();
+}
+
 function init() {
   // Without <dialog> support (old browsers) the search stays out of the page instead of half-working.
   if (typeof HTMLDialogElement !== 'function' || typeof HTMLDialogElement.prototype.showModal !== 'function') {
@@ -457,6 +500,7 @@ function init() {
     const base = kbd.matches('[data-site-search-open]') && kbd.getAttribute('aria-label');
     if (base) kbd.setAttribute('aria-label', `${base} (${shortcutLabel})`);
   }
+  adaptHeaderTrigger();
   // Capture phase + stopPropagation: the global search owns ⌘K/Ctrl+K on every page, ahead of any handler
   // on the focused field or widget (the FAQ boxes no longer bind it).
   document.addEventListener('keydown', event => {

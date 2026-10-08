@@ -247,3 +247,23 @@ html.site-search-open { overflow: hidden; scrollbar-gutter: stable; }
   .bus-header .site-search-trigger__icon,
   .guide-header .site-search-trigger__icon { width: 16px; height: 16px; }
 }
+
+/* Com o menu sanduíche, a busca acompanha sua altura e usa o espaço livre da linha. */
+.site-search-trigger[data-search-compact] {
+  --search-label-padding: 12px;
+  box-sizing: border-box;
+  width: var(--search-menu-size);
+  min-width: var(--search-menu-size);
+  height: var(--search-menu-size);
+  min-height: var(--search-menu-size);
+  padding: 0;
+  justify-content: center;
+}
+.site-search-trigger[data-search-compact] .site-search-trigger__icon { width: 20px; height: 20px; }
+.site-search-trigger[data-search-compact] .site-search-trigger__label,
+.site-search-trigger[data-search-compact] .site-search-trigger__kbd { display: none; }
+.site-search-trigger[data-search-compact][data-search-label="true"] {
+  width: auto;
+  padding-inline: var(--search-label-padding);
+}
+.site-search-trigger[data-search-compact][data-search-label="true"] .site-search-trigger__label { display: inline; }

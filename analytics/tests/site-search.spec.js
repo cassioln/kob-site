@@ -447,20 +447,36 @@ async function expectHeaderFits(page, container, where) {
 }
 
 async function scrollHomeNav(page) {
+  await expect(page.locator('.hero')).toHaveAttribute('data-intro', 'done');
   await page.evaluate(() => document.getElementById('navio').scrollIntoView({ behavior: 'instant' }));
   await expect(page.locator('#nav')).toHaveAttribute('data-scrolled', 'true');
 }
 
-for (const width of [320, 390]) {
-  test(`os 9 headers cabem a ${width}px com a lupa`, async ({ page }) => {
+for (const width of [320, 390, 800, 1024, 1320]) {
+  test(`os 9 headers adaptam a busca ao menu a ${width}px`, async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.route(/https:\/\/.*youtube(?:-nocookie)?\.com\/.*/, route => route.fulfill({ contentType: 'text/html', body: '<html></html>' }));
     await page.setViewportSize({ width, height: 800 });
     for (const [path, , container] of PAGES) {
       await visit(page, path);
       await expectHeaderFits(page, container, `${path} @${width}`);
+      const trigger = page.locator(`${container} > .site-search-trigger`);
+      const menu = page.locator('#navToggle');
+      if (await menu.isVisible()) {
+        await expect(trigger).toHaveAttribute('data-search-compact', 'true');
+        const buttonBox = await trigger.boundingBox(), menuBox = await menu.boundingBox();
+        expect(buttonBox.height).toBeCloseTo(menuBox.height, 1);
+        if (width >= 390) await expect(trigger.locator('.site-search-trigger__label')).toBeVisible();
+        if (width === 320 && container === '.bus-header__right') {
+          await expect(trigger.locator('.site-search-trigger__label')).toBeHidden();
+          expect(buttonBox.width).toBeCloseTo(buttonBox.height, 1);
+        }
+      } else await expect(trigger).not.toHaveAttribute('data-search-compact');
       if (container !== '.nav__right') continue;
       await scrollHomeNav(page);
       await expectHeaderFits(page, container, `${path} @${width} rolado`);
+      await expect(trigger).toHaveAttribute('data-search-compact', 'true');
+      expect((await trigger.boundingBox()).height).toBeCloseTo((await menu.boundingBox()).height, 1);
     }
   });
 }
@@ -470,6 +486,7 @@ test('hero: busca e idiomas compartilham cores e hover', async ({ page }) => {
   await page.setViewportSize({ width: 1920, height: 900 });
   for (const path of ['/', '/en/', '/es/']) {
     await visit(page, path);
+    await page.mouse.move(0, 200);
     const trigger = page.locator('.nav__right .site-search-trigger');
     const languages = page.locator('.nav__right .lang-switch:not(.lang-switch--mobile)');
     await expect(trigger).toHaveCSS('color', 'rgb(255, 255, 255)');
@@ -485,6 +502,7 @@ test('hero: busca e idiomas compartilham cores e hover', async ({ page }) => {
 
 for (const width of [1321, 1366, 1680, 1920, 2560]) {
   test(`homes: menu e lupa cabem a ${width}px, no topo e rolado`, async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.setViewportSize({ width, height: 800 });
     for (const path of ['/', '/en/', '/es/']) {
       await visit(page, path);
