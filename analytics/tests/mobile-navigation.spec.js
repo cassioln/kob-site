@@ -25,6 +25,18 @@ for (const locale of locales) {
       await expect(drawer).toHaveAttribute('aria-hidden', 'false');
       await expect(toggle).toHaveAttribute('aria-expanded', 'true');
       await expect(language).toBeVisible();
+      if (surface === 'manual-de-bordo') {
+        await expect(drawer.locator('.nav__brand')).toHaveCSS('opacity', '1');
+        const menuLinks = drawer.locator('.guide-drawer__link:visible');
+        await expect(menuLinks).toHaveCount(7);
+        for (const link of await menuLinks.all()) {
+          await expect(link).toHaveCSS('text-decoration-line', 'none');
+          const box = await link.boundingBox();
+          expect(box.height).toBeGreaterThanOrEqual(44);
+        }
+        await menuLinks.first().hover();
+        await expect(menuLinks.first()).toHaveCSS('text-decoration-line', 'none');
+      }
       await expect(language.locator('.lang-switch__item')).toHaveCount(3);
       await expect(language.locator('[aria-current="page"]')).toHaveText(locale.active);
       if (surface === 'onibus') {

@@ -45,6 +45,7 @@
   .guide-header__nav-link,
   .guide-menu-desktop,
   .guide-menu-mobile,
+  .guide-drawer__link,
   .live-group-invite,
   .live-support-link,
   .checklist-sidebar__nav-item,
@@ -79,6 +80,7 @@
   .guide-header__nav-link,
   .guide-menu-desktop,
   .guide-menu-mobile,
+  .guide-drawer__link,
   .live-group-invite,
   .live-support-link,
   .checklist-sidebar__nav-item,
@@ -111,6 +113,7 @@
   .guide-header__nav-link,
   .guide-menu-desktop,
   .guide-menu-mobile,
+  .guide-drawer__link,
   .checklist-sidebar__nav-item,
   .checklist-group__toggle,
   .checklist-share__button,
@@ -144,6 +147,7 @@
   .guide-header__nav-link,
   .guide-menu-desktop,
   .guide-menu-mobile,
+  .guide-drawer__link,
   .checklist-sidebar__nav-item,
   .checklist-group__toggle,
   .checklist-share__button,
@@ -176,6 +180,7 @@
   .guide-header__nav-link,
   .guide-menu-desktop,
   .guide-menu-mobile,
+  .guide-drawer__link,
   .checklist-sidebar__nav-item,
   .checklist-group__toggle,
   .checklist-share__button,
@@ -6196,6 +6201,8 @@
   display: flex !important;
   z-index: 2500;
   box-sizing: border-box;
+  padding-inline: 20px;
+  background: #fff;
 }
 
 @media (min-width: 768px) {
@@ -6208,17 +6215,101 @@
   }
 }
 
-.guide-page .drawer nav a {
-  font-size: 1.25rem;
-  padding: 12px 0;
-  color: #0f2942;
-  transition: color .15s ease, transform .15s cubic-bezier(.16, 1, .3, 1);
+/* Manual menu: compact identity, quiet navigation and a clear current section. */
+.guide-page .drawer__head {
+  min-height: 76px;
+  margin-bottom: 20px;
+  gap: 16px;
 }
 
-.guide-page .drawer nav a:hover,
-.guide-page .drawer nav a:focus-visible {
-  color: #009adb;
-  transform: translateX(6px);
+.guide-page .drawer__head .nav__brand {
+  opacity: 1;
+  gap: 12px;
+  min-width: 0;
+}
+
+.guide-page .drawer__head .nav__brand img {
+  width: 86px;
+  height: auto;
+  flex-shrink: 0;
+}
+
+.guide-drawer__title {
+  max-width: 12ch;
+  color: #082f57;
+  font: 700 1rem/1.3 var(--font-body);
+}
+
+.guide-page .drawer__close {
+  flex-shrink: 0;
+  background: #f1f6fa;
+  border-color: transparent;
+}
+
+.guide-page .drawer__language {
+  margin-bottom: 18px;
+  padding: 0 0 20px;
+  gap: 8px;
+}
+
+.guide-page .drawer__language > span {
+  color: #49647a;
+  font-size: .8125rem;
+}
+
+.guide-page .drawer > nav {
+  gap: 4px;
+}
+
+.guide-page .drawer .guide-drawer__link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 50px;
+  padding: 12px 14px;
+  border: 0;
+  border-radius: 10px;
+  color: #082f57;
+  font: 600 1rem/1.4 var(--font-body);
+  text-decoration: none;
+  transition: background-color .18s ease, color .18s ease;
+}
+
+.guide-page .drawer .guide-drawer__link::after {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-top: 1.5px solid currentColor;
+  border-right: 1.5px solid currentColor;
+  transform: rotate(45deg);
+  flex-shrink: 0;
+  opacity: .6;
+}
+
+.guide-page .drawer .guide-drawer__link:is(:hover, :focus-visible, .is-active) {
+  color: #082f57;
+  background: #e7f4fb;
+  text-decoration: none;
+}
+
+.guide-page .drawer .guide-drawer__link.is-active {
+  font-weight: 800;
+}
+
+.guide-page .drawer :is(a, button):focus-visible {
+  outline: 2px solid #17648a;
+  outline-offset: 3px;
+}
+
+.guide-page .drawer .guide-menu-desktop {
+  display: none;
+}
+
+@media (max-width: 359px) {
+  .guide-page .drawer { padding-inline: 16px; }
+  .guide-page .drawer__head .nav__brand { gap: 8px; }
+  .guide-page .drawer__head .nav__brand img { width: 72px; }
 }
 
 
