@@ -10052,11 +10052,15 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
-    touch-action: pan-x;
+    touch-action: pan-x pan-y;
   }
 
   .deck__fan::-webkit-scrollbar {
     display: none;
+  }
+
+  .deck__fan.is-scroll-driven {
+    scroll-snap-type: none;
   }
 
   .deck__fan::before {
