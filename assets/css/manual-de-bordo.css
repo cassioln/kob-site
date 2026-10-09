@@ -4972,6 +4972,12 @@
 
 #duvidas .faq-manual__head { grid-template-columns: minmax(0, 1fr); }
 
+/* The field wrapper already provides the visible keyboard focus indicator. */
+.guide-page #duvidas .faq-search input:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
 #duvidas .faq-search-clear {
   display: none;
   align-items: center;
