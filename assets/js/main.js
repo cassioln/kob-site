@@ -192,7 +192,7 @@ document.documentElement.classList.add('js');
   var drawerLanguage = drawer.querySelector('[data-home-drawer-language]');
   var languageHeader = mobileLanguage && mobileLanguage.parentElement;
   var languageNext = mobileLanguage && mobileLanguage.nextElementSibling;
-  var mobileNavigation = window.matchMedia('(max-width: 1320px)');
+  var mobileNavigation = window.matchMedia('(max-width: 1440px)');
   function syncHomeLanguage(passedFold) {
     if (!mobileLanguage || !drawerLanguage) return;
     var showInDrawer = mobileNavigation.matches && passedFold;

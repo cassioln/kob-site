@@ -449,6 +449,8 @@ function adaptHeaderTrigger() {
   const header = trigger.closest('.nav');
   const context = document.createElement('canvas').getContext('2d');
   if (!label || !icon || !context || typeof ResizeObserver !== 'function') return;
+  // Cached HTML from before the structured button keeps search interaction during a rolling deploy.
+  if (!label.querySelector('.site-search-trigger__label-text')) return;
   let frame = null;
 
   function adaptGuideSearch() {
@@ -480,9 +482,10 @@ function adaptHeaderTrigger() {
     const buttonStyle = getComputedStyle(trigger);
     const buttonGap = parseFloat(buttonStyle.columnGap) || 0;
     const borders = parseFloat(buttonStyle.borderLeftWidth) + parseFloat(buttonStyle.borderRightWidth);
-    const padding = compact ? 24 : expanded ? 36 : 32;
+    const hero = header?.dataset.scrolled === 'false';
+    const padding = compact ? 24 : hero ? 32 : expanded ? 36 : 32;
     let descriptionWidth = 0;
-    if (expanded) {
+    if (expanded && !hero) {
       const style = getComputedStyle(description);
       context.font = style.font;
       descriptionWidth = context.measureText(description.textContent).width
@@ -492,8 +495,12 @@ function adaptHeaderTrigger() {
     context.font = labelStyle.font;
     const textWidth = text => context.measureText(text).width + letterSpacing * text.length;
     const required = text => icon.getBoundingClientRect().width + Math.max(textWidth(text), descriptionWidth) + buttonGap + padding + borders;
-    const long = trigger.dataset.searchLabelLong;
-    const short = trigger.dataset.searchLabelShort;
+    const long = hero ? trigger.dataset.searchLabelHero || description.textContent : trigger.dataset.searchLabelLong;
+    const short = hero ? trigger.dataset.searchLabelHeroShort || trigger.dataset.searchLabelShort : trigger.dataset.searchLabelShort;
+    if (header) {
+      const accessible = trigger.dataset.searchAccessibleLabel || trigger.getAttribute('aria-label').split(' — ').pop();
+      trigger.setAttribute('aria-label', `${long} — ${accessible}`);
+    }
     // The home keeps its header height; the subtitle accompanies the full prompt only.
     if (header && expanded && required(long) > available) {
       fitSearchButton(available, height, false, compact, size);
@@ -512,7 +519,8 @@ function adaptHeaderTrigger() {
       showShortcut = width + buttonGap + shortcutWidth <= available;
       if (showShortcut) width += buttonGap + shortcutWidth;
     }
-    if (showLabel && text === long) width = Math.min(available, Math.max(width, expanded ? 460 : 180));
+    const preferredWidth = header ? hero ? 0 : 290 : expanded ? 460 : 180;
+    if (showLabel && text === long) width = Math.min(available, Math.max(width, preferredWidth));
     if (title.textContent !== text) title.textContent = text;
     trigger.dataset.searchLabel = String(showLabel);
     trigger.dataset.searchShortcut = String(showShortcut);
@@ -538,8 +546,10 @@ function adaptHeaderTrigger() {
       return;
     }
     const compact = Boolean(menu.getClientRects().length);
-    const size = compact ? Math.round(menu.getBoundingClientRect().height) : 58;
-    const available = row.clientWidth - occupiedWithoutSearch(row);
+    const hero = header.dataset.scrolled === 'false';
+    const size = compact ? Math.round(menu.getBoundingClientRect().height) : hero ? 38 : 58;
+    const room = row.clientWidth - occupiedWithoutSearch(row);
+    const available = hero ? room : Math.min(room, 290);
     fitSearchButton(available, size, !compact, compact, size);
   }
 

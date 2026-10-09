@@ -28,7 +28,7 @@ const settled = page => page.waitForFunction(() => document.querySelector('.site
 test('botão abre o bilhete com "Mais procurados" e o foco no campo', async ({ page }) => {
   await home(page);
   const trigger = page.locator('.nav__right [data-site-search-open]');
-  await expect(trigger).toHaveAttribute('aria-label', 'O QUE VOCÊ PROCURA? — Buscar no site');
+  await expect(trigger).toHaveAttribute('aria-label', 'Pesquise em todo site — Buscar no site');
   await trigger.click();
   await expect(dialog(page)).toBeVisible();
   await expect(page.locator('html')).toHaveCSS('scrollbar-gutter', 'stable');
@@ -352,7 +352,8 @@ for (const [path, lang, container] of PAGES) {
     await page.route(/https:\/\/.*youtube(?:-nocookie)?\.com\/.*/, route => route.fulfill({ contentType: 'text/html', body: '<html></html>' }));
     await visit(page, path);
     const trigger = page.locator(`${container} > .site-search-trigger`);
-    const accessibleLabel = `${TEXT[lang].placeholder.toLocaleUpperCase(lang)} — ${TEXT[lang].label}`;
+    const heroText = { pt: 'Pesquise em todo site', en: 'Search the entire site', es: 'Busca en todo el sitio' };
+    const accessibleLabel = `${container === '.nav__right' ? heroText[lang] : TEXT[lang].placeholder.toLocaleUpperCase(lang)} — ${TEXT[lang].label}`;
     await expect(trigger).toHaveAttribute('aria-label', accessibleLabel);
     await expect(trigger.locator('[data-site-search-kbd]')).toHaveText(/^(⌘ K|Ctrl K)$/);
     await pressShortcut(page);
@@ -456,6 +457,15 @@ async function scrollHomeNav(page) {
   await expect(page.locator('#nav')).toHaveAttribute('data-scrolled', 'true');
 }
 
+async function expectHomeLogoProportions(page) {
+  const logo = page.locator('#nav > .nav__brand img');
+  await expect(logo).toBeVisible();
+  await expect.poll(() => logo.evaluate(img => {
+    const box = img.getBoundingClientRect();
+    return box.width >= 70 ? Math.abs(box.width / box.height - img.naturalWidth / img.naturalHeight) : Infinity;
+  }), { message: 'A marca mantém a proporção original quando o header encolhe' }).toBeLessThan(0.01);
+}
+
 for (const width of [320, 390, 800, 1024, 1320]) {
   test(`os 9 headers adaptam a busca ao menu a ${width}px`, async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -475,13 +485,14 @@ for (const width of [320, 390, 800, 1024, 1320]) {
       if (container !== '.nav__right') continue;
       await scrollHomeNav(page);
       await expectHeaderFits(page, container, `${path} @${width} rolado`);
+      await expectHomeLogoProportions(page);
       await expect(trigger).toHaveAttribute('data-search-compact', 'true');
       expect((await trigger.boundingBox()).height).toBeCloseTo((await menu.boundingBox()).height, 1);
     }
   });
 }
 
-// Busca de 58 px: adapta o texto e o atalho ao espaço livre real de cada idioma.
+// Mantém a paleta da primeira dobra ao adaptar o texto de cada idioma.
 test('hero: busca e idiomas compartilham cores e hover', async ({ page }) => {
   await page.setViewportSize({ width: 1920, height: 900 });
   for (const path of ['/', '/en/', '/es/']) {
@@ -500,20 +511,24 @@ test('hero: busca e idiomas compartilham cores e hover', async ({ page }) => {
   }
 });
 
-for (const width of [1321, 1366, 1680, 1920, 2560]) {
+for (const width of [1321, 1366, 1440, 1441, 1680, 1920, 2560]) {
   test(`homes: menu e lupa cabem a ${width}px, no topo e rolado`, async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.setViewportSize({ width, height: 800 });
     for (const path of ['/', '/en/', '/es/']) {
       await visit(page, path);
       await expect(page.locator('#nav')).toHaveAttribute('data-scrolled', 'false');
-      await expect(page.locator('.nav__right .site-search-trigger')).toHaveCSS('min-height', '58px');
+      await expect(page.locator('.nav__right .site-search-trigger')).toHaveCSS('min-height', '38px');
       await expectHeaderFits(page, '.nav__right', `${path} @${width} topo`);
       await scrollHomeNav(page);
       await expectHeaderFits(page, '.nav__right', `${path} @${width} rolado`);
+      await expectHomeLogoProportions(page);
       const trigger = page.locator('.nav__right .site-search-trigger');
       const box = await trigger.boundingBox();
       expect(box.height).toBe(58);
+      expect(box.width).toBeLessThanOrEqual(290);
+      const font = await trigger.locator('.site-search-trigger__label-text').evaluate(el => ({ size: parseFloat(getComputedStyle(el).fontSize), rem: parseFloat(getComputedStyle(document.documentElement).fontSize) }));
+      expect(font.size).toBeLessThanOrEqual(font.rem * 1.05);
       for (const neighbour of ['.header-manual-link', '.btn--primary']) {
         expect((await page.locator(`.nav__right > ${neighbour}`).boundingBox()).height).toBeCloseTo(box.height, 1);
       }
@@ -526,6 +541,14 @@ for (const width of [1321, 1366, 1680, 1920, 2560]) {
       await expect(trigger.locator('.site-search-trigger__label')).toBeVisible({ visible: hasLabel });
       const hasShortcut = await trigger.getAttribute('data-search-shortcut') === 'true';
       await expect(trigger.locator('.site-search-trigger__kbd')).toBeVisible({ visible: hasShortcut });
+      if (width <= 1440) {
+        await page.locator('#navToggle').click();
+        await expect(page.locator('#drawer')).toHaveAttribute('data-open', 'true');
+        await expect(page.locator('#drawer .lang-switch--mobile')).toBeVisible();
+        await expect(page.locator('#drawer .lang-switch__btn')).toHaveCount(3);
+        await page.locator('#drawerClose').click();
+        await expect(page.locator('#navToggle')).toBeFocused();
+      } else await expect(page.locator('#navToggle')).toBeHidden();
     }
   });
 }
@@ -726,3 +749,20 @@ for (const path of ['/onibus.html', '/en/onibus.html', '/es/onibus.html']) {
     });
   }
 }
+
+
+test('HTML de busca em cache continua compatível durante a publicação', async ({ page }) => {
+  const errors = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.route(/\/assets\/js\/site-search\.js/, async route => {
+    // Simulate HTML already delivered before this module's newer version is fetched.
+    await page.locator('header .site-search-trigger').evaluate(button => {
+      for (const name of ['data-search-label-hero', 'data-search-label-hero-short', 'data-search-accessible-label']) button.removeAttribute(name);
+    });
+    await route.continue();
+  });
+  await home(page);
+  await pressShortcut(page);
+  await expect(dialog(page)).toBeVisible();
+  expect(errors).toEqual([]);
+});
