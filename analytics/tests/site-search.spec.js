@@ -18,7 +18,7 @@ const home = page => visit(page, '/');
 // instead of ControlOrMeta, which follows the host OS.
 // The module writes the platform label at init (until then the HTML says "⌘ K"), so wait for it first.
 const shortcutKey = async page => {
-  await expect(page.locator('[data-site-search-open]').first()).toHaveAttribute('aria-keyshortcuts', /\+K$/);
+  await expect(page.locator('[data-site-search-open]').first()).toHaveAttribute('aria-keyshortcuts', /^(Meta|Control)\+K$/);
   return (await page.locator('[data-site-search-kbd]').first().textContent()).includes('⌘') ? 'Meta' : 'Control';
 };
 const pressShortcut = async (page, extra = '') => page.keyboard.press(`${await shortcutKey(page)}+${extra}k`);
@@ -28,7 +28,7 @@ const settled = page => page.waitForFunction(() => document.querySelector('.site
 test('botão abre o bilhete com "Mais procurados" e o foco no campo', async ({ page }) => {
   await home(page);
   const trigger = page.locator('.nav__right [data-site-search-open]');
-  await expect(trigger).toHaveAttribute('aria-label', 'Buscar no site');
+  await expect(trigger).toHaveAttribute('aria-label', 'O QUE VOCÊ PROCURA? — Buscar no site');
   await trigger.click();
   await expect(dialog(page)).toBeVisible();
   await expect(page.locator('html')).toHaveCSS('scrollbar-gutter', 'stable');
@@ -332,8 +332,8 @@ test('movimento reduzido usa só fade', async ({ page }) => {
 
 const PAGES = [
   ['/', 'pt', '.nav__right'], ['/en/', 'en', '.nav__right'], ['/es/', 'es', '.nav__right'],
-  ['/manual-de-bordo.html', 'pt', '.guide-header__actions'], ['/en/manual-de-bordo.html', 'en', '.guide-header__actions'], ['/es/manual-de-bordo.html', 'es', '.guide-header__actions'],
-  ['/onibus.html', 'pt', '.bus-header__right'], ['/en/onibus.html', 'en', '.bus-header__right'], ['/es/onibus.html', 'es', '.bus-header__right']
+  ['/manual-de-bordo.html', 'pt', '.guide-header__top'], ['/en/manual-de-bordo.html', 'en', '.guide-header__top'], ['/es/manual-de-bordo.html', 'es', '.guide-header__top'],
+  ['/onibus.html', 'pt', '.bus-header__top'], ['/en/onibus.html', 'en', '.bus-header__top'], ['/es/onibus.html', 'es', '.bus-header__top']
 ];
 const TEXT = {
   pt: { label: 'Buscar no site', placeholder: 'O que você procura?', where: 'Pesquisa no site', faqButton: 'Buscar no site inteiro', pages: /^(Kriativos On Board|Busão Kriativo|Manual de Bordo|Live de Embarque)$/ },
@@ -351,8 +351,9 @@ for (const [path, lang, container] of PAGES) {
     });
     await page.route(/https:\/\/.*youtube(?:-nocookie)?\.com\/.*/, route => route.fulfill({ contentType: 'text/html', body: '<html></html>' }));
     await visit(page, path);
-    const trigger = page.locator(`${container} > .site-search-trigger:first-child`);
-    await expect(trigger).toHaveAttribute('aria-label', TEXT[lang].label);
+    const trigger = page.locator(`${container} > .site-search-trigger`);
+    const accessibleLabel = `${TEXT[lang].placeholder.toLocaleUpperCase(lang)} — ${TEXT[lang].label}`;
+    await expect(trigger).toHaveAttribute('aria-label', accessibleLabel);
     await expect(trigger.locator('[data-site-search-kbd]')).toHaveText(/^(⌘ K|Ctrl K)$/);
     await pressShortcut(page);
     await expect(page.locator('.site-search__input')).toBeFocused();
@@ -426,8 +427,8 @@ test('Ctrl+K abre com foco num campo do formulário do busão', async ({ page })
 // Measures the header row for real: every visible control of the right-hand group ends inside the page,
 // and whatever shares its vertical band (brand, menu links, down to their text) ends before it starts.
 async function expectHeaderFits(page, container, where) {
-  await expect(page.locator(`${container} > .site-search-trigger:first-child`), where).toBeVisible();
-  const fit = await page.evaluate(selector => {
+  await expect(page.locator(`${container} > .site-search-trigger`), where).toBeVisible();
+  await expect.poll(async () => page.evaluate(selector => {
     const shown = el => el.getClientRects().length > 0 && getComputedStyle(el).visibility !== 'hidden';
     const right = el => el.getBoundingClientRect().right;
     const group = document.querySelector(selector);
@@ -443,12 +444,10 @@ async function expectHeaderFits(page, container, where) {
     return {
       clientWidth: document.documentElement.clientWidth,
       overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
-      end: Math.max(...controls.map(right)), start, beforeEnd: Math.max(0, ...before)
+      endFits: Math.max(...controls.map(right)) <= document.documentElement.clientWidth + 0.5,
+      beforeFits: Math.max(0, ...before) <= start + 0.5
     };
-  }, container);
-  expect(fit.overflow, `${where}: rolagem horizontal`).toBe(0);
-  expect(fit.end, `${where}: o grupo da direita passa da borda`).toBeLessThanOrEqual(fit.clientWidth + 0.5);
-  expect(fit.beforeEnd, `${where}: marca/menu invadem o grupo da direita`).toBeLessThanOrEqual(fit.start + 0.5);
+  }, container), { message: `${where}: controles cabem sem sobreposição` }).toMatchObject({ overflow: 0, endFits: true, beforeFits: true });
 }
 
 async function scrollHomeNav(page) {
@@ -472,9 +471,6 @@ for (const width of [320, 390, 800, 1024, 1320]) {
         const buttonBox = await trigger.boundingBox(), menuBox = await menu.boundingBox();
         expect(buttonBox.height).toBeCloseTo(menuBox.height, 1);
         if (width >= 390) await expect(trigger.locator('.site-search-trigger__label')).toBeVisible();
-        if (width === 320 && container === '.bus-header__right') {
-          await expect(trigger.locator('.site-search-trigger__label')).toBeVisible();
-        }
       } else await expect(trigger).not.toHaveAttribute('data-search-compact');
       if (container !== '.nav__right') continue;
       await scrollHomeNav(page);
@@ -485,7 +481,7 @@ for (const width of [320, 390, 800, 1024, 1320]) {
   });
 }
 
-// Busca de 58 px: lupa sozinha nas menores, texto nas médias, atalho nas grandes.
+// Busca de 58 px: adapta o texto e o atalho ao espaço livre real de cada idioma.
 test('hero: busca e idiomas compartilham cores e hover', async ({ page }) => {
   await page.setViewportSize({ width: 1920, height: 900 });
   for (const path of ['/', '/en/', '/es/']) {
@@ -511,7 +507,7 @@ for (const width of [1321, 1366, 1680, 1920, 2560]) {
     for (const path of ['/', '/en/', '/es/']) {
       await visit(page, path);
       await expect(page.locator('#nav')).toHaveAttribute('data-scrolled', 'false');
-      await expect(page.locator('.nav__right .site-search-trigger')).toHaveCSS('min-height', '38px');
+      await expect(page.locator('.nav__right .site-search-trigger')).toHaveCSS('min-height', '58px');
       await expectHeaderFits(page, '.nav__right', `${path} @${width} topo`);
       await scrollHomeNav(page);
       await expectHeaderFits(page, '.nav__right', `${path} @${width} rolado`);
@@ -521,13 +517,15 @@ for (const width of [1321, 1366, 1680, 1920, 2560]) {
       for (const neighbour of ['.header-manual-link', '.btn--primary']) {
         expect((await page.locator(`.nav__right > ${neighbour}`).boundingBox()).height).toBeCloseTo(box.height, 1);
       }
-      if (width < 1680) expect(box.width).toBeCloseTo(box.height, 1);
-      else if (width < 1920) expect(box.width).toBe(140);
-      else expect(box.width).toBeGreaterThanOrEqual(176);
+      // Each locale fits its real text, then drops the shortcut or label as space runs out.
+      const hasLabel = await trigger.getAttribute('data-search-label') === 'true';
+      if (hasLabel) expect(box.width).toBeGreaterThan(box.height);
+      else expect(box.width).toBeCloseTo(box.height, 1);
       // On the navy scrolled bar the button turns white like its neighbours.
       await expect(trigger).toHaveCSS('color', 'rgb(255, 255, 255)');
-      await expect(trigger.locator('.site-search-trigger__label')).toBeVisible({ visible: width >= 1680 });
-      await expect(trigger.locator('.site-search-trigger__kbd')).toBeVisible({ visible: width >= 1920 });
+      await expect(trigger.locator('.site-search-trigger__label')).toBeVisible({ visible: hasLabel });
+      const hasShortcut = await trigger.getAttribute('data-search-shortcut') === 'true';
+      await expect(trigger.locator('.site-search-trigger__kbd')).toBeVisible({ visible: hasShortcut });
     }
   });
 }

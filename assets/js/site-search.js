@@ -6,7 +6,7 @@ const COPY = {
     where: 'Pesquisa no site', placeholder: 'O que você procura?', featured: 'Mais procurados',
     showing: 'Mostrando resultados para', and: ' e ', count: n => (n === 1 ? '1 resultado' : `${n} resultados`),
     none: q => `Nada sobre “${q}” no site.`, tryLead: 'Tente uma palavra mais geral, ou um destes assuntos:',
-    tryTerms: ['proibidos', 'bagagem', 'cabine'], whatsapp: 'Perguntar à Royal Trip no WhatsApp',
+    tryTerms: ['proibidos', 'bagagem', 'cabine'], whatsapp: 'Perguntar à Royal Trip',
     whatsappText: 'Olá, Royal Trip! Procurei no site do Kriativos On Board 2026 e não encontrei uma informação. Podem me ajudar?',
     loading: 'Carregando a busca…', error: 'Não foi possível carregar a busca. Verifique a conexão e tente de novo.',
     retry: 'Tentar de novo', close: 'Fechar', hints: ['navegar', 'abrir', 'fechar']
@@ -15,7 +15,7 @@ const COPY = {
     where: 'Search the site', placeholder: 'What are you looking for?', featured: 'Most searched',
     showing: 'Showing results for', and: ' and ', count: n => (n === 1 ? '1 result' : `${n} results`),
     none: q => `Nothing about “${q}” on the site.`, tryLead: 'Try a broader word, or one of these topics:',
-    tryTerms: ['prohibited', 'luggage', 'cabin'], whatsapp: 'Ask Royal Trip on WhatsApp',
+    tryTerms: ['prohibited', 'luggage', 'cabin'], whatsapp: 'Ask Royal Trip',
     whatsappText: "Hi, Royal Trip! I searched the Kriativos On Board 2026 website and couldn't find some information. Can you help me?",
     loading: 'Loading search…', error: "Search couldn't load. Check your connection and try again.",
     retry: 'Try again', close: 'Close', hints: ['navigate', 'open', 'close']
@@ -24,7 +24,7 @@ const COPY = {
     where: 'Buscar en el sitio', placeholder: '¿Qué estás buscando?', featured: 'Lo más buscado',
     showing: 'Mostrando resultados para', and: ' y ', count: n => (n === 1 ? '1 resultado' : `${n} resultados`),
     none: q => `No hay nada sobre “${q}” en el sitio.`, tryLead: 'Prueba con una palabra más general o con uno de estos temas:',
-    tryTerms: ['prohibidos', 'equipaje', 'camarote'], whatsapp: 'Preguntar a Royal Trip por WhatsApp',
+    tryTerms: ['prohibidos', 'equipaje', 'camarote'], whatsapp: 'Preguntar a Royal Trip',
     whatsappText: '¡Hola, Royal Trip! Busqué en el sitio de Kriativos On Board 2026 y no encontré una información. ¿Me pueden ayudar?',
     loading: 'Cargando la búsqueda…', error: 'No se pudo cargar la búsqueda. Revisa tu conexión e inténtalo de nuevo.',
     retry: 'Intentar de nuevo', close: 'Cerrar', hints: ['navegar', 'abrir', 'cerrar']
@@ -223,9 +223,11 @@ function renderEmpty(query) {
   // A button, not a link: GA4's enhanced measurement records a link's href as link_url, and the WhatsApp URL
   // carries the phone and the message (analytics/pii-denylist.yaml). The URL only exists at click time.
   const whatsapp = el('button', {
-    type: 'button', class: 'site-search__whatsapp', text: copy.whatsapp,
+    type: 'button', class: 'site-search__whatsapp',
     onclick: () => window.open(`https://api.whatsapp.com/send?phone=5513981580498&text=${encodeURIComponent(copy.whatsappText)}`, '_blank', 'noopener')
-  });
+  },
+  el('img', { class: 'site-search__whatsapp-icon', src: '/assets/images/brand/whatsapp-icon-white.png', alt: '', 'aria-hidden': 'true', width: '20', height: '20' }),
+  el('span', { text: copy.whatsapp }));
   showState(el('div', { class: 'site-search__empty' }, el('strong', { text: copy.none(query) }), el('p', { text: copy.tryLead }), tries, whatsapp));
   setStatus(copy.none(query));
 }
@@ -439,36 +441,106 @@ function adaptHeaderTrigger() {
   const trigger = document.querySelector('header [data-site-search-open]');
   const menu = document.getElementById('navToggle');
   if (!trigger || !menu) return;
-  const row = trigger.parentElement.parentElement;
+  const guideRow = trigger.closest('.guide-header__top');
+  const row = guideRow || trigger.parentElement.parentElement;
   const label = trigger.querySelector('.site-search-trigger__label');
+  const shortcut = trigger.querySelector('.site-search-trigger__kbd');
+  const icon = trigger.querySelector('.site-search-trigger__icon');
+  const header = trigger.closest('.nav');
   const context = document.createElement('canvas').getContext('2d');
-  if (!label || !context || typeof ResizeObserver !== 'function') return;
+  if (!label || !icon || !context || typeof ResizeObserver !== 'function') return;
   let frame = null;
+
+  function adaptGuideSearch() {
+    const compact = Boolean(menu.getClientRects().length);
+    const size = compact ? Math.round(menu.getBoundingClientRect().height) : 44;
+    const identity = row.querySelector('.guide-header__identity');
+    const expanded = Boolean(identity.querySelector('.manual-brand-tag__domain').getClientRects().length);
+    const rowStyle = getComputedStyle(row);
+    const gap = parseFloat(rowStyle.columnGap) || 0;
+    const identityWidth = identity.getBoundingClientRect().width;
+    const actionsWidth = row.querySelector('.guide-header__actions').getBoundingClientRect().width;
+    const available = row.clientWidth - identityWidth - actionsWidth - gap * 2;
+    fitSearchButton(available, identity.getBoundingClientRect().height, expanded, compact, size);
+  }
+
+  function fitSearchButton(available, height, expanded, compact, size) {
+    trigger.dataset.searchExpanded = String(expanded);
+    trigger.style.setProperty('--guide-search-height', `${height}px`);
+    if (compact) {
+      trigger.dataset.searchCompact = 'true';
+      trigger.style.setProperty('--search-menu-size', `${size}px`);
+    } else {
+      delete trigger.dataset.searchCompact;
+      trigger.style.removeProperty('--search-menu-size');
+    }
+    const title = label.querySelector('.site-search-trigger__label-text');
+    const description = label.querySelector('.site-search-trigger__description');
+    const labelStyle = getComputedStyle(title);
+    const buttonStyle = getComputedStyle(trigger);
+    const buttonGap = parseFloat(buttonStyle.columnGap) || 0;
+    const borders = parseFloat(buttonStyle.borderLeftWidth) + parseFloat(buttonStyle.borderRightWidth);
+    const padding = compact ? 24 : expanded ? 36 : 32;
+    let descriptionWidth = 0;
+    if (expanded) {
+      const style = getComputedStyle(description);
+      context.font = style.font;
+      descriptionWidth = context.measureText(description.textContent).width
+        + (parseFloat(style.letterSpacing) || 0) * description.textContent.length;
+    }
+    const letterSpacing = parseFloat(labelStyle.letterSpacing) || 0;
+    context.font = labelStyle.font;
+    const textWidth = text => context.measureText(text).width + letterSpacing * text.length;
+    const required = text => icon.getBoundingClientRect().width + Math.max(textWidth(text), descriptionWidth) + buttonGap + padding + borders;
+    const long = trigger.dataset.searchLabelLong;
+    const short = trigger.dataset.searchLabelShort;
+    // The home keeps its header height; the subtitle accompanies the full prompt only.
+    if (header && expanded && required(long) > available) {
+      fitSearchButton(available, height, false, compact, size);
+      return;
+    }
+    const text = header && !compact && !expanded ? short : required(long) <= available ? long : short;
+    const showLabel = required(text) <= available;
+    let width = showLabel ? required(text) : size;
+    let showShortcut = false;
+    if (shortcut && !compact && showLabel) {
+      const style = getComputedStyle(shortcut);
+      context.font = style.font;
+      const shortcutWidth = context.measureText(shortcut.textContent).width
+        + (parseFloat(style.paddingLeft) || 0) + (parseFloat(style.paddingRight) || 0)
+        + (parseFloat(style.borderLeftWidth) || 0) + (parseFloat(style.borderRightWidth) || 0);
+      showShortcut = width + buttonGap + shortcutWidth <= available;
+      if (showShortcut) width += buttonGap + shortcutWidth;
+    }
+    if (showLabel && text === long) width = Math.min(available, Math.max(width, expanded ? 460 : 180));
+    if (title.textContent !== text) title.textContent = text;
+    trigger.dataset.searchLabel = String(showLabel);
+    trigger.dataset.searchShortcut = String(showShortcut);
+    trigger.style.setProperty('--guide-search-width', `${Math.ceil(width)}px`);
+  }
+
+  // display:contents in the home hero keeps search on the left. Count those controls
+  // in the header row; on the scrolled bar count the right group's own spacing too.
+  function occupiedWithoutSearch(container) {
+    const style = getComputedStyle(container);
+    const children = [...container.children].flatMap(child => getComputedStyle(child).display === 'contents' ? [...child.children] : [child])
+      .filter(child => child.getClientRects().length && getComputedStyle(child).visibility !== 'hidden');
+    return children.reduce((width, child) => width + (child === trigger ? 0
+      : child.contains(trigger) ? occupiedWithoutSearch(child) : child.getBoundingClientRect().width), 0)
+      + (parseFloat(style.columnGap) || 0) * Math.max(0, children.length - 1)
+      + (parseFloat(style.paddingLeft) || 0) + (parseFloat(style.paddingRight) || 0);
+  }
 
   function update() {
     frame = null;
-    if (!menu.getClientRects().length) {
-      delete trigger.dataset.searchCompact;
-      delete trigger.dataset.searchLabel;
-      trigger.style.removeProperty('--search-menu-size');
+    if (guideRow) {
+      adaptGuideSearch();
       return;
     }
-    const size = `${Math.round(menu.getBoundingClientRect().height)}px`;
-    trigger.dataset.searchCompact = 'true';
-    if (trigger.style.getPropertyValue('--search-menu-size') !== size) trigger.style.setProperty('--search-menu-size', size);
-    const rowStyle = getComputedStyle(row);
-    const controls = [...row.children].filter(child => child.getClientRects().length && getComputedStyle(child).visibility !== 'hidden');
-    const occupied = controls.reduce((total, child) => total + child.getBoundingClientRect().width, 0);
-    const gap = parseFloat(rowStyle.columnGap) || 0;
-    const available = row.clientWidth - (parseFloat(rowStyle.paddingLeft) || 0) - (parseFloat(rowStyle.paddingRight) || 0)
-      - occupied - gap * Math.max(0, controls.length - 1) + trigger.getBoundingClientRect().width;
-    const style = getComputedStyle(trigger);
-    context.font = getComputedStyle(label).font;
-    const labelWidth = context.measureText(label.textContent).width;
-    const needed = trigger.querySelector('svg').getBoundingClientRect().width + labelWidth + (parseFloat(style.columnGap) || 0)
-      + 2 * parseFloat(style.getPropertyValue('--search-label-padding')) + parseFloat(style.borderLeftWidth) + parseFloat(style.borderRightWidth);
-    const showLabel = available >= needed + 2;
-    if (trigger.dataset.searchLabel !== String(showLabel)) trigger.dataset.searchLabel = String(showLabel);
+    const compact = Boolean(menu.getClientRects().length);
+    const size = compact ? Math.round(menu.getBoundingClientRect().height) : 58;
+    const available = row.clientWidth - occupiedWithoutSearch(row);
+    fitSearchButton(available, size, !compact, compact, size);
   }
 
   function queue() { if (frame === null) frame = requestAnimationFrame(update); }

@@ -45,12 +45,13 @@
     rel="stylesheet">
   <link rel="preload" href="/assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
 
-  <link rel="stylesheet" href="/assets/css/main.css?v=20261009-footer-credit-size">
-  <link rel="stylesheet" href="/assets/css/site-search.css?v=20261009-faq-filter">
-  <link rel="stylesheet" href="/assets/css/manual-de-bordo.css?v=20261009-faq-focus">
+  <link rel="stylesheet" href="/assets/css/main.css?v=20261009-purple-drawers-shared-search">
+  <link rel="stylesheet" href="/assets/css/site-search.css?v=20261009-shared-search-button">
+  <link rel="stylesheet" href="/assets/css/manual-de-bordo.css?v=20261009-shared-boarding-header">
   <link rel="stylesheet" href="/assets/css/footer-sponsors.css?v=20261007-sponsors-marquee">
   <link rel="stylesheet" href="/assets/css/cookie-consent.css?v=20260820-fix-contrast">
-  <link rel="stylesheet" href="/assets/css/mobile-navigation.css?v=20261009-menu">
+  <link rel="stylesheet" href="/assets/css/mobile-navigation.css?v=20261009-shared-boarding-header">
+  <link rel="stylesheet" href="/assets/css/boarding-header.css?v=20261009-shared-boarding-header">
 
   <script defer src="/assets/js/cookie-consent.js?v=20261008-i18n"></script>
   <script defer src="/assets/js/footer-sponsors.js?v=20261007-sponsors-marquee"></script>
@@ -60,7 +61,7 @@
   <script type="module" src="/assets/js/manual-de-bordo-checklist.js?v=20261005-topic-player"></script>
   <script type="module" src="/assets/js/manual-de-bordo-routing.js?v=20261006-manual-domain"></script>
   <script type="module" src="/assets/js/manual-games-carousel.js?v=20261006-manual-carousel"></script>
-  <script type="module" src="/assets/js/site-search.js?v=20261008-destinos"></script>
+  <script type="module" src="/assets/js/site-search.js?v=20261009-shared-search-button"></script>
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -122,53 +123,60 @@
       ]
     }
   </script>
-  <script defer src="/assets/js/mobile-navigation.js?v=20261008-mobile-header-2"></script>
+  <script defer src="/assets/js/mobile-navigation.js?v=20261009-shared-boarding-header"></script>
 </head>
 
 <body class="guide-page">
   <a class="skip-link" href="#main">Skip to main content</a>
 
-  <header class="guide-header">
+  <header class="guide-header boarding-header">
     <div class="guide-container guide-header__inner">
-      <div class="guide-header__identity">
-        <a href="https://kriativosonboard.com.br/en/" class="guide-header__brand"
-          aria-label="Kriativos On Board — Home">
-          <img src="/assets/images/brand/kriativos-on-board-logo.webp" alt="Kriativos On Board 2026" width="2930"
-            height="1796">
-        </a>
-        <div class="manual-brand-tag" aria-label="Official Onboard Manual">
-          <span class="manual-brand-tag__main">Onboard Manual</span>
-          <span class="manual-brand-tag__domain">manualdebordo.kriativosonboard.com.br</span>
+      <div class="guide-header__top">
+        <div class="guide-header__identity">
+          <a href="https://kriativosonboard.com.br/en/" class="guide-header__brand"
+            aria-label="Kriativos On Board — Home">
+            <img src="/assets/images/brand/kriativos-on-board-logo.webp" alt="Kriativos On Board 2026" width="2930"
+              height="1796">
+          </a>
+          <div class="manual-brand-tag" aria-label="Official Onboard Manual">
+            <span class="manual-brand-tag__main">Onboard Manual</span>
+            <span class="manual-brand-tag__domain">manualdebordo.kriativosonboard.com.br</span>
+          </div>
         </div>
-      </div>
-      <div class="guide-header__actions">
-        <button type="button" class="site-search-trigger" data-site-search-open aria-haspopup="dialog"
-          aria-keyshortcuts="Meta+K Control+K" aria-label="Search the site">
+        <button type="button" class="site-search-trigger" data-site-search-open data-search-label-long="WHAT ARE YOU LOOKING FOR?" data-search-label-short="SEARCH" aria-haspopup="dialog"
+          aria-keyshortcuts="Meta+K Control+K" aria-label="WHAT ARE YOU LOOKING FOR? — Search the site">
           <svg class="site-search-trigger__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
             stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4 4"></path></svg>
-          <span class="site-search-trigger__label">Search</span>
+          <span class="site-search-trigger__label">
+            <span class="site-search-trigger__label-text">SEARCH</span>
+            <span class="site-search-trigger__description">Search the entire site</span>
+          </span>
           <kbd class="site-search-trigger__kbd" data-site-search-kbd aria-hidden="true">⌘ K</kbd>
         </button>
-        <nav class="lang-switch" aria-label="Language selector">
-          <a href="https://manualdebordo.kriativosonboard.com.br/" class="lang-switch__item" hreflang="pt-BR" lang="pt-BR">PT</a>
-          <span class="lang-switch__item is-active" aria-current="page">EN</span>
-          <a href="https://manualdebordo.kriativosonboard.com.br/es/" class="lang-switch__item" hreflang="es" lang="es">ES</a>
-        </nav>
-        <button type="button" class="nav__toggle" id="navToggle" aria-label="Open menu" aria-expanded="false"
-          aria-controls="drawer">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round">
-            <path d="M3 6h18M3 12h18M3 18h18"></path>
-          </svg>
-        </button>
+        <div class="guide-header__actions">
+          <nav class="lang-switch" aria-label="Language selector">
+            <a href="https://manualdebordo.kriativosonboard.com.br/" class="lang-switch__item" hreflang="pt-BR" lang="pt-BR">PT</a>
+            <span class="lang-switch__item is-active" aria-current="page">EN</span>
+            <a href="https://manualdebordo.kriativosonboard.com.br/es/" class="lang-switch__item" hreflang="es" lang="es">ES</a>
+          </nav>
+          <button type="button" class="nav__toggle" id="navToggle" aria-label="Open menu" aria-expanded="false"
+            aria-controls="drawer">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round">
+              <path d="M3 6h18M3 12h18M3 18h18"></path>
+            </svg>
+          </button>
+        </div>
       </div>
-      <nav class="guide-header__nav" aria-label="Onboard Manual navigation">
-        <a href="#checklist" data-open-checklist class="guide-header__nav-link">Checklist</a>
-        <a href="#cronograma" class="guide-header__nav-link">Schedule</a>
-        <a href="https://kriativosonboard.com.br/en/onibus.html" target="_blank" rel="noopener noreferrer" class="guide-header__nav-link">Charter</a>
-        <a href="#jogos" class="guide-header__nav-link">Gaming and activities</a>
-        <a href="#duvidas" class="guide-header__nav-link">FAQ</a>
-        <a href="#contato" class="guide-header__nav-link">Contact</a>
-      </nav>
+      <div class="guide-header__navigation">
+        <nav class="guide-header__nav" aria-label="Onboard Manual navigation">
+          <a href="#checklist" data-open-checklist class="guide-header__nav-link">Checklist</a>
+          <a href="#cronograma" class="guide-header__nav-link">Schedule</a>
+          <a href="#jogos" class="guide-header__nav-link">Gaming and activities</a>
+          <a href="#duvidas" class="guide-header__nav-link">FAQ</a>
+          <a href="#contato" class="guide-header__nav-link">Contact</a>
+          <a href="https://kriativosonboard.com.br/en/onibus.html" target="_blank" rel="noopener noreferrer" class="guide-header__nav-link">Official Charter</a>
+        </nav>
+      </div>
     </div>
   </header>
 
@@ -197,12 +205,19 @@
       <a class="guide-drawer__link" href="#live">Boarding live recording</a>
       <a class="guide-drawer__link" href="#checklist" data-open-checklist>Checklist</a>
       <a class="guide-drawer__link" href="#cronograma">Schedule</a>
-      <a class="guide-drawer__link guide-menu-mobile" href="https://busao.kriativosonboard.com.br/en/">Transportation</a>
-      <a class="guide-drawer__link guide-menu-desktop" href="https://kriativosonboard.com.br/en/onibus.html">Official Charter</a>
       <a class="guide-drawer__link" href="#jogos">Gaming and activities</a>
       <a class="guide-drawer__link" href="#duvidas">FAQ</a>
-      <a class="guide-drawer__link" href="#contato">Contact Team</a>
+      <a class="guide-drawer__link" href="#contato">Contact</a>
     </nav>
+    <div class="drawer__actions">
+      <a class="btn guide-drawer__action" href="https://kriativosonboard.com.br/en/onibus.html" target="_blank" rel="noopener noreferrer">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M6 3h12a3 3 0 0 1 3 3v12H3V6a3 3 0 0 1 3-3Z"></path>
+          <path d="M3 10h18M7 15h.01M17 15h.01M7 18v2m10-2v2"></path>
+        </svg>
+        <span>Official Charter</span>
+      </a>
+    </div>
   </div>
 
   <main id="main">

@@ -11845,3 +11845,30 @@ a:focus-visible,
   .footer.footer--with-social .footer__legal-copy { flex-direction: column; }
   .footer.footer--with-social .footer__legal .ksio-powered-line { justify-self: start; text-align: left !important; }
 }
+
+/* All three mobile drawers share the KOB purple navigation palette. */
+#drawer .guide-drawer__title,
+#drawer > nav > a { color: #4d1766; }
+#drawer > nav > a:is(:hover, :focus-visible, .is-active) { color: #6b168e; background: #f5edf9; }
+#drawer > nav > a::after { color: #916aa7; }
+#drawer .drawer__close { color: #4d1766; background: #f5edf9; border-color: #e2d2eb; }
+#drawer .drawer__close svg { stroke: currentColor; }
+#drawer .drawer__close:is(:hover, :focus-visible) { color: #fff; background: #7b1fa2; border-color: #7b1fa2; }
+#drawer :is(.drawer__language, .drawer__home-language) { color: #72547f; border-color: #e7ddeb; }
+#drawer :is(.drawer__language, .drawer__home-language) > span { color: #72547f; }
+#drawer .lang-switch { background: #f8f3fb; border-color: #e2d2eb; }
+#drawer :is(.lang-switch__btn, .lang-switch__item) { color: #5c2475; background: transparent; }
+#drawer :is(.lang-switch__btn, .lang-switch__item):is(.is-active, :hover, :focus-visible) { color: #fff; background: #7b1fa2; }
+#drawer .lang-switch__sep { color: #bea5cb; }
+#drawer :is(.header-manual-link, .guide-drawer__action, .drawer__action-link) {
+  color: #5c2475;
+  background: #f4eafa;
+  border-color: #dfc9eb;
+}
+#drawer :is(.header-manual-link, .guide-drawer__action, .drawer__action-link):is(:hover, :focus-visible) {
+  color: #4d1766;
+  background: #ecdbf5;
+  border-color: #cda9df;
+}
+#drawer .header-manual-link :is(span, strong, svg) { color: inherit; }
+#drawer :is(a, button):focus-visible { outline-color: #7b1fa2; }

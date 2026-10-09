@@ -273,8 +273,8 @@
   <!-- Fontes da marca (banner KOB): Gobold Extra2 = display, Chantal = acento manuscrito -->
   <link rel="preload" href="assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
 
-  <link rel="stylesheet" href="assets/css/main.css?v=20261009-footer-credit-size">
-  <link rel="stylesheet" href="assets/css/site-search.css?v=20261009-faq-filter">
+  <link rel="stylesheet" href="assets/css/main.css?v=20261009-purple-drawers-shared-search">
+  <link rel="stylesheet" href="assets/css/site-search.css?v=20261009-shared-search-button">
   <link rel="stylesheet" href="assets/css/cookie-consent.css?v=20260820-fix-contrast">
   <script defer src="assets/js/cookie-consent.js?v=20261008-i18n"></script>
 </head>
@@ -431,11 +431,14 @@
       <a class="nav__link--fold1" href="https://manualdebordo.kriativosonboard.com.br/">Manual de Bordo</a>
     </nav>
     <div class="nav__right">
-      <button type="button" class="site-search-trigger" data-site-search-open aria-haspopup="dialog"
-        aria-keyshortcuts="Meta+K Control+K" aria-label="Buscar no site">
+      <button type="button" class="site-search-trigger" data-site-search-open data-search-label-long="O QUE VOCÊ PROCURA?" data-search-label-short="BUSCAR" aria-haspopup="dialog"
+        aria-keyshortcuts="Meta+K Control+K" aria-label="O QUE VOCÊ PROCURA? — Buscar no site">
         <svg class="site-search-trigger__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
           stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4 4"></path></svg>
-        <span class="site-search-trigger__label">Buscar</span>
+        <span class="site-search-trigger__label">
+          <span class="site-search-trigger__label-text">BUSCAR</span>
+          <span class="site-search-trigger__description">Pesquise em todo site</span>
+        </span>
         <kbd class="site-search-trigger__kbd" data-site-search-kbd aria-hidden="true">⌘ K</kbd>
       </button>
       <div class="lang-switch" role="group" aria-label="Idioma / Language">
@@ -3135,7 +3138,7 @@
   </a>
 
   <script src="assets/js/main.js?v=20261008-mobile-language"></script>
-  <script type="module" src="assets/js/site-search.js?v=20261008-destinos"></script>
+  <script type="module" src="assets/js/site-search.js?v=20261009-shared-search-button"></script>
 </body>
 
 </html>

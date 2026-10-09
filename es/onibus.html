@@ -69,46 +69,59 @@
     href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap"
     rel="stylesheet">
   <link rel="preload" href="/assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
-  <link rel="stylesheet" href="/assets/css/main.css?v=20261009-footer-credit-size">
-  <link rel="stylesheet" href="/assets/css/site-search.css?v=20261009-faq-filter">
+  <link rel="stylesheet" href="/assets/css/main.css?v=20261009-purple-drawers-shared-search">
+  <link rel="stylesheet" href="/assets/css/site-search.css?v=20261009-shared-search-button">
   <link rel="stylesheet" href="/assets/css/onibus.css?v=20261008-stepper-transform">
   <link rel="stylesheet" href="/assets/css/footer-sponsors.css?v=20261007-sponsors-marquee">
   <link rel="stylesheet" href="/assets/css/cookie-consent.css?v=20260820-fix-contrast">
-  <link rel="stylesheet" href="/assets/css/mobile-navigation.css?v=20261009-menu">
+  <link rel="stylesheet" href="/assets/css/mobile-navigation.css?v=20261009-shared-boarding-header">
+  <link rel="stylesheet" href="/assets/css/boarding-header.css?v=20261009-shared-boarding-header">
   <script defer src="/assets/js/cookie-consent.js?v=20261008-i18n"></script>
   <script defer src="/assets/js/footer-sponsors.js?v=20261007-sponsors-marquee"></script>
   <script defer src="/assets/js/onibus.js?v=20261008-stepper-transform"></script>
-  <script type="module" src="/assets/js/site-search.js?v=20261008-destinos"></script>
-  <script defer src="/assets/js/mobile-navigation.js?v=20261008-mobile-header-2"></script>
+  <script type="module" src="/assets/js/site-search.js?v=20261009-shared-search-button"></script>
+  <script defer src="/assets/js/mobile-navigation.js?v=20261009-shared-boarding-header"></script>
 </head>
 
 <body class="bus-page">
   <a class="skip-link" href="#main">Saltar al contenido</a>
 
-  <header class="bus-header">
-    <a href="https://kriativosonboard.com.br/es/" class="bus-header__brand"
-      aria-label="Kriativos On Board — Página principal del evento">
-      <img src="/assets/images/brand/kriativos-on-board-logo.webp" alt="Kriativos On Board" width="2930" height="1796">
-    </a>
-    <div class="bus-header__right">
-      <button type="button" class="site-search-trigger" data-site-search-open aria-haspopup="dialog"
-        aria-keyshortcuts="Meta+K Control+K" aria-label="Buscar en el sitio">
-        <svg class="site-search-trigger__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-          stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4 4"></path></svg>
-        <span class="site-search-trigger__label">Buscar</span>
-        <kbd class="site-search-trigger__kbd" data-site-search-kbd aria-hidden="true">⌘ K</kbd>
-      </button>
-      <nav class="lang-switch" aria-label="Idioma / Language">
-        <a href="https://busao.kriativosonboard.com.br/" class="lang-switch__item" hreflang="pt-BR" lang="pt-BR">PT</a>
-        <a href="https://busao.kriativosonboard.com.br/en/" class="lang-switch__item" hreflang="en" lang="en">EN</a>
-        <span class="lang-switch__item is-active" aria-current="page">ES</span>
-      </nav>
-      <a class="btn header-manual-link" href="https://manualdebordo.kriativosonboard.com.br/es/"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 7v14M3 3h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5v16h-5a4 4 0 0 0-4 2 4 4 0 0 0-4-2H3Z"/></svg><span>Manual de a bordo</span></a>
-      <button type="button" class="nav__toggle" id="navToggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="drawer" hidden>
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" aria-hidden="true">
-          <path d="M3 6h18M3 12h18M3 18h18"></path>
-        </svg>
-      </button>
+  <header class="bus-header boarding-header">
+    <div class="guide-header__inner">
+      <div class="guide-header__top bus-header__top">
+        <div class="guide-header__identity">
+          <a href="https://kriativosonboard.com.br/es/" class="bus-header__brand guide-header__brand"
+            aria-label="Kriativos On Board — Página principal del evento">
+            <img src="/assets/images/brand/kriativos-on-board-logo.webp" alt="Kriativos On Board" width="2930" height="1796">
+          </a>
+          <div class="manual-brand-tag" aria-label="Busão dos Kriativos — KOB 2026">
+            <span class="manual-brand-tag__main">Busão dos Kriativos</span>
+            <span class="manual-brand-tag__domain">busao.kriativosonboard.com.br</span>
+          </div>
+        </div>
+        <button type="button" class="site-search-trigger" data-site-search-open data-search-label-long="¿QUÉ ESTÁS BUSCANDO?" data-search-label-short="BUSCAR" aria-haspopup="dialog"
+          aria-keyshortcuts="Meta+K Control+K" aria-label="¿QUÉ ESTÁS BUSCANDO? — Buscar en el sitio">
+          <svg class="site-search-trigger__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4 4"></path></svg>
+          <span class="site-search-trigger__label">
+            <span class="site-search-trigger__label-text">BUSCAR</span>
+            <span class="site-search-trigger__description">Busca en todo el sitio</span>
+          </span>
+          <kbd class="site-search-trigger__kbd" data-site-search-kbd aria-hidden="true">⌘ K</kbd>
+        </button>
+        <div class="bus-header__right guide-header__actions">
+          <nav class="lang-switch" aria-label="Idioma / Language">
+            <a href="https://busao.kriativosonboard.com.br/" class="lang-switch__item" hreflang="pt-BR" lang="pt-BR">PT</a>
+            <a href="https://busao.kriativosonboard.com.br/en/" class="lang-switch__item" hreflang="en" lang="en">EN</a>
+            <span class="lang-switch__item is-active" aria-current="page">ES</span>
+          </nav>
+          <button type="button" class="nav__toggle" id="navToggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="drawer" hidden>
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+              <path d="M3 6h18M3 12h18M3 18h18"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
     </div>
   </header>
 
@@ -118,7 +131,7 @@
     <div class="drawer__head">
       <span class="nav__brand">
         <img src="/assets/images/brand/kriativos-on-board-menu.png" alt="KOB — Kriativos On Board" width="300" height="192">
-      <span class="guide-drawer__title">Busão Kriativo</span></span>
+      <span class="guide-drawer__title">Busão dos Kriativos</span></span>
       <button type="button" class="drawer__close" id="drawerClose" aria-label="Cerrar menú">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" aria-hidden="true">
           <path d="M6 6l12 12M18 6L6 18"></path>
@@ -132,9 +145,17 @@
     <nav aria-label="Menú del traslado">
       <a href="#passageiros">Registro y reserva</a>
       <a href="#embarque">Punto de encuentro y horarios</a>
-      <div data-drawer-manual></div>
-      <a href="https://kriativosonboard.com.br/es/">Sitio oficial de KOB</a>
     </nav>
+    <div class="drawer__actions">
+      <div data-drawer-manual><a class="btn header-manual-link" href="https://manualdebordo.kriativosonboard.com.br/es/"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 7v14M3 3h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5v16h-5a4 4 0 0 0-4 2 4 4 0 0 0-4-2H3Z"/></svg><span>Manual de a bordo</span></a></div>
+      <a class="btn drawer__action-link" href="https://kriativosonboard.com.br/es/">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m3 10 9-7 9 7"></path>
+          <path d="M5 9v12h14V9M9 21v-7h6v7"></path>
+        </svg>
+        <span>Página principal</span>
+      </a>
+    </div>
   </div>
 
   <main id="main">

@@ -6072,35 +6072,29 @@
   text-decoration-line: none !important;
 }
 
-/* Give desktop navigation its own row; keep visual and keyboard order aligned. */
+/* Separate header rows and balance the search between identity and controls. */
+.guide-header__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+}
+
 @media (min-width: 1025px) {
   .guide-header__inner {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    column-gap: 32px;
-    row-gap: 12px;
     padding-bottom: 8px;
   }
 
-  .guide-header .site-search-trigger {
-    width: 210px;
-    min-height: 44px;
-    padding-inline: 18px;
-    justify-content: flex-start;
-    gap: 12px;
-  }
-
-  .guide-header .site-search-trigger__kbd {
-    margin-left: auto;
+  .guide-header__navigation {
+    border-top: 1px solid #dce5ed;
+    padding-top: 8px;
   }
 
   .guide-header__nav {
-    grid-column: 1 / -1;
     width: 100%;
     margin: 0;
-    padding: 8px 0 0;
+    padding: 0;
     gap: clamp(8px, 1.5vw, 24px);
-    border-top: 1px solid #dce5ed;
   }
 
   .guide-page .guide-header__nav-link {
@@ -6111,56 +6105,6 @@
     padding: 10px 16px;
     border-radius: 8px;
   }
-}
-
-.guide-header .site-search-trigger[data-search-compact] {
-  --search-label-padding: 18px;
-}
-
-.guide-header .nav__toggle {
-  display: none;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  padding: 0;
-  border-radius: var(--r-sm, 8px);
-  border: 1px solid rgba(8, 47, 87, 0.16);
-  background: rgba(8, 47, 87, 0.04);
-  color: var(--ocean-navy, #041d3a);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  flex-shrink: 0;
-}
-
-@media (max-width: 1024px) {
-  .guide-header__nav {
-    display: none;
-  }
-
-  .guide-header .nav__toggle {
-    display: inline-flex;
-  }
-}
-
-.guide-header .nav__toggle svg {
-  width: 22px;
-  height: 22px;
-  stroke: var(--ocean-navy, #041d3a);
-  stroke-width: 2.2;
-}
-
-.guide-header .nav__toggle:hover,
-.guide-header .nav__toggle:focus-visible {
-  background: #082f57;
-  border-color: #082f57;
-  color: #ffffff;
-  box-shadow: 0 4px 12px rgba(4, 29, 58, 0.15);
-}
-
-.guide-header .nav__toggle:hover svg,
-.guide-header .nav__toggle:focus-visible svg {
-  stroke: #ffffff;
 }
 
 .guide-drawer-backdrop {

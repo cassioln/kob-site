@@ -28,7 +28,7 @@ for (const locale of locales) {
       {
         await expect(drawer.locator('.nav__brand')).toHaveCSS('opacity', '1');
         const menuLinks = drawer.locator(':scope > nav > a:visible');
-        await expect(menuLinks).toHaveCount(surface === 'manual-de-bordo' ? 7 : 3);
+        await expect(menuLinks).toHaveCount(surface === 'manual-de-bordo' ? 6 : 2);
         for (const link of await menuLinks.all()) {
           await expect(link).toHaveCSS('text-decoration-line', 'none');
           const box = await link.boundingBox();
@@ -78,7 +78,6 @@ for (const locale of locales) {
       await page.setViewportSize({ width: 1440, height: 900 });
       await expect(drawer).toHaveAttribute('data-open', 'false');
       await expect(page.locator('header .lang-switch')).toBeVisible();
-      if (surface === 'onibus') await expect(page.locator('header .header-manual-link')).toBeVisible();
       await expect(page.locator('header [aria-current="page"]')).toHaveText(locale.active);
       await expect(toggle).toBeHidden();
       await expect(page.locator('#main')).not.toHaveAttribute('inert', '');
