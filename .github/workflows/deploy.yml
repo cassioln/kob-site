@@ -27,6 +27,7 @@ jobs:
   deploy:
     name: Deploy do Site
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
       - name: Checkout do repositório
@@ -34,8 +35,15 @@ jobs:
         with:
           fetch-depth: 2
 
+      - name: Preparar cliente FTP
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install --no-install-recommends -y lftp
+
       - name: Validar seleção dos arquivos de publicação
-        run: python3 .github/scripts/test-deploy-assets.py
+        run: |
+          python3 .github/scripts/test-deploy-assets.py
+          python3 .github/scripts/test-deploy-ftp.py
 
       # O HTML só ganha novas versões de cache após os arquivos estarem no ar.
       - name: Preparar arquivos referenciados pelo HTML
@@ -46,62 +54,19 @@ jobs:
 
       - name: Enviar arquivos antes do HTML
         if: steps.deploy_assets.outputs.has_assets == 'true'
-        uses: locaweb/ftp-deploy@1.0.0
-        with:
-          host: ${{ secrets.FTP_HOST }}
-          user: ${{ secrets.FTP_USER }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          localDir: '.github/.deploy-assets'
-          remoteDir: 'public_html'
-          options: '--verbose'
+        env:
+          FTP_HOST: ${{ secrets.FTP_HOST }}
+          FTP_USER: ${{ secrets.FTP_USER }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        run: python3 .github/scripts/deploy-ftp.py assets
 
       - name: Confirmar arquivos públicos antes do HTML
         if: steps.deploy_assets.outputs.has_assets == 'true'
         run: python3 .github/scripts/deploy-assets.py --verify
 
       - name: FTP Deploy Locaweb
-        uses: locaweb/ftp-deploy@1.0.0
-        with:
-          host: ${{ secrets.FTP_HOST }}
-          user: ${{ secrets.FTP_USER }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          localDir: '.'
-          remoteDir: 'public_html' # Pasta padrão da Locaweb. Se o seu domínio usar outra pasta, altere aqui.
-          options: >-
-            --delete
-            -x ^\.git/
-            -x ^\.github/
-            -x ^\.agents/
-            -x ^\.hermes/
-            -x ^\.hermes-tmp/
-            -x ^\.impeccable/
-            -x ^\.codex/
-            -x ^\.worktrees/
-            -x ^\.od-skills/
-            -x ^\.playwright-mcp/
-            -x ^bkp/
-            -x ^assets/images/creators/
-            -x ^analytics/
-            -x ^server/
-            -x ^api/
-            -x ^netlify/
-            -x ^php/db/
-            -x ^loop_finder/
-            -x ^node_modules/
-            -x ^tests?/
-            -x ^docs/superpowers/
-            -x ^README\.md$
-            -x ^PRODUCT\.md$
-            -x ^DESIGN\.md$
-            -x ^ONIBUS-PAGAMENTO\.md$
-            -x ^ANALYTICS-PREREQUISITES\.md$
-            -x ^preview\.sh$
-            -x ^netlify\.toml$
-            -x ^vercel\.json$
-            -x ^playwright.*\.mjs$
-            -x ^package\.json$
-            -x ^package-lock\.json$
-            -x ^\.env.*$
-            -x ^\.gitignore$
-            -x \.artifact\.json$
-            -x \.DS_Store$
+        env:
+          FTP_HOST: ${{ secrets.FTP_HOST }}
+          FTP_USER: ${{ secrets.FTP_USER }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        run: python3 .github/scripts/deploy-ftp.py site
