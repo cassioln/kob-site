@@ -9,14 +9,26 @@ const HOMES = { pt: 'index.html', en: 'en/index.html', es: 'es/index.html' };
 const CARDS = ['bagagem', 'proibidos', 'bebidas', 'fumo', 'menores', 'seguranca', 'convivencia', 'consequencias'];
 const MSC = { bagagem: 'https://www.msccruzeiros.com.br/gerenciar-reserva/antes-de-viajar/bagagem', conduta: 'https://www.msccruzeiros.com.br/-/media/brazil/documentos/codigo-de-conduta-hospedes.pdf' };
 
+// The PT page is the reference for the sequence of rule marks (allowed / not allowed / how it works).
+const RULE_MARKS = (() => {
+  const html = fs.readFileSync(new URL('../../manual-de-bordo.html', import.meta.url), 'utf8');
+  const start = html.indexOf('id="regras-msc"');
+  return [...html.slice(start, html.indexOf('</section>', start)).matchAll(/<li class="msc-rule msc-rule--(yes|no|info)">/g)].map(m => m[1]).join();
+})();
+
 const section = html => html.slice(html.indexOf('<section class="guide-section msc-rules" id="regras-msc"'), html.indexOf('</section>', html.indexOf('id="regras-msc"')));
 
-test('Regras da MSC: mesma seção, 8 cards na mesma ordem e fontes oficiais nos 3 idiomas', () => {
+test('Regras da MSC: mesmo quadro, 8 temas com abas, mesmas regras e fontes oficiais nos 3 idiomas', () => {
   for (const [lang, file] of Object.entries(MANUALS)) {
     const html = read(file);
     const block = section(html);
     assert.ok(block.length > 1000, `${lang}: seção #regras-msc não encontrada`);
-    assert.deepEqual([...block.matchAll(/<article class="msc-rules__card" id="regras-([a-z]+)"/g)].map(m => m[1]), CARDS, lang);
+    assert.deepEqual([...block.matchAll(/<article class="msc-rules__panel" id="regras-([a-z]+)" role="tabpanel"/g)].map(m => m[1]), CARDS, lang);
+    // Every topic has its tab, pointing at its panel, in the same order.
+    assert.deepEqual([...block.matchAll(/role="tab" id="regras-([a-z]+)-tab" aria-controls="regras-\1"/g)].map(m => m[1]), CARDS, `${lang}: abas`);
+    // Same rules in every language: count and status of each row, topic by topic.
+    const marks = [...block.matchAll(/<li class="msc-rule msc-rule--(yes|no|info)">/g)].map(m => m[1]).join();
+    assert.equal(marks, RULE_MARKS, `${lang}: sinais das regras`);
     for (const url of Object.values(MSC)) {
       assert.match(block, new RegExp(`<a href="${url.replace(/[.?]/g, '\\$&')}" target="_blank" rel="noopener noreferrer">`), `${lang}: fonte ${url}`);
     }
