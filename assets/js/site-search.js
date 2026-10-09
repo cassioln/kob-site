@@ -1,4 +1,4 @@
-import { prepareIndex, search, snippetFor, highlightParts, buildResultUrl } from './site-search-engine.js?v=20261008-busca';
+import { prepareIndex, search, snippetFor, highlightParts, buildResultUrl, destinationFor } from './site-search-engine.js?v=20261008-destinos';
 
 const lang = (document.documentElement.lang || 'pt').slice(0, 2).toLowerCase();
 const COPY = {
@@ -9,8 +9,7 @@ const COPY = {
     tryTerms: ['proibidos', 'bagagem', 'cabine'], whatsapp: 'Perguntar à Royal Trip no WhatsApp',
     whatsappText: 'Olá, Royal Trip! Procurei no site do Kriativos On Board 2026 e não encontrei uma informação. Podem me ajudar?',
     loading: 'Carregando a busca…', error: 'Não foi possível carregar a busca. Verifique a conexão e tente de novo.',
-    retry: 'Tentar de novo', close: 'Fechar', hints: ['navegar', 'abrir', 'fechar'],
-    dest: { home: ['destino', 'Home'], bus: ['destino', 'Busão'], manual: ['destino', 'Manual'], live: 'live' }
+    retry: 'Tentar de novo', close: 'Fechar', hints: ['navegar', 'abrir', 'fechar']
   },
   en: {
     where: 'Search the site', placeholder: 'What are you looking for?', featured: 'Most searched',
@@ -19,8 +18,7 @@ const COPY = {
     tryTerms: ['prohibited', 'luggage', 'cabin'], whatsapp: 'Ask Royal Trip on WhatsApp',
     whatsappText: "Hi, Royal Trip! I searched the Kriativos On Board 2026 website and couldn't find some information. Can you help me?",
     loading: 'Loading search…', error: "Search couldn't load. Check your connection and try again.",
-    retry: 'Try again', close: 'Close', hints: ['navigate', 'open', 'close'],
-    dest: { home: ['go to', 'Home'], bus: ['go to', 'Busão'], manual: ['go to', 'Guide'], live: 'live' }
+    retry: 'Try again', close: 'Close', hints: ['navigate', 'open', 'close']
   },
   es: {
     where: 'Buscar en el sitio', placeholder: '¿Qué estás buscando?', featured: 'Lo más buscado',
@@ -29,8 +27,7 @@ const COPY = {
     tryTerms: ['prohibidos', 'equipaje', 'camarote'], whatsapp: 'Preguntar a Royal Trip por WhatsApp',
     whatsappText: '¡Hola, Royal Trip! Busqué en el sitio de Kriativos On Board 2026 y no encontré una información. ¿Me pueden ayudar?',
     loading: 'Cargando la búsqueda…', error: 'No se pudo cargar la búsqueda. Revisa tu conexión e inténtalo de nuevo.',
-    retry: 'Intentar de nuevo', close: 'Cerrar', hints: ['navegar', 'abrir', 'cerrar'],
-    dest: { home: ['destino', 'Inicio'], bus: ['destino', 'Busão'], manual: ['destino', 'Guía'], live: 'live' }
+    retry: 'Intentar de nuevo', close: 'Cerrar', hints: ['navegar', 'abrir', 'cerrar']
   }
 };
 const copy = COPY[lang] || COPY.pt;
@@ -264,9 +261,7 @@ function highlightInto(node, text, terms) {
 }
 
 function destination(entry) {
-  const [label, name] = entry.kind === 'live'
-    ? [copy.dest.live, String(entry.time || '').replace(/^00:/, '')]
-    : copy.dest[entry.page];
+  const { label, name } = destinationFor(entry, lang);
   return el('span', { class: 'site-search__dest' }, el('span', { class: 'site-search__dest-label', text: label }), el('b', { class: 'site-search__dest-name', text: name }));
 }
 
