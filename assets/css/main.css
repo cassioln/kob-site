@@ -11194,7 +11194,7 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
 .faq-search small { min-height: 1.4em; color: #49647a; font-size: .75rem; }
 
 @media (min-width: 901px) {
-  #faq .faq__rail { position: sticky; top: 112px; }
+  #faq .faq__rail { position: sticky; top: 150px; }
   #faq .faq__rail .faq__nav { position: relative; top: auto; }
 }
 
