@@ -51,7 +51,7 @@ export function sectionKey({ anchor = '' } = {}) {
 
 export function destinationFor(entry, lang = 'pt') {
   const names = DESTINATIONS[lang] || DESTINATIONS.pt;
-  if (entry.anchor?.startsWith('#live-')) return { label: names.live, name: String(entry.time || '').replace(/^00:/, '') };
+  if (entry.anchor?.startsWith('#live-')) return { label: names.live, name: String(entry.time || '') };
   return { label: names.pages[entry.page] || '', name: names.sections[entry.page]?.[sectionKey(entry)] || '' };
 }
 
