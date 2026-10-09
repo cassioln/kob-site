@@ -738,9 +738,9 @@ export const CHAPTERS = [
     },
     "noticeSeconds": 4461.800,
     "notice": {
-      "pt": "A franquia falada diverge da MSC. Por pessoa: duas malas de até 23 kg cada e duas peças de mão de até 10 kg cada. Por cabine: no máximo 100 kg e/ou oito volumes. Confira as dimensões e demais condições no guia.",
-      "en": "The spoken allowance differs from MSC. Per person: two suitcases of up to 23 kg each and two pieces of hand luggage of up to 10 kg each. Per cabin: no more than 100 kg and/or eight pieces. Check dimensions and other conditions in the guide.",
-      "es": "La franquicia mencionada difiere de MSC. Por persona: dos maletas de hasta 23 kg cada una y dos piezas de mano de hasta 10 kg cada una. Por camarote: un máximo de 100 kg y/o ocho piezas. Consulta las dimensiones y demás condiciones en la guía."
+      "pt": "Regra da MSC: por pessoa, duas malas de até 23 kg e duas peças de mão de até 10 kg; por cabine, até 100 kg e/ou oito volumes. Acima disso, a MSC informa que a bagagem não é aceita no check-in. Na experiência da Royal Trip, nunca houve problema nem pesagem em Santos; levar mais fica por sua conta e risco.",
+      "en": "MSC rule: per person, two suitcases of up to 23 kg and two carry-ons of up to 10 kg; per cabin, up to 100 kg and/or eight pieces. Beyond that, MSC says luggage isn't accepted at check-in. In Royal Trip's experience, there has never been a problem or a weigh-in at Santos; bringing more is at your own risk.",
+      "es": "Regla de MSC: por persona, dos maletas de hasta 23 kg y dos piezas de mano de hasta 10 kg; por camarote, hasta 100 kg y/u ocho piezas. Por encima de eso, MSC indica que el equipaje no se acepta en el check-in. Según la experiencia de Royal Trip, nunca hubo problemas ni pesaje en Santos; llevar más corre por tu cuenta y riesgo."
     },
     "faqId": "faq-o08"
   },
