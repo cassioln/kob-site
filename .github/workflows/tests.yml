@@ -49,6 +49,13 @@ jobs:
       - name: Preparar Chromium
         run: npx playwright install --with-deps chromium
 
+      - name: Validar publicação FTP
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install --no-install-recommends -y lftp
+          python3 .github/scripts/test-deploy-assets.py
+          python3 .github/scripts/test-deploy-ftp.py
+
       - name: Checagens essenciais
         run: npm run test:ci
 

@@ -1486,6 +1486,189 @@ document.documentElement.classList.add('js');
 
   bindSwipeHint(document.querySelector('#embarque .deck__fan'), document.querySelector('[data-deck-swipe-hint]'));
 
+  // No mobile, a faixa fica fixa enquanto o scroll percorre as cartas.
+  (function deckScrollSync() {
+    var fan = document.querySelector('#embarque .deck__fan');
+    if (!fan) return;
+    var section = fan.closest('.deck--cards');
+    var mobile = window.matchMedia('(max-width: 560px)');
+    var motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    var track = document.createElement('div');
+    var frame = document.createElement('div');
+    track.className = 'deck__pin-track';
+    frame.className = 'deck__pin-frame';
+    fan.before(track);
+    track.appendChild(frame);
+    frame.appendChild(fan);
+    var enabled = false;
+    var distance = 0;
+    var top = 0;
+    var origin = null;
+    var direction = null;
+    var scheduled = false;
+
+    function startY() {
+      return track.getBoundingClientRect().top + window.scrollY - top;
+    }
+    function syncScroll() {
+      scheduled = false;
+      if (enabled) fan.scrollLeft = Math.max(0, Math.min(distance, window.scrollY - startY()));
+    }
+    function scheduleScroll() {
+      if (scheduled) return;
+      scheduled = true;
+      requestAnimationFrame(syncScroll);
+    }
+    function resetGesture() {
+      origin = null;
+      direction = null;
+      if (!enabled) fan.classList.remove('is-scroll-driven');
+    }
+    function measure() {
+      enabled = mobile.matches && !motion.matches;
+      section.classList.toggle('has-pinned-deck', enabled);
+      fan.classList.toggle('is-scroll-driven', enabled);
+      if (!enabled) {
+        track.style.removeProperty('height');
+        frame.style.removeProperty('top');
+        if (!mobile.matches) fan.scrollLeft = 0;
+        return;
+      }
+      distance = Math.max(0, fan.scrollWidth - fan.clientWidth);
+      var height = fan.getBoundingClientRect().height;
+      top = Math.max(16, (window.innerHeight - height) / 2);
+      track.style.height = (height + distance) + 'px';
+      frame.style.top = top + 'px';
+      syncScroll();
+    }
+    function moveCards(left) {
+      var start = startY();
+      var pinned = enabled && window.scrollY >= start - 1 && window.scrollY <= start + distance + 1;
+      fan.scrollLeft = Math.max(0, Math.min(fan.scrollWidth - fan.clientWidth, left));
+      // Ajustar o progresso dentro da área fixa não desloca as cartas verticalmente.
+      if (pinned) window.scrollTo({ top: start + fan.scrollLeft, behavior: 'instant' });
+    }
+
+    fan.addEventListener('touchstart', function (event) {
+      resetGesture();
+      if (!mobile.matches || event.touches.length !== 1) return;
+      var touch = event.touches[0];
+      origin = { x: touch.clientX, y: touch.clientY, left: fan.scrollLeft };
+    }, { passive: true });
+    fan.addEventListener('touchmove', function (event) {
+      if (!origin || event.touches.length !== 1) return;
+      var touch = event.touches[0];
+      if (!direction) {
+        var dx = Math.abs(touch.clientX - origin.x);
+        var dy = Math.abs(touch.clientY - origin.y);
+        if (Math.max(dx, dy) < 6) return;
+        direction = dy > dx ? 'vertical' : 'horizontal';
+      }
+      if (direction !== 'horizontal') return;
+      if (event.cancelable) event.preventDefault();
+      fan.classList.add('is-scroll-driven');
+      moveCards(origin.left + origin.x - touch.clientX);
+    }, { passive: false });
+    document.addEventListener('touchend', resetGesture, { passive: true });
+    document.addEventListener('touchcancel', resetGesture, { passive: true });
+    fan.addEventListener('keydown', function (event) {
+      if (!enabled || (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight')) return;
+      event.preventDefault();
+      moveCards(fan.scrollLeft + (event.key === 'ArrowRight' ? 1 : -1) * fan.clientWidth * 0.8);
+    });
+    window.addEventListener('scroll', scheduleScroll, { passive: true });
+    window.addEventListener('resize', measure, { passive: true });
+    window.addEventListener('blur', resetGesture);
+    mobile.addEventListener('change', measure);
+    motion.addEventListener('change', measure);
+    if (typeof ResizeObserver === 'function') new ResizeObserver(measure).observe(fan);
+    measure();
+  })();
+
+  // Nas telas maiores, o leque se abre até o centro da viewport e então libera o hover.
+  (function desktopDeckScroll() {
+    var fan = document.querySelector('#embarque .deck__fan');
+    if (!fan) return;
+    var section = fan.closest('.deck--cards');
+    var frame = fan.parentElement;
+    var wide = window.matchMedia('(min-width: 561px)');
+    var motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    var scheduled = false;
+    var completing = false;
+    var progress = 1;
+
+    function update() {
+      scheduled = false;
+      if (!wide.matches || motion.matches) return;
+      var height = frame.offsetHeight;
+      var center = frame.getBoundingClientRect().top + height / 2;
+      progress = Math.max(0, Math.min(1, (window.innerHeight - center) / (window.innerHeight / 2)));
+      if (progress > 0.999) progress = 1;
+      section.style.setProperty('--deck-open', progress.toFixed(4));
+      if (progress < 1) {
+        section.classList.add('is-scroll-fan');
+      } else if (section.classList.contains('is-scroll-fan') && !completing) {
+        // Pinta a posição final antes de restaurar as transições e o hover originais.
+        completing = true;
+        requestAnimationFrame(function () {
+          completing = false;
+          if (progress === 1) section.classList.remove('is-scroll-fan');
+        });
+      }
+    }
+    function schedule() {
+      if (scheduled || !wide.matches || motion.matches) return;
+      scheduled = true;
+      requestAnimationFrame(update);
+    }
+    function reset() {
+      section.classList.remove('is-scroll-fan');
+      section.style.removeProperty('--deck-open');
+      progress = 1;
+      update();
+    }
+    window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', schedule, { passive: true });
+    window.addEventListener('load', schedule);
+    wide.addEventListener('change', reset);
+    motion.addEventListener('change', reset);
+    reset();
+  })();
+
+  // O zoom, a rotação e o reflexo da carta bônus seguem o progresso do scroll.
+  (function bonusCardScroll() {
+    var card = document.querySelector('#embarque .deck__bonus-card');
+    if (!card) return;
+    var motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    var scheduled = false;
+
+    function update() {
+      scheduled = false;
+      if (motion.matches) return;
+      var anchor = card.offsetParent || card.parentElement;
+      var center = anchor.getBoundingClientRect().top + card.offsetTop + card.offsetHeight / 2;
+      var progress = Math.max(0, Math.min(1, (window.innerHeight - center) / window.innerHeight));
+      card.style.setProperty('--bonus-scale', (1 + progress * 0.055).toFixed(4));
+      card.style.setProperty('--bonus-turn', (progress * 6).toFixed(3) + 'deg');
+      card.style.setProperty('--bonus-reflection-x', (-112 + progress * 230).toFixed(2) + '%');
+      card.style.setProperty('--bonus-reflection-opacity', (Math.sin(progress * Math.PI) * 0.7).toFixed(3));
+    }
+    function schedule() {
+      if (scheduled || motion.matches) return;
+      scheduled = true;
+      requestAnimationFrame(update);
+    }
+    function syncMotion() {
+      card.classList.toggle('is-scroll-animated', !motion.matches);
+      update();
+    }
+    window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', schedule, { passive: true });
+    window.addEventListener('load', schedule);
+    motion.addEventListener('change', syncMotion);
+    syncMotion();
+  })();
+
   // ---------- Sliders responsivos dos valores (tablet e celular) ----------
   (function priceSliders() {
     var tracks = Array.prototype.slice.call(document.querySelectorAll('#valores .value-panel .price-grid'));
