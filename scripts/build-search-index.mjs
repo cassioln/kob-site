@@ -35,7 +35,7 @@ const SECTIONS = {
     },
     { id: 'jogos' },
     // Cada card de regra da MSC é um resultado próprio, ancorado no id do card (#regras-bagagem…).
-    { id: 'regras-msc', parts: n => n.tag === 'article' && hasClass(n, 'msc-rules__card') },
+    { id: 'regras-msc', parts: n => n.tag === 'article' && hasClass(n, 'msc-rules__panel') },
     { id: 'contato' }
   ],
   bus: [

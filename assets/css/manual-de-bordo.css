@@ -6417,103 +6417,212 @@
 }
 
 /* ==========================================================================
-   REGRAS DA MSC (#regras-msc): resumo das fontes oficiais em cards por tema,
-   no mesmo visual dos cards de jogos (borda suave, faixa colorida no topo).
+   REGRAS DA MSC (#regras-msc): um quadro de regras em vez de oito cartões.
+   Os temas ficam num trilho azul-abismo (desktop) ou numa faixa de chips
+   (celular) e um tema aparece por vez. Cada regra traz um sinal (pode, não
+   pode, como funciona), um título curto e uma frase de detalhe.
    ========================================================================== */
-.msc-rules__sources {
-  max-width: 70ch;
-  margin: 16px 0 0;
-  padding: 12px 16px;
-  border-left: 4px solid #ffc20e;
-  border-radius: 0 12px 12px 0;
-  background: rgba(2, 132, 199, 0.06);
-  color: #334155;
-  font-size: 0.9rem;
-  line-height: 1.55;
+.msc-rules {
+  --rules-ink: #041d3a;
+  --rules-text: #475569;
+  --rules-line: rgba(8, 57, 101, 0.1);
+  --rules-gold: #ffc20e;
+  --rules-yes: #0f8a6e;
+  --rules-yes-bg: #e2f4ee;
+  --rules-no: #c2410c;
+  --rules-no-bg: #fdebe4;
+  --rules-info: #8a6100;
+  --rules-info-bg: #fff3c4;
 }
 
-.msc-rules__sources a {
-  color: #0369a1;
-  font-weight: 700;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-.msc-rules__grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
-  gap: clamp(16px, 2.4vw, 28px);
-  margin: 0;
-  padding: 0;
-}
-
-.msc-rules__card {
-  position: relative;
-  min-width: 0;
+.msc-rules__board {
   overflow: hidden;
-  padding: 28px 26px 24px;
-  border: 1px solid rgba(8, 57, 101, 0.1);
-  border-radius: 20px;
-  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
-  box-shadow:
-    0 2px 4px rgba(4, 29, 58, 0.02),
-    0 10px 24px -4px rgba(4, 29, 58, 0.07);
-  scroll-margin-top: calc(var(--guide-header-height, 57px) + 24px);
+  border: 1px solid var(--rules-line);
+  border-radius: 24px;
+  background: #ffffff;
+  box-shadow: 0 18px 48px -24px rgba(4, 29, 58, 0.28);
 }
 
-/* Faixa no topo, alternando as cores do KOB */
-.msc-rules__card::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #0284c7, #38bdf8);
+/* --- Temas: faixa de chips no celular, grade no tablet, trilho no desktop --- */
+.msc-rules__tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 14px;
+  background: var(--ocean-abyss, #041d3a);
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
 }
-.msc-rules__card:nth-child(4n + 2)::before { background: linear-gradient(90deg, #71206c, #a835a0); }
-.msc-rules__card:nth-child(4n + 3)::before { background: linear-gradient(90deg, #d97706, #ffc20e); }
-.msc-rules__card:nth-child(4n + 4)::before { background: linear-gradient(90deg, #0f766e, #2dd4bf); }
-
-.msc-rules__card:target {
-  border-color: rgba(255, 194, 14, 0.9);
-  box-shadow: 0 0 0 3px rgba(255, 194, 14, 0.35), 0 10px 24px -4px rgba(4, 29, 58, 0.07);
+.msc-rules__tabs::-webkit-scrollbar { display: none; }
+/* Celular: as bordas esmaecem para indicar que a faixa de temas rola para os lados. */
+@media (max-width: 639px) {
+  .msc-rules__tabs {
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 18px, #000 calc(100% - 18px), transparent 100%);
+    mask-image: linear-gradient(90deg, transparent 0, #000 18px, #000 calc(100% - 18px), transparent 100%);
+  }
+  .msc-rules__legend { gap: 6px 14px; }
 }
+.msc-rules__tabs[hidden] { display: none; }
 
-.msc-rules__title {
-  margin: 0 0 14px;
-  color: #041d3a;
-  font-family: var(--font-display, "Gobold", sans-serif);
-  font-size: clamp(1.2rem, 1.3vw, 1.4rem);
-  font-weight: 800;
-  letter-spacing: -0.01em;
-  line-height: 1.25;
-}
-
-.msc-rules__list {
-  display: grid;
+.msc-rules__tab {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
   gap: 10px;
-  margin: 0;
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.82);
+  font: 600 0.9rem/1.2 var(--font-body, "Montserrat", sans-serif);
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+  scroll-snap-align: center;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+.msc-rules__tab-icon { flex: 0 0 auto; width: 20px; height: 20px; }
+.msc-rules__tab:hover { border-color: rgba(255, 255, 255, 0.32); color: #ffffff; }
+.msc-rules__tab:focus-visible { outline: 3px solid var(--ocean-cyan, #29c3f5); outline-offset: 2px; }
+.msc-rules__tab[aria-selected="true"] {
+  border-color: var(--rules-gold);
+  background: var(--rules-gold);
+  color: var(--rules-ink);
+}
+
+/* --- Painel do tema --- */
+.msc-rules__panels {
+  position: relative;
+  padding: clamp(22px, 4vw, 44px) clamp(18px, 4vw, 48px) clamp(18px, 3vw, 36px);
+}
+
+.msc-rules__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin: 0 0 6px;
   padding: 0;
   list-style: none;
+  color: var(--rules-text);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.msc-rules__legend-item { display: inline-flex; align-items: center; gap: 8px; }
+.msc-rules__legend-item .msc-rule__mark { width: 20px; height: 20px; }
+.msc-rules__legend-item .msc-rule__mark-icon { width: 13px; height: 13px; }
+/* Sem o script os temas aparecem em sequência e a legenda não tem a quem servir de chave fixa. */
+.msc-rules__board:not(.is-tabbed) .msc-rules__legend { display: none; }
+
+.msc-rules__panel {
+  max-width: 72ch;
+  padding-top: 18px;
+  scroll-margin-top: calc(var(--guide-header-height, 57px) + 88px);
+}
+.msc-rules__panel + .msc-rules__panel { margin-top: 28px; border-top: 1px solid var(--rules-line); }
+.msc-rules__board.is-tabbed .msc-rules__panel + .msc-rules__panel { margin-top: 0; border-top: 0; }
+.msc-rules__panel[hidden] { display: none; }
+.msc-rules__panel:focus { outline: none; }
+.msc-rules__panel:focus-visible { outline: 2px solid rgba(41, 195, 245, 0.7); outline-offset: 10px; border-radius: 14px; }
+.msc-rules__board.is-tabbed .msc-rules__panel:not([hidden]) { animation: msc-rules-in 0.22s ease-out; }
+
+.msc-rules__panel-title {
+  margin: 0 0 10px;
+  color: var(--rules-ink);
+  font-family: var(--font-display, "Gobold", sans-serif);
+  font-size: clamp(1.7rem, 3.2vw, 2.4rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.005em;
 }
 
-.msc-rules__list li {
-  position: relative;
-  padding-left: 18px;
-  color: #475569;
-  font-size: 0.9375rem;
+.msc-rules__list { margin: 0; padding: 0; list-style: none; }
+
+.msc-rule {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+  padding: 15px 0;
+  border-top: 1px solid var(--rules-line);
+}
+.msc-rule:first-child { border-top: 0; }
+
+.msc-rule__mark {
+  display: inline-grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+.msc-rule__mark-icon { width: 17px; height: 17px; stroke-width: 2.4; }
+.msc-rule--yes .msc-rule__mark { background: var(--rules-yes-bg); color: var(--rules-yes); }
+.msc-rule--no .msc-rule__mark { background: var(--rules-no-bg); color: var(--rules-no); }
+.msc-rule--info .msc-rule__mark { background: var(--rules-info-bg); color: var(--rules-info); }
+
+.msc-rule__body { margin: 3px 0 0; color: var(--rules-text); font-size: 0.95rem; line-height: 1.6; }
+.msc-rule__lead { display: block; color: var(--rules-ink); font-size: 1rem; font-weight: 700; line-height: 1.4; }
+.msc-rule__detail { display: block; margin-top: 2px; }
+
+.msc-rules__sources {
+  max-width: 78ch;
+  margin: 18px 4px 0;
+  color: var(--rules-text);
+  font-size: 0.82rem;
   line-height: 1.6;
 }
+.msc-rules__sources a { color: #0369a1; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
 
-.msc-rules__list li::before {
-  content: "";
-  position: absolute;
-  top: 0.62em;
-  left: 2px;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #ffc20e;
+@keyframes msc-rules-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
 }
 
+/* Tablet: os oito temas cabem numa grade de quatro colunas acima do painel. */
+@media (min-width: 640px) and (max-width: 1023px) {
+  .msc-rules__tabs {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    overflow: visible;
+    padding: 16px;
+  }
+  .msc-rules__tab { justify-content: center; white-space: normal; text-align: center; }
+  .msc-rules__tab-icon { display: none; }
+  .msc-rules__panel { scroll-margin-top: calc(var(--guide-header-height, 57px) + 24px); }
+}
+
+/* Desktop: trilho vertical à esquerda, com o tema ativo marcado em dourado. */
+@media (min-width: 1024px) {
+  .msc-rules__board.is-tabbed { display: grid; grid-template-columns: minmax(250px, 300px) minmax(0, 1fr); }
+  .msc-rules__tabs {
+    flex-direction: column;
+    gap: 2px;
+    overflow: visible;
+    padding: 22px 14px;
+  }
+  .msc-rules__tab {
+    gap: 14px;
+    min-height: 52px;
+    padding: 12px 16px;
+    border: 0;
+    border-radius: 12px;
+    background: transparent;
+    white-space: normal;
+  }
+  .msc-rules__tab-icon { width: 22px; height: 22px; color: rgba(255, 255, 255, 0.6); }
+  .msc-rules__tab:hover { background: rgba(255, 255, 255, 0.06); }
+  .msc-rules__tab[aria-selected="true"] {
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+    box-shadow: inset 3px 0 0 var(--rules-gold);
+  }
+  .msc-rules__tab[aria-selected="true"] .msc-rules__tab-icon { color: var(--rules-gold); }
+  .msc-rules__panels { padding: 40px 52px 36px; }
+  .msc-rules__legend { justify-content: flex-end; }
+  .msc-rules__panel { padding-top: 0; scroll-margin-top: calc(var(--guide-header-height, 57px) + 24px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .msc-rules__tab { transition: none; }
+  .msc-rules__board.is-tabbed .msc-rules__panel:not([hidden]) { animation: none; }
+}
