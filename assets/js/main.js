@@ -1496,30 +1496,43 @@ document.documentElement.classList.add('js');
     var direction = null;
     var lastY = window.scrollY;
     var settling = null;
+    var manualDrag = false;
 
     function stop() {
       origin = null;
       direction = null;
       clearTimeout(settling);
+      if (manualDrag) fan.classList.remove('is-scroll-driven');
+      manualDrag = false;
     }
 
     document.addEventListener('touchstart', function (event) {
       stop();
-      if (!mobile.matches || motion.matches || event.touches.length !== 1) return;
+      if (!mobile.matches || event.touches.length !== 1) return;
       var touch = event.touches[0];
-      origin = { x: touch.clientX, y: touch.clientY };
+      origin = { x: touch.clientX, y: touch.clientY, left: fan.scrollLeft, onFan: fan.contains(event.target) };
       lastY = window.scrollY;
     }, { passive: true });
 
-    document.addEventListener('touchmove', function (event) {
+    function detectDirection(event) {
       if (!origin || direction || event.touches.length !== 1) return;
       var touch = event.touches[0];
       var dx = Math.abs(touch.clientX - origin.x);
       var dy = Math.abs(touch.clientY - origin.y);
       if (Math.max(dx, dy) < 6) return;
       direction = dy > dx ? 'vertical' : 'horizontal';
-      if (direction === 'horizontal') fan.classList.remove('is-scroll-driven');
-    }, { passive: true });
+    }
+    document.addEventListener('touchmove', detectDirection, { passive: true });
+
+    // Cancela só o gesto horizontal nas cartas, mantendo o arrasto vertical da página.
+    fan.addEventListener('touchmove', function (event) {
+      detectDirection(event);
+      if (!origin || !origin.onFan || direction !== 'horizontal' || event.touches.length !== 1) return;
+      if (event.cancelable) event.preventDefault();
+      manualDrag = true;
+      fan.classList.add('is-scroll-driven');
+      fan.scrollLeft = origin.left + origin.x - event.touches[0].clientX;
+    }, { passive: false });
 
     document.addEventListener('touchend', function () {
       origin = null;
