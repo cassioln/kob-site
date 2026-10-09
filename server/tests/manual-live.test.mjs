@@ -12,7 +12,7 @@ test('41 assuntos cronológicos com conversão exata dos tempos e títulos PT/EN
 });
 test('busca usa a fala fornecida e separa os avisos das informações divergentes', () => {
   const bags=CHAPTERS.find(c=>c.seconds===4456);
-  assert.match(bags.transcripts.pt,/3 malas/); assert.match(bags.notice.pt,/diverge/); assert.equal(bags.faqId,'faq-o08');
+  assert.match(bags.transcripts.pt,/3 malas/); assert.match(bags.notice.pt,/Regra da MSC.*23 kg.*não é aceita no check-in/); assert.match(bags.notice.pt,/Royal Trip.*por sua conta e risco/); assert.equal(bags.faqId,'faq-o08');
   const items=CHAPTERS.find(c=>c.seconds===4481);
   assert.doesNotMatch(items.transcripts.pt,/chapinha sem certificação/);
   const partners=CHAPTERS.find(c=>c.seconds===1036);
