@@ -485,6 +485,18 @@ h4 {
   width: auto;
 }
 
+/* A largura pode encolher no desktop sem comprimir a proporção da marca. */
+.nav > .nav__brand {
+  --nav-brand-height: 78px;
+  min-height: var(--nav-brand-height);
+  flex-shrink: 0;
+}
+
+.nav > .nav__brand img {
+  height: auto;
+  max-height: var(--nav-brand-height);
+}
+
 .nav__brand {
   opacity: 0;
   pointer-events: none;
@@ -9030,6 +9042,7 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
 @media (max-width: 600px) {
   .nav { gap: 8px; }
   .nav__brand img { height: 44px; }
+  .nav > .nav__brand { --nav-brand-height: 44px; }
   .nav__right { gap: 8px; }
 }
 
@@ -11821,6 +11834,17 @@ a:focus-visible,
 }
 @media (max-width: 1320px) {
   .nav[data-scrolled="false"] { gap: 8px; }
+}
+
+/* O menu rolado cede espaço antes de comprimir a marca em telas intermediárias. */
+@media (min-width: 1321px) and (max-width: 1440px) {
+  .nav[data-scrolled="true"] .nav__links { display: none; }
+  .nav[data-scrolled="true"] .nav__toggle {
+    display: inline-flex;
+    width: 58px;
+    height: 58px;
+  }
+  .drawer:has(> .drawer__actions) { display: flex; }
 }
 
 /* Guide and charter: social links and credits share the home footer identity. */

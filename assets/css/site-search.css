@@ -279,3 +279,20 @@ html.site-search-open { overflow: hidden; scrollbar-gutter: stable; }
 }
 .nav .site-search-trigger[data-search-compact][data-search-label="false"] { padding-inline: 0; }
 .nav .site-search-trigger[data-search-compact] .site-search-trigger__label { font-size: .7rem; letter-spacing: .02em; }
+
+/* Home hero: a single, quieter line, preserving its translucent colors. */
+.nav[data-scrolled="false"] .site-search-trigger { padding-inline: 16px; gap: 16px; }
+.nav[data-scrolled="false"] .site-search-trigger .site-search-trigger__label { letter-spacing: 0; }
+.nav[data-scrolled="false"] .site-search-trigger .site-search-trigger__label-text {
+  font: 400 .875rem/1.4 var(--font-body);
+  letter-spacing: 0;
+}
+.nav[data-scrolled="false"] .site-search-trigger .site-search-trigger__description { display: none; }
+.nav[data-scrolled="false"] .site-search-trigger .site-search-trigger__icon { width: 20px; height: 20px; }
+.nav[data-scrolled="false"] .site-search-trigger .site-search-trigger__kbd { font-size: .8rem; padding: 4px 8px; }
+.nav[data-scrolled="false"] .site-search-trigger[data-search-compact] { padding-inline: 12px; }
+.nav[data-scrolled="false"] .site-search-trigger[data-search-label="false"] { padding-inline: 0; }
+
+/* The scrolled search retains the Manual's design in a bounded width. */
+.nav[data-scrolled="true"] .site-search-trigger { max-width: 290px; }
+.nav[data-scrolled="true"] .site-search-trigger[data-search-expanded="true"] .site-search-trigger__label-text { font-size: 1.05rem; }
