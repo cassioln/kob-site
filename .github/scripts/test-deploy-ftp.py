@@ -63,3 +63,42 @@ with tempfile.TemporaryDirectory(prefix='kob-ftp-check-') as temp:
     finally:
         os.chdir(previous)
 print('PASS: staged uploads do not delete; full mirror preserves private/API files; FTP errors fail without logging credentials')
+
+# With the real client installed in CI, mirror only a local file:// fixture.
+import shutil
+if shutil.which('lftp'):
+    with tempfile.TemporaryDirectory(prefix='kob-ftp-local-') as temp:
+        root = Path(temp)
+        source = root / 'source'
+        remote = root / 'remote'
+        stage = source / '.github/.deploy-assets'
+        (stage / 'assets/css').mkdir(parents=True)
+        (stage / 'assets/css/main.css').write_text('new style')
+        source.joinpath('index.html').write_text('new HTML')
+        source.joinpath('.env').write_text('excluded fixture')
+        published = remote / 'public_html'
+        for path in ('api/keep.php', 'php/db/keep.php', '.env', 'assets/images/creators/keep.svg', 'old.html'):
+            file = published / path
+            file.parent.mkdir(parents=True, exist_ok=True)
+            file.write_text('keep')
+        previous = Path.cwd()
+        try:
+            os.chdir(source)
+            env = {'FTP_HOST': remote.as_uri(), 'FTP_USER': 'fixture', 'FTP_PASSWORD': 'fixture'}
+            for mode in ('assets', 'site'):
+                with patch.dict(os.environ, env), patch.object(sys, 'argv', [str(script), mode]):
+                    try:
+                        module['main']()
+                    except SystemExit as error:
+                        assert error.code == 0, (mode, error.code)
+                for path in ('api/keep.php', 'php/db/keep.php', '.env', 'assets/images/creators/keep.svg'):
+                    assert (published / path).read_text() == 'keep', path
+                if mode == 'assets':
+                    assert (published / 'assets/css/main.css').read_text() == 'new style'
+                    assert (published / 'old.html').exists()
+                else:
+                    assert (published / 'index.html').read_text() == 'new HTML'
+                    assert not (published / 'old.html').exists()
+        finally:
+            os.chdir(previous)
+    print('PASS: real lftp local mirror stages assets and preserves excluded remote-only files during deletion')
