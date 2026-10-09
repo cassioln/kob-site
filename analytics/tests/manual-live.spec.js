@@ -342,24 +342,30 @@ test('A orelha permanece unida ao painel durante a animação', async ({ page })
 });
 
 test('Hovers preservam contraste, idioma ativo e fundo do seletor', async ({ page }) => {
-  // Above 1024px the header shows horizontal links instead of the menu button.
-  await page.setViewportSize({ width: 1024, height: 800 });
+  // No desktop (> 1024px), o seletor de idiomas fica no cabeçalho.
+  await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto('/manual-de-bordo.html');
   const styles = selector => page.locator(selector).first().evaluate(e => {
     const s = getComputedStyle(e);
     return { color: s.color, background: s.backgroundColor, decoration: s.textDecorationLine };
   });
   const switchBackground = (await styles('.guide-header .lang-switch')).background;
-  for (const selector of ['.guide-header .lang-switch__item:not(.is-active)', '.guide-header .nav__toggle']) {
+  for (const selector of ['.guide-header .lang-switch__item:not(.is-active)']) {
     await page.locator(selector).first().hover();
     await expect.poll(async () => (await styles(selector)).color).toBe('rgb(255, 255, 255)');
     expect((await styles(selector)).decoration).toBe('none');
   }
   expect((await styles('.guide-header .lang-switch')).background).toBe(switchBackground);
   expect((await styles('.guide-header .lang-switch__item.is-active')).color).toBe('rgb(255, 255, 255)');
-  await page.locator('.guide-header .lang-switch__item').last().focus();
-  await page.keyboard.press('Tab');
-  await expect(page.locator('.guide-header .nav__toggle')).toBeFocused();
+
+  // Em larguras <= 1024px, o menu hambúrguer fica visível no cabeçalho.
+  await page.setViewportSize({ width: 1024, height: 800 });
+  const toggle = page.locator('.guide-header .nav__toggle');
+  await toggle.hover();
+  await expect.poll(async () => (await styles('.guide-header .nav__toggle')).color).toBe('rgb(255, 255, 255)');
+  expect((await styles('.guide-header .nav__toggle')).decoration).toBe('none');
+  await toggle.focus();
+  await expect(toggle).toBeFocused();
   await expect.poll(async () => (await styles('.guide-header .nav__toggle')).color).toBe('rgb(255, 255, 255)');
 });
 
@@ -570,10 +576,9 @@ for(const [lang,path,home,charter,prefix] of [
   await expect(page.locator(`.guide-header__nav-link[href="https://kriativosonboard.com.br${prefix}/onibus.html"]`)).toBeVisible();
   await page.setViewportSize({width:1024,height:1000});
   await page.locator('#navToggle').click();
-  await expect(page.locator('#drawer a').filter({hasText:home})).toBeVisible();
-  await expect(page.locator('#drawer .guide-menu-desktop').last()).toHaveText(charter);
-  await expect(page.locator('#drawer .guide-menu-desktop').last()).toHaveAttribute('href',`https://kriativosonboard.com.br${prefix}/onibus.html`);
-  await expect(page.locator('#drawer .guide-menu-mobile')).toBeHidden();
+  await expect(page.locator('#drawer .guide-drawer__action')).toHaveText(new RegExp(charter));
+  await expect(page.locator('#drawer .guide-drawer__action')).toHaveAttribute('href',`https://kriativosonboard.com.br${prefix}/onibus.html`);
+  await expect(page.locator('#drawer .guide-menu-mobile')).toHaveCount(0);
   await page.keyboard.press('Escape');
   await page.setViewportSize({width:1440,height:1000});
   await page.locator('#loadLivePlayerBtn').click();await readyPlayer(page);
@@ -593,9 +598,8 @@ for(const [lang,path,home,charter,prefix] of [
   await expect(page.locator('.guide-header__home-link')).toBeHidden();
   await expect(page.locator('#liveTotalProgress')).toBeVisible();
   await page.locator('#navToggle').click();
-  await expect(page.locator('#drawer .guide-menu-desktop').first()).toBeHidden();
-  await expect(page.locator('#drawer .guide-menu-mobile')).toBeVisible();
-  await expect(page.locator('#drawer .guide-menu-mobile')).toHaveAttribute('href',`https://busao.kriativosonboard.com.br${prefix}/`);
+  await expect(page.locator('#drawer .guide-drawer__action')).toBeVisible();
+  await expect(page.locator('#drawer .guide-drawer__action')).toHaveAttribute('href',`https://kriativosonboard.com.br${prefix}/onibus.html`);
   await page.setViewportSize({width:600,height:844});
   await expect(page.locator('.guide-header__home-link')).toHaveCount(0);
  });
