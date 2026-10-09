@@ -45,12 +45,12 @@
     rel="stylesheet">
   <link rel="preload" href="/assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
 
-  <link rel="stylesheet" href="/assets/css/main.css?v=20261008-mobile-language">
-  <link rel="stylesheet" href="/assets/css/site-search.css?v=20261008-destinos">
-  <link rel="stylesheet" href="/assets/css/manual-de-bordo.css?v=20261008-drawer">
+  <link rel="stylesheet" href="/assets/css/main.css?v=20261009-menu-faq">
+  <link rel="stylesheet" href="/assets/css/site-search.css?v=20261009-faq-filter">
+  <link rel="stylesheet" href="/assets/css/manual-de-bordo.css?v=20261009-header-faq">
   <link rel="stylesheet" href="/assets/css/footer-sponsors.css?v=20261007-sponsors-marquee">
   <link rel="stylesheet" href="/assets/css/cookie-consent.css?v=20260820-fix-contrast">
-  <link rel="stylesheet" href="/assets/css/mobile-navigation.css?v=20261008-mobile-header-2">
+  <link rel="stylesheet" href="/assets/css/mobile-navigation.css?v=20261009-menu">
 
   <script defer src="/assets/js/cookie-consent.js?v=20261008-i18n"></script>
   <script defer src="/assets/js/footer-sponsors.js?v=20261007-sponsors-marquee"></script>
@@ -141,14 +141,6 @@
           <span class="manual-brand-tag__domain">manualdebordo.kriativosonboard.com.br</span>
         </div>
       </div>
-      <nav class="guide-header__nav" aria-label="Onboard Manual navigation">
-        <a href="#checklist" data-open-checklist class="guide-header__nav-link">Checklist</a>
-        <a href="#cronograma" class="guide-header__nav-link">Schedule</a>
-        <a href="https://kriativosonboard.com.br/en/onibus.html" target="_blank" rel="noopener noreferrer" class="guide-header__nav-link">Charter</a>
-        <a href="#jogos" class="guide-header__nav-link">Games</a>
-        <a href="#duvidas" class="guide-header__nav-link">FAQ</a>
-        <a href="#contato" class="guide-header__nav-link">Contact</a>
-      </nav>
       <div class="guide-header__actions">
         <button type="button" class="site-search-trigger" data-site-search-open aria-haspopup="dialog"
           aria-keyshortcuts="Meta+K Control+K" aria-label="Search the site">
@@ -169,6 +161,14 @@
           </svg>
         </button>
       </div>
+      <nav class="guide-header__nav" aria-label="Onboard Manual navigation">
+        <a href="#checklist" data-open-checklist class="guide-header__nav-link">Checklist</a>
+        <a href="#cronograma" class="guide-header__nav-link">Schedule</a>
+        <a href="https://kriativosonboard.com.br/en/onibus.html" target="_blank" rel="noopener noreferrer" class="guide-header__nav-link">Charter</a>
+        <a href="#jogos" class="guide-header__nav-link">Games</a>
+        <a href="#duvidas" class="guide-header__nav-link">FAQ</a>
+        <a href="#contato" class="guide-header__nav-link">Contact</a>
+      </nav>
     </div>
   </header>
 
@@ -812,48 +812,48 @@
               individual situation, contact Royal Trip through a private channel.
             </p>
           </div>
-          <label class="faq-search" for="faqSearchInput">
-            <span id="faqSearchLabel">What do you need to know?</span>
-            <span class="faq-search__field">
-              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <circle cx="11" cy="11" r="6.5"></circle>
-                <path d="m16 16 4 4"></path>
-              </svg>
-              <input id="faqSearchInput" type="search" placeholder="E.g., documents, luggage, internet, games…" autocomplete="off"
-                aria-labelledby="faqSearchLabel" aria-describedby="faq-search-status">
-              <button type="button" class="faq-search-clear" id="faqClearBtn" title="Clear search" aria-label="Clear search">Clear</button>
-              <button type="button" class="faq-search__spotlight" data-site-search-open data-site-search-kbd
-                aria-label="Search the whole site">⌘ K</button>
-            </span>
-            <small id="faq-search-status" aria-live="polite"><span id="faqResultsCount">42</span> answers organized by topic</small>
-          </label>
         </header>
 
         <div class="faq" style="--faq-progress: 0%">
-          <nav class="faq__nav" aria-label="FAQ categories">
-            <span class="faq__nav-eyebrow">Browse by topic</span>
-            <span class="faq__nav-track" aria-hidden="true"><i></i></span>
-            <a class="faq-category-btn faq__nav-item is-active" href="#faq-preparacao" data-category="preparacao" data-faq-nav="" aria-current="true">
-              Preparation <span class="faq__nav-count">11</span>
-            </a>
-            <a class="faq-category-btn faq__nav-item" href="#faq-chegada" data-category="chegada" data-faq-nav="">
-              Arrival <span class="faq__nav-count">5</span>
-            </a>
-            <a class="faq-category-btn faq__nav-item" href="#faq-jogos" data-category="jogos" data-faq-nav="">
-              Games &amp; Activities <span class="faq__nav-count">8</span>
-            </a>
-            <a class="faq-category-btn faq__nav-item" href="#faq-vida-a-bordo" data-category="vida-a-bordo" data-faq-nav="">
-              During the Cruise <span class="faq__nav-count">15</span>
-            </a>
-            <a class="faq-category-btn faq__nav-item" href="#faq-desembarque" data-category="desembarque" data-faq-nav="">
-              Disembarkation <span class="faq__nav-count">3</span>
-            </a>
+          <div class="faq__rail">
+            <label class="faq-search faq-search--compact" for="faqSearchInput">
+              <span class="faq-search__label" id="faqSearchLabel">What do you need to know?</span>
+              <span class="faq-search__field">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <circle cx="11" cy="11" r="6.5"></circle>
+                  <path d="m16 16 4 4"></path>
+                </svg>
+                <input id="faqSearchInput" type="search" placeholder="Filter questions…" autocomplete="off"
+                  aria-labelledby="faqSearchLabel" aria-describedby="faq-search-status">
+                <button type="button" class="faq-search-clear" id="faqClearBtn" title="Clear search" aria-label="Clear search">Clear</button>
+              </span>
+              <small id="faq-search-status" aria-live="polite"><span id="faqResultsCount">42</span> answers organized by topic</small>
+            </label>
+            <nav class="faq__nav" aria-label="FAQ categories">
+              <span class="faq__nav-eyebrow">Browse by topic</span>
+              <span class="faq__nav-track" aria-hidden="true"><i></i></span>
+              <a class="faq-category-btn faq__nav-item is-active" href="#faq-preparacao" data-category="preparacao" data-faq-nav="" aria-current="true">
+                Preparation <span class="faq__nav-count">11</span>
+              </a>
+              <a class="faq-category-btn faq__nav-item" href="#faq-chegada" data-category="chegada" data-faq-nav="">
+                Arrival <span class="faq__nav-count">5</span>
+              </a>
+              <a class="faq-category-btn faq__nav-item" href="#faq-jogos" data-category="jogos" data-faq-nav="">
+                Games &amp; Activities <span class="faq__nav-count">8</span>
+              </a>
+              <a class="faq-category-btn faq__nav-item" href="#faq-vida-a-bordo" data-category="vida-a-bordo" data-faq-nav="">
+                During the Cruise <span class="faq__nav-count">15</span>
+              </a>
+              <a class="faq-category-btn faq__nav-item" href="#faq-desembarque" data-category="desembarque" data-faq-nav="">
+                Disembarkation <span class="faq__nav-count">3</span>
+              </a>
 
-            <div class="faq-tools" aria-label="FAQ tools">
-              <button type="button" class="faq-tool-btn" data-faq-action="expand-all">Expand All</button>
-              <button type="button" class="faq-tool-btn" data-faq-action="collapse-all">Collapse All</button>
-            </div>
-          </nav>
+              <div class="faq-tools" aria-label="FAQ tools">
+                <button type="button" class="faq-tool-btn" data-faq-action="expand-all">Expand All</button>
+                <button type="button" class="faq-tool-btn" data-faq-action="collapse-all">Collapse All</button>
+              </div>
+            </nav>
+          </div>
 
           <div class="faq__panels">
             <div class="faq-empty-state" id="faqEmptyState">

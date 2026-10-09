@@ -273,8 +273,8 @@
   <!-- Fontes da marca (banner KOB): Gobold Extra2 = display, Chantal = acento manuscrito -->
   <link rel="preload" href="assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
 
-  <link rel="stylesheet" href="assets/css/main.css?v=20261008-mobile-language">
-  <link rel="stylesheet" href="assets/css/site-search.css?v=20261008-destinos">
+  <link rel="stylesheet" href="assets/css/main.css?v=20261009-menu-faq">
+  <link rel="stylesheet" href="assets/css/site-search.css?v=20261009-faq-filter">
   <link rel="stylesheet" href="assets/css/cookie-consent.css?v=20260820-fix-contrast">
   <script defer src="assets/js/cookie-consent.js?v=20261008-i18n"></script>
 </head>
@@ -481,7 +481,7 @@
   <div class="drawer" id="drawer" data-open="false" aria-hidden="true" inert="">
     <div class="drawer__head">
       <span class="nav__brand"><img src="assets/images/brand/kriativos-on-board-menu.png" alt="KOB — Kriativos On Board"
-          width="300" height="192"></span>
+          width="300" height="192"><span class="guide-drawer__title">Kriativos On Board</span></span>
       <button type="button" class="drawer__close" id="drawerClose" aria-label="Fechar menu">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round">
           <path d="M6 6l12 12M18 6L6 18"></path>
@@ -2520,34 +2520,34 @@
             <p class="lead">Encontre respostas sobre documentos, jogos, refeições e regras. Depois, siga para a próxima
               jogada.</p>
           </div>
-          <label class="faq-search" for="faq-search">
-            <span id="faq-search-label">O que você precisa saber?</span>
-            <span class="faq-search__field">
-              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <circle cx="11" cy="11" r="6.5"></circle>
-                <path d="m16 16 4 4"></path>
-              </svg>
-              <input id="faq-search" type="search" placeholder="Ex.: documentos, bebidas, jogos…" autocomplete="off"
-                aria-labelledby="faq-search-label" aria-describedby="faq-search-status">
-              <button type="button" class="faq-search__spotlight" data-site-search-open data-site-search-kbd
-                aria-label="Buscar no site inteiro">⌘ K</button>
-            </span>
-            <small id="faq-search-status" aria-live="polite">34 respostas organizadas por tema</small>
-          </label>
         </header>
         <div class="faq reveal" style="--faq-progress: 0%">
-          <nav class="faq__nav" aria-label="Categorias do FAQ">
-            <span class="faq__nav-eyebrow">Roteiro de consulta</span>
-            <span class="faq__nav-track" aria-hidden="true"><i></i></span>
-            <a class="faq__nav-item is-active" href="#faq-embarque" data-faq-nav="">Embarque &amp;
-              documentos <span class="faq__nav-count">10</span></a>
-            <a class="faq__nav-item" href="#faq-bordo" data-faq-nav="">A bordo &amp; os jogos <span
-                class="faq__nav-count">9</span></a>
-            <a class="faq__nav-item" href="#faq-comida" data-faq-nav="">Comida, bebida &amp; cabine <span
-                class="faq__nav-count">10</span></a>
-            <a class="faq__nav-item" href="#faq-regras" data-faq-nav="">Seguro, saúde &amp; regras <span
-                class="faq__nav-count">5</span></a>
-          </nav>
+          <div class="faq__rail">
+            <label class="faq-search faq-search--compact" for="faq-search">
+              <span class="faq-search__label" id="faq-search-label">O que você precisa saber?</span>
+              <span class="faq-search__field">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <circle cx="11" cy="11" r="6.5"></circle>
+                  <path d="m16 16 4 4"></path>
+                </svg>
+                <input id="faq-search" type="search" placeholder="Filtrar perguntas…" autocomplete="off"
+                  aria-labelledby="faq-search-label" aria-describedby="faq-search-status">
+              </span>
+              <small id="faq-search-status" aria-live="polite">34 respostas organizadas por tema</small>
+            </label>
+            <nav class="faq__nav" aria-label="Categorias do FAQ">
+              <span class="faq__nav-eyebrow">Roteiro de consulta</span>
+              <span class="faq__nav-track" aria-hidden="true"><i></i></span>
+              <a class="faq__nav-item is-active" href="#faq-embarque" data-faq-nav="">Embarque &amp;
+                documentos <span class="faq__nav-count">10</span></a>
+              <a class="faq__nav-item" href="#faq-bordo" data-faq-nav="">A bordo &amp; os jogos <span
+                  class="faq__nav-count">9</span></a>
+              <a class="faq__nav-item" href="#faq-comida" data-faq-nav="">Comida, bebida &amp; cabine <span
+                  class="faq__nav-count">10</span></a>
+              <a class="faq__nav-item" href="#faq-regras" data-faq-nav="">Seguro, saúde &amp; regras <span
+                  class="faq__nav-count">5</span></a>
+            </nav>
+          </div>
 
           <div class="faq__panels">
             <div class="faq__panel" id="faq-embarque">

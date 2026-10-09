@@ -25,10 +25,10 @@ for (const locale of locales) {
       await expect(drawer).toHaveAttribute('aria-hidden', 'false');
       await expect(toggle).toHaveAttribute('aria-expanded', 'true');
       await expect(language).toBeVisible();
-      if (surface === 'manual-de-bordo') {
+      {
         await expect(drawer.locator('.nav__brand')).toHaveCSS('opacity', '1');
-        const menuLinks = drawer.locator('.guide-drawer__link:visible');
-        await expect(menuLinks).toHaveCount(7);
+        const menuLinks = drawer.locator(':scope > nav > a:visible');
+        await expect(menuLinks).toHaveCount(surface === 'manual-de-bordo' ? 7 : 3);
         for (const link of await menuLinks.all()) {
           await expect(link).toHaveCSS('text-decoration-line', 'none');
           const box = await link.boundingBox();
@@ -110,6 +110,16 @@ for (const locale of locales) {
     await expect(headerLanguage).toHaveCount(0);
     await page.locator('#navToggle').click();
     await expect(drawerLanguage).toBeVisible();
+    for (const link of await page.locator('#drawer > nav > a').all()) {
+      await expect(link).toHaveCSS('text-decoration-line', 'none');
+      expect((await link.boundingBox()).height).toBeGreaterThanOrEqual(44);
+    }
+    await expect(page.locator('#drawer .drawer__actions > .btn')).toHaveCount(2);
+    for (const button of await page.locator('#drawer .drawer__actions > .btn').all()) {
+      const box = await button.boundingBox();
+      expect(box.height).toBeGreaterThanOrEqual(44);
+      expect(box.width).toBeLessThanOrEqual(375);
+    }
     await expect(drawerLanguage.locator('[aria-current="page"]')).toHaveText(locale.active);
     for (const target of locales) {
       await expect(drawerLanguage.getByText(target.active, { exact: true }))
