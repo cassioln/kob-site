@@ -6134,6 +6134,51 @@
   text-decoration-line: none !important;
 }
 
+/* Give desktop navigation its own row; keep visual and keyboard order aligned. */
+@media (min-width: 1025px) {
+  .guide-header__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 32px;
+    row-gap: 12px;
+    padding-bottom: 8px;
+  }
+
+  .guide-header .site-search-trigger {
+    width: 210px;
+    min-height: 44px;
+    padding-inline: 18px;
+    justify-content: flex-start;
+    gap: 12px;
+  }
+
+  .guide-header .site-search-trigger__kbd {
+    margin-left: auto;
+  }
+
+  .guide-header__nav {
+    grid-column: 1 / -1;
+    width: 100%;
+    margin: 0;
+    padding: 8px 0 0;
+    gap: clamp(8px, 1.5vw, 24px);
+    border-top: 1px solid #dce5ed;
+  }
+
+  .guide-page .guide-header__nav-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 10px 16px;
+    border-radius: 8px;
+  }
+}
+
+.guide-header .site-search-trigger[data-search-compact] {
+  --search-label-padding: 18px;
+}
+
 .guide-header .nav__toggle {
   display: none;
   align-items: center;
