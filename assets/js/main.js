@@ -1486,6 +1486,72 @@ document.documentElement.classList.add('js');
 
   bindSwipeHint(document.querySelector('#embarque .deck__fan'), document.querySelector('[data-deck-swipe-hint]'));
 
+  // O arrasto vertical avança as cartas mobile nos dois sentidos da página.
+  (function deckScrollSync() {
+    var fan = document.querySelector('#embarque .deck__fan');
+    if (!fan) return;
+    var mobile = window.matchMedia('(max-width: 560px)');
+    var motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    var origin = null;
+    var direction = null;
+    var lastY = window.scrollY;
+    var settling = null;
+
+    function stop() {
+      origin = null;
+      direction = null;
+      clearTimeout(settling);
+    }
+
+    document.addEventListener('touchstart', function (event) {
+      stop();
+      if (!mobile.matches || motion.matches || event.touches.length !== 1) return;
+      var touch = event.touches[0];
+      origin = { x: touch.clientX, y: touch.clientY };
+      lastY = window.scrollY;
+    }, { passive: true });
+
+    document.addEventListener('touchmove', function (event) {
+      if (!origin || direction || event.touches.length !== 1) return;
+      var touch = event.touches[0];
+      var dx = Math.abs(touch.clientX - origin.x);
+      var dy = Math.abs(touch.clientY - origin.y);
+      if (Math.max(dx, dy) < 6) return;
+      direction = dy > dx ? 'vertical' : 'horizontal';
+      if (direction === 'horizontal') fan.classList.remove('is-scroll-driven');
+    }, { passive: true });
+
+    document.addEventListener('touchend', function () {
+      origin = null;
+      if (direction === 'vertical') settling = setTimeout(stop, 160);
+      else stop();
+    }, { passive: true });
+    document.addEventListener('touchcancel', stop, { passive: true });
+
+    window.addEventListener('scroll', function () {
+      var delta = Math.abs(window.scrollY - lastY);
+      lastY = window.scrollY;
+      if (direction !== 'vertical' || !mobile.matches || motion.matches || !delta) return;
+      var rect = fan.getBoundingClientRect();
+      if (rect.bottom <= 0 || rect.top >= window.innerHeight) return;
+      fan.classList.add('is-scroll-driven');
+      fan.scrollLeft += delta;
+      clearTimeout(settling);
+      if (!origin) settling = setTimeout(stop, 160);
+    }, { passive: true });
+
+    fan.addEventListener('keydown', function () { stop(); fan.classList.remove('is-scroll-driven'); });
+    fan.addEventListener('wheel', function () { stop(); fan.classList.remove('is-scroll-driven'); }, { passive: true });
+    window.addEventListener('blur', stop);
+    function reset() {
+      stop();
+      fan.classList.remove('is-scroll-driven');
+      if (!mobile.matches) fan.scrollLeft = 0;
+    }
+    mobile.addEventListener('change', reset);
+    motion.addEventListener('change', reset);
+  })();
+
   // ---------- Sliders responsivos dos valores (tablet e celular) ----------
   (function priceSliders() {
     var tracks = Array.prototype.slice.call(document.querySelectorAll('#valores .value-panel .price-grid'));
