@@ -430,7 +430,7 @@ test('Ctrl+K abre com foco num campo do formulário do busão', async ({ page })
 });
 
 // Measures the header row for real: every visible control of the right-hand group ends inside the page,
-// and whatever sits before it in the row (brand, menu links, down to their text) ends before it starts.
+// and whatever shares its vertical band (brand, menu links, down to their text) ends before it starts.
 async function expectHeaderFits(page, container, where) {
   await expect(page.locator(`${container} > .site-search-trigger:first-child`), where).toBeVisible();
   const fit = await page.evaluate(selector => {
@@ -439,8 +439,13 @@ async function expectHeaderFits(page, container, where) {
     const group = document.querySelector(selector);
     const controls = [...group.children].filter(shown);
     const start = Math.min(...controls.map(el => el.getBoundingClientRect().left));
+    const band = group.getBoundingClientRect();
+    const sameBand = el => {
+      const box = el.getBoundingClientRect();
+      return box.bottom > band.top && box.top < band.bottom;
+    };
     const before = [...group.parentElement.children].filter(el => el !== group && shown(el) && el.getBoundingClientRect().left < start)
-      .flatMap(el => [el, ...el.querySelectorAll('*')]).filter(shown).map(right);
+      .flatMap(el => [el, ...el.querySelectorAll('*')]).filter(el => shown(el) && sameBand(el)).map(right);
     return {
       clientWidth: document.documentElement.clientWidth,
       overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
