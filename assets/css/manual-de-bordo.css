@@ -3431,7 +3431,7 @@
   }
 
   .checklist-sidebar-toggle:hover {
-    background: #f4f8fb;
+    background: var(--ocean-abyss);
     box-shadow: 0 6px 20px rgba(4, 29, 58, .22);
   }
 
