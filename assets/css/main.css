@@ -7137,21 +7137,22 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
     grid-row: span 1;
   }
 
+  /* Paired slots always fit the two-column grid, including portrait photos. */
+  #edicao2025 .edition-constellation>.edition-memory[data-highlight] {
+    grid-column: span 1 !important;
+    grid-row: span 2 !important;
+  }
+
   #edicao2025 .edition-memory[data-highlight][style*="--highlight-slot: 1"] {
-    grid-column: span 2;
-    grid-row: span 2;
+    grid-column: span 2 !important;
+    grid-row: span 2 !important;
   }
 
   #edicao2025 .edition-memory[data-highlight][style*="--highlight-slot: 4"],
   #edicao2025 .edition-memory[data-highlight][style*="--highlight-slot: 5"],
   #edicao2025 .edition-memory[data-highlight][style*="--highlight-slot: 8"] {
-    grid-column: span 2;
-    grid-row: span 1;
-  }
-
-  #edicao2025 .edition-constellation>.edition-memory--portrait[data-highlight] {
-    grid-column: span 1 !important;
-    grid-row: span 2 !important;
+    grid-column: span 2 !important;
+    grid-row: span 1 !important;
   }
 
   .edition-expand {
