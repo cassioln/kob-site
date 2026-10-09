@@ -26,7 +26,7 @@ def mirror_command(mode):
     local = ".github/.deploy-assets" if mode == "assets" else "."
     if not Path(local).is_dir():
         raise ValueError("FTP source directory is missing")
-    options = ["mirror", "--reverse", "--continue", "--dereference"]
+    options = ["mirror", "--reverse", "--continue", "--dereference", "--parallel=3"]
     if mode == "assets":
         options += ["--verbose", "-x", r"^\.git/$"]
     else:

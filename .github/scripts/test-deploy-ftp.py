@@ -24,7 +24,7 @@ with tempfile.TemporaryDirectory(prefix='kob-ftp-check-') as temp:
         assert assets[-2:] == ['.github/.deploy-assets', 'public_html']
         assert site[-2:] == ['.', 'public_html']
         assert '--delete' in site and '--delete-excluded' not in site
-        for flag in ('--reverse', '--continue', '--dereference'):
+        for flag in ('--reverse', '--continue', '--dereference', '--parallel=3'):
             assert flag in assets and flag in site
         patterns = [re.compile(site[i + 1]) for i, value in enumerate(site) if value == '-x']
         protected = [
