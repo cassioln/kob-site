@@ -11909,8 +11909,8 @@ a:focus-visible,
 #drawer :is(.drawer__language, .drawer__home-language) > span { color: var(--drawer-muted); }
 #drawer .lang-switch { background: var(--drawer-head); border-color: var(--drawer-border); }
 #drawer :is(.lang-switch__btn, .lang-switch__item) { color: #fff; background: transparent; }
-#drawer :is(.lang-switch__btn, .lang-switch__item):is(:hover, :focus-visible) { color: #fff; background: var(--drawer-hover); }
-#drawer :is(.lang-switch__btn, .lang-switch__item).is-active { color: var(--drawer-head); background: var(--drawer-accent); }
+#drawer :is(.lang-switch__btn, .lang-switch__item):is(:hover, :focus-visible) { color: #fff !important; background: var(--drawer-hover) !important; }
+#drawer :is(.lang-switch__btn, .lang-switch__item).is-active { color: var(--drawer-head) !important; background: var(--drawer-accent) !important; }
 #drawer .lang-switch__sep { color: var(--drawer-muted); }
 #drawer .drawer__actions { border-top: 1px dashed var(--drawer-border); }
 #drawer :is(.header-manual-link, .guide-drawer__action, .drawer__action-link) {
