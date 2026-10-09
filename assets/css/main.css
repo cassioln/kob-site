@@ -10063,6 +10063,30 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
     scroll-snap-type: none;
   }
 
+  .deck--cards.has-pinned-deck {
+    --deck-pinned-card-width: min(76vw, 282px, calc((100svh - 68px) * 720 / 1098));
+    overflow: clip;
+  }
+
+  .has-pinned-deck .deck__pin-track {
+    margin-top: 24px;
+  }
+
+  .has-pinned-deck .deck__pin-frame {
+    position: sticky;
+  }
+
+  .has-pinned-deck .deck__fan {
+    margin-top: 0;
+    min-height: calc(var(--deck-pinned-card-width) * 1098 / 720 + 36px);
+  }
+
+  .has-pinned-deck .deck__card {
+    flex-basis: var(--deck-pinned-card-width);
+    width: var(--deck-pinned-card-width);
+  }
+
+
   .deck__fan::before {
     display: none;
   }

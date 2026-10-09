@@ -1486,83 +1486,103 @@ document.documentElement.classList.add('js');
 
   bindSwipeHint(document.querySelector('#embarque .deck__fan'), document.querySelector('[data-deck-swipe-hint]'));
 
-  // O arrasto vertical avança as cartas mobile nos dois sentidos da página.
+  // No mobile, a faixa fica fixa enquanto o scroll percorre as cartas.
   (function deckScrollSync() {
     var fan = document.querySelector('#embarque .deck__fan');
     if (!fan) return;
+    var section = fan.closest('.deck--cards');
     var mobile = window.matchMedia('(max-width: 560px)');
     var motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    var track = document.createElement('div');
+    var frame = document.createElement('div');
+    track.className = 'deck__pin-track';
+    frame.className = 'deck__pin-frame';
+    fan.before(track);
+    track.appendChild(frame);
+    frame.appendChild(fan);
+    var enabled = false;
+    var distance = 0;
+    var top = 0;
     var origin = null;
     var direction = null;
-    var lastY = window.scrollY;
-    var settling = null;
-    var manualDrag = false;
+    var scheduled = false;
 
-    function stop() {
+    function startY() {
+      return track.getBoundingClientRect().top + window.scrollY - top;
+    }
+    function syncScroll() {
+      scheduled = false;
+      if (enabled) fan.scrollLeft = Math.max(0, Math.min(distance, window.scrollY - startY()));
+    }
+    function scheduleScroll() {
+      if (scheduled) return;
+      scheduled = true;
+      requestAnimationFrame(syncScroll);
+    }
+    function resetGesture() {
       origin = null;
       direction = null;
-      clearTimeout(settling);
-      if (manualDrag) fan.classList.remove('is-scroll-driven');
-      manualDrag = false;
+      if (!enabled) fan.classList.remove('is-scroll-driven');
+    }
+    function measure() {
+      enabled = mobile.matches && !motion.matches;
+      section.classList.toggle('has-pinned-deck', enabled);
+      fan.classList.toggle('is-scroll-driven', enabled);
+      if (!enabled) {
+        track.style.removeProperty('height');
+        frame.style.removeProperty('top');
+        if (!mobile.matches) fan.scrollLeft = 0;
+        return;
+      }
+      distance = Math.max(0, fan.scrollWidth - fan.clientWidth);
+      var height = fan.getBoundingClientRect().height;
+      top = Math.max(16, (window.innerHeight - height) / 2);
+      track.style.height = (height + distance) + 'px';
+      frame.style.top = top + 'px';
+      syncScroll();
+    }
+    function moveCards(left) {
+      var start = startY();
+      var pinned = enabled && window.scrollY >= start - 1 && window.scrollY <= start + distance + 1;
+      fan.scrollLeft = Math.max(0, Math.min(fan.scrollWidth - fan.clientWidth, left));
+      // Ajustar o progresso dentro da área fixa não desloca as cartas verticalmente.
+      if (pinned) window.scrollTo({ top: start + fan.scrollLeft, behavior: 'instant' });
     }
 
-    document.addEventListener('touchstart', function (event) {
-      stop();
+    fan.addEventListener('touchstart', function (event) {
+      resetGesture();
       if (!mobile.matches || event.touches.length !== 1) return;
       var touch = event.touches[0];
-      origin = { x: touch.clientX, y: touch.clientY, left: fan.scrollLeft, onFan: fan.contains(event.target) };
-      lastY = window.scrollY;
+      origin = { x: touch.clientX, y: touch.clientY, left: fan.scrollLeft };
     }, { passive: true });
-
-    function detectDirection(event) {
-      if (!origin || direction || event.touches.length !== 1) return;
-      var touch = event.touches[0];
-      var dx = Math.abs(touch.clientX - origin.x);
-      var dy = Math.abs(touch.clientY - origin.y);
-      if (Math.max(dx, dy) < 6) return;
-      direction = dy > dx ? 'vertical' : 'horizontal';
-    }
-    document.addEventListener('touchmove', detectDirection, { passive: true });
-
-    // Cancela só o gesto horizontal nas cartas, mantendo o arrasto vertical da página.
     fan.addEventListener('touchmove', function (event) {
-      detectDirection(event);
-      if (!origin || !origin.onFan || direction !== 'horizontal' || event.touches.length !== 1) return;
+      if (!origin || event.touches.length !== 1) return;
+      var touch = event.touches[0];
+      if (!direction) {
+        var dx = Math.abs(touch.clientX - origin.x);
+        var dy = Math.abs(touch.clientY - origin.y);
+        if (Math.max(dx, dy) < 6) return;
+        direction = dy > dx ? 'vertical' : 'horizontal';
+      }
+      if (direction !== 'horizontal') return;
       if (event.cancelable) event.preventDefault();
-      manualDrag = true;
       fan.classList.add('is-scroll-driven');
-      fan.scrollLeft = origin.left + origin.x - event.touches[0].clientX;
+      moveCards(origin.left + origin.x - touch.clientX);
     }, { passive: false });
-
-    document.addEventListener('touchend', function () {
-      origin = null;
-      if (direction === 'vertical') settling = setTimeout(stop, 160);
-      else stop();
-    }, { passive: true });
-    document.addEventListener('touchcancel', stop, { passive: true });
-
-    window.addEventListener('scroll', function () {
-      var delta = Math.abs(window.scrollY - lastY);
-      lastY = window.scrollY;
-      if (direction !== 'vertical' || !mobile.matches || motion.matches || !delta) return;
-      var rect = fan.getBoundingClientRect();
-      if (rect.bottom <= 0 || rect.top >= window.innerHeight) return;
-      fan.classList.add('is-scroll-driven');
-      fan.scrollLeft += delta;
-      clearTimeout(settling);
-      if (!origin) settling = setTimeout(stop, 160);
-    }, { passive: true });
-
-    fan.addEventListener('keydown', function () { stop(); fan.classList.remove('is-scroll-driven'); });
-    fan.addEventListener('wheel', function () { stop(); fan.classList.remove('is-scroll-driven'); }, { passive: true });
-    window.addEventListener('blur', stop);
-    function reset() {
-      stop();
-      fan.classList.remove('is-scroll-driven');
-      if (!mobile.matches) fan.scrollLeft = 0;
-    }
-    mobile.addEventListener('change', reset);
-    motion.addEventListener('change', reset);
+    document.addEventListener('touchend', resetGesture, { passive: true });
+    document.addEventListener('touchcancel', resetGesture, { passive: true });
+    fan.addEventListener('keydown', function (event) {
+      if (!enabled || (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight')) return;
+      event.preventDefault();
+      moveCards(fan.scrollLeft + (event.key === 'ArrowRight' ? 1 : -1) * fan.clientWidth * 0.8);
+    });
+    window.addEventListener('scroll', scheduleScroll, { passive: true });
+    window.addEventListener('resize', measure, { passive: true });
+    window.addEventListener('blur', resetGesture);
+    mobile.addEventListener('change', measure);
+    motion.addEventListener('change', measure);
+    if (typeof ResizeObserver === 'function') new ResizeObserver(measure).observe(fan);
+    measure();
   })();
 
   // ---------- Sliders responsivos dos valores (tablet e celular) ----------
