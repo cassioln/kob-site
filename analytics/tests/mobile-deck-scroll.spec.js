@@ -84,6 +84,8 @@ for (const prefix of ['', 'en/', 'es/']) {
 test('fora da seção e no desktop a página mantém a rolagem habitual', async ({ page }) => {
   const fan = await visitDeck(page);
   await page.locator('#navio').scrollIntoViewIfNeeded();
+  const last = await fan.evaluate(el => el.scrollWidth - el.clientWidth);
+  await expect.poll(() => fan.evaluate(el => el.scrollLeft)).toBe(last);
   const before = await fan.evaluate(el => el.scrollLeft);
   const session = await page.context().newCDPSession(page);
   await session.send('Input.synthesizeScrollGesture', { x: 160, y: 450, yDistance: -100, gestureSourceType: 'touch' });
@@ -183,4 +185,67 @@ test('carta bônus também acompanha o scroll no desktop e respeita movimento re
   await page.evaluate(() => scrollBy({ top: -120, behavior: 'instant' }));
   await page.waitForTimeout(100);
   expect(await bonusState(card)).toEqual(reduced);
+});
+
+async function fanPositions(fan) {
+  return fan.locator('.deck__card').evaluateAll(cards => cards.map(el => {
+    const box = el.getBoundingClientRect();
+    return { x: box.x + box.width / 2, transform: getComputedStyle(el).transform };
+  }));
+}
+
+test.describe('leque sincronizado nas telas maiores', () => {
+  test.use({ viewport: { width: 1440, height: 900 }, isMobile: false, hasTouch: false });
+
+  for (const prefix of ['', 'en/', 'es/']) {
+    test(`${prefix || 'pt'}: abre atrás da carta central até o meio da tela e mantém o hover`, { tag: prefix ? [] : '@smoke' }, async ({ page }) => {
+      const fan = await visitDeck(page, prefix);
+      const start = await fan.evaluate(el => el.parentElement.getBoundingClientRect().top + scrollY + el.parentElement.offsetHeight / 2 - innerHeight);
+      await page.evaluate(y => scrollTo({ top: y, behavior: 'instant' }), start);
+      await page.waitForTimeout(1000);
+      const closed = await fanPositions(fan);
+      for (const card of closed) expect(Math.abs(card.x - closed[2].x)).toBeLessThan(2);
+      await page.evaluate(() => scrollBy({ top: innerHeight / 4, behavior: 'instant' }));
+      await page.waitForTimeout(100);
+      const middle = await fanPositions(fan);
+      expect(middle[0].x).toBeLessThan(closed[0].x - 50);
+      expect(middle[4].x).toBeGreaterThan(closed[4].x + 50);
+      await page.evaluate(() => scrollBy({ top: innerHeight / 4, behavior: 'instant' }));
+      await page.waitForTimeout(200);
+      const open = await fanPositions(fan);
+      expect(open[0].x).toBeLessThan(middle[0].x - 50);
+      expect(open[4].x).toBeGreaterThan(middle[4].x + 50);
+      const frame = await fan.locator('..').boundingBox();
+      expect(frame.y + frame.height / 2).toBeCloseTo(450, 0);
+      const first = fan.locator('.deck__card').first();
+      const beforeHover = await first.boundingBox();
+      await first.hover();
+      await page.waitForTimeout(900);
+      expect((await first.boundingBox()).y).toBeLessThan(beforeHover.y - 30);
+      await page.mouse.move(0, 0);
+      await page.evaluate(y => scrollTo({ top: y, behavior: 'instant' }), start);
+      await page.waitForTimeout(150);
+      const reversed = await fanPositions(fan);
+      for (let i = 0; i < reversed.length; i++) expect(reversed[i].x).toBeCloseTo(closed[i].x, 0);
+    });
+  }
+
+  test('tablet abre o leque sem fixar a página e movimento reduzido mantém as cartas abertas', async ({ page }) => {
+    await page.setViewportSize({ width: 800, height: 900 });
+    const fan = await visitDeck(page);
+    const top = (await fan.boundingBox()).y;
+    await page.evaluate(() => scrollBy({ top: -150, behavior: 'instant' }));
+    await page.waitForTimeout(100);
+    const before = await fanPositions(fan);
+    await page.evaluate(() => scrollBy({ top: 150, behavior: 'instant' }));
+    await page.waitForTimeout(150);
+    expect((await fanPositions(fan))[0].x).toBeLessThan(before[0].x - 30);
+    expect((await fan.boundingBox()).y).toBeCloseTo(top, 0);
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    const reduced = await fanPositions(fan);
+    await page.evaluate(() => scrollBy({ top: -150, behavior: 'instant' }));
+    await page.waitForTimeout(100);
+    expect((await fanPositions(fan)).map(el => el.transform)).toEqual(reduced.map(el => el.transform));
+    expect((await fan.boundingBox()).y).toBeGreaterThan(top + 100);
+  });
 });
