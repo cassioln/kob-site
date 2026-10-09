@@ -74,6 +74,12 @@ if shutil.which('lftp'):
         stage = source / '.github/.deploy-assets'
         (stage / 'assets/css').mkdir(parents=True)
         (stage / 'assets/css/main.css').write_text('new style')
+        # Match the public parent directories present in the repository.
+        (source / 'php').mkdir()
+        (source / 'php/public.php').write_text('public endpoint')
+        (source / 'assets/images').mkdir(parents=True)
+        (source / 'assets/css').mkdir()
+        (source / 'assets/css/main.css').write_text('new style')
         source.joinpath('index.html').write_text('new HTML')
         source.joinpath('.env').write_text('excluded fixture')
         published = remote / 'public_html'
