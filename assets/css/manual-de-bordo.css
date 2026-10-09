@@ -6415,3 +6415,105 @@
 @media (prefers-reduced-motion: reduce) {
   .hero-live-player>.live-chapter-notice:not([hidden]) { transition: none; }
 }
+
+/* ==========================================================================
+   REGRAS DA MSC (#regras-msc): resumo das fontes oficiais em cards por tema,
+   no mesmo visual dos cards de jogos (borda suave, faixa colorida no topo).
+   ========================================================================== */
+.msc-rules__sources {
+  max-width: 70ch;
+  margin: 16px 0 0;
+  padding: 12px 16px;
+  border-left: 4px solid #ffc20e;
+  border-radius: 0 12px 12px 0;
+  background: rgba(2, 132, 199, 0.06);
+  color: #334155;
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.msc-rules__sources a {
+  color: #0369a1;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.msc-rules__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+  gap: clamp(16px, 2.4vw, 28px);
+  margin: 0;
+  padding: 0;
+}
+
+.msc-rules__card {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  padding: 28px 26px 24px;
+  border: 1px solid rgba(8, 57, 101, 0.1);
+  border-radius: 20px;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+  box-shadow:
+    0 2px 4px rgba(4, 29, 58, 0.02),
+    0 10px 24px -4px rgba(4, 29, 58, 0.07);
+  scroll-margin-top: calc(var(--guide-header-height, 57px) + 24px);
+}
+
+/* Faixa no topo, alternando as cores do KOB */
+.msc-rules__card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #0284c7, #38bdf8);
+}
+.msc-rules__card:nth-child(4n + 2)::before { background: linear-gradient(90deg, #71206c, #a835a0); }
+.msc-rules__card:nth-child(4n + 3)::before { background: linear-gradient(90deg, #d97706, #ffc20e); }
+.msc-rules__card:nth-child(4n + 4)::before { background: linear-gradient(90deg, #0f766e, #2dd4bf); }
+
+.msc-rules__card:target {
+  border-color: rgba(255, 194, 14, 0.9);
+  box-shadow: 0 0 0 3px rgba(255, 194, 14, 0.35), 0 10px 24px -4px rgba(4, 29, 58, 0.07);
+}
+
+.msc-rules__title {
+  margin: 0 0 14px;
+  color: #041d3a;
+  font-family: var(--font-display, "Gobold", sans-serif);
+  font-size: clamp(1.2rem, 1.3vw, 1.4rem);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+}
+
+.msc-rules__list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.msc-rules__list li {
+  position: relative;
+  padding-left: 18px;
+  color: #475569;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+.msc-rules__list li::before {
+  content: "";
+  position: absolute;
+  top: 0.62em;
+  left: 2px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #ffc20e;
+}
+

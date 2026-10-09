@@ -28,7 +28,7 @@ for (const locale of locales) {
       {
         await expect(drawer.locator('.nav__brand')).toHaveCSS('opacity', '1');
         const menuLinks = drawer.locator(':scope > nav > a:visible');
-        await expect(menuLinks).toHaveCount(surface === 'manual-de-bordo' ? 6 : 2);
+        await expect(menuLinks).toHaveCount(surface === 'manual-de-bordo' ? 7 : 2); // manual: + Regras MSC
         for (const link of await menuLinks.all()) {
           await expect(link).toHaveCSS('text-decoration-line', 'none');
           const box = await link.boundingBox();

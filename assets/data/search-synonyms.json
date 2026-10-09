@@ -21,7 +21,8 @@
       ["seguro", "seguros"],
       ["proibido", "proibidos", "proibe"],
       ["hotel", "hoteis", "hospedagem"],
-      ["preco", "precos", "valor", "valores", "tarifa", "tarifas"]
+      ["preco", "precos", "valor", "valores", "tarifa", "tarifas"],
+      ["fumar", "fumo", "fumante", "fumantes", "cigarro", "cigarros", "tabaco", "vape", "charuto"]
     ],
     "featured": [
       { "label": "Documentos para embarcar", "page": "manual", "anchor": "#faq-o03" },
@@ -53,7 +54,8 @@
       ["insurance"],
       ["prohibited", "banned", "forbidden", "prohibits"],
       ["hotel", "hotels", "accommodation"],
-      ["price", "prices", "fare", "fares", "rate", "rates"]
+      ["price", "prices", "fare", "fares", "rate", "rates"],
+      ["smoking", "smoke", "cigarette", "cigarettes", "tobacco", "vape", "cigar"]
     ],
     "featured": [
       { "label": "Documents for boarding", "page": "manual", "anchor": "#faq-o03" },
@@ -85,7 +87,8 @@
       ["seguro"],
       ["prohibido", "prohibidos", "prohibe"],
       ["hotel", "hoteles", "alojamiento", "hospedaje"],
-      ["precio", "precios", "valor", "tarifa", "tarifas"]
+      ["precio", "precios", "valor", "tarifa", "tarifas"],
+      ["fumar", "tabaco", "cigarro", "cigarrillo", "cigarrillos", "vape", "fumadores"]
     ],
     "featured": [
       { "label": "Documentos para embarcar", "page": "manual", "anchor": "#faq-o03" },
