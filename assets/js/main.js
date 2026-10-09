@@ -1585,6 +1585,56 @@ document.documentElement.classList.add('js');
     measure();
   })();
 
+  // Nas telas maiores, o leque se abre até o centro da viewport e então libera o hover.
+  (function desktopDeckScroll() {
+    var fan = document.querySelector('#embarque .deck__fan');
+    if (!fan) return;
+    var section = fan.closest('.deck--cards');
+    var frame = fan.parentElement;
+    var wide = window.matchMedia('(min-width: 561px)');
+    var motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    var scheduled = false;
+    var completing = false;
+    var progress = 1;
+
+    function update() {
+      scheduled = false;
+      if (!wide.matches || motion.matches) return;
+      var height = frame.offsetHeight;
+      var center = frame.getBoundingClientRect().top + height / 2;
+      progress = Math.max(0, Math.min(1, (window.innerHeight - center) / (window.innerHeight / 2)));
+      if (progress > 0.999) progress = 1;
+      section.style.setProperty('--deck-open', progress.toFixed(4));
+      if (progress < 1) {
+        section.classList.add('is-scroll-fan');
+      } else if (section.classList.contains('is-scroll-fan') && !completing) {
+        // Pinta a posição final antes de restaurar as transições e o hover originais.
+        completing = true;
+        requestAnimationFrame(function () {
+          completing = false;
+          if (progress === 1) section.classList.remove('is-scroll-fan');
+        });
+      }
+    }
+    function schedule() {
+      if (scheduled || !wide.matches || motion.matches) return;
+      scheduled = true;
+      requestAnimationFrame(update);
+    }
+    function reset() {
+      section.classList.remove('is-scroll-fan');
+      section.style.removeProperty('--deck-open');
+      progress = 1;
+      update();
+    }
+    window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', schedule, { passive: true });
+    window.addEventListener('load', schedule);
+    wide.addEventListener('change', reset);
+    motion.addEventListener('change', reset);
+    reset();
+  })();
+
   // O zoom, a rotação e o reflexo da carta bônus seguem o progresso do scroll.
   (function bonusCardScroll() {
     var card = document.querySelector('#embarque .deck__bonus-card');

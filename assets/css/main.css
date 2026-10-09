@@ -10248,6 +10248,15 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
   }
 }
 
+/* O leque sai de trás da carta central antes de alcançar o centro da tela. */
+@media (min-width: 561px) and (prefers-reduced-motion: no-preference) {
+  .js .deck--cards.is-scroll-fan .deck__card {
+    opacity: 1;
+    transform: translate(calc(-50% + var(--x) * var(--deck-open, 0)), calc(-34px + (var(--y) + 34px) * var(--deck-open, 0))) rotate(calc(var(--r) * var(--deck-open, 0))) scale(var(--card-scale));
+    transition: none;
+  }
+}
+
 /* A carta bônus acompanha a rolagem sem fixar a seção na tela. */
 .js .deck__cta .deck__bonus-card.is-scroll-animated {
   --bonus-base-rotation: -5deg;
