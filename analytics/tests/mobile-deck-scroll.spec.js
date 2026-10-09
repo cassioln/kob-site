@@ -41,8 +41,14 @@ for (const prefix of ['', 'en/', 'es/']) {
     expect(await page.evaluate(() => scrollY)).toBeLessThan(pageAfterDown - 30);
     expect(await fan.evaluate(el => el.scrollLeft)).toBeGreaterThan(afterDown + 30);
     const beforeHorizontal = await fan.evaluate(el => el.scrollLeft);
-    await drag(page, -150, 0);
+    const pageBeforeHorizontal = await page.evaluate(() => scrollY);
+    await drag(page, -150, 80);
     expect(await fan.evaluate(el => el.scrollLeft)).toBeGreaterThan(beforeHorizontal + 30);
+    expect(Math.abs(await page.evaluate(() => scrollY) - pageBeforeHorizontal)).toBeLessThanOrEqual(2);
+    const beforeReverse = await fan.evaluate(el => el.scrollLeft);
+    await drag(page, 150, -80);
+    expect(await fan.evaluate(el => el.scrollLeft)).toBeLessThan(beforeReverse - 30);
+    expect(Math.abs(await page.evaluate(() => scrollY) - pageBeforeHorizontal)).toBeLessThanOrEqual(2);
   });
 }
 
@@ -70,4 +76,8 @@ test('movimento reduzido preserva a rolagem vertical sem avanço automático', a
   await drag(page, 0, -120);
   expect(await page.evaluate(() => scrollY)).toBeGreaterThan(before + 30);
   expect(await fan.evaluate(el => el.scrollLeft)).toBe(0);
+  const beforeHorizontal = await page.evaluate(() => scrollY);
+  await drag(page, -150, 80);
+  expect(await fan.evaluate(el => el.scrollLeft)).toBeGreaterThan(30);
+  expect(Math.abs(await page.evaluate(() => scrollY) - beforeHorizontal)).toBeLessThanOrEqual(2);
 });
