@@ -102,9 +102,7 @@ for (const [platform, label, keys] of [['macOS', '⌘ K', 'Meta+K'], ['Windows',
     for (const trigger of await page.locator('[data-site-search-open]').all()) {
       await expect(trigger).toHaveAttribute('aria-keyshortcuts', keys);
     }
-    // The FAQ chip's visible text is the shortcut, so its name carries it too (WCAG 2.5.3).
-    await expect(page.locator('.faq-search__spotlight')).toHaveText(label);
-    await expect(page.locator('.faq-search__spotlight')).toHaveAccessibleName(`Buscar no site inteiro (${label})`);
+    await expect(page.locator('.faq-search__spotlight')).toHaveCount(0);
   });
 }
 
@@ -383,25 +381,21 @@ const FAQ_BOXES = [
 ];
 
 for (const [path, lang, faqInput, caption] of FAQ_BOXES) {
-  test(`o selo da caixa do FAQ abre a busca global e Ctrl+K não foca mais o FAQ (${path})`, async ({ page }) => {
+  test(`filtro compacto precede as categorias e atalho abre a busca global (${path})`, async ({ page }) => {
     await page.route(/https:\/\/.*youtube(?:-nocookie)?\.com\/.*/, route => route.fulfill({ contentType: 'text/html', body: '<html></html>' }));
     await visit(page, path);
-    const button = page.locator('.faq-search__spotlight');
-    // Read the label only after the module has written the platform shortcut (the HTML default is "⌘ K").
-    await expect(button).toHaveAttribute('aria-keyshortcuts', /\+K$/);
-    const shortcut = await button.textContent();
-    expect(shortcut).toMatch(/^(⌘ K|Ctrl K)$/);
-    await expect(button).toHaveAccessibleName(`${TEXT[lang].faqButton} (${shortcut})`);
-    await button.click();
-    await expect(page.locator('dialog.site-search')).toBeVisible();
-    await page.keyboard.press('Escape');
-    await expect(page.locator('dialog.site-search')).toBeHidden();
+    await expect(page.locator('.faq-search__spotlight')).toHaveCount(0);
+    const ordered = await page.locator(faqInput).evaluate(input => {
+      const rail = input.closest('.faq__rail');
+      return Boolean(rail && rail.querySelector('.faq-search').nextElementSibling?.matches('.faq__nav'));
+    });
+    expect(ordered).toBe(true);
     await page.locator(faqInput).focus();
     await pressShortcut(page);
     await expect(page.locator('.site-search__input')).toBeFocused();
   });
 
-  // The chip sits inside the box's <label>; the filter is named by the question alone.
+  // The visually hidden label preserves the localized accessible name.
   test(`o filtro do FAQ se chama só pela pergunta da caixa (${path})`, async ({ page }) => {
     await page.route(/https:\/\/.*youtube(?:-nocookie)?\.com\/.*/, route => route.fulfill({ contentType: 'text/html', body: '<html></html>' }));
     await visit(page, path);

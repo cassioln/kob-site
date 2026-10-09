@@ -11100,7 +11100,7 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
 
 .faq-manual__head {
   display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(330px, 0.85fr);
+  grid-template-columns: minmax(0, 1fr);
   align-items: end;
   gap: clamp(38px, 7vw, 110px);
   padding-bottom: clamp(44px, 6vw, 74px);
@@ -11133,68 +11133,74 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
 }
 
 .faq-search {
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 24px;
-  color: var(--foam-white);
-  background: var(--ocean-abyss);
-  border-radius: var(--r-lg);
-  box-shadow: 9px 9px 0 rgba(123, 31, 162, 0.18);
+  gap: 6px;
+  margin-bottom: 20px;
+  padding: 0;
+  color: #082f57;
+  background: transparent;
 }
 
-.faq-search>span:first-child {
-  font-size: 0.85rem;
-  font-weight: 800;
+.faq-search__label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .faq-search__field {
-  display: grid;
-  grid-template-columns: 22px 1fr auto;
+  display: flex;
   align-items: center;
-  gap: 11px;
-  min-height: 52px;
-  padding: 4px 14px;
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  border-radius: var(--r-md);
-  background: rgba(255, 255, 255, 0.08);
-  transition: border-color var(--dur-state) var(--ease-quart), background var(--dur-state) var(--ease-quart);
+  gap: 10px;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid #b8c7d5;
+  border-radius: 8px;
+  background: #fff;
+  transition: border-color .18s ease;
 }
 
 .faq-search__field:focus-within {
-  border-color: var(--ocean-cyan);
-  background: rgba(255, 255, 255, 0.12);
-  outline: 2px solid rgba(41, 195, 245, 0.26);
+  border-color: #17648a;
+  outline: 2px solid #17648a;
   outline-offset: 2px;
 }
 
 .faq-search__field svg {
-  width: 22px;
-  stroke: var(--ocean-cyan);
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  stroke: #49647a;
   stroke-width: 1.8;
   stroke-linecap: round;
 }
 
 .faq-search input {
   width: 100%;
-  min-height: 44px;
+  min-height: 42px;
   min-width: 0;
   border: 0;
   outline: 0;
-  color: var(--foam-white);
+  color: #082f57;
   background: transparent;
-  font: inherit;
-  font-size: 0.92rem;
+  font: 400 .875rem/1.4 var(--font-body);
 }
 
-.faq-search input::placeholder {
-  color: rgba(255, 255, 255, 0.7);
+.faq-search input::placeholder { color: #49647a; }
+.faq-search small { min-height: 1.4em; color: #49647a; font-size: .75rem; }
+
+@media (min-width: 901px) {
+  #faq .faq__rail { position: sticky; top: 112px; }
+  #faq .faq__rail .faq__nav { position: relative; top: auto; }
 }
 
-.faq-search small {
-  min-height: 1.4em;
-  color: rgba(255, 255, 255, 0.68);
-  font-size: 0.72rem;
+@media (max-width: 900px) {
+  .faq__rail { display: contents; }
+  .faq-search { margin-bottom: -20px; }
 }
 
 #faq .faq {
@@ -11634,7 +11640,7 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
   }
 
   .faq-search {
-    padding: 20px;
+    padding: 0;
   }
 
   .faq-search__field {
@@ -11692,3 +11698,115 @@ a:focus-visible,
 .route-destination__link:focus-visible {
   text-decoration: none;
 }
+
+/* Shared mobile menu identity across home, Manual and Busão. */
+/* Manual menu: compact identity, quiet navigation and a clear current section. */
+.drawer__head {
+  min-height: 76px;
+  margin-bottom: 20px;
+  gap: 16px;
+}
+
+.drawer__head .nav__brand {
+  opacity: 1;
+  gap: 12px;
+  min-width: 0;
+}
+
+.drawer__head .nav__brand img {
+  width: 86px;
+  height: auto;
+  flex-shrink: 0;
+}
+
+.guide-drawer__title {
+  max-width: 12ch;
+  color: #082f57;
+  font: 700 1rem/1.3 var(--font-body);
+}
+
+.drawer__close {
+  flex-shrink: 0;
+  background: #f1f6fa;
+  border-color: transparent;
+}
+
+.drawer__language {
+  margin-bottom: 18px;
+  padding: 0 0 20px;
+  gap: 8px;
+}
+
+.drawer__language > span {
+  color: #49647a;
+  font-size: .8125rem;
+}
+
+.drawer > nav {
+  gap: 4px;
+}
+
+.drawer > nav > a:not(.btn) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 50px;
+  padding: 12px 14px;
+  border: 0;
+  border-radius: 10px;
+  color: #082f57;
+  font: 600 1rem/1.4 var(--font-body);
+  text-decoration: none;
+  transition: background-color .18s ease, color .18s ease;
+}
+
+.drawer > nav > a:not(.btn)::after {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-top: 1.5px solid currentColor;
+  border-right: 1.5px solid currentColor;
+  transform: rotate(45deg);
+  flex-shrink: 0;
+  opacity: .6;
+}
+
+.drawer > nav > a:not(.btn):is(:hover, :focus-visible, .is-active) {
+  color: #082f57;
+  background: #e7f4fb;
+  text-decoration: none;
+}
+
+.drawer > nav > a:not(.btn).is-active {
+  font-weight: 800;
+}
+
+.drawer :is(a, button):focus-visible {
+  outline: 2px solid #17648a;
+  outline-offset: 3px;
+}
+
+
+@media (max-width: 359px) {
+  .drawer { padding-inline: 16px; }
+  .drawer__head .nav__brand { gap: 8px; }
+  .drawer__head .nav__brand img { width: 72px; }
+}
+
+
+
+.drawer { padding-inline: 20px; background: #fff; }
+.drawer__home-language { margin-bottom: 18px; padding: 0 0 20px; gap: 8px; }
+.drawer__home-language > span { color: #49647a; font-size: .8125rem; }
+.drawer__home-language .lang-switch--mobile { width: 100%; box-sizing: border-box; }
+.drawer__actions { gap: 10px; padding-top: 20px; }
+.drawer__actions > .btn { min-height: 56px; height: auto; padding: 12px 16px; border-radius: 10px; font: 700 .9375rem/1.4 var(--font-body); text-decoration: none; }
+.drawer__actions > .header-manual-link { justify-content: flex-start; gap: 12px; background: #e7f4fb; border-color: #c9dfe9; color: #082f57; }
+.drawer__actions > .header-manual-link:hover { background: #d7edf8; border-color: #b8d7e6; color: #082f57; }
+.drawer__actions .header-manual-link :is(span, strong, svg),
+.drawer__actions > .header-manual-link:hover .header-manual-link__icon { color: #082f57; }
+.drawer__actions .header-manual-link__sub { font-size: .75rem; }
+.drawer__actions .header-manual-link__title { font-size: .9375rem; }
+.drawer > nav > [data-drawer-manual] .btn { margin: 8px 0 0; width: 100%; min-height: 52px; border-radius: 10px; justify-content: flex-start; padding: 12px 14px; background: #e7f4fb; border: 1px solid #c9dfe9; color: #082f57; font: 700 .9375rem/1.4 var(--font-body); text-decoration: none; }
+@media (min-width: 768px) { .drawer { left: auto; width: min(400px, 100vw); box-shadow: -10px 0 35px rgba(4,29,58,.22); border-left: 1px solid rgba(8,47,87,.12); } }

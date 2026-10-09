@@ -167,7 +167,8 @@ test('Controles personalizados substituem os controles do YouTube e navegam entr
   await expect(page.locator('#livePlayPauseBtn')).toHaveAttribute('aria-label', /^Reproduzir:/);
 
   // Clique no container do vídeo aciona o toggle do player
-  await page.locator('#livePlayerContainer').click({ position: { x: 50, y: 50 } });
+  // The two-row sticky header can cover the video's top edge after the controls scroll into view.
+  await page.locator('#livePlayerContainer').click();
   expect(await page.evaluate(() => window.__liveMock.calls.at(-1))).toEqual(['play']);
   await expect(page.locator('#livePlayPauseBtn .live-control-icon path')).toHaveAttribute('d','M9 5v14M15 5v14');
 

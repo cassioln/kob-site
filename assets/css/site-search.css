@@ -226,25 +226,6 @@ html.site-search-open { overflow: hidden; scrollbar-gutter: stable; }
   .site-search[open] .site-search__body { animation: site-search-fade 120ms linear; }
 }
 
-.faq-search__spotlight {
-  padding: 4px 7px;
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  border-radius: 5px;
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.82);
-  font: 600 0.68rem/1 var(--font-body);
-  white-space: nowrap;
-  cursor: pointer;
-}
-.faq-search__spotlight:hover { background: rgba(255, 255, 255, 0.16); color: #fff; }
-.faq-search__spotlight:focus-visible { outline: 3px solid var(--ocean-cyan, #29c3f5); outline-offset: 2px; }
-
-/* Like the <kbd> it replaced (main.css), the chip leaves the FAQ field on phones: no ⌘K there,
-   and the home field drops to two columns. The header button still opens the search. */
-@media (max-width: 620px) {
-  .faq-search__spotlight { display: none; }
-}
-
 @media (max-width: 480px) {
   .bus-header .site-search-trigger,
   .guide-header .site-search-trigger { width: 32px; min-height: 32px; border-radius: 7px; }
