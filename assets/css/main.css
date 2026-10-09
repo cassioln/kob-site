@@ -7137,21 +7137,22 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
     grid-row: span 1;
   }
 
+  /* Paired slots always fit the two-column grid, including portrait photos. */
+  #edicao2025 .edition-constellation>.edition-memory[data-highlight] {
+    grid-column: span 1 !important;
+    grid-row: span 2 !important;
+  }
+
   #edicao2025 .edition-memory[data-highlight][style*="--highlight-slot: 1"] {
-    grid-column: span 2;
-    grid-row: span 2;
+    grid-column: span 2 !important;
+    grid-row: span 2 !important;
   }
 
   #edicao2025 .edition-memory[data-highlight][style*="--highlight-slot: 4"],
   #edicao2025 .edition-memory[data-highlight][style*="--highlight-slot: 5"],
   #edicao2025 .edition-memory[data-highlight][style*="--highlight-slot: 8"] {
-    grid-column: span 2;
-    grid-row: span 1;
-  }
-
-  #edicao2025 .edition-constellation>.edition-memory--portrait[data-highlight] {
-    grid-column: span 1 !important;
-    grid-row: span 2 !important;
+    grid-column: span 2 !important;
+    grid-row: span 1 !important;
   }
 
   .edition-expand {
@@ -11810,3 +11811,64 @@ a:focus-visible,
 .drawer__actions .header-manual-link__title { font-size: .9375rem; }
 .drawer > nav > [data-drawer-manual] .btn { margin: 8px 0 0; width: 100%; min-height: 52px; border-radius: 10px; justify-content: flex-start; padding: 12px 14px; background: #e7f4fb; border: 1px solid #c9dfe9; color: #082f57; font: 700 .9375rem/1.4 var(--font-body); text-decoration: none; }
 @media (min-width: 768px) { .drawer { left: auto; width: min(400px, 100vw); box-shadow: -10px 0 35px rgba(4,29,58,.22); border-left: 1px solid rgba(8,47,87,.12); } }
+
+/* Home hero: search starts at the left; language and menu stay on the right. */
+.nav[data-scrolled="false"] .nav__right { display: contents; }
+.nav[data-scrolled="false"] .nav__right > .site-search-trigger {
+  order: -1;
+  margin-right: auto;
+  flex-shrink: 0;
+}
+@media (max-width: 1320px) {
+  .nav[data-scrolled="false"] { gap: 8px; }
+}
+
+/* Guide and charter: social links and credits share the home footer identity. */
+.footer.footer--with-social .footer-social { margin-bottom: 0; border-bottom: 0; }
+.footer.footer--with-social .footer__legal {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px 24px !important;
+  align-items: center !important;
+}
+.footer.footer--with-social .footer__legal-copy { display: flex; flex-wrap: wrap; gap: 4px 12px; min-width: 0; }
+.footer.footer--with-social .footer__legal .ksio-powered-line {
+  width: auto !important;
+  margin: 0 !important;
+  font-size: 1rem !important;
+  letter-spacing: 0 !important;
+  white-space: nowrap;
+}
+.footer.footer--with-social .footer__legal .ksio-powered-line a { font-size: 1.2rem !important; }
+@media (max-width: 560px) {
+  .footer.footer--with-social .footer__legal { grid-template-columns: minmax(0, 1fr); }
+  .footer.footer--with-social .footer__legal-copy { flex-direction: column; }
+  .footer.footer--with-social .footer__legal .ksio-powered-line { justify-self: start; text-align: left !important; }
+}
+
+/* All three mobile drawers share the KOB purple navigation palette. */
+#drawer .guide-drawer__title,
+#drawer > nav > a { color: #4d1766; }
+#drawer > nav > a:is(:hover, :focus-visible, .is-active) { color: #6b168e; background: #f5edf9; }
+#drawer > nav > a::after { color: #916aa7; }
+#drawer .drawer__close { color: #4d1766; background: #f5edf9; border-color: #e2d2eb; }
+#drawer .drawer__close svg { stroke: currentColor; }
+#drawer .drawer__close:is(:hover, :focus-visible) { color: #fff; background: #7b1fa2; border-color: #7b1fa2; }
+#drawer :is(.drawer__language, .drawer__home-language) { color: #72547f; border-color: #e7ddeb; }
+#drawer :is(.drawer__language, .drawer__home-language) > span { color: #72547f; }
+#drawer .lang-switch { background: #f8f3fb; border-color: #e2d2eb; }
+#drawer :is(.lang-switch__btn, .lang-switch__item) { color: #5c2475; background: transparent; }
+#drawer :is(.lang-switch__btn, .lang-switch__item):is(.is-active, :hover, :focus-visible) { color: #fff; background: #7b1fa2; }
+#drawer .lang-switch__sep { color: #bea5cb; }
+#drawer :is(.header-manual-link, .guide-drawer__action, .drawer__action-link) {
+  color: #5c2475;
+  background: #f4eafa;
+  border-color: #dfc9eb;
+}
+#drawer :is(.header-manual-link, .guide-drawer__action, .drawer__action-link):is(:hover, :focus-visible) {
+  color: #4d1766;
+  background: #ecdbf5;
+  border-color: #cda9df;
+}
+#drawer .header-manual-link :is(span, strong, svg) { color: inherit; }
+#drawer :is(a, button):focus-visible { outline-color: #7b1fa2; }

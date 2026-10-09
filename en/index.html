@@ -246,8 +246,8 @@
   <!-- Fontes da marca (banner KOB): Gobold Extra2 = display, Chantal = acento manuscrito -->
   <link rel="preload" href="/assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
 
-  <link rel="stylesheet" href="/assets/css/main.css?v=20261009-menu-faq">
-  <link rel="stylesheet" href="/assets/css/site-search.css?v=20261009-faq-filter">
+  <link rel="stylesheet" href="/assets/css/main.css?v=20261009-purple-drawers-shared-search">
+  <link rel="stylesheet" href="/assets/css/site-search.css?v=20261009-shared-search-button">
   <link rel="stylesheet" href="/assets/css/cookie-consent.css?v=20260820-fix-contrast">
   <script defer src="/assets/js/cookie-consent.js?v=20261008-i18n"></script>
 </head>
@@ -404,11 +404,14 @@
       <a class="nav__link--fold1" href="https://manualdebordo.kriativosonboard.com.br/en/">Onboard Guide</a>
     </nav>
     <div class="nav__right">
-      <button type="button" class="site-search-trigger" data-site-search-open aria-haspopup="dialog"
-        aria-keyshortcuts="Meta+K Control+K" aria-label="Search the site">
+      <button type="button" class="site-search-trigger" data-site-search-open data-search-label-long="WHAT ARE YOU LOOKING FOR?" data-search-label-short="SEARCH" aria-haspopup="dialog"
+        aria-keyshortcuts="Meta+K Control+K" aria-label="WHAT ARE YOU LOOKING FOR? — Search the site">
         <svg class="site-search-trigger__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
           stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4 4"></path></svg>
-        <span class="site-search-trigger__label">Search</span>
+        <span class="site-search-trigger__label">
+          <span class="site-search-trigger__label-text">SEARCH</span>
+          <span class="site-search-trigger__description">Search the entire site</span>
+        </span>
         <kbd class="site-search-trigger__kbd" data-site-search-kbd aria-hidden="true">⌘ K</kbd>
       </button>
       <div class="lang-switch" role="group" aria-label="Language selector">
@@ -3003,7 +3006,7 @@
   </a>
 
   <script src="/assets/js/main.js?v=20261008-mobile-language"></script>
-  <script type="module" src="/assets/js/site-search.js?v=20261008-destinos"></script>
+  <script type="module" src="/assets/js/site-search.js?v=20261009-shared-search-button"></script>
 </body>
 
 </html>

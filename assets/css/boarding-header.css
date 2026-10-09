@@ -1,0 +1,299 @@
+/* Shared first row for the Manual de Bordo and Busão dos Kriativos. */
+.bus-header.boarding-header {
+  display: block;
+  padding: 0;
+  z-index: 2100;
+  background: rgba(248, 250, 252, 0.95);
+  box-shadow: 0 4px 20px -2px rgba(4, 29, 58, 0.08), 0 2px 6px -1px rgba(4, 29, 58, 0.04);
+}
+
+.bus-header .guide-header__inner {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1280px;
+  margin-inline: auto;
+  padding: 14px clamp(16px, 4vw, 32px);
+}
+
+.bus-header .guide-header__identity {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.bus-header .guide-header__brand {
+  display: flex;
+  width: auto;
+  flex-shrink: 0;
+}
+
+.bus-header .guide-header__brand img {
+  width: auto;
+  height: clamp(48px, 4.8vw, 64px);
+}
+
+.bus-header .manual-brand-tag {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-left: 20px;
+  margin-left: 20px;
+  border-left: 2px solid rgba(8, 47, 87, 0.18);
+}
+
+.bus-header .manual-brand-tag__main {
+  font: 800 clamp(1.4rem, 2.5vw, 2.15rem)/1.3 var(--font-display);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: #041d3a;
+}
+
+.bus-header .manual-brand-tag__domain {
+  display: inline-block;
+  margin-top: 2px;
+  font: 400 0.74rem/1.6 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  letter-spacing: 0.04em;
+  color: #64748b;
+}
+
+.bus-header .guide-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+}
+
+.bus-header .lang-switch {
+  gap: 0;
+  padding: 2px;
+  border-color: rgba(8, 47, 87, 0.16);
+  border-radius: var(--r-sm);
+  font: 700 0.82rem/1.6 var(--font-body);
+}
+
+.bus-header .lang-switch__item {
+  display: inline-block;
+  min-width: 0;
+  height: auto;
+  padding: 4px 8px;
+  font-size: inherit;
+  letter-spacing: normal;
+  box-shadow: none;
+}
+
+@media (max-width: 820px) {
+  .bus-header .manual-brand-tag__main { font-size: 1.25rem; }
+  .bus-header .guide-header__brand img { height: 44px; }
+}
+
+@media (max-width: 768px) {
+  .bus-header .guide-header__inner { padding-block: 10px; }
+  .bus-header .guide-header__brand img { height: 40px; }
+  .bus-header .manual-brand-tag { margin-left: 10px; padding-left: 10px; }
+  .bus-header .manual-brand-tag__main { font-size: 1rem; letter-spacing: 0; }
+  .bus-header .guide-header__actions { gap: 8px; }
+}
+
+@media (max-width: 520px) {
+  .bus-header .manual-brand-tag { border-left-width: 1.5px; }
+}
+
+@media (max-width: 480px) {
+  .bus-header .guide-header__inner { padding-inline: 12px; }
+  .bus-header .guide-header__brand img { height: 34px; }
+  .bus-header .manual-brand-tag { margin-left: 8px; padding-left: 8px; }
+  .bus-header .manual-brand-tag__main { font-size: 0.85rem; }
+  .bus-header .guide-header__actions { gap: 4px; }
+}
+
+@media (max-width: 380px) {
+  .bus-header .guide-header__inner { padding-inline: 8px; }
+}
+
+.guide-header__top {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 16px;
+}
+
+.guide-header__top .guide-header__identity {
+  width: max-content;
+  justify-self: start;
+}
+
+.guide-header__top .guide-header__actions {
+  justify-self: end;
+}
+
+.boarding-header .site-search-trigger {
+  box-sizing: border-box;
+  width: var(--guide-search-width, auto);
+  height: var(--guide-search-height, 44px);
+  min-height: 44px;
+  padding-inline: 16px;
+  justify-content: flex-start;
+  justify-self: start;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  text-align: left;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #fff;
+  color: var(--ocean-navy);
+  gap: 10px;
+}
+
+.boarding-header .site-search-trigger:hover {
+  background: #f0f5fa;
+  border-color: #94a3b8;
+}
+
+.boarding-header .site-search-trigger__label,
+.boarding-header .site-search-trigger[data-search-label="true"] .site-search-trigger__label {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+}
+
+.boarding-header .site-search-trigger__description {
+  display: none;
+  font: 400 0.74rem/1.6 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  letter-spacing: 0.04em;
+  color: #64748b;
+}
+
+.boarding-header .site-search-trigger__kbd {
+  margin: 0;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.boarding-header .site-search-trigger[data-search-expanded="true"] {
+  padding-inline: 18px;
+  gap: 12px;
+}
+
+.boarding-header .site-search-trigger[data-search-expanded="true"] .site-search-trigger__icon {
+  width: 28px;
+  height: 28px;
+}
+
+.boarding-header .site-search-trigger[data-search-expanded="true"] .site-search-trigger__label-text {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  line-height: 1.1;
+}
+
+.boarding-header .site-search-trigger[data-search-expanded="true"] .site-search-trigger__description {
+  display: block;
+}
+
+.boarding-header .site-search-trigger[data-search-expanded="true"] .site-search-trigger__kbd {
+  font-size: 0.8rem;
+  padding: 4px 8px;
+}
+
+.boarding-header .site-search-trigger[data-search-shortcut="false"] .site-search-trigger__kbd,
+.boarding-header .site-search-trigger[data-search-label="false"] .site-search-trigger__label {
+  display: none;
+}
+
+.boarding-header .site-search-trigger[data-search-label="false"] {
+  padding-inline: 0;
+  justify-content: center;
+}
+
+.boarding-header .site-search-trigger[data-search-compact] {
+  --search-label-padding: 12px;
+  width: var(--guide-search-width, var(--search-menu-size));
+  height: var(--search-menu-size);
+  min-height: var(--search-menu-size);
+  justify-content: flex-start;
+}
+
+.boarding-header .site-search-trigger[data-search-compact][data-search-label="false"] {
+  justify-content: center;
+}
+
+@media (min-width: 821px) and (max-width: 1200px) {
+  .guide-header__top .manual-brand-tag__main {
+    font-size: 1.5rem;
+  }
+}
+
+.boarding-header .nav__toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: var(--r-sm, 8px);
+  border: 1px solid rgba(8, 47, 87, 0.16);
+  background: rgba(8, 47, 87, 0.04);
+  color: var(--ocean-navy, #041d3a);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+@media (max-width: 1024px) {
+  .guide-header__navigation {
+    display: none;
+  }
+
+  .guide-header__top .manual-brand-tag__domain {
+    display: none;
+  }
+
+  .boarding-header .site-search-trigger {
+    justify-self: end;
+  }
+
+  .boarding-header .nav__toggle {
+    display: inline-flex;
+  }
+}
+
+@media (max-width: 767px) {
+  .guide-header__top {
+    column-gap: 8px;
+  }
+
+  .boarding-header .site-search-trigger__label {
+    font-size: 0.7rem;
+    letter-spacing: 0.02em;
+  }
+}
+
+.boarding-header .nav__toggle svg {
+  width: 22px;
+  height: 22px;
+  stroke: var(--ocean-navy, #041d3a);
+  stroke-width: 2.2;
+}
+
+.boarding-header .nav__toggle:hover,
+.boarding-header .nav__toggle:focus-visible {
+  background: #082f57;
+  border-color: #082f57;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(4, 29, 58, 0.15);
+}
+
+.boarding-header .nav__toggle:hover svg,
+.boarding-header .nav__toggle:focus-visible svg {
+  stroke: #ffffff;
+}
+
+@media (min-width: 1025px) {
+  .guide-header__top { column-gap: 25px; }
+}

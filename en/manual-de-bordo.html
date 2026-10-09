@@ -45,12 +45,13 @@
     rel="stylesheet">
   <link rel="preload" href="/assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
 
-  <link rel="stylesheet" href="/assets/css/main.css?v=20261009-menu-faq">
-  <link rel="stylesheet" href="/assets/css/site-search.css?v=20261009-faq-filter">
-  <link rel="stylesheet" href="/assets/css/manual-de-bordo.css?v=20261009-header-faq">
+  <link rel="stylesheet" href="/assets/css/main.css?v=20261009-purple-drawers-shared-search">
+  <link rel="stylesheet" href="/assets/css/site-search.css?v=20261009-shared-search-button">
+  <link rel="stylesheet" href="/assets/css/manual-de-bordo.css?v=20261009-shared-boarding-header">
   <link rel="stylesheet" href="/assets/css/footer-sponsors.css?v=20261007-sponsors-marquee">
   <link rel="stylesheet" href="/assets/css/cookie-consent.css?v=20260820-fix-contrast">
-  <link rel="stylesheet" href="/assets/css/mobile-navigation.css?v=20261009-menu">
+  <link rel="stylesheet" href="/assets/css/mobile-navigation.css?v=20261009-shared-boarding-header">
+  <link rel="stylesheet" href="/assets/css/boarding-header.css?v=20261009-shared-boarding-header">
 
   <script defer src="/assets/js/cookie-consent.js?v=20261008-i18n"></script>
   <script defer src="/assets/js/footer-sponsors.js?v=20261007-sponsors-marquee"></script>
@@ -60,7 +61,7 @@
   <script type="module" src="/assets/js/manual-de-bordo-checklist.js?v=20261005-topic-player"></script>
   <script type="module" src="/assets/js/manual-de-bordo-routing.js?v=20261006-manual-domain"></script>
   <script type="module" src="/assets/js/manual-games-carousel.js?v=20261006-manual-carousel"></script>
-  <script type="module" src="/assets/js/site-search.js?v=20261008-destinos"></script>
+  <script type="module" src="/assets/js/site-search.js?v=20261009-shared-search-button"></script>
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -122,53 +123,60 @@
       ]
     }
   </script>
-  <script defer src="/assets/js/mobile-navigation.js?v=20261008-mobile-header-2"></script>
+  <script defer src="/assets/js/mobile-navigation.js?v=20261009-shared-boarding-header"></script>
 </head>
 
 <body class="guide-page">
   <a class="skip-link" href="#main">Skip to main content</a>
 
-  <header class="guide-header">
+  <header class="guide-header boarding-header">
     <div class="guide-container guide-header__inner">
-      <div class="guide-header__identity">
-        <a href="https://kriativosonboard.com.br/en/" class="guide-header__brand"
-          aria-label="Kriativos On Board — Home">
-          <img src="/assets/images/brand/kriativos-on-board-logo.webp" alt="Kriativos On Board 2026" width="2930"
-            height="1796">
-        </a>
-        <div class="manual-brand-tag" aria-label="Official Onboard Manual">
-          <span class="manual-brand-tag__main">Onboard Manual</span>
-          <span class="manual-brand-tag__domain">manualdebordo.kriativosonboard.com.br</span>
+      <div class="guide-header__top">
+        <div class="guide-header__identity">
+          <a href="https://kriativosonboard.com.br/en/" class="guide-header__brand"
+            aria-label="Kriativos On Board — Home">
+            <img src="/assets/images/brand/kriativos-on-board-logo.webp" alt="Kriativos On Board 2026" width="2930"
+              height="1796">
+          </a>
+          <div class="manual-brand-tag" aria-label="Official Onboard Manual">
+            <span class="manual-brand-tag__main">Onboard Manual</span>
+            <span class="manual-brand-tag__domain">manualdebordo.kriativosonboard.com.br</span>
+          </div>
         </div>
-      </div>
-      <div class="guide-header__actions">
-        <button type="button" class="site-search-trigger" data-site-search-open aria-haspopup="dialog"
-          aria-keyshortcuts="Meta+K Control+K" aria-label="Search the site">
+        <button type="button" class="site-search-trigger" data-site-search-open data-search-label-long="WHAT ARE YOU LOOKING FOR?" data-search-label-short="SEARCH" aria-haspopup="dialog"
+          aria-keyshortcuts="Meta+K Control+K" aria-label="WHAT ARE YOU LOOKING FOR? — Search the site">
           <svg class="site-search-trigger__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
             stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="m16 16 4 4"></path></svg>
-          <span class="site-search-trigger__label">Search</span>
+          <span class="site-search-trigger__label">
+            <span class="site-search-trigger__label-text">SEARCH</span>
+            <span class="site-search-trigger__description">Search the entire site</span>
+          </span>
           <kbd class="site-search-trigger__kbd" data-site-search-kbd aria-hidden="true">⌘ K</kbd>
         </button>
-        <nav class="lang-switch" aria-label="Language selector">
-          <a href="https://manualdebordo.kriativosonboard.com.br/" class="lang-switch__item" hreflang="pt-BR" lang="pt-BR">PT</a>
-          <span class="lang-switch__item is-active" aria-current="page">EN</span>
-          <a href="https://manualdebordo.kriativosonboard.com.br/es/" class="lang-switch__item" hreflang="es" lang="es">ES</a>
-        </nav>
-        <button type="button" class="nav__toggle" id="navToggle" aria-label="Open menu" aria-expanded="false"
-          aria-controls="drawer">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round">
-            <path d="M3 6h18M3 12h18M3 18h18"></path>
-          </svg>
-        </button>
+        <div class="guide-header__actions">
+          <nav class="lang-switch" aria-label="Language selector">
+            <a href="https://manualdebordo.kriativosonboard.com.br/" class="lang-switch__item" hreflang="pt-BR" lang="pt-BR">PT</a>
+            <span class="lang-switch__item is-active" aria-current="page">EN</span>
+            <a href="https://manualdebordo.kriativosonboard.com.br/es/" class="lang-switch__item" hreflang="es" lang="es">ES</a>
+          </nav>
+          <button type="button" class="nav__toggle" id="navToggle" aria-label="Open menu" aria-expanded="false"
+            aria-controls="drawer">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round">
+              <path d="M3 6h18M3 12h18M3 18h18"></path>
+            </svg>
+          </button>
+        </div>
       </div>
-      <nav class="guide-header__nav" aria-label="Onboard Manual navigation">
-        <a href="#checklist" data-open-checklist class="guide-header__nav-link">Checklist</a>
-        <a href="#cronograma" class="guide-header__nav-link">Schedule</a>
-        <a href="https://kriativosonboard.com.br/en/onibus.html" target="_blank" rel="noopener noreferrer" class="guide-header__nav-link">Charter</a>
-        <a href="#jogos" class="guide-header__nav-link">Games</a>
-        <a href="#duvidas" class="guide-header__nav-link">FAQ</a>
-        <a href="#contato" class="guide-header__nav-link">Contact</a>
-      </nav>
+      <div class="guide-header__navigation">
+        <nav class="guide-header__nav" aria-label="Onboard Manual navigation">
+          <a href="#checklist" data-open-checklist class="guide-header__nav-link">Checklist</a>
+          <a href="#cronograma" class="guide-header__nav-link">Schedule</a>
+          <a href="#jogos" class="guide-header__nav-link">Gaming and activities</a>
+          <a href="#duvidas" class="guide-header__nav-link">FAQ</a>
+          <a href="#contato" class="guide-header__nav-link">Contact</a>
+          <a href="https://kriativosonboard.com.br/en/onibus.html" target="_blank" rel="noopener noreferrer" class="guide-header__nav-link">Official Charter</a>
+        </nav>
+      </div>
     </div>
   </header>
 
@@ -197,12 +205,19 @@
       <a class="guide-drawer__link" href="#live">Boarding live recording</a>
       <a class="guide-drawer__link" href="#checklist" data-open-checklist>Checklist</a>
       <a class="guide-drawer__link" href="#cronograma">Schedule</a>
-      <a class="guide-drawer__link guide-menu-mobile" href="https://busao.kriativosonboard.com.br/en/">Transportation</a>
-      <a class="guide-drawer__link guide-menu-desktop" href="https://kriativosonboard.com.br/en/onibus.html">Official Charter</a>
-      <a class="guide-drawer__link" href="#jogos">Games</a>
+      <a class="guide-drawer__link" href="#jogos">Gaming and activities</a>
       <a class="guide-drawer__link" href="#duvidas">FAQ</a>
-      <a class="guide-drawer__link" href="#contato">Contact Team</a>
+      <a class="guide-drawer__link" href="#contato">Contact</a>
     </nav>
+    <div class="drawer__actions">
+      <a class="btn guide-drawer__action" href="https://kriativosonboard.com.br/en/onibus.html" target="_blank" rel="noopener noreferrer">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M6 3h12a3 3 0 0 1 3 3v12H3V6a3 3 0 0 1 3-3Z"></path>
+          <path d="M3 10h18M7 15h.01M17 15h.01M7 18v2m10-2v2"></path>
+        </svg>
+        <span>Official Charter</span>
+      </a>
+    </div>
   </div>
 
   <main id="main">
@@ -2021,7 +2036,7 @@
   </aside>
   -->
 
-  <footer class="footer guide-footer" aria-labelledby="footer-guide-nav-title">
+  <footer class="footer guide-footer footer--with-social" aria-labelledby="footer-guide-nav-title">
     <div class="footer__horizon" aria-hidden="true">
       <svg viewBox="0 0 1440 180" preserveAspectRatio="none">
         <path class="footer__route-shadow" pathLength="1"
@@ -2062,6 +2077,62 @@
           <a href="#duvidas">Frequently asked questions</a>
         </nav>
       </div>
+
+      <nav class="footer-social" aria-label="Nerd Kriativa social media">
+          <a class="footer-social__link footer-social__link--instagram"
+            href="https://www.instagram.com/kriativosonboard/" target="_blank" rel="noopener">
+            <span class="footer-social__instrument" aria-hidden="true">
+              <span class="footer-social__orbit"></span>
+              <span class="footer-social__glyph">
+                <svg viewBox="0 0 24 24">
+                  <path
+                    d="M12 2.2c3.2 0 3.6 0 4.9.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s0 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58 0-4.85-.07c-1.17-.05-1.8-.25-2.23-.41a3.7 3.7 0 01-1.38-.9 3.7 3.7 0 01-.9-1.38c-.16-.42-.36-1.06-.41-2.23C2.2 15.58 2.2 15.2 2.2 12s0-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.42 2.2 8.8 2.2 12 2.2zm0 3.65A6.15 6.15 0 1018.15 12 6.15 6.15 0 0012 5.85zm0 10.15A4 4 0 1116 12a4 4 0 01-4 4zm6.4-10.4a1.44 1.44 0 11-1.44-1.44 1.44 1.44 0 011.44 1.44z">
+                  </path>
+                </svg>
+              </span>
+            </span>
+            <span class="footer-social__copy"><strong>Instagram</strong><small>@kriativosonboard</small></span>
+            <svg class="footer-social__arrow" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M7 17 17 7M8 7h9v9"></path>
+            </svg>
+          </a>
+
+          <a class="footer-social__link footer-social__link--facebook" href="https://www.facebook.com/nerdkriativa"
+            target="_blank" rel="noopener">
+            <span class="footer-social__instrument" aria-hidden="true">
+              <span class="footer-social__orbit"></span>
+              <span class="footer-social__glyph">
+                <svg viewBox="0 0 320 512">
+                  <path
+                    d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06H297V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z">
+                  </path>
+                </svg>
+              </span>
+            </span>
+            <span class="footer-social__copy"><strong>Facebook</strong><small>@nerdkriativa</small></span>
+            <svg class="footer-social__arrow" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M7 17 17 7M8 7h9v9"></path>
+            </svg>
+          </a>
+
+          <a class="footer-social__link footer-social__link--youtube" href="https://www.youtube.com/c/NerdKriativa"
+            target="_blank" rel="noopener">
+            <span class="footer-social__instrument" aria-hidden="true">
+              <span class="footer-social__orbit"></span>
+              <span class="footer-social__glyph">
+                <svg viewBox="0 0 24 24">
+                  <path
+                    d="M23.5 6.2a3 3 0 00-2.11-2.12C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.39.53A3 3 0 00.5 6.2 31.3 31.3 0 000 12a31.3 31.3 0 00.5 5.8 3 3 0 002.11 2.12c1.89.53 9.39.53 9.39.53s7.5 0 9.39-.53a3 3 0 002.11-2.12A31.3 31.3 0 0024 12a31.3 31.3 0 00-.5-5.8zM9.6 15.6V8.4l6.2 3.6z">
+                  </path>
+                </svg>
+              </span>
+            </span>
+            <span class="footer-social__copy"><strong>YouTube</strong><small>@NerdKriativa</small></span>
+            <svg class="footer-social__arrow" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M7 17 17 7M8 7h9v9"></path>
+            </svg>
+          </a>
+        </nav>
 
       <section class="footer-sponsors" data-footer-sponsors aria-labelledby="footer-sponsors-title">
         <div class="footer-sponsors__head">
@@ -2133,16 +2204,18 @@
               <span class="lang-switch__item is-active" aria-current="page">EN</span>
               <a href="https://manualdebordo.kriativosonboard.com.br/es/" class="lang-switch__item" hreflang="es" lang="es">ES</a>
             </nav>
-            <div class="ksio-powered-line">
-              Powered by <a href="https://ksio.dev" target="_blank" rel="noopener noreferrer">ksio.dev</a>
-            </div>
           </div>
         </div>
 
         <div class="footer__legal">
+          <div class="footer__legal-copy">
           <span>© 2026 Kriativos On Board. All rights reserved. · MSC Musica November 20–23, 2026.</span>
           <span class="footer__legal-sep" aria-hidden="true">·</span>
           <span>Partner agency: Royal Trip · CNPJ 16.957.402/0001-19</span>
+          </div>
+          <div class="ksio-powered-line">
+              Powered by <a href="https://ksio.dev" target="_blank" rel="noopener noreferrer">ksio.dev</a>
+            </div>
         </div>
       </div>
     </div>
