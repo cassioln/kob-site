@@ -10248,6 +10248,29 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
   }
 }
 
+/* A carta bônus acompanha a rolagem sem fixar a seção na tela. */
+.js .deck__cta .deck__bonus-card.is-scroll-animated {
+  --bonus-base-rotation: -5deg;
+  --bonus-base-lift: -16px;
+  opacity: 1;
+  transform: rotate(calc(var(--bonus-base-rotation) + var(--bonus-turn, 0deg))) translateY(var(--bonus-base-lift)) scale(var(--bonus-scale, 1));
+  transition: box-shadow 260ms var(--ease-quart);
+  transition-delay: 0s;
+}
+
+.js .deck__cta .deck__bonus-card.is-scroll-animated::after {
+  opacity: var(--bonus-reflection-opacity, 0);
+  transform: translateX(var(--bonus-reflection-x, -112%)) skewX(-14deg);
+  transition: none;
+}
+
+@media (max-width: 560px) {
+  .js .deck__cta .deck__bonus-card.is-scroll-animated {
+    --bonus-base-rotation: -3deg;
+    --bonus-base-lift: -10px;
+  }
+}
+
 /* ──────────────────────────────────────────────────────────────────────────
    PRÉ-EMBARQUE — ROTA ATÉ O PORTO + MANUAL DE BORDO
    ────────────────────────────────────────────────────────────────────────── */

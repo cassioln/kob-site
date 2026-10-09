@@ -123,3 +123,64 @@ for (const viewport of [{ width: 320, height: 568 }, { width: 560, height: 320 }
     expect(await fan.evaluate(el => el.scrollLeft)).toBeGreaterThan(90);
   });
 }
+
+async function bonusState(card) {
+  return card.evaluate(el => {
+    const matrix = new DOMMatrixReadOnly(getComputedStyle(el).transform);
+    const reflection = getComputedStyle(el, '::after');
+    return {
+      scale: Math.hypot(matrix.a, matrix.b),
+      angle: Math.atan2(matrix.b, matrix.a) * 180 / Math.PI,
+      reflectionX: new DOMMatrixReadOnly(reflection.transform).m41,
+      reflectionOpacity: Number(reflection.opacity)
+    };
+  });
+}
+
+for (const prefix of ['', 'en/', 'es/']) {
+  test(`${prefix || 'pt'}: zoom, giro e reflexo da carta bônus revertem com o scroll`, { tag: prefix ? [] : '@smoke' }, async ({ page }) => {
+    await visitDeck(page, prefix);
+    const card = page.locator('.deck__bonus-card');
+    await card.evaluate(el => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
+    await page.waitForTimeout(1000);
+    await page.evaluate(() => scrollBy({ top: -160, behavior: 'instant' }));
+    await page.waitForTimeout(100);
+    const initialY = await page.evaluate(() => scrollY);
+    const before = await bonusState(card);
+    const beforeBox = await card.boundingBox();
+    await page.evaluate(() => scrollBy({ top: 160, behavior: 'instant' }));
+    await page.waitForTimeout(100);
+    const middle = await bonusState(card);
+    expect(middle.scale).toBeGreaterThan(before.scale + 0.005);
+    expect(middle.scale).toBeLessThan(1.06);
+    expect(middle.angle).toBeGreaterThan(before.angle + 0.5);
+    expect(middle.reflectionX).toBeGreaterThan(before.reflectionX + 20);
+    expect(middle.reflectionOpacity).toBeGreaterThan(0.5);
+    expect((await card.boundingBox()).y).toBeLessThan(beforeBox.y - 100);
+    await page.evaluate(y => scrollTo({ top: y, behavior: 'instant' }), initialY);
+    await page.waitForTimeout(100);
+    const reversed = await bonusState(card);
+    expect(reversed.scale).toBeCloseTo(before.scale, 3);
+    expect(reversed.angle).toBeCloseTo(before.angle, 2);
+    expect(reversed.reflectionX).toBeCloseTo(before.reflectionX, 1);
+    expect(await card.getAttribute('href')).toBe('#navio');
+  });
+}
+
+test('carta bônus também acompanha o scroll no desktop e respeita movimento reduzido', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await visitDeck(page);
+  const card = page.locator('.deck__bonus-card');
+  await card.evaluate(el => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
+  await page.waitForTimeout(1000);
+  const before = await bonusState(card);
+  await page.evaluate(() => scrollBy({ top: 120, behavior: 'instant' }));
+  await page.waitForTimeout(100);
+  expect((await bonusState(card)).scale).toBeGreaterThan(before.scale + 0.005);
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.waitForTimeout(100);
+  const reduced = await bonusState(card);
+  await page.evaluate(() => scrollBy({ top: -120, behavior: 'instant' }));
+  await page.waitForTimeout(100);
+  expect(await bonusState(card)).toEqual(reduced);
+});

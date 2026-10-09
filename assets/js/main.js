@@ -1585,6 +1585,40 @@ document.documentElement.classList.add('js');
     measure();
   })();
 
+  // O zoom, a rotação e o reflexo da carta bônus seguem o progresso do scroll.
+  (function bonusCardScroll() {
+    var card = document.querySelector('#embarque .deck__bonus-card');
+    if (!card) return;
+    var motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    var scheduled = false;
+
+    function update() {
+      scheduled = false;
+      if (motion.matches) return;
+      var anchor = card.offsetParent || card.parentElement;
+      var center = anchor.getBoundingClientRect().top + card.offsetTop + card.offsetHeight / 2;
+      var progress = Math.max(0, Math.min(1, (window.innerHeight - center) / window.innerHeight));
+      card.style.setProperty('--bonus-scale', (1 + progress * 0.055).toFixed(4));
+      card.style.setProperty('--bonus-turn', (progress * 6).toFixed(3) + 'deg');
+      card.style.setProperty('--bonus-reflection-x', (-112 + progress * 230).toFixed(2) + '%');
+      card.style.setProperty('--bonus-reflection-opacity', (Math.sin(progress * Math.PI) * 0.7).toFixed(3));
+    }
+    function schedule() {
+      if (scheduled || motion.matches) return;
+      scheduled = true;
+      requestAnimationFrame(update);
+    }
+    function syncMotion() {
+      card.classList.toggle('is-scroll-animated', !motion.matches);
+      update();
+    }
+    window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', schedule, { passive: true });
+    window.addEventListener('load', schedule);
+    motion.addEventListener('change', syncMotion);
+    syncMotion();
+  })();
+
   // ---------- Sliders responsivos dos valores (tablet e celular) ----------
   (function priceSliders() {
     var tracks = Array.prototype.slice.call(document.querySelectorAll('#valores .value-panel .price-grid'));
