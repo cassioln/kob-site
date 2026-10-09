@@ -223,7 +223,7 @@ test('destino: nome da página em cima e da seção embaixo, para todo resultado
   assert.deepEqual(destinationFor({ page: 'manual', kind: 'faq', anchor: '#faq-o08' }, 'pt'), { label: 'Manual de Bordo', name: 'Dúvidas' });
   assert.deepEqual(destinationFor({ page: 'bus', kind: 'section', anchor: '#embarque' }, 'pt'), { label: 'Busão Kriativo', name: 'Embarque' });
   assert.deepEqual(destinationFor({ page: 'home', kind: 'section', anchor: '#panel-bebidas' }, 'en'), { label: 'Kriativos On Board', name: 'Pricing' });
-  assert.deepEqual(destinationFor({ page: 'manual', kind: 'section', anchor: '#cronograma-bordo' }, 'es'), { label: 'Guía de a bordo', name: 'Cronograma' });
+  assert.deepEqual(destinationFor({ page: 'manual', kind: 'section', anchor: '#cronograma-bordo' }, 'es'), { label: 'Manual de a bordo', name: 'Cronograma' });
   assert.deepEqual(destinationFor({ page: 'manual', kind: 'live', anchor: '#live-1765', time: '00:29:25' }, 'pt'), { label: 'Live de Embarque', name: '29:25' });
   assert.deepEqual(destinationFor({ page: 'manual', kind: 'live', anchor: '#live-4481', time: '01:14:41' }, 'en'), { label: 'Boarding Live', name: '01:14:41' });
 });

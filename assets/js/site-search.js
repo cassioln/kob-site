@@ -1,4 +1,4 @@
-import { prepareIndex, search, snippetFor, highlightParts, buildResultUrl, destinationFor } from './site-search-engine.js?v=20261008-busca';
+import { prepareIndex, search, snippetFor, highlightParts, buildResultUrl, destinationFor } from './site-search-engine.js?v=20261008-destinos';
 
 const lang = (document.documentElement.lang || 'pt').slice(0, 2).toLowerCase();
 const COPY = {

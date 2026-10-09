@@ -10,7 +10,8 @@ const LOCAL_FILES = { home: '', bus: 'onibus.html', manual: 'manual-de-bordo.htm
 const words = text => normalizeSearch(text).split(' ').filter(Boolean);
 
 // Where a result leads, as the ticket shows it: the page's name on top and the section's short name below
-// (the live shows its minute). Section keys come from the anchor; "Mais procurados" use the same rule.
+// (the live shows its minute). The manual's name is the one its own header shows in each language.
+// Section keys come from the anchor; "Mais procurados" use the same rule.
 const DESTINATIONS = {
   pt: {
     pages: { home: 'Kriativos On Board', bus: 'Busão Kriativo', manual: 'Manual de Bordo' }, live: 'Live de Embarque',
@@ -21,7 +22,7 @@ const DESTINATIONS = {
     }
   },
   en: {
-    pages: { home: 'Kriativos On Board', bus: 'Busão Kriativo', manual: 'Onboard Guide' }, live: 'Boarding Live',
+    pages: { home: 'Kriativos On Board', bus: 'Busão Kriativo', manual: 'Onboard Manual' }, live: 'Boarding Live',
     sections: {
       home: { faq: 'FAQ', navio: 'The Ship', incluso: "What's Included", itinerario: 'Itinerary', valores: 'Pricing', hospedagem: 'Accommodation', parceiros: 'Partners' },
       manual: { faq: 'FAQ', checklist: 'Checklist', cronograma: 'Schedule', jogos: 'Games', contato: 'Contact' },
@@ -29,7 +30,7 @@ const DESTINATIONS = {
     }
   },
   es: {
-    pages: { home: 'Kriativos On Board', bus: 'Busão Kriativo', manual: 'Guía de a bordo' }, live: 'Charla de embarque',
+    pages: { home: 'Kriativos On Board', bus: 'Busão Kriativo', manual: 'Manual de a bordo' }, live: 'Charla de embarque',
     sections: {
       home: { faq: 'Preguntas', navio: 'El barco', incluso: 'Qué incluye', itinerario: 'Itinerario', valores: 'Precios', hospedagem: 'Hospedaje', parceiros: 'Aliados' },
       manual: { faq: 'Dudas', checklist: 'Checklist', cronograma: 'Cronograma', jogos: 'Juegos', contato: 'Contacto' },

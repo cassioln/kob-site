@@ -339,8 +339,8 @@ const PAGES = [
 ];
 const TEXT = {
   pt: { label: 'Buscar no site', placeholder: 'O que você procura?', where: 'Pesquisa no site', faqButton: 'Buscar no site inteiro', pages: /^(Kriativos On Board|Busão Kriativo|Manual de Bordo|Live de Embarque)$/ },
-  en: { label: 'Search the site', placeholder: 'What are you looking for?', where: 'Search the site', faqButton: 'Search the whole site', pages: /^(Kriativos On Board|Busão Kriativo|Onboard Guide|Boarding Live)$/ },
-  es: { label: 'Buscar en el sitio', placeholder: '¿Qué estás buscando?', where: 'Buscar en el sitio', faqButton: 'Buscar en todo el sitio', pages: /^(Kriativos On Board|Busão Kriativo|Guía de a bordo|Charla de embarque)$/ }
+  en: { label: 'Search the site', placeholder: 'What are you looking for?', where: 'Search the site', faqButton: 'Search the whole site', pages: /^(Kriativos On Board|Busão Kriativo|Onboard Manual|Boarding Live)$/ },
+  es: { label: 'Buscar en el sitio', placeholder: '¿Qué estás buscando?', where: 'Buscar en el sitio', faqButton: 'Buscar en todo el sitio', pages: /^(Kriativos On Board|Busão Kriativo|Manual de a bordo|Charla de embarque)$/ }
 };
 
 for (const [path, lang, container] of PAGES) {
