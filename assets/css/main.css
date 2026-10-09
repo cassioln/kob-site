@@ -11822,3 +11822,26 @@ a:focus-visible,
 @media (max-width: 1320px) {
   .nav[data-scrolled="false"] { gap: 8px; }
 }
+
+/* Guide and charter: social links and credits share the home footer identity. */
+.footer.footer--with-social .footer-social { margin-bottom: 0; border-bottom: 0; }
+.footer.footer--with-social .footer__legal {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px 24px !important;
+  align-items: center !important;
+}
+.footer.footer--with-social .footer__legal-copy { display: flex; flex-wrap: wrap; gap: 4px 12px; min-width: 0; }
+.footer.footer--with-social .footer__legal .ksio-powered-line {
+  width: auto !important;
+  margin: 0 !important;
+  font-size: .75rem !important;
+  letter-spacing: 0 !important;
+  white-space: nowrap;
+}
+.footer.footer--with-social .footer__legal .ksio-powered-line a { font-size: .875rem !important; }
+@media (max-width: 560px) {
+  .footer.footer--with-social .footer__legal { grid-template-columns: minmax(0, 1fr); }
+  .footer.footer--with-social .footer__legal-copy { flex-direction: column; }
+  .footer.footer--with-social .footer__legal .ksio-powered-line { justify-self: start; text-align: left !important; }
+}
