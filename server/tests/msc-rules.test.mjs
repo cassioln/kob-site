@@ -7,7 +7,7 @@ const read = file => fs.readFileSync(new URL(`../../${file}`, import.meta.url), 
 const MANUALS = { pt: 'manual-de-bordo.html', en: 'en/manual-de-bordo.html', es: 'es/manual-de-bordo.html' };
 const HOMES = { pt: 'index.html', en: 'en/index.html', es: 'es/index.html' };
 const CARDS = ['bagagem', 'proibidos', 'bebidas', 'fumo', 'menores', 'seguranca', 'convivencia', 'consequencias'];
-const MSC = { bagagem: 'https://www.msccruzeiros.com.br/gerenciar-reserva/antes-de-viajar/bagagem', conduta: 'https://www.msccruzeiros.com.br/-/media/brazil/documentos/codigo-de-conduta-hospedes.pdf' };
+const MSC = { bagagem: 'https://www.msccruzeiros.com.br/gerenciar-reserva/antes-de-viajar/bagagem?utm_source=kriativosonboard', conduta: 'https://www.msccruzeiros.com.br/-/media/brazil/documentos/codigo-de-conduta-hospedes.pdf' };
 
 // The PT page is the reference for the sequence of rule marks (allowed / not allowed / how it works).
 const RULE_MARKS = (() => {
@@ -33,6 +33,9 @@ test('Regras da MSC: mesmo quadro, 8 temas com abas, mesmas regras e fontes ofic
       assert.match(block, new RegExp(`<a href="${url.replace(/[.?]/g, '\\$&')}" target="_blank" rel="noopener noreferrer">`), `${lang}: fonte ${url}`);
     }
     assert.match(block, /<time datetime="2026-10-09">/, `${lang}: data de conferência`);
+    // The legend sits above the board, outside it.
+    const legend = block.indexOf('class="msc-rules__legend"');
+    assert.ok(legend > 0 && legend < block.indexOf('data-msc-rules'), `${lang}: legenda fora do quadro`);
     // Menu, drawer and footer lead to the section; the FAQs on luggage and prohibited items lead to their card.
     assert.equal((html.match(/href="#regras-msc"/g) || []).length, 3, `${lang}: links para a seção`);
     for (const [faq, card] of [['faq-o08', 'bagagem'], ['faq-o10', 'proibidos']]) {
@@ -46,7 +49,7 @@ test('FAQ da home sobre itens proibidos leva à lista oficial da MSC, em nova ja
   for (const [lang, file] of Object.entries(HOMES)) {
     const html = read(file);
     const details = html.slice(html.indexOf('id="faq-h33"'), html.indexOf('</details>', html.indexOf('id="faq-h33"')));
-    assert.match(details, new RegExp(`<a href="${MSC.bagagem}" target="_blank" rel="noopener noreferrer">`), lang);
+    assert.match(details, new RegExp(`<a href="${MSC.bagagem.replace(/[.?]/g, '\\$&')}" target="_blank" rel="noopener noreferrer">`), lang);
     assert.match(details, /class="sr-only"/, `${lang}: aviso de nova janela para leitor de tela`);
   }
 });

@@ -6454,8 +6454,8 @@
   scrollbar-width: none;
 }
 .msc-rules__tabs::-webkit-scrollbar { display: none; }
-/* Celular: as bordas esmaecem para indicar que a faixa de temas rola para os lados. */
-@media (max-width: 639px) {
+/* Celular e tablet: as bordas esmaecem para indicar que a faixa de temas rola para os lados. */
+@media (max-width: 1023px) {
   .msc-rules__tabs {
     -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 18px, #000 calc(100% - 18px), transparent 100%);
     mask-image: linear-gradient(90deg, transparent 0, #000 18px, #000 calc(100% - 18px), transparent 100%);
@@ -6494,14 +6494,14 @@
 /* --- Painel do tema --- */
 .msc-rules__panels {
   position: relative;
-  padding: clamp(22px, 4vw, 44px) clamp(18px, 4vw, 48px) clamp(18px, 3vw, 36px);
+  padding: clamp(16px, 3vw, 28px) clamp(18px, 4vw, 48px) clamp(14px, 2.4vw, 24px);
 }
 
 .msc-rules__legend {
   display: flex;
   flex-wrap: wrap;
   gap: 8px 18px;
-  margin: 0 0 6px;
+  margin: 0 0 14px;
   padding: 0;
   list-style: none;
   color: var(--rules-text);
@@ -6511,12 +6511,10 @@
 .msc-rules__legend-item { display: inline-flex; align-items: center; gap: 8px; }
 .msc-rules__legend-item .msc-rule__mark { width: 20px; height: 20px; }
 .msc-rules__legend-item .msc-rule__mark-icon { width: 13px; height: 13px; }
-/* Sem o script os temas aparecem em sequência e a legenda não tem a quem servir de chave fixa. */
-.msc-rules__board:not(.is-tabbed) .msc-rules__legend { display: none; }
 
 .msc-rules__panel {
   max-width: 72ch;
-  padding-top: 18px;
+  padding-top: 4px;
   scroll-margin-top: calc(var(--guide-header-height, 57px) + 88px);
 }
 .msc-rules__panel + .msc-rules__panel { margin-top: 28px; border-top: 1px solid var(--rules-line); }
@@ -6527,10 +6525,10 @@
 .msc-rules__board.is-tabbed .msc-rules__panel:not([hidden]) { animation: msc-rules-in 0.22s ease-out; }
 
 .msc-rules__panel-title {
-  margin: 0 0 10px;
+  margin: 0 0 6px;
   color: var(--rules-ink);
   font-family: var(--font-display, "Gobold", sans-serif);
-  font-size: clamp(1.7rem, 3.2vw, 2.4rem);
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
   font-weight: 800;
   line-height: 1.05;
   letter-spacing: -0.005em;
@@ -6543,7 +6541,7 @@
   grid-template-columns: 30px minmax(0, 1fr);
   gap: 14px;
   align-items: start;
-  padding: 15px 0;
+  padding: 12px 0;
   border-top: 1px solid var(--rules-line);
 }
 .msc-rule:first-child { border-top: 0; }
@@ -6573,27 +6571,77 @@
 }
 .msc-rules__sources a { color: #0369a1; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
 
+/* Com o script, o quadro tem altura fixa de 560px: o tema ocupa o espaço que sobra e, se as regras não couberem,
+   são divididas em páginas (manual-de-bordo-rules.js mede o que cabe). */
+.msc-rules__board.is-tabbed {
+  display: flex;
+  flex-direction: column;
+  height: 560px;
+}
+.msc-rules__board.is-tabbed .msc-rules__tabs { flex: 0 0 auto; }
+.msc-rules__board.is-tabbed .msc-rules__panels {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+}
+.msc-rules__board.is-tabbed .msc-rules__panel:not([hidden]) {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+}
+.msc-rules__board.is-tabbed .msc-rules__list {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto; /* only if a single rule is taller than the space left (very narrow screens) */
+}
+.msc-rule.is-page-start { border-top: 0; }
+
+.msc-rules__pager {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 4px;
+  padding-top: 10px;
+  border-top: 1px solid var(--rules-line);
+}
+.msc-rules__pager[hidden] { display: none; }
+.msc-rules__page-status { margin: 0; color: var(--rules-text); font-size: 0.85rem; font-weight: 600; }
+.msc-rules__page-buttons { display: flex; gap: 8px; }
+.msc-rules__page-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--rules-line);
+  border-radius: 50%;
+  background: #ffffff;
+  color: var(--rules-ink);
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+.msc-rules__page-btn svg { width: 20px; height: 20px; }
+.msc-rules__page-btn:hover:not(:disabled) { border-color: var(--rules-gold); background: var(--rules-info-bg); }
+.msc-rules__page-btn:focus-visible { outline: 3px solid var(--ocean-cyan, #29c3f5); outline-offset: 2px; }
+.msc-rules__page-btn:disabled { opacity: 0.35; cursor: default; }
+
 @keyframes msc-rules-in {
   from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: none; }
 }
 
-/* Tablet: os oito temas cabem numa grade de quatro colunas acima do painel. */
+/* Tablet: a mesma faixa de chips do celular, para sobrar altura para as regras no quadro de 560px. */
 @media (min-width: 640px) and (max-width: 1023px) {
-  .msc-rules__tabs {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    overflow: visible;
-    padding: 16px;
-  }
-  .msc-rules__tab { justify-content: center; white-space: normal; text-align: center; }
-  .msc-rules__tab-icon { display: none; }
   .msc-rules__panel { scroll-margin-top: calc(var(--guide-header-height, 57px) + 24px); }
 }
 
 /* Desktop: trilho vertical à esquerda, com o tema ativo marcado em dourado. */
 @media (min-width: 1024px) {
   .msc-rules__board.is-tabbed { display: grid; grid-template-columns: minmax(250px, 300px) minmax(0, 1fr); }
+  .msc-rules__board.is-tabbed .msc-rules__tabs { overflow-y: auto; }
   .msc-rules__tabs {
     flex-direction: column;
     gap: 2px;
@@ -6617,8 +6665,8 @@
     box-shadow: inset 3px 0 0 var(--rules-gold);
   }
   .msc-rules__tab[aria-selected="true"] .msc-rules__tab-icon { color: var(--rules-gold); }
-  .msc-rules__panels { padding: 40px 52px 36px; }
-  .msc-rules__legend { justify-content: flex-end; }
+  .msc-rules__panels { padding: 30px 48px 22px; }
+  .msc-rules__legend { justify-content: flex-end; margin-bottom: 16px; }
   .msc-rules__panel { padding-top: 0; scroll-margin-top: calc(var(--guide-header-height, 57px) + 24px); }
 }
 
