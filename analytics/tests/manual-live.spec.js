@@ -573,11 +573,12 @@ for(const [lang,path,home,charter,prefix] of [
   // Wide desktop: horizontal links replace the menu button; the logo leads home.
   await expect(page.locator('#navToggle')).toBeHidden();
   await expect(page.locator('.guide-header__brand')).toHaveAttribute('href',`https://kriativosonboard.com.br${prefix}/`);
-  await expect(page.locator(`.guide-header__nav-link[href="https://kriativosonboard.com.br${prefix}/onibus.html"]`)).toBeVisible();
+  await expect(page.locator(`.guide-header__nav-link[href="https://busao.kriativosonboard.com.br${prefix}/"]`)).toBeVisible();
   await page.setViewportSize({width:1024,height:1000});
   await page.locator('#navToggle').click();
+  await expect(page.locator('#drawer a').filter({hasText:home})).toBeVisible();
   await expect(page.locator('#drawer .guide-drawer__action')).toHaveText(new RegExp(charter));
-  await expect(page.locator('#drawer .guide-drawer__action')).toHaveAttribute('href',`https://kriativosonboard.com.br${prefix}/onibus.html`);
+  await expect(page.locator('#drawer .guide-drawer__action')).toHaveAttribute('href',`https://busao.kriativosonboard.com.br${prefix}/`);
   await expect(page.locator('#drawer .guide-menu-mobile')).toHaveCount(0);
   await page.keyboard.press('Escape');
   await page.setViewportSize({width:1440,height:1000});
@@ -599,7 +600,7 @@ for(const [lang,path,home,charter,prefix] of [
   await expect(page.locator('#liveTotalProgress')).toBeVisible();
   await page.locator('#navToggle').click();
   await expect(page.locator('#drawer .guide-drawer__action')).toBeVisible();
-  await expect(page.locator('#drawer .guide-drawer__action')).toHaveAttribute('href',`https://kriativosonboard.com.br${prefix}/onibus.html`);
+  await expect(page.locator('#drawer .guide-drawer__action')).toHaveAttribute('href',`https://busao.kriativosonboard.com.br${prefix}/`);
   await page.setViewportSize({width:600,height:844});
   await expect(page.locator('.guide-header__home-link')).toHaveCount(0);
  });
