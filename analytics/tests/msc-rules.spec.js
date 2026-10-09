@@ -26,6 +26,30 @@ async function expectOnly(page, topic) {
   await expect(page.locator('.msc-rules__panel:visible')).toHaveCount(1);
 }
 
+// Every rule of the topic is reachable through the pages, each page fits the list area, and the pager says where you are.
+async function expectPagination(page, topic, total) {
+  const pager = panel(page, topic).locator('.msc-rules__pager');
+  await expect(pager).toBeVisible();
+  const status = pager.locator('.msc-rules__page-status');
+  const pages = Number((await status.textContent()).match(/(\d+)\D+(\d+)/)[2]);
+  expect(pages).toBeGreaterThan(1);
+  await expect(pager.locator('button').first()).toBeDisabled();
+  const seen = new Set();
+  for (let i = 1; i <= pages; i++) {
+    await expect(status).toHaveText(new RegExp(`${i}\\D+${pages}`));
+    const fit = await panel(page, topic).evaluate(el => {
+      const list = el.querySelector('.msc-rules__list').getBoundingClientRect();
+      const rows = [...el.querySelectorAll('.msc-rule:not([hidden])')];
+      return { texts: rows.map(r => r.textContent.trim()), clipped: rows.some(r => r.getBoundingClientRect().bottom > list.bottom + 1) };
+    });
+    expect(fit.clipped).toBe(false);
+    fit.texts.forEach(text => seen.add(text));
+    if (i < pages) await pager.locator('button').last().click();
+  }
+  await expect(pager.locator('button').last()).toBeDisabled();
+  expect(seen.size).toBe(total);
+}
+
 // The open topic sits below the sticky guide header, inside the window.
 const belowHeader = (page, topic) => expect.poll(() => page.evaluate(id => {
   const top = document.getElementById(id).getBoundingClientRect().top;
@@ -87,6 +111,15 @@ for (const [path, lang, navLabel, query, fumoTitle, bagagemTitle] of PAGES) {
     await belowHeader(page, 'fumo');
   });
 
+  test(`quadro tem 560px e pagina as regras que não cabem (${lang})`, async ({ page }) => {
+    await visit(page, path);
+    await expect(page.locator('#regras-msc .msc-rules__board > .msc-rules__legend')).toHaveCount(0);
+    await expect(page.locator('#regras-msc > .guide-container > .msc-rules__legend')).toBeVisible();
+    expect(await page.locator('[data-msc-rules]').evaluate(el => el.getBoundingClientRect().height)).toBe(560);
+    await tab(page, 'proibidos').click();
+    await expectPagination(page, 'proibidos', 8);
+  });
+
   for (const width of [375, 768]) {
     test(`quadro cabe a ${width}px: temas em faixa ou grade, sem rolagem da página (${lang})`, async ({ page }) => {
       await visit(page, path, width);
@@ -100,6 +133,9 @@ for (const [path, lang, navLabel, query, fumoTitle, bagagemTitle] of PAGES) {
       for (const box of await page.locator('.msc-rules__tab').evaluateAll(tabs => tabs.map(t => t.getBoundingClientRect().height))) {
         expect(box).toBeGreaterThanOrEqual(44);
       }
+      expect(await page.locator('[data-msc-rules]').evaluate(el => el.getBoundingClientRect().height)).toBe(560);
+      await tab(page, 'bagagem').click();
+      await expectPagination(page, 'bagagem', 7);
     });
   }
 }
