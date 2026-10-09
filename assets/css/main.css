@@ -11810,3 +11810,14 @@ a:focus-visible,
 .drawer__actions .header-manual-link__title { font-size: .9375rem; }
 .drawer > nav > [data-drawer-manual] .btn { margin: 8px 0 0; width: 100%; min-height: 52px; border-radius: 10px; justify-content: flex-start; padding: 12px 14px; background: #e7f4fb; border: 1px solid #c9dfe9; color: #082f57; font: 700 .9375rem/1.4 var(--font-body); text-decoration: none; }
 @media (min-width: 768px) { .drawer { left: auto; width: min(400px, 100vw); box-shadow: -10px 0 35px rgba(4,29,58,.22); border-left: 1px solid rgba(8,47,87,.12); } }
+
+/* Home hero: search starts at the left; language and menu stay on the right. */
+.nav[data-scrolled="false"] .nav__right { display: contents; }
+.nav[data-scrolled="false"] .nav__right > .site-search-trigger {
+  order: -1;
+  margin-right: auto;
+  flex-shrink: 0;
+}
+@media (max-width: 1320px) {
+  .nav[data-scrolled="false"] { gap: 8px; }
+}
