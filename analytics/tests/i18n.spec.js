@@ -530,7 +530,7 @@ for (const [lang, path] of [['pt', '/'], ['en', '/en/'], ['es', '/es/']]) {
         expect(m.y + m.height).toBeLessThan(r.y);
         await reserve.scrollIntoViewIfNeeded();
         const visibleReserve = await reserve.boundingBox();
-        expect(visibleReserve.y + visibleReserve.height).toBeLessThanOrEqual(page.viewportSize().height);
+        expect(visibleReserve.y + visibleReserve.height).toBeLessThanOrEqual(page.viewportSize().height + 1); // sub-pixel rounding
         await page.keyboard.press('Escape');
         await expect(toggle).toBeFocused();
         await expect(drawer).toHaveAttribute('aria-hidden', 'true');
