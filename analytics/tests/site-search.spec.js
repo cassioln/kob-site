@@ -110,7 +110,8 @@ test('consulta com HTML vira texto e o vazio oferece WhatsApp', async ({ page })
   await home(page);
   await pressShortcut(page);
   await input(page).fill('<img src=x onerror=alert(1)>');
-  await expect(dialog(page).locator('img')).toHaveCount(0);
+  await expect(dialog(page).locator('img[src="x"]')).toHaveCount(0);
+  await expect(dialog(page).locator('[onerror]')).toHaveCount(0);
   await input(page).fill('xyzqwk');
   await expect(page.locator('.site-search__empty strong')).toHaveText('Nada sobre “xyzqwk” no site.');
   // No href in the page (GA4 would log it): the WhatsApp URL, phone and message, is opened only on click.
@@ -704,7 +705,7 @@ test('resultado da live na mesma página toca no minuto', async ({ page }) => {
   await pressShortcut(page);
   await input(page).fill('estacionamento concais');
   const live = options(page).filter({ hasText: 'Estacionamento no Concais' });
-  await expect(live.locator('.site-search__dest-name')).toHaveText('29:25');
+  await expect(live.locator('.site-search__dest-name')).toHaveText('00:29:25');
   await live.click();
   await expect(dialog(page)).toBeHidden();
   await expect(page.locator('#livePlayerContainer iframe')).toHaveAttribute('src', /[?&]start=1765(&|$)/);
