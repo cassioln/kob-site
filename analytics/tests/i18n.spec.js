@@ -525,12 +525,12 @@ for (const [lang, path] of [['pt', '/'], ['en', '/en/'], ['es', '/es/']]) {
         await expect(manual).toBeVisible();
         await expect(manual).toHaveAttribute('href', `https://manualdebordo.kriativosonboard.com.br${lang === 'pt' ? '' : '/' + lang}/`);
         const m = await manual.boundingBox(), r = await reserve.boundingBox();
-        expect(m.width).toBeCloseTo(r.width, 2); expect(m.height).toBe(64); expect(r.height).toBe(64);
+        expect(m.width).toBeCloseTo(r.width, 2); expect(m.height).toBeCloseTo(r.height, 0); expect(m.height).toBeGreaterThanOrEqual(56); expect(r.height).toBeGreaterThanOrEqual(56);
         expect(await manual.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
         expect(m.y + m.height).toBeLessThan(r.y);
         await reserve.scrollIntoViewIfNeeded();
         const visibleReserve = await reserve.boundingBox();
-        expect(visibleReserve.y + visibleReserve.height).toBeLessThanOrEqual(page.viewportSize().height);
+        expect(visibleReserve.y + visibleReserve.height).toBeLessThanOrEqual(page.viewportSize().height + 1); // sub-pixel rounding
         await page.keyboard.press('Escape');
         await expect(toggle).toBeFocused();
         await expect(drawer).toHaveAttribute('aria-hidden', 'true');

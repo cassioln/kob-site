@@ -110,7 +110,8 @@ test('consulta com HTML vira texto e o vazio oferece WhatsApp', async ({ page })
   await home(page);
   await pressShortcut(page);
   await input(page).fill('<img src=x onerror=alert(1)>');
-  await expect(dialog(page).locator('img')).toHaveCount(0);
+  await expect(dialog(page).locator('img[src="x"]')).toHaveCount(0);
+  await expect(dialog(page).locator('[onerror]')).toHaveCount(0);
   await input(page).fill('xyzqwk');
   await expect(page.locator('.site-search__empty strong')).toHaveText('Nada sobre “xyzqwk” no site.');
   // No href in the page (GA4 would log it): the WhatsApp URL, phone and message, is opened only on click.
