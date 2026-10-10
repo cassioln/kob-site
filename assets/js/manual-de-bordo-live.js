@@ -1,7 +1,7 @@
-import { CHAPTERS, LIVE_VIDEO_ID, LIVE_DURATION, GROUP_INVITE_URL } from './manual-de-bordo-live-data.js?v=20261008-live-copy';
+import { CHAPTERS, LIVE_VIDEO_ID, LIVE_DURATION, GROUP_INVITE_URL } from './manual-de-bordo-live-data.js?v=20261009-msc-bagagem';
 import { normalizeSearch, matchChapter, highlightParts, excerpt, transcriptFor } from './manual-de-bordo-live-search.js?v=20261007-transcript-i18n';
 
-import { topicAt, topicProgress, seekInTopic, isNoticeDue, isGroupInviteDue, mobileNoticeAt } from './manual-de-bordo-live-timeline.js?v=20261008-live-copy';
+import { topicAt, topicProgress, seekInTopic, isNoticeDue, isGroupInviteDue, mobileNoticeAt } from './manual-de-bordo-live-timeline.js?v=20261009-msc-bagagem';
 import { initLiveGuideHelp } from './manual-de-bordo-live-help.js?v=20261005-mobile-live';
 import { initLiveMarkers } from './manual-de-bordo-live-markers.js?v=20261005-mobile-live';
 import { initLiveControlMarquee, initLiveNoticeMarquee, initLivePulse } from './manual-de-bordo-live-marquee.js?v=20261007-notice-reading-complete';

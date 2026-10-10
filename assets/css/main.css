@@ -10053,12 +10053,40 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
-    touch-action: pan-x;
+    touch-action: pan-x pan-y;
   }
 
   .deck__fan::-webkit-scrollbar {
     display: none;
   }
+
+  .deck__fan.is-scroll-driven {
+    scroll-snap-type: none;
+  }
+
+  .deck--cards.has-pinned-deck {
+    --deck-pinned-card-width: min(76vw, 282px, calc((100svh - 68px) * 720 / 1098));
+    overflow: clip;
+  }
+
+  .has-pinned-deck .deck__pin-track {
+    margin-top: 24px;
+  }
+
+  .has-pinned-deck .deck__pin-frame {
+    position: sticky;
+  }
+
+  .has-pinned-deck .deck__fan {
+    margin-top: 0;
+    min-height: calc(var(--deck-pinned-card-width) * 1098 / 720 + 36px);
+  }
+
+  .has-pinned-deck .deck__card {
+    flex-basis: var(--deck-pinned-card-width);
+    width: var(--deck-pinned-card-width);
+  }
+
 
   .deck__fan::before {
     display: none;
@@ -10218,6 +10246,38 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
 @media (prefers-reduced-motion: reduce) and (hover: hover) and (pointer: fine) {
   .deck--cards.is-in .deck__card:hover {
     transform: translate(calc(-50% + var(--x)), calc(var(--y) - 86px)) rotate(0deg) scale(var(--card-hover-scale)) !important;
+  }
+}
+
+/* O leque sai de trás da carta central antes de alcançar o centro da tela. */
+@media (min-width: 561px) and (prefers-reduced-motion: no-preference) {
+  .js .deck--cards.is-scroll-fan .deck__card {
+    opacity: 1;
+    transform: translate(calc(-50% + var(--x) * var(--deck-open, 0)), calc(-34px + (var(--y) + 34px) * var(--deck-open, 0))) rotate(calc(var(--r) * var(--deck-open, 0))) scale(var(--card-scale));
+    transition: none;
+  }
+}
+
+/* A carta bônus acompanha a rolagem sem fixar a seção na tela. */
+.js .deck__cta .deck__bonus-card.is-scroll-animated {
+  --bonus-base-rotation: -5deg;
+  --bonus-base-lift: -16px;
+  opacity: 1;
+  transform: rotate(calc(var(--bonus-base-rotation) + var(--bonus-turn, 0deg))) translateY(var(--bonus-base-lift)) scale(var(--bonus-scale, 1));
+  transition: box-shadow 260ms var(--ease-quart);
+  transition-delay: 0s;
+}
+
+.js .deck__cta .deck__bonus-card.is-scroll-animated::after {
+  opacity: var(--bonus-reflection-opacity, 0);
+  transform: translateX(var(--bonus-reflection-x, -112%)) skewX(-14deg);
+  transition: none;
+}
+
+@media (max-width: 560px) {
+  .js .deck__cta .deck__bonus-card.is-scroll-animated {
+    --bonus-base-rotation: -3deg;
+    --bonus-base-lift: -10px;
   }
 }
 
@@ -11871,29 +11931,60 @@ a:focus-visible,
   .footer.footer--with-social .footer__legal .ksio-powered-line { justify-self: start; text-align: left !important; }
 }
 
-/* All three mobile drawers share the KOB purple navigation palette. */
+/* Mobile menus share the navy surfaces and gold accents of the search ticket. */
+#drawer {
+  --drawer-surface: #0a3a68;
+  --drawer-head: #082f57;
+  --drawer-control: #174a76;
+  --drawer-hover: #205783;
+  --drawer-border: #7196b9;
+  --drawer-muted: #c1d4e5;
+  --drawer-accent: #ffc20e;
+  color-scheme: dark;
+  color: #fff;
+  background: var(--drawer-surface);
+  border-color: #406b95;
+  padding-top: 0;
+  padding-inline: 20px;
+  scrollbar-color: var(--drawer-border) var(--drawer-surface);
+}
+#drawer::selection,
+#drawer ::selection { color: var(--drawer-head); background: var(--drawer-accent); }
+#drawer .drawer__head {
+  min-height: 90px;
+  margin-inline: -20px;
+  padding: max(14px, env(safe-area-inset-top, 14px)) 20px 18px;
+  background: var(--drawer-head);
+  border-bottom: 1px dashed var(--drawer-border);
+}
 #drawer .guide-drawer__title,
-#drawer > nav > a { color: #4d1766; }
-#drawer > nav > a:is(:hover, :focus-visible, .is-active) { color: #6b168e; background: #f5edf9; }
-#drawer > nav > a::after { color: #916aa7; }
-#drawer .drawer__close { color: #4d1766; background: #f5edf9; border-color: #e2d2eb; }
+#drawer > nav > a { color: #fff; }
+#drawer > nav > a:is(:hover, :focus-visible) { color: #fff; background: var(--drawer-hover); }
+#drawer > nav > a.is-active { color: var(--drawer-accent); background: var(--drawer-control); }
+#drawer > nav > a::after { color: var(--drawer-muted); }
+#drawer > nav > a.is-active::after { color: var(--drawer-accent); opacity: 1; }
+#drawer .drawer__close { color: #fff; background: var(--drawer-control); border-color: var(--drawer-border); }
 #drawer .drawer__close svg { stroke: currentColor; }
-#drawer .drawer__close:is(:hover, :focus-visible) { color: #fff; background: #7b1fa2; border-color: #7b1fa2; }
-#drawer :is(.drawer__language, .drawer__home-language) { color: #72547f; border-color: #e7ddeb; }
-#drawer :is(.drawer__language, .drawer__home-language) > span { color: #72547f; }
-#drawer .lang-switch { background: #f8f3fb; border-color: #e2d2eb; }
-#drawer :is(.lang-switch__btn, .lang-switch__item) { color: #5c2475; background: transparent; }
-#drawer :is(.lang-switch__btn, .lang-switch__item):is(.is-active, :hover, :focus-visible) { color: #fff; background: #7b1fa2; }
-#drawer .lang-switch__sep { color: #bea5cb; }
+#drawer .drawer__close:is(:hover, :focus-visible) { color: var(--drawer-head); background: var(--drawer-accent); border-color: var(--drawer-accent); }
+#drawer :is(.drawer__language, .drawer__home-language) { color: var(--drawer-muted); border-color: #406b95; }
+#drawer :is(.drawer__language, .drawer__home-language) > span { color: var(--drawer-muted); }
+#drawer .lang-switch { background: var(--drawer-head); border-color: var(--drawer-border); }
+#drawer :is(.lang-switch__btn, .lang-switch__item) { color: #fff; background: transparent; }
+#drawer :is(.lang-switch__btn, .lang-switch__item):is(:hover, :focus-visible) { color: #fff !important; background: var(--drawer-hover) !important; }
+#drawer :is(.lang-switch__btn, .lang-switch__item).is-active { color: var(--drawer-head) !important; background: var(--drawer-accent) !important; }
+#drawer .lang-switch__sep { color: var(--drawer-muted); }
+#drawer .drawer__actions { border-top: 1px dashed var(--drawer-border); }
 #drawer :is(.header-manual-link, .guide-drawer__action, .drawer__action-link) {
-  color: #5c2475;
-  background: #f4eafa;
-  border-color: #dfc9eb;
+  color: #fff;
+  background: var(--drawer-control);
+  border-color: var(--drawer-border);
 }
 #drawer :is(.header-manual-link, .guide-drawer__action, .drawer__action-link):is(:hover, :focus-visible) {
-  color: #4d1766;
-  background: #ecdbf5;
-  border-color: #cda9df;
+  color: #fff;
+  background: var(--drawer-hover);
+  border-color: var(--drawer-muted);
 }
 #drawer .header-manual-link :is(span, strong, svg) { color: inherit; }
-#drawer :is(a, button):focus-visible { outline-color: #7b1fa2; }
+#drawer .drawer__actions > .btn--primary { color: var(--drawer-head); background: var(--drawer-accent); border-color: var(--drawer-accent); }
+#drawer .drawer__actions > .btn--primary:is(:hover, :focus-visible) { color: var(--drawer-head); background: #ffd34e; border-color: #ffd34e; }
+#drawer :is(a, button):focus-visible { outline-color: var(--drawer-accent); }

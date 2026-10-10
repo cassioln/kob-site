@@ -17,7 +17,7 @@ const DESTINATIONS = {
     pages: { home: 'Kriativos On Board', bus: 'Busão Kriativo', manual: 'Manual de Bordo' }, live: 'Live de Embarque',
     sections: {
       home: { faq: 'Dúvidas', navio: 'O navio', incluso: 'O que inclui', itinerario: 'Itinerário', valores: 'Valores', hospedagem: 'Hospedagem', parceiros: 'Parceiros' },
-      manual: { faq: 'Dúvidas', checklist: 'Checklist', cronograma: 'Cronograma', jogos: 'Jogos', contato: 'Contato' },
+      manual: { faq: 'Dúvidas', checklist: 'Checklist', cronograma: 'Cronograma', jogos: 'Jogos', regras: 'Regras MSC', contato: 'Contato' },
       bus: { main: 'Visão geral', 'como-reservar': 'Como reservar', condicoes: 'Condições', embarque: 'Embarque' }
     }
   },
@@ -25,7 +25,7 @@ const DESTINATIONS = {
     pages: { home: 'Kriativos On Board', bus: 'Busão Kriativo', manual: 'Onboard Manual' }, live: 'Boarding Live',
     sections: {
       home: { faq: 'FAQ', navio: 'The Ship', incluso: "What's Included", itinerario: 'Itinerary', valores: 'Pricing', hospedagem: 'Accommodation', parceiros: 'Partners' },
-      manual: { faq: 'FAQ', checklist: 'Checklist', cronograma: 'Schedule', jogos: 'Games', contato: 'Contact' },
+      manual: { faq: 'FAQ', checklist: 'Checklist', cronograma: 'Schedule', jogos: 'Games', regras: 'MSC Rules', contato: 'Contact' },
       bus: { main: 'Overview', 'como-reservar': 'How to Book', condicoes: 'Conditions', embarque: 'Boarding' }
     }
   },
@@ -33,7 +33,7 @@ const DESTINATIONS = {
     pages: { home: 'Kriativos On Board', bus: 'Busão Kriativo', manual: 'Manual de a bordo' }, live: 'Charla de embarque',
     sections: {
       home: { faq: 'Preguntas', navio: 'El barco', incluso: 'Qué incluye', itinerario: 'Itinerario', valores: 'Precios', hospedagem: 'Hospedaje', parceiros: 'Aliados' },
-      manual: { faq: 'Dudas', checklist: 'Checklist', cronograma: 'Cronograma', jogos: 'Juegos', contato: 'Contacto' },
+      manual: { faq: 'Dudas', checklist: 'Checklist', cronograma: 'Cronograma', jogos: 'Juegos', regras: 'Reglas de MSC', contato: 'Contacto' },
       bus: { main: 'Resumen', 'como-reservar': 'Cómo reservar', condicoes: 'Condiciones', embarque: 'Embarque' }
     }
   }
@@ -45,12 +45,13 @@ export function sectionKey({ anchor = '' } = {}) {
   if (!id) return 'main';
   if (id.startsWith('cronograma')) return 'cronograma'; // a stage of the schedule
   if (id.startsWith('panel-')) return 'valores'; // a price tab (cabins | drinks)
+  if (id.startsWith('regras-')) return 'regras'; // the MSC rules section and its cards
   return id;
 }
 
 export function destinationFor(entry, lang = 'pt') {
   const names = DESTINATIONS[lang] || DESTINATIONS.pt;
-  if (entry.anchor?.startsWith('#live-')) return { label: names.live, name: String(entry.time || '').replace(/^00:/, '') };
+  if (entry.anchor?.startsWith('#live-')) return { label: names.live, name: String(entry.time || '') };
   return { label: names.pages[entry.page] || '', name: names.sections[entry.page]?.[sectionKey(entry)] || '' };
 }
 

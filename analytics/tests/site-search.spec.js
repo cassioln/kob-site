@@ -705,7 +705,7 @@ test('resultado da live na mesma página toca no minuto', async ({ page }) => {
   await pressShortcut(page);
   await input(page).fill('estacionamento concais');
   const live = options(page).filter({ hasText: 'Estacionamento no Concais' });
-  await expect(live.locator('.site-search__dest-name')).toHaveText('29:25');
+  await expect(live.locator('.site-search__dest-name')).toHaveText('00:29:25');
   await live.click();
   await expect(dialog(page)).toBeHidden();
   await expect(page.locator('#livePlayerContainer iframe')).toHaveAttribute('src', /[?&]start=1765(&|$)/);
