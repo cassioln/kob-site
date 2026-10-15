@@ -167,7 +167,7 @@ export const CHAPTERS = [
       "pt": "O ônibus fretado está com vagas esgotadas. Novas reservas encerradas. Já reservou? Confira os horários e as orientações de embarque.",
       "en": "The charter bus is sold out and new bookings are closed. Already booked? Check departure times and boarding instructions.",
       "es": "Las plazas del autobús chárter están agotadas y las nuevas reservas están cerradas. ¿Ya reservaste? Consulta los horarios y las indicaciones de embarque."
-},
+    },
     "faqId": "faq-o12"
   },
   {
