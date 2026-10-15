@@ -4140,3 +4140,51 @@
     transform: none !important;
   }
 }
+
+/* Encerramento das vendas: a informação permanece visível sem JavaScript. */
+.bus-hero__scarcity--sold-out {
+  justify-content: flex-start;
+  gap: clamp(14px, 2vw, 24px);
+  margin: 0;
+  padding: clamp(20px, 2.6vw, 32px);
+  border-radius: 12px;
+  background: #95194f;
+  color: #fff;
+  box-shadow: none;
+}
+.bus-hero__scarcity--sold-out .bus-hero__scarcity-icon {
+  width: clamp(30px, 4vw, 48px);
+  height: clamp(30px, 4vw, 48px);
+  color: inherit;
+}
+.bus-hero__sold-out-copy { flex: 1; min-width: 0; }
+.bus-hero__sold-out-title {
+  display: block;
+  font: 700 clamp(2rem, 4vw, 3.5rem)/1.08 var(--font-display);
+  text-transform: uppercase;
+}
+.bus-hero__sold-out-copy p { margin: 8px 0 0; max-width: 58ch; line-height: 1.5; }
+.bus-hero__sold-out-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 1px solid rgba(255, 255, 255, .65);
+  border-radius: 6px;
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+}
+.bus-hero__sold-out-link:hover { background: rgba(255, 255, 255, .12); color: #fff; }
+.bus-hero__sold-out-link:focus-visible { outline: 3px solid #ffc20e; outline-offset: 4px; }
+.bus-checkout__grid[hidden], .bus-intro[hidden] { display: none !important; }
+.bus-checkout[data-sales-closed="true"] .bus-section-heading { max-width: 760px; margin-inline: auto; }
+@media (max-width: 760px) {
+  .bus-hero__scarcity--sold-out { flex-wrap: wrap; align-items: flex-start; }
+  .bus-hero__sold-out-copy { flex-basis: calc(100% - 70px); }
+  .bus-hero__sold-out-link { margin-left: auto; }
+}
+@media (max-width: 760px) {
+  .bus-hero:has(.bus-hero__scarcity--sold-out) h1 { max-width: none; width: 100%; font-size: clamp(2rem, 8.7vw, 3rem); line-height: 1.05; }
+}

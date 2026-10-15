@@ -1,5 +1,7 @@
 import { randomUUID } from 'node:crypto';
 
+export const BUS_SALES_CLOSED = true;
+
 export const BUS_PRICE_CENTS = 12000;
 export const MAX_PASSENGERS = 100;
 

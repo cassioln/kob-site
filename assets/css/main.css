@@ -12006,3 +12006,20 @@ a:focus-visible,
 #drawer .drawer__actions > .btn--primary { color: var(--drawer-head); background: var(--drawer-accent); border-color: var(--drawer-accent); }
 #drawer .drawer__actions > .btn--primary:is(:hover, :focus-visible) { color: var(--drawer-head); background: #ffd34e; border-color: #ffd34e; }
 #drawer :is(a, button):focus-visible { outline-color: var(--drawer-accent); }
+
+/* Disponibilidade do fretado junto aos links de informação, em todas as páginas. */
+.transport-sold-out {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding: .25em .55em;
+  border-radius: 4px;
+  background: #fff0f6;
+  color: #8c174b;
+  font: 800 .75rem/1.35 var(--font-body);
+  vertical-align: middle;
+  text-transform: none;
+  white-space: nowrap;
+}
+.transport-availability { color: #8c174b; font-weight: 700; }
+.drawer__actions .guide-drawer__action:has(.transport-sold-out) { flex-wrap: wrap; }
