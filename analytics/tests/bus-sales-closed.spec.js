@@ -17,7 +17,7 @@ for (const locale of locales) {
       await expect(page.locator('#bus-sales-status')).toContainText(locale.sold);
       await expect(page.locator('#bus-sales-status')).toBeVisible();
       await expect(page.locator('#bus-form')).toBeHidden();
-      await expect(page.locator('#main')).not.toContainText(/Vagas abertas|Seats Available|Plazas disponibles/i);
+      await expect(page.locator('#main')).not.toContainText(/Vagas abertas|Seats Available|Plazas disponibles|50%/i);
       await expect(page.locator('#primary-name')).toBeDisabled();
       await expect(page.locator('.bus-checkout__grid')).toBeHidden();
       await page.locator('#bus-form').evaluate(form => form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true })));
@@ -26,6 +26,14 @@ for (const locale of locales) {
       await expect(page.locator('#step-heading')).toContainText(locale.summary);
       await expect(page.locator('#bus-form')).toBeHidden();
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      await page.locator('#embarque #meetingMapOpen').click();
+      await expect(page.locator('#meetingMapModal')).toBeVisible();
+      const mapBounds = await page.locator('#meetingMapModal').boundingBox();
+      expect(mapBounds.width).toBeGreaterThan(200);
+      expect(mapBounds.height).toBeGreaterThan(200);
+      await page.locator('#meetingMapClose').click();
+      await expect(page.locator('#meetingMapModal')).toBeHidden();
+      await expect(page.locator('#meetingMapOpen')).toBeFocused();
       for (const file of ['index.html', 'manual-de-bordo.html']) {
         await page.goto(`/${locale.prefix}${file}?lang=${locale.prefix.slice(0, 2) || 'pt'}`);
         const links = page.locator('a[href*="busao.kriativosonboard.com.br"], a[href="https://kriativosonboard.com.br/onibus.html"]');
