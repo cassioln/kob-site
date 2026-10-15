@@ -9,6 +9,8 @@ declare(strict_types=1);
  * nunca aceito do navegador.
  */
 
+const BUS_SALES_CLOSED = true;
+
 const BUS_PRICE_CENTS = 12000;
 const BUS_MAX_PASSENGERS = 100;
 

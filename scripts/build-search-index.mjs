@@ -105,6 +105,11 @@ export function sectionEntries(root, page, configs = SECTIONS[page]) {
         title: textOf(title || node).replace(/\s*:\s*$/, ''), text: clip(textOf(node, { skip: n => n === title }))
       }));
     });
+    const salesNotice = page === 'bus' ? byId(root, 'bus-sales-status') : null;
+    if (salesNotice) {
+      const availability = textOf(findFirst(salesNotice, n => hasClass(n, 'bus-hero__sold-out-title')));
+      if (availability) for (const item of out) item.title += ` · ${availability}`;
+    }
     return out;
   });
 }
@@ -118,7 +123,7 @@ export function liveEntries(chapters, lang) {
     if (!transcript) throw new Error(`live-${chapter.seconds}: falta a transcrição em ${lang}`);
     return entry({
       id: `live-${chapter.seconds}`, page: 'manual', kind: 'live', title,
-      text: [transcript, chapter.notice?.[lang]].filter(Boolean).join(' ').replace(/\s+/g, ' ').trim(),
+      text: [chapter.notice?.[lang], transcript].filter(Boolean).join(' ').replace(/\s+/g, ' ').trim(),
       keywords: chapter.keywords || '', anchor: `#live-${chapter.seconds}`, time: chapter.time
     });
   });

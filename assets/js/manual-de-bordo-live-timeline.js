@@ -1,4 +1,4 @@
-import { CHAPTERS, LIVE_DURATION, GROUP_INVITE_CUES, GROUP_INVITE_DURATION } from './manual-de-bordo-live-data.js?v=20261009-msc-bagagem';
+import { CHAPTERS, LIVE_DURATION, GROUP_INVITE_CUES, GROUP_INVITE_DURATION } from './manual-de-bordo-live-data.js?v=20261015-bus-sold-out';
 
 import { SUPPORT_NOTICES } from './manual-de-bordo-live-support.js?v=20261008-live-copy';
 

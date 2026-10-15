@@ -3,6 +3,8 @@
 
   var form = document.getElementById('bus-form');
   if (!form) return;
+  var checkout = document.getElementById('passageiros');
+  var salesClosed = checkout && checkout.dataset.salesClosed === 'true';
 
   var primaryName = document.getElementById('primary-name');
   var primaryCpf = document.getElementById('primary-cpf');
@@ -248,6 +250,7 @@
 
   var I18N_BUS = {
     pt: {
+      salesClosed: 'As vagas do fretado estão esgotadas. Novas reservas encerradas.',
       passenger: 'passageiro',
       passengers: 'passageiros',
       primaryContact: 'Contato Principal',
@@ -345,6 +348,7 @@
       }
     },
     en: {
+      salesClosed: 'The charter bus is sold out. New bookings are closed.',
       passenger: 'passenger',
       passengers: 'passengers',
       primaryContact: 'Primary Contact',
@@ -442,6 +446,7 @@
       }
     },
     es: {
+      salesClosed: 'Las plazas del autobús chárter están agotadas. Nuevas reservas cerradas.',
       passenger: 'pasajero',
       passengers: 'pasajeros',
       primaryContact: 'Contacto Principal',
@@ -1243,6 +1248,7 @@
     var saved = readCheckoutState();
     if (!saved) return;
 
+    if (salesClosed) checkout.querySelector('.bus-checkout__grid').hidden = false;
     activeRegistrationId = saved.registrationId;
     confirmedSnapshot = saved.snapshot;
     activePayment = saved.payment || null;
@@ -1536,6 +1542,7 @@
 
   async function submitForm(event) {
     event.preventDefault();
+    if (salesClosed) return;
     if (!validateForm()) return;
 
     submit.disabled = true;
@@ -1550,7 +1557,7 @@
         body: JSON.stringify(getPayload())
       });
       var data = await response.json().catch(function () { return {}; });
-      if (!response.ok) throw new Error(data.error || t.validation.submitErrorDefault);
+      if (!response.ok) throw new Error(data.code === 'BUS_SOLD_OUT' ? t.salesClosed : (data.error || t.validation.submitErrorDefault));
       showPayment(data);
     } catch (error) {
       setStatus(error.message || t.validation.submitErrorDefault, true);
@@ -1743,9 +1750,11 @@
     });
   }
 
-  setStep('cadastro');
-  setWizardStep(1);
-  syncGroupModeState();
+  if (!salesClosed) {
+    setStep('cadastro');
+    setWizardStep(1);
+    syncGroupModeState();
+  }
   restoreCheckoutState();
 
   // Hero: Efeito de perspectiva sutil na ilustração do ônibus (Editorial Craft)

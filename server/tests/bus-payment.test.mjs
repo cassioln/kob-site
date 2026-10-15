@@ -250,18 +250,20 @@ test('monta a order Pix com token, idempotência e valor server-side', async () 
   assert.equal(response.qrCodeBase64, 'aGVsbG8=');
 });
 
-test('adaptador HTTP retorna apenas o contrato público do Pix', async () => {
-  const dependencies = fakeDependencies();
+test('vagas esgotadas: adaptador HTTP não cria cadastro nem cobrança', async () => {
+  let touched = false;
+  const forbidden = () => { touched = true; throw new Error('Closed sales must not reach dependencies'); };
   const result = await handleCreatePixRequest({
-    method: 'POST',
-    body: JSON.stringify(basePayload),
-    headers: { 'x-idempotency-key': '00000000-0000-4000-8000-000000000004' },
-    dependencies
+    method: 'POST', body: JSON.stringify(basePayload),
+    dependencies: {
+      db: { createRegistration: forbidden, updateRegistration: forbidden },
+      mercadoPago: { createOrder: forbidden }
+    }
   });
-
-  assert.equal(result.statusCode, 201);
-  assert.equal(result.body.totalAmount, '360.00');
-  assert.equal(result.body.qrCode, '00020126580014br.gov.bcb.pix0136test-code');
+  assert.equal(result.statusCode, 409);
+  assert.equal(result.body.code, 'BUS_SOLD_OUT');
+  assert.equal(touched, false);
+  assert.equal(Object.hasOwn(result.body, 'qrCode'), false);
   assert.equal(Object.hasOwn(result.body, 'cpf'), false);
   assert.equal(Object.hasOwn(result.body, 'email'), false);
 });

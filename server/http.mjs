@@ -4,7 +4,7 @@ import {
   getMercadoPagoOrder,
   MercadoPagoError
 } from './mercadopago.mjs';
-import { createPixOrder, ValidationError } from './bus-payment.mjs';
+import { BUS_SALES_CLOSED, createPixOrder, ValidationError } from './bus-payment.mjs';
 import {
   buildCorsHeaders,
   buildPreflightResponse,
@@ -64,6 +64,10 @@ export async function handleCreatePixRequest({
 
   if (method !== 'POST') {
     return respond({ statusCode: 405, body: { error: 'Método não permitido.' } });
+  }
+
+  if (BUS_SALES_CLOSED) {
+    return respond({ statusCode: 409, body: { code: 'BUS_SOLD_OUT', error: 'As vagas do fretado estão esgotadas. Novas reservas encerradas.' } });
   }
 
   let payload;

@@ -13,6 +13,11 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
     exit;
 }
 
+if (BUS_SALES_CLOSED) {
+    json_response(409, ['code' => 'BUS_SOLD_OUT', 'error' => 'As vagas do fretado estão esgotadas. Novas reservas encerradas.']);
+    exit;
+}
+
 try {
     $payload = read_json_body();
     $data = validate_bus_payload($payload);

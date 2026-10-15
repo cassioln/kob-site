@@ -172,8 +172,8 @@ test('origem permitida recebe Access-Control-Allow-Origin refletido nos endpoint
   }
 
   // Contratos preservados.
-  assert.equal(pix.statusCode, 201);
-  assert.equal(pix.body.totalAmount, '360.00');
+  assert.equal(pix.statusCode, 409);
+  assert.equal(pix.body.code, 'BUS_SOLD_OUT');
   assert.equal(status.statusCode, 200);
   assert.deepEqual(status.body, { status: 'confirmed', statusDetail: 'accredited' });
   assert.equal(proof.statusCode, 201);
@@ -194,7 +194,7 @@ test('origem não permitida NÃO recebe Access-Control-Allow-Origin', async () =
   }
 
   // Sem CORS o navegador bloqueia, mas o contrato HTTP segue idêntico.
-  assert.equal(pix.statusCode, 201);
+  assert.equal(pix.statusCode, 409);
   assert.equal(status.statusCode, 200);
   assert.equal(proof.statusCode, 201);
 });

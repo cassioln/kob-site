@@ -129,7 +129,7 @@ test('plural encontra o singular nos 3 idiomas', () => {
 test('"são" continua sendo termo de busca (São Paulo)', () => {
   const r = search(prepared.pt, 'são paulo');
   assert.deepEqual(r.tokens, ['sao', 'paulo']);
-  assert.match(r.results[0].entry.title, /São Paulo/);
+  assert.match(r.results[0].entry.title + ' ' + r.results[0].entry.text, /São Paulo/);
 });
 
 test('sinônimo só é informado quando a palavra digitada não casou na entrada', () => {

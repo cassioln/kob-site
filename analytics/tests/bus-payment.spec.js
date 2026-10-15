@@ -18,6 +18,20 @@ function fakePixResponse() {
 
 test.use({ trace: 'off', screenshot: 'off', video: 'off' });
 
+// O cadastro foi encerrado publicamente. Esta fixture preserva a cobertura do
+// wizard e do Pix existente, sem reabrir o endpoint real de vendas.
+test.beforeEach(async ({ page }) => {
+  await page.route('**/*onibus.html*', async route => {
+    const response = await route.fetch();
+    const html = (await response.text())
+      .replace('data-sales-closed="true"', 'data-sales-closed="false"')
+      .replace('class="bus-checkout__grid" hidden', 'class="bus-checkout__grid"')
+      .replace('class="bus-form" novalidate hidden inert', 'class="bus-form" novalidate')
+      .replaceAll(' disabled data-sales-disabled', '');
+    await route.fulfill({ response, body: html });
+  });
+});
+
 test('cadastra o grupo, calcula o valor e exibe o Pix', { tag: '@smoke' }, async ({ page }) => {
   let requestBody = null;
   await page.route('**/api/create-pix-order', async (route) => {

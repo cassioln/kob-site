@@ -175,7 +175,7 @@
           "name": "Is there transportation to the port?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Yes! We offer an official round-trip charter bus between Barra Funda (São Paulo), at Rua Tagipuru, near no. 552, and the Port of Santos. Bus 1: meet at 6:00 AM, departure at 6:30 AM (confirmed). Bus 2: meet at 6:40 AM, departure at 7:20 AM, subject to a minimum number of passengers; if the minimum isn't reached, a full refund will be issued via Pix (Brazil's instant payment system). The return from the port on Monday (Nov 23) is scheduled for 10:30 AM."
+            "text": "The charter bus is sold out and new bookings are closed. Yes! We offer an official round-trip charter bus between Barra Funda (São Paulo), at Rua Tagipuru, near no. 552, and the Port of Santos. Bus 1: meet at 6:00 AM, departure at 6:30 AM (confirmed). Bus 2: meet at 6:40 AM, departure at 7:20 AM, subject to a minimum number of passengers; if the minimum isn't reached, a full refund will be issued via Pix (Brazil's instant payment system). The return from the port on Monday (Nov 23) is scheduled for 10:30 AM."
           }
         },
         {
@@ -246,7 +246,7 @@
   <!-- Fontes da marca (banner KOB): Gobold Extra2 = display, Chantal = acento manuscrito -->
   <link rel="preload" href="/assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
 
-  <link rel="stylesheet" href="/assets/css/main.css?v=20261009-hero-cta-size-2">
+  <link rel="stylesheet" href="/assets/css/main.css?v=20261015-bus-sold-out">
   <link rel="stylesheet" href="/assets/css/site-search.css?v=20261009-home-search-folds">
   <link rel="stylesheet" href="/assets/css/cookie-consent.css?v=20260820-fix-contrast">
   <script defer src="/assets/js/cookie-consent.js?v=20261008-i18n"></script>
@@ -2336,7 +2336,7 @@
                 height="654" loading="lazy" decoding="async">
             </figure>
             <div class="route-shuttle__copy">
-              <h3 id="route-shuttle-title">Busão Kriativo</h3>
+              <h3 id="route-shuttle-title">Busão Kriativo <span class="transport-sold-out">Sold out</span></h3>
               <p class="route-shuttle__official">Official KOB Charter Bus!</p>
               <p>Depart São Paulo with fellow gamers and arrive smoothly at the Port of Santos.</p>
               <div class="route-shuttle__schedule">
@@ -2350,7 +2350,7 @@
                   <span class="route-shuttle__schedule-dot" aria-hidden="true"></span>
                   <span class="route-shuttle__schedule-name">Bus 2:</span>
                   <span class="route-shuttle__schedule-time">departure at <strong>07:20 AM</strong></span>
-                  <span class="route-shuttle__schedule-status--open">(Seats Available!)</span>
+                  <span class="route-shuttle__schedule-status--sold">(Sold out)</span>
                 </div>
               </div>
             </div>
@@ -2387,11 +2387,10 @@
               </span>
             </div>
             <a class="route-shuttle__link" href="https://busao.kriativosonboard.com.br/en/">
-              <span>View details & book seats!</span>
+              <span>Check charter bus times and travel information.</span>
               <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path d="M5 12h14M13 6l6 6-6 6"></path>
-              </svg>
-            </a>
+              </svg> <span class="transport-sold-out">Sold out</span></a>
           </article>
 
           <article class="route-stop route-stop--first">
@@ -2551,7 +2550,7 @@
                 </details>
                 <details id="faq-h06">
                   <summary>Is there transportation to the port?</summary>
-                  <div>Yes! We offer an official round-trip charter bus between Barra Funda (São Paulo), at Rua Tagipuru, near no. 552, and the Port of Santos. Bus 1: meet at 6:00 AM, departure at 6:30 AM (confirmed). Bus 2: meet at 6:40 AM, departure at 7:20 AM, subject to a minimum number of passengers; if the minimum isn't reached, a full refund will be issued via Pix (Brazil's instant payment system). The return from the port on Monday (Nov 23) is scheduled for 10:30 AM. <a href="https://busao.kriativosonboard.com.br/en/" target="_blank" rel="noopener">See the charter bus and book your seat.</a></div>
+                  <div><strong>The charter bus is sold out and new bookings are closed.</strong> Yes! We offer an official round-trip charter bus between Barra Funda (São Paulo), at Rua Tagipuru, near no. 552, and the Port of Santos. Bus 1: meet at 6:00 AM, departure at 6:30 AM (confirmed). Bus 2: meet at 6:40 AM, departure at 7:20 AM, subject to a minimum number of passengers; if the minimum isn't reached, a full refund will be issued via Pix (Brazil's instant payment system). The return from the port on Monday (Nov 23) is scheduled for 10:30 AM. <a href="https://busao.kriativosonboard.com.br/en/" target="_blank" rel="noopener">Check charter bus times and travel information. <span class="transport-sold-out">Sold out</span></a></div>
                 </details>
                 <details id="faq-h07">
                   <summary>How do I handle parking?</summary>
@@ -2958,7 +2957,7 @@
             data-analytics-intent="reservation_support"
             href="https://api.whatsapp.com/send?phone=5513981580498&amp;text=Hello%2C%20Royal%20Trip%21%20I%20would%20like%20to%20book%20my%20cabin%20for%20Kriativos%20On%20Board%202026.%20Can%20you%20help%20me%3F"
             target="_blank" rel="noopener">Royal Trip WhatsApp</a>
-          <a href="https://busao.kriativosonboard.com.br/en/">Charter Bus</a>
+          <a href="https://busao.kriativosonboard.com.br/en/">Charter Bus <span class="transport-sold-out">Sold out</span></a>
           <a href="#valores">View Pricing</a>
           <a href="#itinerario">Itinerary</a>
         </nav>
