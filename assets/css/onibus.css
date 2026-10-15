@@ -2834,6 +2834,28 @@
   font-weight: 600;
 }
 
+.bus-reassurance__content .bus-review-map-btn {
+  gap: 8px;
+  margin-block: 8px;
+  padding: 10px 14px;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 8px;
+  text-decoration: none;
+}
+
+.bus-reassurance__content .bus-review-map-btn:hover,
+.bus-reassurance__content .bus-review-map-btn:focus-visible {
+  border-color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.bus-reassurance__content .bus-review-map-btn svg {
+  width: 18px;
+  height: 18px;
+  opacity: 1;
+}
+
 .bus-reassurance__list {
   display: flex;
   flex-direction: column;

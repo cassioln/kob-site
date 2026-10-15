@@ -71,7 +71,7 @@
   <link rel="preload" href="/assets/fonts/gobold-extra2.woff2" as="font" type="font/woff2" crossorigin="">
   <link rel="stylesheet" href="/assets/css/main.css?v=20261015-bus-sold-out">
   <link rel="stylesheet" href="/assets/css/site-search.css?v=20261009-home-search-folds">
-  <link rel="stylesheet" href="/assets/css/onibus.css?v=20261015-bus-sold-out">
+  <link rel="stylesheet" href="/assets/css/onibus.css?v=20261015-boarding-info">
   <link rel="stylesheet" href="/assets/css/footer-sponsors.css?v=20261007-sponsors-marquee">
   <link rel="stylesheet" href="/assets/css/cookie-consent.css?v=20260820-fix-contrast">
   <link rel="stylesheet" href="/assets/css/mobile-navigation.css?v=20261009-shared-boarding-header">
@@ -618,13 +618,7 @@
                             <span class="bus-review-info-box__label">Meeting Point</span>
                             <strong class="bus-review-info-box__main">Rua Tagipuru, nº 552</strong>
                             <span class="bus-review-info-box__sub">Barra Funda · São Paulo (behind Memorial da América Latina)</span>
-                            <button class="bus-review-map-btn" id="meetingMapOpen" type="button" aria-haspopup="dialog" disabled data-sales-disabled>
-                              <span>View map</span>
-                              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                <path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Z"></path>
-                                <path d="M9 3v15M15 6v15"></path>
-                              </svg>
-                            </button>
+
                           </div>
                         </div>
 
@@ -916,41 +910,6 @@
                 <button id="still-here-cancel" class="btn btn--ghost" type="button">Cancel transaction</button>
               </div>
             </dialog>
-
-            <!-- MODAL: Localização do Ponto de Encontro (Barra Funda) -->
-            <dialog class="tour360 map-modal" id="meetingMapModal" aria-labelledby="meetingMapTitle">
-              <div class="tour360__bar map-modal__bar">
-                <div class="map-modal__heading">
-                  <span class="map-modal__marker" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                      stroke-linejoin="round">
-                      <path d="M12 21s6-5.15 6-11a6 6 0 1 0-12 0c0 5.85 6 11 6 11Z"></path>
-                      <circle cx="12" cy="10" r="2"></circle>
-                    </svg>
-                  </span>
-                  <span>
-                    <b class="tour360__label" id="meetingMapTitle">Meeting Point · Barra Funda</b>
-                    <small class="map-modal__address">Rua Tagipuru, 552 · Barra Funda, São Paulo - SP</small>
-                  </span>
-                </div>
-                <button class="tour360__icon-btn tour360__close" id="meetingMapClose" type="button"
-                  aria-label="Close Meeting Point map">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    aria-hidden="true">
-                    <path d="M6 6l12 12M18 6 6 18"></path>
-                  </svg>
-                </button>
-              </div>
-              <div class="tour360__stage map-modal__stage">
-                <div class="tour360__spinner map-modal__spinner" aria-hidden="true">
-                  <div class="tour360__spinner-dots"><span></span><span></span><span></span></div>
-                </div>
-                <iframe class="map-modal__frame" id="meetingMapFrame"
-                  title="Meeting Point Map - Rua Tagipuru, 552"
-                  data-src="https://maps.google.com/maps?q=Rua+Tagipuru%2C+552+-+Barra+Funda%2C+S%C3%A3o+Paulo+-+SP&amp;t=&amp;z=16&amp;ie=UTF8&amp;iwloc=&amp;output=embed"
-                  loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
-              </div>
-            </dialog>
           </div>
 
           <aside class="bus-summary" aria-label="Reservation summary">
@@ -980,6 +939,41 @@
       </div>
     </section>
 
+    <!-- MODAL: Localização do Ponto de Encontro (Barra Funda) -->
+    <dialog class="tour360 map-modal" id="meetingMapModal" aria-labelledby="meetingMapTitle">
+      <div class="tour360__bar map-modal__bar">
+        <div class="map-modal__heading">
+          <span class="map-modal__marker" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M12 21s6-5.15 6-11a6 6 0 1 0-12 0c0 5.85 6 11 6 11Z"></path>
+              <circle cx="12" cy="10" r="2"></circle>
+            </svg>
+          </span>
+          <span>
+            <b class="tour360__label" id="meetingMapTitle">Meeting Point · Barra Funda</b>
+            <small class="map-modal__address">Rua Tagipuru, 552 · Barra Funda, São Paulo - SP</small>
+          </span>
+        </div>
+        <button class="tour360__icon-btn tour360__close" id="meetingMapClose" type="button"
+          aria-label="Close Meeting Point map">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            aria-hidden="true">
+            <path d="M6 6l12 12M18 6 6 18"></path>
+          </svg>
+        </button>
+      </div>
+      <div class="tour360__stage map-modal__stage">
+        <div class="tour360__spinner map-modal__spinner" aria-hidden="true">
+          <div class="tour360__spinner-dots"><span></span><span></span><span></span></div>
+        </div>
+        <iframe class="map-modal__frame" id="meetingMapFrame"
+          title="Meeting Point Map - Rua Tagipuru, 552"
+          data-src="https://maps.google.com/maps?q=Rua+Tagipuru%2C+552+-+Barra+Funda%2C+S%C3%A3o+Paulo+-+SP&amp;t=&amp;z=16&amp;ie=UTF8&amp;iwloc=&amp;output=embed"
+          loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+      </div>
+    </dialog>
+
     <section id="condicoes" class="bus-reassurance" aria-labelledby="conditions-title">
       <div class="container bus-reassurance__inner">
         <div class="bus-reassurance__head">
@@ -1004,7 +998,7 @@
                 </li>
                 <li class="bus-reassurance__item bus-reassurance__item--cyan">
                   <span class="bus-reassurance__dot" aria-hidden="true"></span>
-                  <span><strong>Bus 2:</strong> Over 50% of available seats already filled.</span>
+                  <span><strong>Bus 2:</strong> <strong>Sold out</strong>.</span>
                 </li>
               </ul>
               <p class="bus-reassurance__note">If the minimum threshold for Bus 2 is not met, <strong>100% of the amount paid via Pix will be fully refunded</strong> by the organization.</p>
@@ -1051,6 +1045,13 @@
             <div class="bus-reassurance__content">
               <h3>Complete round-trip shuttle</h3>
               <p>Round-trip transportation between Barra Funda and Santos Harbor is <strong>R$ 120,00</strong> (luggage included). Meeting point: <strong>Rua Tagipuru, 552</strong>.</p>
+              <button class="bus-review-map-btn" id="meetingMapOpen" type="button" aria-haspopup="dialog">
+                <span>View map</span>
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Z"></path>
+                  <path d="M9 3v15M15 6v15"></path>
+                </svg>
+              </button>
               <ul class="bus-reassurance__list">
                 <li class="bus-reassurance__item bus-reassurance__item--gold">
                   <span class="bus-reassurance__dot" aria-hidden="true"></span>
