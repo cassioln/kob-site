@@ -1,8 +1,8 @@
 /* Only the static boarding shell is cached. API traffic always reaches the network. */
 'use strict';
-var VERSION = '20261016-embarque-offline-v5', CACHE = 'kob-boarding-shell-' + VERSION;
+var VERSION = '20261016-painel-tooltip-v6', CACHE = 'kob-boarding-shell-' + VERSION;
 var FILES = ['/painel-onibus.html', '/embarque.webmanifest', '/en/embarque.webmanifest', '/es/embarque.webmanifest',
-  '/assets/css/painel-onibus.css?v=20261016-painel-overflow-v30', '/assets/css/painel-embarque.css?v=' + VERSION,
+  '/assets/css/painel-onibus.css?v=20261016-painel-tooltip-v31', '/assets/css/painel-embarque.css?v=' + VERSION,
   '/assets/fonts/gobold-extra2.woff2', '/assets/fonts/chantal-medium.woff2',
   '/assets/images/brand/embarque-icon.svg', '/assets/images/brand/favicon-32.png', '/assets/images/brand/apple-touch-icon.png',
   '/assets/images/brand/kriativos-on-board-logo.webp', '/assets/images/manual/kriativa-checklist.png']
