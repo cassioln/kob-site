@@ -209,7 +209,7 @@ for (const [lang, pendingWord, readyWord] of [['pt', 'Aguardando conexão', 'Pro
     await expect(page.locator('#embarque-offline-state')).toHaveText(readyWord, { timeout: 25000 });
     await context.setOffline(true); await page.locator('[data-check="1"]').click();
     await expect(page.locator('[data-person="1"] .embarque-person__detail')).toHaveText(pendingWord);
-    await expect(page.locator('#embarque-offline-toggle')).toHaveAttribute('aria-label', new RegExp(pendingWord === 'Aguardando conexão' ? 'Sem conexão · 1 marcação' : pendingWord === 'Waiting for connection' ? 'No connection · 1 change' : 'Sin conexión · 1 cambio'));
+    await expect(page.locator('#embarque-offline-toggle')).toHaveAttribute('aria-label', new RegExp(pendingWord === 'Aguardando conexão' ? 'Sem conexão · 1 marcação pendente' : pendingWord === 'Waiting for connection' ? 'No connection · 1 pending change' : 'Sin conexión · 1 cambio pendiente'));
     await notices(page);
     const menu = await page.locator('#embarque-offline-menu').boundingBox();
     expect(menu.x).toBeGreaterThanOrEqual(0); expect(menu.x + menu.width).toBeLessThanOrEqual(390);

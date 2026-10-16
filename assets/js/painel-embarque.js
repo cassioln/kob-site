@@ -51,6 +51,13 @@
     function groupIcon(kind) {
       return '<svg class="embarque-group__meeple embarque-group__meeple--' + kind + '" viewBox="0 0 512 512" aria-hidden="true">' + meeple + '</svg>';
     }
+    // Região viva: limpa e escreve no quadro seguinte para repetir um anúncio idêntico.
+    var announceFrame = 0;
+    function announce(text) {
+      cancelAnimationFrame(announceFrame);
+      $('announcement').textContent = '';
+      announceFrame = requestAnimationFrame(function () { $('announcement').textContent = text; });
+    }
     function setNotice(key) {
       noticeKey = key;
       renderNotices();
@@ -78,7 +85,9 @@
     function conflictNotice(op) {
       var person = queueState.confirmed.find(function (p) { return p.id === op.passenger_id; });
       var help = !person ? t('conflictRemoved') : op.conflict === 'bus' ? t('conflictBus', { number: person.bus_number }) : t('conflictHelp');
-      var disabled = !queueState.online || loading ? ' disabled' : '';
+      // Sem rede o botão fica desabilitado de verdade. Durante a leitura de 8s só fica
+      // aria-disabled, para o foco não pular para a nuvem quando a lista é redesenhada.
+      var disabled = !queueState.online ? ' disabled' : loading ? ' aria-disabled="true"' : '';
       return { id: 'conflict:' + op.id, action: true, tone: 'warning', text: help, html: '<li class="embarque-notice-item" data-tone="warning" data-notice="conflict">' +
         '<span class="embarque-notice-item__eyebrow">' + esc(t('conflictNotice')) + '</span>' +
         '<strong>' + esc(op.name) + ' · ' + esc(t(op.leg)) + '</strong><p>' + esc(help) + '</p>' +
@@ -107,7 +116,7 @@
       if (queueState.waiting) list.push(simpleNotice('waiting', 'info', t('waiting', { count: queueState.waiting }), false, 'fleet'));
       var toggle = $('offline-toggle'), notices = $('notices');
       var statusText = state === 'offline' ? t('offlineShort') : state === 'unstable' ? t('connectionUnstable') :
-        state === 'connecting' ? t('syncing') : lastSync ? t('connectionOnline', { time: time(lastSync) }) : t('connectionOnlineShort');
+        state === 'connecting' ? t('connectionChecking') : lastSync ? t('connectionOnline', { time: time(lastSync) }) : t('connectionOnlineShort');
       $('network').textContent = statusText;
       $('network').dataset.network = state;
       var help = ready && state === 'offline' ? t('networkOfflineHelp') : ready && state === 'unstable' ? t('networkUnstableHelp') : '';
@@ -134,7 +143,8 @@
       toggle.dataset.notices = String(list.length);
       var others = list.filter(function (item) { return item.id !== 'queued'; }).length;
       var label = [t('offlineAccess'), statusText.split(' · ')[0]];
-      if (pending.size) label.push(t('queuedNotice', { count: pending.size }));
+      // Mesmo número do badge (conflitos incluídos).
+      if (pending.size) label.push(t('pendingCount', { count: pending.size }));
       if (others) label.push(t('noticeCount', { count: others }));
       toggle.setAttribute('aria-label', label.join(' · '));
       toggle.title = label.join(' · ');
@@ -145,7 +155,7 @@
       if (!alerted.size) toggle.classList.remove('is-alerting');
       if (fresh.length) {
         toggle.classList.remove('is-alerting'); void toggle.offsetWidth; toggle.classList.add('is-alerting');
-        $('announcement').textContent = fresh[0].text;
+        announce(fresh.map(function (item) { return item.text; }).join(' '));
       }
     }
     function translate() {
@@ -350,7 +360,7 @@
         render();
       },
       saved: function (op) {
-        $('announcement').textContent = t(op.present ? 'saved' : 'removed', { name: op.name, leg: t(op.leg) });
+        announce(t(op.present ? 'saved' : 'removed', { name: op.name, leg: t(op.leg) }));
       }
     });
     function sync(force) {
@@ -380,7 +390,7 @@
     $('offline-toggle').addEventListener('click', function () { $('offline-toggle').classList.remove('is-alerting'); });
     $('notices').addEventListener('click', function (event) {
       var button = event.target.closest('button');
-      if (!button || button.disabled) return;
+      if (!button || button.disabled || button.getAttribute('aria-disabled') === 'true') return;
       if (button.dataset.resolve) {
         coordinator.resolve(button.dataset.operation, button.dataset.resolve === 'local').catch(function () { setNotice('storageError'); });
       } else if (button.dataset.noticeAction === 'retry') sync(true);
@@ -490,7 +500,7 @@
     });
     window.addEventListener('online', function () { sync(true); });
     window.addEventListener('offline', function () {
-      stale = true; coordinator.refresh(); render(); $('announcement').textContent = t(ready ? 'offlineReady' : 'firstConnection');
+      stale = true; coordinator.refresh(); render(); announce(t(ready ? 'offlineReady' : 'firstConnection'));
     });
     window.addEventListener('focus', function () { coordinator.reload().then(function () { sync(false); }); });
     document.addEventListener('visibilitychange', function () { if (!document.hidden) sync(false); });
@@ -503,7 +513,7 @@
         type: action === 'excel' ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' : 'application/pdf'
       }); }
     });
-    offlineAccess = window.KobBoardingOffline(root, { t: t, lang: lang, refresh: function () { return sync(true); } });
+    offlineAccess = window.KobBoardingOffline(root, { t: t, lang: lang });
     translate();
     return {
       // autoOpen só no atalho da chamada (?chamada=1) ou sem rede, quando a
@@ -531,7 +541,7 @@
         exporter.clear();
         $('list').replaceChildren();
         $('empty').hidden = true; $('loading').hidden = false;
-        $('announcement').textContent = ''; setNotice(''); renderSummary(); syncStatus();
+        cancelAnimationFrame(announceFrame); $('announcement').textContent = ''; setNotice(''); renderSummary(); syncStatus();
       }
     };
   };

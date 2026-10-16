@@ -1,6 +1,6 @@
 /* Only the static boarding shell is cached. API traffic always reaches the network. */
 'use strict';
-var VERSION = '20261016-busao-kob-v10', CACHE = 'kob-boarding-shell-' + VERSION;
+var VERSION = '20261016-busao-kob-v11', CACHE = 'kob-boarding-shell-' + VERSION;
 // Os manifestos levam ?v= para o navegador/WebAPK buscar nome e ícone novos; a página pede a mesma URL.
 var FILES = ['/painel-onibus.html'].concat(['', 'en/', 'es/'].map(function (lang) { return '/' + lang + 'embarque.webmanifest?v=' + VERSION; }), [
   '/assets/css/painel-onibus.css?v=20261016-check-busao-v8', '/assets/css/painel-embarque.css?v=' + VERSION,
