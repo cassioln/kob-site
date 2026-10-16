@@ -14,8 +14,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Check Busão KOB">
   <meta name="application-name" content="Check Busão KOB">
-    <link rel="stylesheet" href="assets/css/painel-onibus.css?v=20261016-editar-reserva-v9">
-  <link rel="stylesheet" href="assets/css/painel-embarque.css?v=20261016-editar-reserva-v9">
+    <link rel="stylesheet" href="assets/css/painel-onibus.css?v=20261016-editar-reserva-v10">
+  <link rel="stylesheet" href="assets/css/painel-embarque.css?v=20261016-editar-reserva-v10">
 </head>
 
 <body class="painel">
@@ -426,6 +426,32 @@
     </form>
   </dialog>
 
+  <!-- Modal de edição de reserva (assets/js/painel-editar-reserva.js) -->
+  <dialog id="painel-editar-dialog" class="bus-dialog bus-dialog--vip bus-dialog--editar" aria-labelledby="painel-editar-titulo">
+    <form id="form-editar" method="dialog" novalidate>
+      <div class="bus-dialog__header">
+        <div class="bus-dialog__badge-icone bus-dialog__badge-icone--editar" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M12 20h9"></path><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path></svg>
+        </div>
+        <div>
+          <h2 id="painel-editar-titulo">Editar reserva</h2>
+          <p id="painel-editar-subtitulo" class="bus-dialog__subtitle"></p>
+        </div>
+      </div>
+      <div class="editar-corpo">
+        <div id="editar-grupo-campo"></div>
+        <ul id="editar-passageiros" class="editar-passageiros"></ul>
+        <fieldset id="editar-responsavel" class="editar-responsavel" hidden><legend>Novo responsável</legend></fieldset>
+      </div>
+      <p id="editar-aviso" class="editar-aviso" role="status" hidden></p>
+      <p id="editar-erro" class="vip-form__erro" role="alert" hidden></p>
+      <div class="bus-dialog__actions bus-dialog__actions--vip">
+        <button id="editar-cancelar" class="botao botao--discreto" type="button">Cancelar</button>
+        <button id="editar-salvar" class="botao botao--primario" type="submit">Salvar alterações</button>
+      </div>
+    </form>
+  </dialog>
+
   <!-- Modal de Alerta / Erro / Aviso -->
   <dialog id="painel-alerta-dialog" class="bus-dialog" aria-labelledby="painel-dialog-titulo">
     <div class="bus-dialog__header">
@@ -441,14 +467,15 @@
     </div>
   </dialog>
 
-  <script defer src="assets/js/painel-embarque-i18n.js?v=20261016-editar-reserva-v9"></script>
-  <script defer src="assets/js/painel-embarque-export.js?v=20261016-editar-reserva-v9"></script>
-  <script defer src="assets/js/painel-embarque-bus-picker.js?v=20261016-editar-reserva-v9"></script>
-  <script defer src="assets/js/painel-embarque-store.js?v=20261016-editar-reserva-v9"></script>
-  <script defer src="assets/js/painel-embarque-sync.js?v=20261016-editar-reserva-v9"></script>
-  <script defer src="assets/js/painel-embarque-offline.js?v=20261016-editar-reserva-v9"></script>
-  <script defer src="assets/js/painel-embarque.js?v=20261016-editar-reserva-v9"></script>
-  <script defer src="assets/js/painel-onibus.js?v=20261016-editar-reserva-v9"></script>
+  <script defer src="assets/js/painel-embarque-i18n.js?v=20261016-editar-reserva-v10"></script>
+  <script defer src="assets/js/painel-embarque-export.js?v=20261016-editar-reserva-v10"></script>
+  <script defer src="assets/js/painel-embarque-bus-picker.js?v=20261016-editar-reserva-v10"></script>
+  <script defer src="assets/js/painel-embarque-store.js?v=20261016-editar-reserva-v10"></script>
+  <script defer src="assets/js/painel-embarque-sync.js?v=20261016-editar-reserva-v10"></script>
+  <script defer src="assets/js/painel-embarque-offline.js?v=20261016-editar-reserva-v10"></script>
+  <script defer src="assets/js/painel-embarque.js?v=20261016-editar-reserva-v10"></script>
+  <script defer src="assets/js/painel-editar-reserva.js?v=20261016-editar-reserva-v10"></script>
+  <script defer src="assets/js/painel-onibus.js?v=20261016-editar-reserva-v10"></script>
 </body>
 
 </html>

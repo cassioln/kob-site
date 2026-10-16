@@ -2337,6 +2337,7 @@
     frota: function () { return estado.frota; },
     confirmar: mostrarConfirmacaoModal,
     aoSalvar: function () { carregar(); },
+    meeplePath: MEEPLE_PATH_D,
     formatos: {
       formatarCpf: formatarCpf,
       formatarWhatsapp: formatarWhatsapp,

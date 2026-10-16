@@ -1,14 +1,15 @@
 /* Only the static boarding shell is cached. API traffic always reaches the network. */
 'use strict';
-var VERSION = '20261016-editar-reserva-v9', CACHE = 'kob-boarding-shell-' + VERSION;
+var VERSION = '20261016-editar-reserva-v10', CACHE = 'kob-boarding-shell-' + VERSION;
 var FILES = ['/painel-onibus.html', '/embarque.webmanifest', '/en/embarque.webmanifest', '/es/embarque.webmanifest',
-  '/assets/css/painel-onibus.css?v=20261016-editar-reserva-v9', '/assets/css/painel-embarque.css?v=' + VERSION,
+  '/assets/css/painel-onibus.css?v=20261016-editar-reserva-v10', '/assets/css/painel-embarque.css?v=' + VERSION,
   '/assets/fonts/gobold-extra2.woff2', '/assets/fonts/chantal-medium.woff2',
   '/assets/images/brand/favicon-32.png', '/assets/images/brand/check-busao-apple-touch-icon.png',
   '/assets/images/brand/check-busao-icon-192.png', '/assets/images/brand/check-busao-icon-512.png', '/assets/images/brand/check-busao-maskable-512.png',
   '/assets/images/brand/kriativos-on-board-logo.webp', '/assets/images/manual/kriativa-checklist.png']
   .concat(['i18n', 'export', 'bus-picker', 'store', 'sync', 'offline'].map(function (name) { return '/assets/js/painel-embarque-' + name + '.js?v=' + VERSION; }))
-  .concat(['/assets/js/painel-embarque.js?v=' + VERSION, '/assets/js/painel-onibus.js?v=' + VERSION]);
+  .concat(['/assets/js/painel-embarque.js?v=' + VERSION, '/assets/js/painel-editar-reserva.js?v=' + VERSION,
+    '/assets/js/painel-onibus.js?v=' + VERSION]);
 self.addEventListener('install', function (event) {
   event.waitUntil(caches.open(CACHE).then(function (cache) {
     return cache.addAll(FILES.map(function (file) { return new Request(file, { cache: 'reload', credentials: 'omit' }); }));

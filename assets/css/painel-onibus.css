@@ -4101,15 +4101,18 @@
   }
 }
 
-/* Passageiro que desistiu continua na lista (conferência), mas esmaecido e
-   riscado; a etiqueta "Desistiu" e a data ficam legíveis, sem risco. */
+/* Passageiro que desistiu continua na lista (conferência), riscado e num tom
+   mais apagado; a etiqueta "Desistiu" e a data ficam legíveis, sem risco.
+   Cor sólida em vez de opacidade: com opacity .6 o texto caía para 2.3:1.
+   `--p-tinta-fraca` dá 5.5:1 no branco, 4.5:1 na linha realçada e 5.2:1 na
+   linha VIP (AA para texto normal). */
 .tabela__linha--desistente .tabela__nome {
+  color: var(--p-tinta-fraca);
   text-decoration: line-through;
-  opacity: 0.6;
 }
 
 .tabela__linha--desistente .tabela__faixa-passageiro {
-  opacity: 0.6;
+  color: var(--p-tinta-fraca);
 }
 
 .tabela__desistiu {
@@ -4123,4 +4126,367 @@
 .tabela__desistiu .etiqueta {
   font-size: 0.6875rem;
   padding: 1px 6px;
+}
+
+/* ---- Modal "Editar reserva" ------------------------------------------------
+   Mesma moldura do modal VIP (.bus-dialog--vip); o corpo rola e o rodapé com
+   Cancelar / Salvar fica sempre visível. */
+
+.bus-dialog--editar {
+  width: min(calc(100% - 32px), 680px);
+  max-width: 680px;
+}
+
+/* `.vip-formulario__campo` (grid) e `.etiqueta` (inline-block) venceriam o
+   atributo `hidden`; dentro do modal ele sempre esconde. */
+.bus-dialog--editar [hidden] {
+  display: none !important;
+}
+
+.bus-dialog__badge-icone--editar {
+  background: var(--p-acao-fraca);
+  color: var(--p-acao);
+}
+
+.bus-dialog__badge-icone--editar svg {
+  width: 18px;
+  height: 18px;
+}
+
+.bus-dialog--editar form {
+  max-height: calc(100vh - 96px);
+}
+
+.editar-corpo {
+  display: grid;
+  gap: 14px;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 2px 4px 2px 1px;
+}
+
+.editar-grupo {
+  max-width: 360px;
+}
+
+.editar-grupo__aviso,
+.bus-dialog p.editar-grupo__aviso {
+  margin: 2px 0 0;
+  color: var(--p-espera);
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+
+.editar-passageiros {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.editar-passageiro {
+  border: 1px solid var(--p-linha);
+  border-radius: var(--p-raio);
+  background: var(--p-superficie);
+}
+
+.editar-passageiro--aberto {
+  border-color: var(--p-linha-forte);
+  background: var(--p-superficie-2);
+}
+
+.editar-passageiro__resumo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 52px;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: var(--p-raio);
+  background: transparent;
+  color: var(--p-tinta);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.editar-passageiro__resumo:hover {
+  background: var(--p-realce-linha);
+}
+
+.editar-passageiro__resumo:focus-visible {
+  outline: 2px solid var(--p-acao);
+  outline-offset: -2px;
+}
+
+.editar-passageiro__icone {
+  display: inline-flex;
+  flex: 0 0 20px;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  color: var(--p-tinta-fraca);
+}
+
+.editar-passageiro__icone--responsavel {
+  color: var(--p-acao);
+}
+
+.editar-passageiro__icone svg {
+  width: 18px;
+  height: 18px;
+}
+
+.editar-passageiro__texto {
+  display: grid;
+  flex: 1 1 auto;
+  min-width: 0;
+  gap: 1px;
+}
+
+.editar-passageiro__nome {
+  overflow: hidden;
+  font-size: 0.9375rem;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.editar-passageiro__meta {
+  color: var(--p-tinta-fraca);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.editar-passageiro__etiqueta {
+  flex: 0 0 auto;
+}
+
+.editar-passageiro__seta {
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: var(--p-tinta-fraca);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform var(--p-transicao);
+}
+
+.editar-passageiro__resumo[aria-expanded="true"] .editar-passageiro__seta {
+  transform: rotate(180deg);
+}
+
+/* Desistente: nome riscado em cor sólida (5.5:1 no branco, 4.9:1 no cinza do
+   item aberto), sem opacidade. */
+.editar-passageiro--desistente .editar-passageiro__nome {
+  color: var(--p-tinta-fraca);
+  text-decoration: line-through;
+}
+
+.editar-passageiro__painel {
+  padding: 4px 14px 14px;
+}
+
+.editar-passageiro__painel .vip-formulario__campo select,
+.editar-passageiro__painel .vip-formulario__campo textarea,
+.editar-grupo select {
+  width: 100%;
+  min-height: 40px;
+  padding: 8px 10px;
+  border: 1px solid var(--p-linha-forte);
+  border-radius: var(--p-raio-p);
+  background: var(--p-superficie);
+  color: var(--p-tinta);
+  font: inherit;
+  font-size: 0.875rem;
+  box-sizing: border-box;
+}
+
+.editar-grupo select:focus-visible,
+.editar-passageiro__painel textarea:focus-visible {
+  outline: 2px solid var(--p-acao);
+  outline-offset: 1px;
+  border-color: var(--p-acao);
+}
+
+.editar-passageiro__painel textarea {
+  resize: vertical;
+  line-height: 1.4;
+}
+
+.editar-desistencia {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--p-linha);
+}
+
+/* Switch "Desistiu": botão com role=switch, rótulo visível no próprio botão. */
+.editar-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  justify-self: start;
+  min-height: 44px;
+  padding: 4px 6px 4px 0;
+  border: 0;
+  background: transparent;
+  color: var(--p-tinta);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.editar-switch:focus-visible {
+  outline: 2px solid var(--p-acao);
+  outline-offset: 2px;
+  border-radius: var(--p-raio-p);
+}
+
+.editar-switch__trilho {
+  position: relative;
+  display: inline-block;
+  flex: 0 0 40px;
+  width: 40px;
+  height: 22px;
+  border: 1px solid var(--p-tinta-fraca);
+  border-radius: 999px;
+  background: var(--p-superficie);
+  transition: background var(--p-transicao), border-color var(--p-transicao);
+  box-sizing: border-box;
+}
+
+.editar-switch__botao {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--p-tinta-fraca);
+  transition: transform var(--p-transicao), background var(--p-transicao);
+}
+
+.editar-switch[aria-checked="true"] .editar-switch__trilho {
+  border-color: var(--p-falha);
+  background: var(--p-falha);
+}
+
+.editar-switch[aria-checked="true"] .editar-switch__botao {
+  background: #ffffff;
+  transform: translateX(18px);
+}
+
+.editar-nota,
+.bus-dialog p.editar-nota {
+  margin-top: 12px;
+  color: var(--p-tinta-media);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
+.editar-responsavel {
+  margin: 0;
+  padding: 12px 14px 14px;
+  border: 1px solid var(--p-acao);
+  border-radius: var(--p-raio);
+  background: var(--p-acao-fraca);
+}
+
+.editar-responsavel legend {
+  padding: 0 6px;
+  color: var(--p-acao-escura);
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+.editar-responsavel__dica,
+.bus-dialog p.editar-responsavel__dica {
+  margin: 0 0 8px;
+  color: var(--p-tinta-media);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
+.editar-responsavel__opcoes {
+  display: grid;
+  gap: 2px;
+}
+
+.editar-responsavel__opcao {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 40px;
+  padding: 4px 6px;
+  border-radius: var(--p-raio-p);
+  color: var(--p-tinta);
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.editar-responsavel__opcao:hover {
+  background: var(--p-superficie);
+}
+
+.editar-responsavel__opcao input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--p-acao);
+}
+
+.editar-responsavel__nome {
+  font-weight: 650;
+}
+
+.editar-responsavel__falta {
+  color: var(--p-tinta-media);
+  font-size: 0.8125rem;
+}
+
+/* `.bus-dialog p` (0,1,1) venceria `.vip-form__erro` (0,1,0) na margem, cor e
+   tamanho; aqui a mensagem de erro do modal fica com o vermelho de falha. */
+.bus-dialog--editar p.vip-form__erro {
+  margin: 14px 0 0;
+  color: var(--p-falha);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
+.editar-aviso,
+.bus-dialog p.editar-aviso {
+  margin: 14px 0 0;
+  padding: 10px 12px;
+  border-radius: var(--p-raio-p);
+  background: var(--p-espera-fundo);
+  color: var(--p-espera);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
+@media (max-width: 560px) {
+  .bus-dialog--editar form {
+    max-height: calc(100vh - 72px);
+  }
+
+  .editar-grupo {
+    max-width: none;
+  }
+
+  .editar-passageiro__painel {
+    padding: 4px 10px 12px;
+  }
+
+  .editar-passageiro__etiqueta {
+    padding: 2px 6px;
+    font-size: 0.6875rem;
+  }
 }
