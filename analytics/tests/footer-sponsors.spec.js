@@ -10,7 +10,7 @@ test('Sponsors loop without a seam and remain usable with pause and keyboard in 
     const section = page.locator('[data-footer-sponsors]');
     await section.scrollIntoViewIfNeeded();
     const original = section.locator('#footer-sponsors-list');
-    await expect(original.locator('li')).toHaveCount(8);
+    await expect(original.locator('li')).toHaveCount(9);
     await expect(original.locator('a[aria-label^="Fácil Shopping"]')).toHaveAttribute('href', 'https://facilshopping.com.br/');
     const copy = section.locator('.footer-sponsors__copy');
     await expect(copy).toHaveAttribute('aria-hidden', 'true');
@@ -54,6 +54,6 @@ test('Reduced motion shows every sponsor without scrolling or duplicate accessib
       const viewport = el.querySelector('.footer-sponsors__viewport');
       return viewport.scrollWidth <= viewport.clientWidth && getComputedStyle(el.querySelector('.footer-sponsors__belt')).animationName === 'none';
     })).toBe(true);
-    await expect(section.locator('#footer-sponsors-list a')).toHaveCount(8);
+    await expect(section.locator('#footer-sponsors-list a')).toHaveCount(9);
   }
 });

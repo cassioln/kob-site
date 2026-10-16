@@ -1,8 +1,8 @@
 /* Only the static boarding shell is cached. API traffic always reaches the network. */
 'use strict';
-var VERSION = '20261016-check-busao-v7', CACHE = 'kob-boarding-shell-' + VERSION;
+var VERSION = '20261016-check-busao-v8', CACHE = 'kob-boarding-shell-' + VERSION;
 var FILES = ['/painel-onibus.html', '/embarque.webmanifest', '/en/embarque.webmanifest', '/es/embarque.webmanifest',
-  '/assets/css/painel-onibus.css?v=20261016-painel-overflow-v30', '/assets/css/painel-embarque.css?v=' + VERSION,
+  '/assets/css/painel-onibus.css?v=20261016-check-busao-v8', '/assets/css/painel-embarque.css?v=' + VERSION,
   '/assets/fonts/gobold-extra2.woff2', '/assets/fonts/chantal-medium.woff2',
   '/assets/images/brand/favicon-32.png', '/assets/images/brand/check-busao-apple-touch-icon.png',
   '/assets/images/brand/check-busao-icon-192.png', '/assets/images/brand/check-busao-icon-512.png', '/assets/images/brand/check-busao-maskable-512.png',
