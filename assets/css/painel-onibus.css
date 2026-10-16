@@ -898,11 +898,14 @@
 
   .filtro-onibus {
     flex: 1 1 100%;
+    min-width: 0;
+    max-width: 100%;
     justify-content: space-between;
   }
 
   .filtro-onibus select {
     flex: 1;
+    min-width: 0;
   }
 
   .tabela-envolve {

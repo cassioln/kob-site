@@ -262,6 +262,24 @@ for (const [lang, title, save] of [ ['pt', 'Chamada de embarque', 'Confirmar emb
   });
 }
 
+test('filtro de reservas não amplia a página em 320 px com opções longas @smoke', async ({ page, context }) => {
+  await mockPanel(context);
+  await page.setViewportSize({ width: 320, height: 844 });
+  await page.goto('/painel-onibus.html?lang=en');
+  await expect(page.locator('#embarque-expected')).toHaveText('3');
+  await page.locator('#embarque-close').click();
+  await expect(page.locator('#embarque-sidebar')).not.toBeVisible();
+  await page.locator('#filtro-onibus').evaluate(select => {
+    const option = document.createElement('option');
+    option.value = 'fixture'; option.textContent = 'Ônibus 1234 · 999 passageiros para conferir';
+    select.appendChild(option);
+  });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
+  expect((await page.locator('.filtro-onibus').boundingBox()).width).toBeLessThanOrEqual(288);
+  await page.locator('#filtro-onibus').selectOption('fixture');
+  await expect(page.locator('#filtro-onibus')).toHaveValue('fixture');
+});
+
 test('lista vazia orienta a alocação sem controles de presença', async ({ page, context }) => {
   await mockPanel(context, { people: [], waiting: 0 });
   await page.goto('/painel-onibus.html');
