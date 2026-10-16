@@ -137,7 +137,8 @@ $linhas = [
     ],
     // Linha 6: primeiro passageiro (não responsável) desistiu numa reserva
     // ativa: células do passageiro tachadas com a borda de início de grupo;
-    // as da reserva (Qtd, Valor, Status, Pago em, Transação) sem risco.
+    // as da reserva (Responsável, Ônibus, Qtd, Valor, Status, Pago em,
+    // Transação) sem risco.
     [
         'estilo' => 'desistente_grupo',
         'celulas' => [
@@ -149,8 +150,8 @@ $linhas = [
             '18 anos ou mais',
             '(11) 99999-6666',
             'p6@teste.com',
-            'Responsável Gama',
-            ['tipo' => 'texto', 'v' => 'Ônibus 2', 'estilo' => 'texto'],
+            ['v' => 'Responsável Gama', 'estilo' => 'grupo'],
+            ['v' => 'Ônibus 2', 'estilo' => 'grupo'],
             ['v' => '1', 'estilo' => 'grupo'],
             ['v' => 'R$ 240,00', 'estilo' => 'grupo'],
             ['v' => 'Pagamento aprovado', 'estilo' => 'status_ok'],
@@ -380,7 +381,7 @@ if ($cells9['A9']['s'] !== $indices['desistente_grupo'] || $cells9['D9']['s'] !=
     fwrite(STDERR, "FAIL: desistente na primeira linha não usa desistente_grupo (A9={$cells9['A9']['s']}, C9={$cells9['C9']['s']}, D9={$cells9['D9']['s']})\n");
     exit(1);
 }
-foreach (['K9', 'L9', 'O9', 'P9'] as $ref) {
+foreach (['I9', 'J9', 'K9', 'L9', 'O9', 'P9'] as $ref) {
     if ($cells9[$ref]['s'] !== $indices['grupo']) {
         fwrite(STDERR, "FAIL: $ref (célula da reserva) tem estilo {$cells9[$ref]['s']}, esperado {$indices['grupo']} (sem risco)\n");
         exit(1);

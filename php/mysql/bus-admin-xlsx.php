@@ -216,9 +216,9 @@ try {
                 $estiloBase = 'normal';
             }
             $estiloLinha = $estiloBase;
-            // Células da reserva (Qtd, Valor, Status, Pago em, Transação) com o
-            // estilo da reserva quando só o passageiro desistiu: o pagamento
-            // não mudou, então não aparece riscado.
+            // Células da reserva (Responsável, Ônibus, Qtd, Valor, Status, Pago
+            // em, Transação) com o estilo da reserva quando só o passageiro
+            // desistiu: a reserva não mudou, então não aparece riscada.
             $estiloReserva = null;
             if ($desistiu) {
                 // Esmaecida e tachada: a pessoa segue na planilha, mas não viaja.
@@ -253,12 +253,10 @@ try {
                     $faixaEtaria,
                     $whatsappPassageiro,
                     $emailPassageiro,
-                    (string) $r['primary_name'],
-                    [
-                        'tipo' => 'texto',
-                        'v' => $r['bus_number'] !== null ? 'Ônibus ' . $r['bus_number'] : ($isVip ? 'Sem ônibus confirmado' : '—'),
-                        'estilo' => 'texto',
-                    ],
+                    $celulaReserva((string) $r['primary_name']),
+                    $celulaReserva(
+                        $r['bus_number'] !== null ? 'Ônibus ' . $r['bus_number'] : ($isVip ? 'Sem ônibus confirmado' : '—')
+                    ),
                     $celulaReserva($primeiro ? $grupo : ''),
                     $celulaReserva($primeiro ? $valor : ''),
                     $primeiro
