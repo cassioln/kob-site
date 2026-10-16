@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { boardingHttp } from '../helpers/boarding-http.mjs';
 
-// App instalado "Check Busão KOB": abre pelo atalho (?chamada=1), funciona sem
+// App instalado "Busão KOB - Lista de Embarque": abre pelo atalho (?chamada=1), funciona sem
 // rede e reenvia as marcações. Roda no Chromium (Android) e no WebKit (iPhone).
 let closeHttp;
 test.afterEach(async () => { if (closeHttp) { await closeHttp(); closeHttp = null; } });
@@ -44,15 +44,17 @@ async function pendingCount(page) {
   }));
 }
 
-test('manifesto e ícones do Check Busão KOB nos três idiomas @smoke', async ({ page, context }) => {
+test('manifesto versionado e ícones do Busão KOB nos três idiomas @smoke', async ({ page, context }) => {
   await mock(context);
   await page.addInitScript(() => localStorage.setItem('kob_admin_token', 'dev-token'));
   for (const lang of ['pt', 'en', 'es']) {
     await page.goto('/painel-onibus.html?chamada=1&lang=' + lang);
     const href = await page.locator('#embarque-manifest').getAttribute('href');
+    // O ?v= força o navegador/WebAPK a buscar de novo nome e ícone após a troca.
+    expect(href).toMatch(new RegExp('^' + (lang === 'pt' ? '' : lang + '/') + 'embarque\\.webmanifest\\?v=.+'));
     const manifest = await (await page.request.get('/' + href)).json();
-    expect(manifest.name).toBe('Check Busão KOB');
-    expect(manifest.short_name).toBe('Check Busão KOB');
+    expect(manifest.name).toBe('Busão KOB - Lista de Embarque');
+    expect(manifest.short_name).toBe('Busão KOB');
     expect(manifest.start_url).toBe('/painel-onibus.html?chamada=1&lang=' + lang);
     for (const icon of manifest.icons) {
       const response = await page.request.get(icon.src);
@@ -61,7 +63,8 @@ test('manifesto e ícones do Check Busão KOB nos três idiomas @smoke', async (
     }
     expect(manifest.icons.map(icon => icon.purpose || 'any')).toEqual(expect.arrayContaining(['any', 'maskable']));
   }
-  await expect(page.locator('meta[name="apple-mobile-web-app-title"]')).toHaveAttribute('content', 'Check Busão KOB');
+  await expect(page.locator('meta[name="apple-mobile-web-app-title"]')).toHaveAttribute('content', 'Busão KOB');
+  await expect(page.locator('meta[name="application-name"]')).toHaveAttribute('content', 'Busão KOB - Lista de Embarque');
   const touch = await page.locator('link[rel="apple-touch-icon"]').getAttribute('href');
   expect((await page.request.get('/' + touch)).ok()).toBe(true);
 });

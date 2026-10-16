@@ -23,6 +23,10 @@ test('shell offline inclui scripts e estilos atuais com versões e caminhos exis
   const assets = [...html.matchAll(/(?:src|href)="(assets\/(?:js|css)\/[^" ]+)"/g)].map(match => '/' + match[1]);
   assert(assets.length >= 9);
   for (const path of assets) assert(files.includes(path), `Asset ausente ou versão desatualizada: ${path}`);
+  // O manifesto é pedido com ?v= (pt no HTML; en/es trocados pelo JS mantendo o mesmo ?v=).
+  const manifest = html.match(/id="embarque-manifest"[^>]*href="([^"]+)"/)[1];
+  assert.match(manifest, /^embarque\.webmanifest\?v=.+/);
+  for (const prefix of ['', 'en/', 'es/']) assert(files.includes('/' + prefix + manifest), `Manifesto fora do cache offline: ${prefix}${manifest}`);
 });
 test('manifestos pt/en/es abrem somente chamada no mesmo app sem credenciais', () => {
   for (const lang of ['pt', 'en', 'es']) {
@@ -31,7 +35,9 @@ test('manifestos pt/en/es abrem somente chamada no mesmo app sem credenciais', (
     assert.equal(url.pathname, '/painel-onibus.html'); assert.equal(url.searchParams.get('chamada'), '1');
     assert.equal(url.searchParams.get('lang'), lang); assert.equal(manifest.lang, lang);
     assert.equal(manifest.display, 'standalone'); assert(!url.searchParams.has('token'));
-    assert.equal(manifest.name, 'Check Busão KOB'); assert.equal(manifest.short_name, 'Check Busão KOB');
+    assert.equal(manifest.name, 'Busão KOB - Lista de Embarque'); assert.equal(manifest.short_name, 'Busão KOB');
+    // O id não muda: o app instalado é atualizado em vez de virar um app novo.
+    assert.equal(manifest.id, '/painel-onibus.html?chamada=1');
     assert(manifest.icons.some(icon => icon.purpose === 'maskable' && icon.sizes === '512x512'));
     assert(manifest.icons.some(icon => icon.purpose === 'any' && icon.sizes === '192x192'));
     for (const icon of manifest.icons) assert(existsSync(new URL(icon.src.slice(1), root)));

@@ -75,11 +75,15 @@ O **Kriativos On Board (kob-site)** é a plataforma web oficial do **Kriativos O
 
    **Usar no celular/tablet sem sinal:** com internet, abrir a chamada e conferir
    o ícone de nuvem no cabeçalho (com ✓ quando está **Pronto neste dispositivo**).
-   O app instalável **Check Busão KOB** (ícone com a frente do ônibus) abre
-   `painel-onibus.html?chamada=1`, sem carregar Reservas/Frota. Para instalar,
-   use **Instalar** no menu da nuvem (Android/Chrome) ou adicione à tela inicial
-   pelo menu do navegador (no iPhone/iPad, Compartilhar → Adicionar à Tela de
-   Início). No iPhone/iPad, abrir o atalho ainda com
+   O app instalável **Busão KOB - Lista de Embarque** (nome curto "Busão KOB",
+   ícone com a frente do ônibus) abre `painel-onibus.html?chamada=1`, sem
+   carregar Reservas/Frota. Para instalar, use **Instalar** no menu da nuvem
+   (Android/Chrome) ou adicione à tela inicial pelo menu do navegador (no
+   iPhone/iPad, Compartilhar → Adicionar à Tela de Início). No Android, instalar
+   pelo **Chrome**: o Samsung Internet gera o app com uma versão antiga do Android
+   e o Google Play Protect bloqueia a instalação ("App de risco bloqueado"); pelo
+   Chrome o mesmo app instala sem alerta. Quem instalou uma versão anterior
+   precisa remover o atalho e instalar de novo para ver o nome e o ícone novos. No iPhone/iPad, abrir o atalho ainda com
    internet, entrar novamente e aguardar a preparação dentro dele. O navegador
    pode separar os dados do Safari e do app. Não limpar os dados do site antes
    de enviar a fila. Armazenamento persistente é solicitado, sem garantia contra

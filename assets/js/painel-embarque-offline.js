@@ -4,7 +4,9 @@
     var t = options.t, state = {}, prepared = false, preparing = false, failed = false, installPrompt = null;
     var $ = function (id) { return root.querySelector('#embarque-' + id); };
     var manifest = document.getElementById('embarque-manifest');
-    manifest.href = (options.lang === 'pt' ? '' : options.lang + '/') + 'embarque.webmanifest';
+    // Mantém o ?v= do HTML: é o que força o navegador a buscar nome e ícone atualizados.
+    var manifestVersion = (manifest.getAttribute('href').match(/\?.*$/) || [''])[0];
+    manifest.href = (options.lang === 'pt' ? '' : options.lang + '/') + 'embarque.webmanifest' + manifestVersion;
     document.querySelectorAll('[data-boarding-entry]').forEach(function (node) { node.textContent = t(node.dataset.boardingEntry); });
     var toggle = $('offline-toggle'), menu = $('offline-menu');
     function render() {
