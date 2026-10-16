@@ -23,6 +23,17 @@ async function gotoBoarding(page, url = '/painel-onibus.html') {
   // A primeira sincronização redesenha a lista; esperar evita localizar linhas que serão trocadas.
   await expect(page.locator('#embarque-update')).toHaveAttribute('aria-busy', 'false');
 }
+// Marcações na fila do IndexedDB (mesma leitura dos testes offline).
+function queued(page) {
+  return page.evaluate(() => new Promise((resolve, reject) => {
+    const request = indexedDB.open('kob-boarding-offline', 1);
+    request.onerror = reject;
+    request.onsuccess = () => {
+      const db = request.result, tx = db.transaction('sessions'), get = tx.objectStore('sessions').getAll();
+      get.onsuccess = () => resolve(get.result[0]?.pending.length ?? 0); tx.oncomplete = () => db.close();
+    };
+  }));
+}
 async function openNotices(page) {
   const toggle = page.locator('#embarque-offline-toggle');
   if (await toggle.getAttribute('aria-expanded') !== 'true') await toggle.click();
@@ -684,7 +695,8 @@ test('menu de ônibus compacto tem opções grandes, teclado e Escape próprio @
   await gotoBoarding(page, '/painel-onibus.html');
   const picker = page.getByRole('combobox', { name: 'Filtrar por ônibus', exact: true });
   const box = await picker.boundingBox();
-  expect(box.height).toBe(await page.locator('.embarque-trip .embarque-segment').evaluate(el => el.offsetHeight));
+  // boundingBox vem com fração (51.99998) durante/apos a transição do slider; offsetHeight é inteiro.
+  expect(box.height).toBeCloseTo(await page.locator('.embarque-trip .embarque-segment').evaluate(el => el.offsetHeight), 0);
   await picker.click();
   const options = page.getByRole('listbox').getByRole('option');
   await expect(options).toHaveCount(3);
@@ -932,22 +944,38 @@ test('nuvem fica verde online, amarela com envio falhando e vermelha com traço 
 });
 
 test('badge da nuvem limita em 99+ e linhas mostram Sincronizando enquanto o envio está segurado @smoke', async ({ page, context }) => {
+  // 100 envios sequenciais levam ~3 s localmente; folga para runners lentos do CI.
+  test.setTimeout(90000);
+  // 100 pessoas: o mínimo para o badge mostrar "99+".
   const data = fixture();
-  for (let id = 4; id <= 103; id++) data.people.push({ ...data.people[0], id: String(id), primary: false, name: `Passageiro ${id}`, outbound: emptyState(), return: emptyState() });
+  for (let id = 4; id <= 100; id++) data.people.push({ ...data.people[0], id: String(id), primary: false, name: `Passageiro ${id}`, outbound: emptyState(), return: emptyState() });
   let release;
   const wait = new Promise(resolve => { release = resolve; });
-  await mockPanel(context, data, { delay: () => wait });
+  const api = await mockPanel(context, data, { delay: () => wait });
   await gotoBoarding(page, '/painel-onibus.html');
   await page.locator('[data-check="1"]').click();
   await expect(page.locator('[data-person="1"] .embarque-person__detail')).toHaveText('Sincronizando');
-  // Enquanto o 1º POST está segurado, as próximas marcações entram na fila local.
-  for (let id = 2; id <= 103; id++) await page.locator(`[data-check="${id}"]`).click();
+  // Enquanto o 1º POST está segurado, as outras marcações entram na fila local. Os cliques
+  // rodam na página (mesmo caminho da interface) para caber bem antes do timeout de 15 s do POST.
+  await page.evaluate(async () => {
+    for (let id = 2; id <= 100; id++) {
+      const button = document.querySelector(`[data-check="${id}"]`);
+      button.click();
+      await new Promise(resolve => setTimeout(resolve, 0));
+    }
+  });
+  await expect.poll(() => queued(page), { timeout: 15000 }).toBe(100);
   await expect(page.locator('#embarque-offline-badge')).toHaveText('99+');
   await expect(page.locator('[data-person="50"] .embarque-person__detail')).toHaveText('Sincronizando');
   // O rótulo usa o mesmo número do badge.
-  await expect(page.locator('#embarque-offline-toggle')).toHaveAttribute('aria-label', /103 marcações pendentes/);
+  await expect(page.locator('#embarque-offline-toggle')).toHaveAttribute('aria-label', /100 marcações pendentes/);
+  expect(api.writes).toHaveLength(1);
   release();
-  await expect(page.locator('#embarque-offline-badge')).toBeHidden({ timeout: 30000 });
+  // A fila envia um POST por vez; acompanha a fila no IndexedDB até zerar.
+  await expect.poll(() => queued(page), { timeout: 60000 }).toBe(0);
+  expect(api.writes).toHaveLength(100);
+  await expect(page.locator('#embarque-offline-badge')).toBeHidden();
+  await expect(page.locator('[data-person="50"] .embarque-person__detail')).toHaveText('Confirmado às 06:00:00');
 });
 
 test('conflito pulsa a nuvem e anuncia sem abrir o menu; resolve pelo menu da nuvem @smoke', async ({ page, context }) => {
