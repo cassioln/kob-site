@@ -18,6 +18,11 @@ embarque. A reserva continua existindo, com histórico.
 
 1. Ícone de editar em cada reserva da lista (todas: pagas, pendentes,
    canceladas, VIP), na primeira linha do grupo.
+   O mesmo ícone também aparece em cada card de reserva do Planejamento de
+   Frota (`.grupo-item__top`, ao lado do código), abrindo o mesmo modal. O
+   clique não pode iniciar o arraste do card (`mousedown` com
+   `stopPropagation`, como os outros botões do card). Cards VIP legados
+   (`id` começando com `vip_`) não têm reserva real e ficam sem o ícone.
 2. Ao clicar, abrir um modal com a identidade visual do `#painel-vip-dialog`
    (`bus-dialog`, cabeçalho com badge de ícone, título, subtítulo, ações no
    rodapé).
@@ -71,7 +76,7 @@ embarque. A reserva continua existindo, com histórico.
 | Colo sem adulto | Bloquear o salvamento se crianças de colo ativas > adultos pagantes ativos; a mensagem orienta marcar também a criança |
 | Novo responsável | Só adultos 18+ ativos; e-mail e WhatsApp dele viram o contato da reserva; se faltarem, o modal exige preencher antes de salvar |
 | Todos desistem | A reserva vira "Desistente": sai da frota e do embarque, fica na lista com esse status, não pede novo responsável |
-| Alcance do ícone | Todas as reservas. O toggle de desistência só aparece em reservas pagas e VIP (as que ocupam lugar) |
+| Alcance do ícone | Lista de reservas e cards da frota. Todas as reservas. O toggle de desistência só aparece em reservas pagas e VIP (as que ocupam lugar) |
 | E-mail | Avisar a organização (administrativo@) a cada salvamento com desistência, reativação ou troca de responsável |
 | Grupo | Seletor com os nomes livres do catálogo (`bus_catalogo_grupos`) + o atual |
 | Registro | Data/hora da desistência (automática, UTC) + motivo opcional; ambos no Excel |
