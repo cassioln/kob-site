@@ -20,6 +20,14 @@ async function gotoBoarding(page, url = '/painel-onibus.html') {
   await expect(opener).toBeVisible();
   await opener.click();
   await expect(page.locator('#embarque-sidebar')).toHaveClass(/is-open/);
+  // A primeira sincronização redesenha a lista; esperar evita localizar linhas que serão trocadas.
+  await expect(page.locator('#embarque-update')).toHaveAttribute('aria-busy', 'false');
+}
+async function openNotices(page) {
+  const toggle = page.locator('#embarque-offline-toggle');
+  if (await toggle.getAttribute('aria-expanded') !== 'true') await toggle.click();
+  await expect(page.locator('#embarque-offline-menu')).toBeVisible();
+  return page.locator('#embarque-notices');
 }
 async function openExport(page) {
   const toggle = page.locator('#embarque-export-toggle');
@@ -99,13 +107,25 @@ test('identifica seleção pendente até confirmar no banco e impede duplo toque
   await page.keyboard.press('Space');
   await expect(ana).toBeDisabled();
   await expect(ana).toHaveAttribute('aria-busy', 'true');
-  await expect(page.locator('[data-person="1"] .embarque-person__detail')).toHaveText('Enviando ao banco…');
+  const detail = page.locator('[data-person="1"] .embarque-person__detail');
+  await expect(detail).toHaveText('Sincronizando');
+  await expect(detail.locator('.embarque-person__spinner')).toHaveCSS('animation-name', 'embarque-spin');
+  await expect(detail.locator('svg')).toHaveAttribute('aria-hidden', 'true');
+  // Mesma fonte, tamanho e cor do "Aguardando embarque" e sem o antigo fundo amarelo.
+  const look = node => { const style = getComputedStyle(node); return [style.fontSize, style.fontWeight, style.color].join(); };
+  expect(await detail.evaluate(look)).toBe(await page.locator('[data-person="2"] .embarque-person__detail').evaluate(look));
+  await expect(page.locator('[data-person="1"]')).not.toHaveCSS('background-color', 'rgb(255, 248, 233)');
+  await expect(ana).toHaveAttribute('aria-label', 'Desmarcar embarque de Ana de Souza · Ida · Sincronizando');
+  await expect(page.locator('#embarque-offline-badge')).toHaveText('1');
+  await expect(page.locator('#embarque-offline-menu')).toBeHidden();
   await expect(ana).toHaveAttribute('aria-pressed', 'true');
   await expect(page.locator('#embarque-present')).toHaveText('1');
   await expect(page.locator('[data-person="1"]')).toHaveClass(/is-queued/);
   release();
   await expect(ana).toHaveAttribute('aria-pressed', 'true');
   await expect(page.locator('[data-person="1"]')).not.toHaveClass(/is-queued/);
+  await expect(detail).toHaveText('Confirmado às 06:00:00');
+  await expect(page.locator('#embarque-offline-badge')).toBeHidden();
   await expect(ana).toBeFocused();
   expect(api.writes).toHaveLength(1);
 });
@@ -124,6 +144,7 @@ test('tablet mantém contadores visíveis durante a chamada @smoke', async ({ pa
   await mockPanel(context);
   await page.setViewportSize({ width: 820, height: 700 });
   await gotoBoarding(page, '/painel-onibus.html');
+  await expect(page.locator('[data-check="3"]')).toBeVisible();
   await page.locator('[data-check="3"]').scrollIntoViewIfNeeded();
   const summary = await page.locator('.embarque-overview').boundingBox();
   expect(summary.y).toBeGreaterThanOrEqual(0);
@@ -174,7 +195,10 @@ test('erro de gravação e falta de conexão mantêm marcação identificada com
   await mockPanel(context, fixture(), { fail: true });
   await gotoBoarding(page, '/painel-onibus.html');
   await page.locator('[data-check="1"]').click();
-  await expect(page.locator('#embarque-connection')).toContainText('pendente de envio');
+  await expect(page.locator('#embarque-offline-badge')).toHaveText('1');
+  await expect(page.locator('[data-person="1"] .embarque-person__detail')).toHaveText('Aguardando conexão');
+  await expect(await openNotices(page)).toContainText('1 marcação aguardando envio');
+  await page.locator('#embarque-offline-toggle').click();
   await expect(page.locator('[data-check="1"]')).toHaveAttribute('aria-pressed', 'true');
   await expect(page.locator('[data-person="1"]')).toHaveClass(/is-queued/);
   await expect(page.locator('[data-boarding-export="pdf"]')).toBeDisabled();
@@ -840,7 +864,7 @@ test('acesso offline vira ícone no cabeçalho com menu curto e Escape próprio 
   await mockPanel(context);
   await gotoBoarding(page, '/painel-onibus.html');
   const toggle = page.locator('.embarque-header__actions #embarque-offline-toggle');
-  await expect(toggle).toHaveAttribute('aria-label', 'Acesso offline');
+  await expect(toggle).toHaveAttribute('aria-label', 'Acesso offline · Online · 1 aviso');
   await expect(page.locator('#embarque-scroll .embarque-offline')).toHaveCount(0);
   await expect(page.locator('#embarque-offline-link')).toHaveCount(0);
   await expect(page.getByText('Adicione à tela inicial')).toHaveCount(0);
@@ -850,7 +874,10 @@ test('acesso offline vira ícone no cabeçalho com menu curto e Escape próprio 
   await expect(toggle).toHaveAttribute('aria-expanded', 'true');
   await expect(menu).toBeVisible();
   await expect(menu.locator('#embarque-prepare')).toHaveText('Preparar');
-  expect((await menu.innerText()).length).toBeLessThan(120);
+  await expect(menu.locator('#embarque-network')).toContainText('Online · sincronizado às');
+  // O bloco de preparo offline continua curto; os avisos ficam numa lista própria abaixo.
+  expect((await menu.locator('.embarque-offline__readiness').innerText()).length).toBeLessThan(120);
+  await expect(menu.locator('#embarque-notices [data-notice="waiting"]')).toContainText('1 pessoa confirmada ainda sem ônibus');
   await toggle.press('Escape');
   await expect(menu).toBeHidden();
   await expect(toggle).toBeFocused();
@@ -858,4 +885,123 @@ test('acesso offline vira ícone no cabeçalho com menu curto e Escape próprio 
   await toggle.click();
   await page.locator('#embarque-search').click();
   await expect(menu).toBeHidden();
+});
+
+test('nuvem fica verde online, amarela com envio falhando e vermelha com traço sem conexão @smoke', async ({ page, context }) => {
+  const failing = { fail: false };
+  await mockPanel(context, fixture(), failing);
+  await gotoBoarding(page, '/painel-onibus.html');
+  const toggle = page.locator('#embarque-offline-toggle');
+  const slash = toggle.locator('.embarque-offline__slash');
+  await expect(toggle).toHaveAttribute('data-network', 'online');
+  await expect(toggle).toHaveCSS('color', 'rgb(127, 224, 196)');
+  await expect(slash).toBeHidden();
+  await expect(page.locator('#embarque-offline-badge')).toBeHidden();
+  // O aviso de pessoas sem ônibus não tem número: aparece como ponto.
+  await expect(page.locator('#embarque-offline-dot')).toBeVisible();
+  failing.fail = true;
+  await page.locator('[data-check="1"]').click();
+  await expect(toggle).toHaveAttribute('data-network', 'unstable');
+  await expect(toggle).toHaveCSS('color', 'rgb(255, 209, 102)');
+  await expect(slash).toBeHidden();
+  await expect(page.locator('#embarque-offline-badge')).toHaveText('1');
+  await expect(page.locator('#embarque-offline-dot')).toBeHidden();
+  await expect(page.locator('[data-person="1"] .embarque-person__detail')).toHaveText('Aguardando conexão');
+  await context.setOffline(true);
+  await expect(toggle).toHaveAttribute('data-network', 'offline');
+  await expect(toggle).toHaveCSS('color', 'rgb(255, 139, 139)');
+  await expect(slash).toBeVisible();
+  await expect(toggle).toHaveAttribute('aria-label', 'Acesso offline · Sem conexão · 1 marcação aguardando envio · 1 aviso');
+  const menu = await openNotices(page);
+  await expect(page.locator('#embarque-network')).toHaveText('Sem conexão');
+  await expect(menu.locator('[data-notice="queued"]')).toContainText('1 marcação aguardando envio');
+  await expect(menu.locator('[data-notice="queued"]')).not.toContainText('Contadores incluem a seleção local');
+  await expect(menu.locator('[data-notice="waiting"] #embarque-fleet')).toBeVisible();
+  failing.fail = false;
+  await context.setOffline(false);
+  await expect(toggle).toHaveAttribute('data-network', 'online');
+  await expect(page.locator('#embarque-offline-badge')).toBeHidden();
+  await expect(page.locator('[data-person="1"] .embarque-person__detail')).toHaveText('Confirmado às 06:00:00');
+  await expect(menu.locator('[data-notice="queued"]')).toHaveCount(0);
+  await page.locator('#embarque-fleet').click();
+  await expect(page.locator('#embarque-sidebar')).not.toBeVisible();
+  await expect(page.locator('[data-aba="frota"]')).toHaveAttribute('aria-selected', 'true');
+});
+
+test('badge da nuvem limita em 99+ e linhas mostram Sincronizando enquanto o envio está segurado @smoke', async ({ page, context }) => {
+  const data = fixture();
+  for (let id = 4; id <= 103; id++) data.people.push({ ...data.people[0], id: String(id), primary: false, name: `Passageiro ${id}`, outbound: emptyState(), return: emptyState() });
+  let release;
+  const wait = new Promise(resolve => { release = resolve; });
+  await mockPanel(context, data, { delay: () => wait });
+  await gotoBoarding(page, '/painel-onibus.html');
+  await page.locator('[data-check="1"]').click();
+  await expect(page.locator('[data-person="1"] .embarque-person__detail')).toHaveText('Sincronizando');
+  // Enquanto o 1º POST está segurado, as próximas marcações entram na fila local.
+  for (let id = 2; id <= 103; id++) await page.locator(`[data-check="${id}"]`).click();
+  await expect(page.locator('#embarque-offline-badge')).toHaveText('99+');
+  await expect(page.locator('[data-person="50"] .embarque-person__detail')).toHaveText('Sincronizando');
+  await expect(page.locator('#embarque-offline-toggle')).toHaveAttribute('aria-label', /103 marcações aguardando envio/);
+  release();
+  await expect(page.locator('#embarque-offline-badge')).toBeHidden({ timeout: 30000 });
+});
+
+test('conflito pulsa a nuvem e anuncia sem abrir o menu; resolve pelo menu da nuvem @smoke', async ({ page, context }) => {
+  const api = await mockPanel(context);
+  await gotoBoarding(page, '/painel-onibus.html');
+  await context.setOffline(true);
+  await page.locator('[data-check="1"]').click();
+  await expect(page.locator('[data-person="1"] .embarque-person__detail')).toHaveText('Aguardando conexão');
+  await expect(page.locator('[data-person="1"] .embarque-person__detail svg')).toHaveAttribute('aria-hidden', 'true');
+  api.manifest.people[0].outbound = { present: false, revision: 2, checked_at: null };
+  const toggle = page.locator('#embarque-offline-toggle');
+  await expect(toggle).not.toHaveClass(/is-alerting/);
+  await context.setOffline(false);
+  await expect(toggle).toHaveClass(/is-alerting/);
+  await expect(toggle).toHaveCSS('animation-name', 'embarque-alert');
+  await expect(page.locator('#embarque-announcement')).toHaveText('Outra pessoa alterou esta presença. Escolha qual marcação manter.');
+  await expect(page.locator('#embarque-offline-menu')).toBeHidden();
+  await expect(page.locator('#embarque-conflicts, #embarque-connection, #embarque-error, #embarque-waiting')).toHaveCount(0);
+  await expect(page.locator('[data-person="1"] .embarque-person__detail')).toHaveText('Marcação para conferir');
+  await toggle.click();
+  await expect(toggle).not.toHaveClass(/is-alerting/);
+  const conflict = page.locator('#embarque-notices [data-notice="conflict"]');
+  await expect(conflict).toContainText('Ana de Souza · Ida');
+  await expect(conflict).toContainText('Neste dispositivo: A bordo · No banco: Faltando');
+  expect(api.writes).toHaveLength(0);
+  await conflict.locator('[data-resolve="local"]').click();
+  await expect(conflict).toHaveCount(0);
+  await expect.poll(() => api.writes.length).toBe(1);
+  expect(api.writes[0].body.expected_revision).toBe(2);
+  await expect(page.locator('[data-check="1"]')).toHaveAttribute('aria-pressed', 'true');
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#embarque-offline-menu')).toBeHidden();
+  await expect(page.locator('#embarque-sidebar')).toBeVisible();
+  // Com movimento reduzido o pulso não anima (o aviso continua anunciado e marcado no ícone).
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await toggle.evaluate(node => node.classList.add('is-alerting'));
+  await expect(toggle).toHaveCSS('animation-name', 'none');
+});
+
+test('menu da nuvem rola e cabe em 320 px com vários avisos @smoke', async ({ page, context }) => {
+  const api = await mockPanel(context);
+  await page.setViewportSize({ width: 320, height: 640 });
+  await gotoBoarding(page, '/painel-onibus.html?lang=es');
+  await context.setOffline(true);
+  for (const id of ['1', '2', '3']) await page.locator(`[data-check="${id}"]`).click();
+  for (const person of api.manifest.people) person.outbound = { present: false, revision: 5, checked_at: null };
+  await context.setOffline(false);
+  await expect(page.locator('#embarque-offline-badge')).toHaveText('3');
+  const list = await openNotices(page);
+  await expect(list.locator('[data-notice="conflict"]')).toHaveCount(3);
+  const box = await page.locator('#embarque-offline-menu').evaluate(node => {
+    const rect = node.getBoundingClientRect();
+    return { left: rect.left, right: rect.right, bottom: rect.bottom, scrolls: node.scrollHeight > node.clientHeight, overflowY: getComputedStyle(node).overflowY };
+  });
+  expect(box.left).toBeGreaterThanOrEqual(0);
+  expect(box.right).toBeLessThanOrEqual(320);
+  expect(box.bottom).toBeLessThanOrEqual(640);
+  expect(box).toMatchObject({ scrolls: true, overflowY: 'auto' });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
+  await expect(list.locator('[data-resolve="server"]').first()).toHaveText('Conservar la base');
 });

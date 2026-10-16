@@ -51,11 +51,19 @@ O **Kriativos On Board (kob-site)** é a plataforma web oficial do **Kriativos O
    existente e controle de revisão entre dispositivos; a atualização automática ocorre
    a cada oito segundos com a chamada aberta. A lista mínima e a fila de marcações
    ficam no IndexedDB, separadas por hash do acesso, sem CPF ou dados financeiros.
-   Cada check é persistido no dispositivo antes do envio e aparece como pendente
-   até o banco confirmar. Contadores incluem a seleção local com aviso visível.
+   Cada check é persistido no dispositivo antes do envio; a linha troca
+   "Aguardando embarque" por "Sincronizando" (com rede) ou "Aguardando conexão"
+   (sem rede) até o banco confirmar e mostrar "Confirmado às…". Contadores
+   incluem a seleção local. Todos os avisos (pendências, conflitos, acesso
+   expirado, erro de armazenamento ou de primeira conexão, pessoas sem ônibus)
+   ficam no menu do ícone de nuvem, que funciona como central de notificações:
+   verde online, amarelo com conexão instável, vermelho com traço sem conexão,
+   número com as marcações aguardando envio e um ponto para os demais avisos.
+   Avisos que exigem ação fazem a nuvem pulsar uma vez e são anunciados ao leitor
+   de tela, sem abrir o menu sozinho.
    A fila sobrevive a recarga/fechamento e reenvia com conexão e chamada aberta.
-   Conflitos exigem escolha explícita; sair com pendências pede confirmação.
-   Sem armazenamento disponível, novas marcações ficam bloqueadas com aviso.
+   Conflitos exigem escolha explícita no menu da nuvem; sair com pendências pede
+   confirmação. Sem armazenamento disponível, novas marcações ficam bloqueadas com aviso.
    Trocar o trecho durante uma gravação mantém a resposta vinculada ao trecho
    original; os anúncios acessíveis identificam pessoa e trecho em pt/en/es.
    A área de chamada oferece português, inglês e espanhol, selecionados por

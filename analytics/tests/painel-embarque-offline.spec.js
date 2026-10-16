@@ -35,6 +35,12 @@ async function ready(page, lang = 'pt') {
   await expect(page.locator('[data-check="1"]')).toBeEnabled();
   await expect(page.locator('#embarque-update')).toHaveAttribute('aria-busy', 'false');
 }
+async function notices(page) {
+  const toggle = page.locator('#embarque-offline-toggle');
+  if (await toggle.getAttribute('aria-expanded') !== 'true') await toggle.click();
+  await expect(page.locator('#embarque-offline-menu')).toBeVisible();
+  return page.locator('#embarque-notices');
+}
 async function records(page) {
   return page.evaluate(() => new Promise((resolve, reject) => {
     const request = indexedDB.open('kob-boarding-offline', 1);
@@ -65,10 +71,14 @@ test('fila grava antes da rede, identifica pendência e preserva ida/volta @smok
   await expect(page.locator('[data-person="1"]')).toHaveClass(/is-queued/);
   expect(await page.locator('#embarque-sidebar').evaluate(node => node.scrollTop)).toBe(0);
   expect((await page.locator('.embarque-header').boundingBox()).y).toBeGreaterThanOrEqual(0);
-  await expect(page.locator('#embarque-connection')).toContainText('pendente');
+  await expect(page.locator('#embarque-offline-badge')).toHaveText('1');
+  await expect(await notices(page)).toContainText('1 marcação aguardando envio');
+  await expect(page.locator('[data-person="1"] .embarque-person__detail')).toHaveText('Sincronizando');
   await expect(page.locator('[data-boarding-export="pdf"]')).toBeDisabled();
   release(); await pending(page, 0);
   await expect(page.locator('[data-person="1"]')).not.toHaveClass(/is-queued/);
+  await expect(page.locator('#embarque-offline-badge')).toBeHidden();
+  await expect(page.locator('#embarque-notices')).toBeHidden();
   expect(api.data.people[0].outbound.present).toBe(true);
   expect(api.data.people[0].return.present).toBe(false);
   const cached = JSON.stringify(await records(page));
@@ -126,8 +136,9 @@ test('revisão divergente exige escolha e permite manter o banco @smoke', async 
   await page.locator('[data-check="1"]').click(); await pending(page, 1);
   api.data.people[0].outbound.revision = 2; // Another device checked and then unchecked.
   await context.setOffline(false);
-  await expect(page.locator('#embarque-conflicts')).toContainText('Ana Offline');
-  await expect(page.locator('#embarque-conflicts')).toContainText('Outra pessoa');
+  const list = await notices(page);
+  await expect(list.locator('[data-notice="conflict"]')).toContainText('Ana Offline');
+  await expect(list.locator('[data-notice="conflict"]')).toContainText('Outra pessoa');
   expect(api.posts).toHaveLength(0);
   await page.locator('[data-resolve="server"]').click(); await pending(page, 0);
   await expect(page.locator('[data-check="1"]')).toHaveAttribute('aria-pressed', 'false');
@@ -138,7 +149,7 @@ test('conflito de ônibus exige confirmação antes de enviar com ônibus atual 
   await page.locator('[data-check="1"]').click(); await pending(page, 1);
   api.data.people[0].bus_number = 3;
   await context.setOffline(false);
-  await expect(page.locator('#embarque-conflicts')).toContainText('Ônibus 3');
+  await expect((await notices(page)).locator('[data-notice="conflict"]')).toContainText('Ônibus 3');
   expect(api.posts).toHaveLength(0);
   await page.locator('[data-resolve="local"]').click(); await pending(page, 0);
   expect(api.posts[0].bus_number).toBe(3);
@@ -148,7 +159,7 @@ test('passageiro removido não é enviado e pode descartar pendência @smoke', a
   const api = await mock(context); await ready(page); await context.setOffline(true);
   await page.locator('[data-check="1"]').click(); await pending(page, 1);
   api.data.people.shift(); await context.setOffline(false);
-  await expect(page.locator('#embarque-conflicts')).toContainText('não está mais');
+  await expect((await notices(page)).locator('[data-notice="conflict"]')).toContainText('não está mais');
   await expect(page.locator('[data-resolve="local"]')).toHaveCount(0);
   await page.locator('[data-resolve="server"]').click(); await pending(page, 0);
   expect(api.posts).toHaveLength(0);
@@ -158,7 +169,7 @@ test('acesso revogado suspende fila e sair exige confirmação de descarte @smok
   const api = await mock(context); await ready(page); await context.setOffline(true);
   await page.locator('[data-check="1"]').click(); await pending(page, 1);
   api.reject = true; await context.setOffline(false);
-  await expect(page.locator('#embarque-connection')).toContainText('acesso expirou');
+  await expect((await notices(page)).locator('[data-notice="expired"]')).toContainText('acesso expirou');
   await expect(page.locator('[data-check="1"]')).toBeDisabled();
   await page.locator('#embarque-close').click();
   page.once('dialog', dialog => dialog.dismiss()); await page.locator('#botao-sair').click();
@@ -181,6 +192,7 @@ test('nova autenticação do mesmo acesso preserva e reenvia pendências @smoke'
   const api = await mock(context); await ready(page); await context.setOffline(true);
   await page.locator('[data-check="1"]').click(); await pending(page, 1);
   api.reject = true; await context.setOffline(false);
+  await notices(page);
   await expect(page.locator('#embarque-reauth')).toBeVisible();
   await page.locator('#embarque-reauth').click();
   await expect(page.locator('#form-login')).toBeVisible(); await pending(page, 1);
@@ -191,12 +203,16 @@ test('nova autenticação do mesmo acesso preserva e reenvia pendências @smoke'
   expect(api.posts).toHaveLength(1);
 });
 
-for (const [lang, pendingWord, readyWord] of [['pt', 'Pendente de envio', 'Pronto neste dispositivo'], ['en', 'Pending upload', 'Ready on this device'], ['es', 'Pendiente de envío', 'Listo en este dispositivo']]) {
+for (const [lang, pendingWord, readyWord] of [['pt', 'Aguardando conexão', 'Pronto neste dispositivo'], ['en', 'Waiting for connection', 'Ready on this device'], ['es', 'Esperando conexión', 'Listo en este dispositivo']]) {
   test(`offline e instalação localizados em ${lang} @smoke`, async ({ page, context }) => {
     await mock(context); await page.setViewportSize({ width: 390, height: 844 }); await ready(page, lang);
     await expect(page.locator('#embarque-offline-state')).toHaveText(readyWord, { timeout: 25000 });
     await context.setOffline(true); await page.locator('[data-check="1"]').click();
     await expect(page.locator('[data-person="1"] .embarque-person__detail')).toHaveText(pendingWord);
+    await expect(page.locator('#embarque-offline-toggle')).toHaveAttribute('aria-label', new RegExp(pendingWord === 'Aguardando conexão' ? 'Sem conexão · 1 marcação' : pendingWord === 'Waiting for connection' ? 'No connection · 1 change' : 'Sin conexión · 1 cambio'));
+    await notices(page);
+    const menu = await page.locator('#embarque-offline-menu').boundingBox();
+    expect(menu.x).toBeGreaterThanOrEqual(0); expect(menu.x + menu.width).toBeLessThanOrEqual(390);
     await expect(page.locator('#embarque-sidebar')).toHaveAttribute('lang', lang === 'pt' ? 'pt-BR' : lang === 'en' ? 'en-US' : 'es');
     expect(await page.locator('#embarque-sidebar').evaluate(node => node.scrollWidth <= node.clientWidth)).toBe(true);
   });
@@ -207,7 +223,9 @@ test('armazenamento bloqueado não confirma falsamente uma seleção @smoke', as
   await page.addInitScript(() => { Object.defineProperty(window, 'indexedDB', { value: null }); });
   await page.goto('/painel-onibus.html?chamada=1');
   await expect(page.locator('#embarque-expected')).toHaveText('2');
-  await expect(page.locator('#embarque-connection')).toContainText('Não foi possível salvar');
+  await expect(page.locator('#embarque-offline-toggle')).toHaveClass(/is-alerting/);
+  await expect(page.locator('#embarque-offline-menu')).toBeHidden();
+  await expect((await notices(page)).locator('[data-notice="storageError"]')).toContainText('Não foi possível salvar');
   await expect(page.locator('[data-check="1"]')).toBeDisabled();
   await expect(page.locator('[data-check="1"]')).toHaveAttribute('aria-pressed', 'false');
 });
@@ -218,7 +236,8 @@ test('quota excedida no commit mantém check anterior e não envia ao banco @smo
     IDBObjectStore.prototype.put = function () { throw new DOMException('Quota full', 'QuotaExceededError'); };
   });
   await page.locator('[data-check="1"]').click();
-  await expect(page.locator('#embarque-connection')).toContainText('Não foi possível salvar');
+  await expect(page.locator('#embarque-announcement')).toContainText('Não foi possível salvar');
+  await expect((await notices(page)).locator('[data-notice="storageError"]')).toContainText('Não foi possível salvar');
   await expect(page.locator('[data-check="1"]')).toHaveAttribute('aria-pressed', 'false');
   await pending(page, 0); expect(api.posts).toHaveLength(0);
 });
@@ -228,7 +247,7 @@ test('conflito de revisão só envia intenção local depois de escolha explíci
   await page.locator('[data-check="1"]').click(); await pending(page, 1);
   api.data.people[0].outbound.revision = 2;
   await context.setOffline(false);
-  await expect(page.locator('#embarque-conflicts')).toBeVisible();
+  await expect((await notices(page)).locator('[data-notice="conflict"]')).toBeVisible();
   expect(api.posts).toHaveLength(0);
   await page.locator('[data-resolve="local"]').click(); await pending(page, 0);
   expect(api.posts[0].expected_revision).toBe(2);
@@ -252,7 +271,8 @@ test('cache de outro acesso não abre lista sem primeira preparação autorizada
   await expect(page.locator('#embarque-offline-state')).toHaveText('Pronto neste dispositivo', { timeout: 25000 });
   await page.evaluate(() => localStorage.setItem('kob_admin_token', 'another-key'));
   await network(context, api, true); await page.reload();
-  await expect(page.locator('#embarque-error')).toContainText('primeira vez');
+  await expect((await notices(page)).locator('[data-notice="firstConnection"]')).toContainText('primeira vez');
+  await expect(page.locator('#embarque-retry')).toBeVisible();
   await expect(page.locator('[data-person]')).toHaveCount(0);
   await expect(page.locator('#embarque-offline-state')).toHaveText('Ainda não preparado');
 });

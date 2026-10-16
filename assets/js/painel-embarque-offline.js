@@ -13,7 +13,6 @@
       $('offline-state').dataset.ready = String(ready);
       toggle.dataset.ready = String(ready);
       toggle.setAttribute('aria-busy', String(preparing));
-      toggle.title = t('offlineAccess') + ' · ' + $('offline-state').textContent;
       $('offline-help').textContent = t(failed ? 'offlineUnsupported' : ready ? 'offlineHelpReady' : 'offlineHelpNotReady', {
         time: state.savedAt ? new Intl.DateTimeFormat(root.lang || 'pt-BR', { dateStyle: 'short', timeStyle: 'short', timeZone: 'America/Sao_Paulo' }).format(new Date(state.savedAt)) : ''
       });
@@ -63,6 +62,8 @@
     window.addEventListener('appinstalled', function () { installPrompt = null; render(); });
     window.addEventListener('online', function () { prepare(false); });
     prepare(false);
-    return { update: function (next) { state = next; render(); } };
+    // A nuvem é dividida: este módulo cuida do preparo offline; rede, rótulo e avisos
+    // vêm de renderNotices() em painel-embarque.js.
+    return { update: function (next) { state = next; render(); }, close: function () { setMenu(false); } };
   };
 })();

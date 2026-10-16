@@ -93,6 +93,8 @@ test('atalho abre sem sinal, guarda marcações e reenvia ao voltar a conexão @
   await next.locator('[data-check="1"]').click();
   await expect.poll(() => pendingCount(next)).toBe(2);
   await expect(next.locator('[data-person="1"]')).toHaveClass(/is-queued/);
+  await expect(next.locator('[data-person="1"] .embarque-person__detail')).toHaveText('Aguardando conexão');
+  await expect(next.locator('#embarque-offline-badge')).toHaveText('2');
   expect(api.posts).toHaveLength(0);
   expect(api.financial).toBe(0);
 
@@ -108,4 +110,5 @@ test('atalho abre sem sinal, guarda marcações e reenvia ao voltar a conexão @
   expect(api.data.people[0].outbound.present).toBe(true);
   expect(api.data.people[0].return.present).toBe(true);
   await expect(next.locator('[data-person="1"]')).not.toHaveClass(/is-queued/);
+  await expect(next.locator('#embarque-offline-badge')).toBeHidden();
 });

@@ -1,6 +1,6 @@
 /* Only the static boarding shell is cached. API traffic always reaches the network. */
 'use strict';
-var VERSION = '20261016-check-busao-v8', CACHE = 'kob-boarding-shell-' + VERSION;
+var VERSION = '20261016-nuvem-v9', CACHE = 'kob-boarding-shell-' + VERSION;
 var FILES = ['/painel-onibus.html', '/embarque.webmanifest', '/en/embarque.webmanifest', '/es/embarque.webmanifest',
   '/assets/css/painel-onibus.css?v=20261016-check-busao-v8', '/assets/css/painel-embarque.css?v=' + VERSION,
   '/assets/fonts/gobold-extra2.woff2', '/assets/fonts/chantal-medium.woff2',
