@@ -1,7 +1,7 @@
 {
   "id": "/painel-onibus.html?chamada=1",
-  "name": "Check Busão KOB",
-  "short_name": "Check Busão KOB",
+  "name": "Busão KOB - Lista de Embarque",
+  "short_name": "Busão KOB",
   "lang": "es",
   "start_url": "/painel-onibus.html?chamada=1&lang=es",
   "scope": "/",
