@@ -1049,16 +1049,14 @@
 
           var tituloGrupo = document.createElement('div');
           tituloGrupo.className = 'grupo-item__titulo';
+          // Sem `title` no nome: o tooltip do card abre ao passar o mouse em
+          // todo o título, e o balão nativo apareceria por cima dele.
           if (r.is_vip) {
-            var nomeVip = r.responsavel || 'Reserva VIP';
-            tituloGrupo.textContent = nomeVip;
-            tituloGrupo.title = nomeVip;
+            tituloGrupo.textContent = r.responsavel || 'Reserva VIP';
           } else if (r.grupo) {
             tituloGrupo.textContent = r.grupo;
-            tituloGrupo.title = r.grupo;
           } else {
             tituloGrupo.textContent = r.responsavel;
-            tituloGrupo.title = r.responsavel;
           }
 
           var tituloGrupoWrap = document.createElement('div');
@@ -1328,7 +1326,12 @@
             tooltip.innerHTML = '<div class="grupo-item__tooltip-resp">' + escapeHtml(r.responsavel || 'Reserva VIP') + '</div><div class="grupo-item__tooltip-pax">1 vaga reservada para a equipe</div>';
           } else {
             var nomeResp = r.responsavel || r.grupo || 'Participante';
-            var htmlTooltip = '<div class="grupo-item__tooltip-resp"><strong>Contato principal:</strong> ' + escapeHtml(nomeResp) + '</div>';
+            var htmlTooltip = '';
+            // O nome do grupo pode vir cortado no card; o tooltip mostra inteiro.
+            if (r.grupo) {
+              htmlTooltip += '<div class="grupo-item__tooltip-resp"><strong>Grupo:</strong> ' + escapeHtml(r.grupo) + '</div>';
+            }
+            htmlTooltip += '<div class="grupo-item__tooltip-resp"><strong>Contato principal:</strong> ' + escapeHtml(nomeResp) + '</div>';
 
             var listaPassageiros = Array.isArray(r.passageiros) ? r.passageiros : [];
             // Filtra passageiros além do responsável (posicao >= 2 ou índice >= 1)

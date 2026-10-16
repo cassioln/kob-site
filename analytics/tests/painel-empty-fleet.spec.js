@@ -654,3 +654,49 @@ test('mostra o total líquido com a taxa calculada por pagamento', async ({ page
   await expect(page.locator('#r-receita-liquida')).toHaveText('R$ 475,24');
   await expect(page.getByText('Taxa Mercado Pago 0,99%', { exact: true })).toBeVisible();
 });
+
+test('abre o tooltip do card da frota ao passar o mouse no título do grupo', async ({ page }) => {
+  const id = '00000001-1111-4111-8111-000000000001';
+  await page.route('**/api/bus-admin-data*', route => route.fulfill({
+    status: 200,
+    contentType: 'application/json',
+    body: JSON.stringify({
+      reservas: [],
+      resumo: {
+        total_a_bordo: 2, pagantes: 2, criancas_no_colo: 0, reservas_pagas: 1,
+        reservas_pendentes: 0, reservas_falha: 0, receita_centavos: 24000, sem_telefone: 0
+      },
+      frota: {
+        capacidade: 46,
+        minimo: 40,
+        sem_onibus_confirmado: [],
+        onibus: [{
+          numero: 1, ocupados: 2, assentos_ocupados: 2, vagas_livres: 44,
+          pagantes: 2, criancas: 0, total: 2, assentos: 2,
+          reservas: [{
+            id, code: '00000001', grupo: 'Terraforming Mars', responsavel: 'Ana Souza',
+            pagantes: 2, criancas: 0, total: 2, assentos: 2, is_vip: false,
+            pago_em: '10/10/2026 10:00',
+            passageiros: [
+              { posicao: 1, nome: 'Ana Souza', responsavel: true, menor: false, crianca_colo: false },
+              { posicao: 2, nome: 'Bruno Souza', responsavel: false, menor: false, crianca_colo: false }
+            ]
+          }]
+        }]
+      }
+    })
+  }));
+
+  await page.goto('/painel-onibus.html');
+  await page.locator('#embarque-close').click();
+  await page.getByRole('tab', { name: 'Reservas', exact: true }).click();
+  await page.getByRole('tab', { name: 'Planejamento de Frota' }).click();
+
+  const tooltip = page.locator('#grupo-info-' + id);
+  await expect(tooltip).toBeHidden();
+  await expect(page.locator('.grupo-item__titulo')).not.toHaveAttribute('title', /.*/);
+  await page.locator('.grupo-item__titulo').hover();
+  await expect(tooltip).toBeVisible();
+  await expect(tooltip).toContainText('Grupo: Terraforming Mars');
+  await expect(tooltip).toContainText('Contato principal: Ana Souza');
+});

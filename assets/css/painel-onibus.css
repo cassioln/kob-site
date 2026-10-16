@@ -2002,7 +2002,7 @@
   filter: drop-shadow(0 1px 1px rgba(100, 116, 139, 0.3));
 }
 
-.grupo-item__info-trigger:hover,
+.grupo-item__titulo-wrap:hover .grupo-item__info-trigger,
 .grupo-item__info-trigger:focus-visible {
   color: var(--p-acao);
   outline: none;
@@ -2407,7 +2407,7 @@
   border-color: #0f172a transparent transparent transparent;
 }
 
-.grupo-item__info-trigger:hover~.grupo-item__tooltip,
+.grupo-item__titulo-wrap:hover>.grupo-item__tooltip,
 .grupo-item__info-trigger:focus-visible~.grupo-item__tooltip {
   opacity: 1;
   visibility: visible;
