@@ -128,6 +128,8 @@ RewriteRule ^api/bus-fleet-assign/?$          php/mysql/bus-fleet-assign.php [QS
 RewriteRule ^api/bus-fleet-auto-balance/?$    php/mysql/bus-fleet-auto-balance.php [QSA,L]
 RewriteRule ^api/bus-vip-create/?$            php/mysql/bus-vip-create.php [QSA,L]
 RewriteRule ^api/bus-vip-delete/?$            php/mysql/bus-vip-delete.php [QSA,L]
+RewriteRule ^api/bus-registration-update/?$  php/mysql/bus-registration-update.php [QSA,L]
+RewriteRule ^api/bus-group-names/?$          php/mysql/bus-group-names.php [QSA,L]
 RewriteRule ^api/bus-payment-proof/?$         php/mysql/bus-payment-proof.php [QSA,L]
 RewriteRule ^api/mercadopago-webhook/?$       php/mysql/mercadopago-webhook.php [QSA,L]
 RewriteRule ^api/embarcados-contact/?$        php/mysql/embarcados-contact.php [QSA,L]

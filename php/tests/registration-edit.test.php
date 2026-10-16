@@ -6,6 +6,8 @@ require_once __DIR__ . '/../lib/registration-edit-schema.php';
 require_once __DIR__ . '/../lib/registration-edit.php';
 require_once __DIR__ . '/../lib/bus-boarding.php';
 require_once __DIR__ . '/../lib/bus-fleet.php';
+require_once __DIR__ . '/../lib/registration-edit-apply.php';
+require_once __DIR__ . '/../lib/registration-edit-email.php';
 
 function edit_expect($expected, $actual, string $message): void
 {
@@ -392,6 +394,64 @@ edit_expect([2, 0], [$plan['seats_before'], $plan['seats_after']], 'Native ints:
 
 echo "PASS: registration edit rules\n";
 
+// ---------------------------------------------------------------------------
+// E-mail para a organização (só o template; nada é enviado).
+// ---------------------------------------------------------------------------
+$before = edit_fixture()['registration'];
+edit_expect('Reserva 0B6F1C1E – alteração no painel', bus_registration_edit_email_subject('0B6F1C1E'), 'Email subject');
+
+$plan = bus_registration_edit_plan(edit_fixture(), edit_request(['2' => [
+    'withdrawn' => true, 'withdrawal_reason' => 'Mudou de <planos>', 'email' => 'novo@example.com',
+]]), [], NOW);
+$context = bus_registration_edit_email_context($before, $plan, 2);
+edit_expect(['0B6F1C1E', 'Azul', 3, 1], [$context['code'], $context['group'], $context['bus_number'], $context['seats_freed']], 'Email context');
+$text = bus_registration_edit_email_text($context);
+foreach ([
+    'RESERVA 0B6F1C1E - ALTERAÇÃO NO PAINEL', 'Grupo: Azul', 'Ônibus: 3',
+    "DESISTÊNCIAS\r\n- Pessoa Dois (motivo: Mudou de <planos>)",
+    "DADOS CORRIGIDOS\r\n- Pessoa Dois: e-mail",
+    "LUGARES\r\n- 1 lugar liberado no Ônibus 3\r\n- 2 reservas aguardando ônibus",
+] as $needle) {
+    edit_expect(true, str_contains($text, $needle), "Email text has '{$needle}'");
+}
+edit_expect(false, str_contains($text, 'motivo da desistência'), 'Reason is not repeated as a correction');
+$html = bus_registration_edit_email_html($context);
+edit_expect(true, str_contains($html, 'Pessoa Dois (motivo: Mudou de &lt;planos&gt;)'), 'Email html escapes the reason');
+edit_expect(false, str_contains($html, '<planos>'), 'Email html has no raw reason markup');
+edit_expect(true, str_contains($html, '1 lugar liberado no Ônibus 3'), 'Email html has seats freed');
+edit_expect(true, str_contains($html, '2 reservas aguardando ônibus'), 'Email html has waiting count');
+edit_expect(true, str_contains($html, 'Reserva 0B6F1C1E – alteração no painel'), 'Email html preheader is the subject');
+
+$noWaiting = bus_registration_edit_email_text(bus_registration_edit_email_context($before, $plan, 0));
+edit_expect(false, str_contains($noWaiting, 'aguardando'), 'No waiting line when nobody waits');
+edit_expect(true, str_contains(bus_registration_edit_email_text(bus_registration_edit_email_context($before, $plan, 1)),
+    '1 reserva aguardando ônibus'), 'Singular waiting line');
+
+// Troca de responsável + desistência do antigo, sem motivo.
+$plan = bus_registration_edit_plan(edit_fixture(), edit_request(['1' => ['withdrawn' => true]], '2'), [], NOW);
+$text = bus_registration_edit_email_text(bus_registration_edit_email_context($before, $plan, 0));
+edit_expect(true, str_contains($text, "NOVO RESPONSÁVEL\r\n- Pessoa Um → Pessoa Dois"), 'Email lists new primary');
+edit_expect(true, str_contains($text, 'Pessoa Um (sem motivo informado)'), 'Email marks missing reason');
+
+// Desistência total: o ônibus do e-mail é o de antes (o plano zera bus_number).
+$plan = bus_registration_edit_plan(edit_fixture(), edit_request(
+    ['1' => ['withdrawn' => true], '2' => ['withdrawn' => true], '3' => ['withdrawn' => true]]), [], NOW);
+$context = bus_registration_edit_email_context($before, $plan, 0);
+edit_expect([3, 2], [$context['bus_number'], $context['seats_freed']], 'Full withdrawal email keeps old bus');
+edit_expect(true, str_contains(bus_registration_edit_email_text($context), '2 lugares liberados no Ônibus 3'), 'Plural seats freed');
+
+// Reativação da reserva inteira: volta para o ônibus guardado.
+$gone = edit_fixture(
+    ['1' => ['withdrawn_at' => '2026-10-16 10:00:00'], '2' => ['withdrawn_at' => '2026-10-16 10:00:00'],
+        '3' => ['withdrawn_at' => '2026-10-16 10:00:00']],
+    ['bus_number' => null, 'withdrawn_at' => '2026-10-16 10:00:00', 'withdrawn_bus_number' => '3', 'withdrawn_fleet_status' => 'assigned']
+);
+$plan = bus_registration_edit_plan($gone, edit_request(['1' => ['withdrawn' => false]], '1', $gone), [], NOW);
+$text = bus_registration_edit_email_text(bus_registration_edit_email_context($gone['registration'], $plan, 0));
+edit_expect(true, str_contains($text, "VOLTARAM PARA A VIAGEM\r\n- Pessoa Um"), 'Email lists reactivation');
+edit_expect(true, str_contains($text, '1 lugar ocupado a mais no Ônibus 3'), 'Email lists seats taken');
+echo "PASS: registration edit email\n";
+
 $dsn = getenv('KOB_BOARDING_TEST_DSN');
 if (!$dsn) {
     echo "SKIP: MySQL integration (set KOB_BOARDING_TEST_DSN for isolated kob_boarding_test database)\n";
@@ -491,3 +551,160 @@ $groupIds = array_column(bus_fleet_load_balance_snapshot($pdo)['groups'], 'id');
 edit_expect(false, in_array('withdrawn-registration', $groupIds, true), 'Balance ignores withdrawn registration');
 edit_expect(true, in_array('partial-registration', $groupIds, true), 'Balance keeps the partially withdrawn registration');
 echo "PASS: withdrawn readers\n";
+
+// ---------------------------------------------------------------------------
+// Gravação da edição (bus_registration_edit_apply) com locks e conflitos.
+// ---------------------------------------------------------------------------
+$pdo->exec('DELETE FROM bus_boarding_checkins');
+$pdo->exec('DELETE FROM bus_registration_edits');
+$pdo->exec('DELETE FROM bus_passengers');
+$pdo->exec('DELETE FROM bus_registrations');
+$pdo->exec('DELETE FROM bus_settings');
+// Mesmo UNIQUE da produção (001): a troca de CPF entre passageiros precisa passar por ele.
+$pdo->exec('ALTER TABLE bus_passengers ADD UNIQUE KEY bus_passengers_registration_cpf_key (registration_id, cpf)');
+
+$mainId = 'aaaaaaaa-0000-4000-8000-000000000001';
+$otherId = 'bbbbbbbb-0000-4000-8000-000000000002';
+$ghostId = 'cccccccc-0000-4000-8000-000000000003';
+$fillerId = 'dddddddd-0000-4000-8000-000000000004';
+$pdo->exec("INSERT INTO bus_registrations
+    (id, primary_name, primary_cpf, primary_birth_date, email, whatsapp, passenger_count, children_count,
+     group_name, status, bus_number, fleet_assignment_status, updated_at) VALUES
+    ('$mainId', 'Pessoa Um', '52998224725', '1990-05-20', 'um@example.com', '11987654321', 2, 1,
+     'Azul', 'confirmed', 1, 'assigned', '2026-10-16 18:00:00'),
+    ('$otherId', 'Outra Pessoa', '39053344705', NULL, 'outra@example.com', '11987654322', 1, 0,
+     NULL, 'confirmed', 3, 'assigned', '2026-10-16 18:00:00'),
+    ('$ghostId', 'Fica Junto', '10000000019', NULL, 'fica@example.com', '11987654323', 1, 0,
+     'Catan', 'confirmed', 3, 'assigned', '2026-10-16 18:00:00')");
+$pdo->exec("INSERT INTO bus_passengers
+    (registration_id, `position`, full_name, cpf, whatsapp, email, is_primary, is_minor, is_child_lap, withdrawn_at) VALUES
+    ('$mainId', 1, 'Pessoa Um', '52998224725', '11987654321', 'um@example.com', 1, 0, 0, NULL),
+    ('$mainId', 2, 'Pessoa Dois', '11144477735', '11976543210', 'dois@example.com', 0, 0, 0, NULL),
+    ('$mainId', 3, 'Criança Três', '12345678909', NULL, NULL, 0, 1, 1, NULL),
+    ('$otherId', 1, 'Outra Pessoa', '39053344705', '11987654322', 'outra@example.com', 1, 0, 0, NULL),
+    ('$ghostId', 1, 'Fica Junto', '10000000019', '11987654323', 'fica@example.com', 1, 0, 0, NULL),
+    ('$ghostId', 2, 'Desistiu Antes', '10000791989', NULL, NULL, 0, 0, 0, '2026-10-15 12:00:00')");
+
+$mainPassengerId = static fn (int $position): string => (string) $pdo->query(
+    "SELECT id FROM bus_passengers WHERE registration_id = '$mainId' AND `position` = $position"
+)->fetchColumn();
+[$p1, $p2, $p3] = [$mainPassengerId(1), $mainPassengerId(2), $mainPassengerId(3)];
+
+/** Pedido do painel montado do estado atual do banco, como o modal faria. */
+$dbRequest = static function (array $overrides = [], ?string $primaryId = null) use ($pdo, $mainId): array {
+    $registration = $pdo->query("SELECT group_name, updated_at FROM bus_registrations WHERE id = '$mainId'")->fetch(PDO::FETCH_ASSOC);
+    $passengers = [];
+    $primary = null;
+    foreach ($pdo->query("SELECT * FROM bus_passengers WHERE registration_id = '$mainId' ORDER BY `position`")->fetchAll(PDO::FETCH_ASSOC) as $p) {
+        $id = (string) $p['id'];
+        if ((int) $p['is_primary'] === 1) $primary = $id;
+        $passengers[] = array_merge([
+            'id' => $id, 'full_name' => $p['full_name'], 'cpf' => $p['cpf'],
+            'whatsapp' => $p['whatsapp'] ?? '', 'email' => $p['email'] ?? '',
+            'age_group' => (int) $p['is_child_lap'] === 1 ? 'lap' : ((int) $p['is_minor'] === 1 ? 'minor' : 'adult'),
+            'withdrawn' => $p['withdrawn_at'] !== null, 'withdrawal_reason' => $p['withdrawal_reason'] ?? '',
+        ], $overrides[$id] ?? []);
+    }
+    return [
+        'registration_id' => $mainId, 'expected_updated_at' => (string) $registration['updated_at'],
+        'group_name' => $registration['group_name'], 'primary_passenger_id' => $primaryId ?? $primary,
+        'passengers' => $passengers,
+    ];
+};
+/** Mesma sequência do endpoint: BEGIN, apply, COMMIT; rollBack se lançar. */
+$apply = static function (array $request) use ($pdo): array {
+    $pdo->beginTransaction();
+    try {
+        $result = bus_registration_edit_apply($pdo, $request, NOW);
+        $pdo->commit();
+        return $result;
+    } catch (Throwable $e) {
+        $pdo->rollBack();
+        throw $e;
+    }
+};
+$snapshot = static fn (): string => json_encode([
+    $pdo->query("SELECT * FROM bus_registrations WHERE id = '$mainId'")->fetch(PDO::FETCH_ASSOC),
+    $pdo->query("SELECT * FROM bus_passengers WHERE registration_id = '$mainId' ORDER BY id")->fetchAll(PDO::FETCH_ASSOC),
+    $pdo->query('SELECT COUNT(*) FROM bus_registration_edits')->fetchColumn(),
+]);
+$mainRow = static fn (): array => $pdo->query("SELECT * FROM bus_registrations WHERE id = '$mainId'")->fetch(PDO::FETCH_ASSOC);
+$passengerRow = static fn (string $id): array => $pdo->query("SELECT * FROM bus_passengers WHERE id = $id")->fetch(PDO::FETCH_ASSOC);
+
+// Desistência do adulto 2.
+$result = $apply($dbRequest([$p2 => ['withdrawn' => true, 'withdrawal_reason' => 'Mudou de planos']]));
+edit_expect([NOW, 'Mudou de planos'], [$passengerRow($p2)['withdrawn_at'], $passengerRow($p2)['withdrawal_reason']], 'Withdrawal stored');
+$row = $mainRow();
+edit_expect(['1', '1', '1'], [(string) $row['passenger_count'], (string) $row['children_count'], (string) $row['bus_number']], 'Counts recalculated, bus kept');
+edit_expect(true, $row['updated_at'] !== '2026-10-16 18:00:00', 'updated_at bumped on save');
+edit_expect((string) $row['updated_at'], $result['updated_at'], 'apply returns the new updated_at');
+edit_expect([true, 0, 1, 2], [$result['plan']['notify'], $result['waiting'], $result['plan']['seats_after'], $result['plan']['seats_before']], 'apply result');
+$log = $pdo->query("SELECT registration_id, edited_at, changes FROM bus_registration_edits")->fetchAll(PDO::FETCH_ASSOC);
+edit_expect(1, count($log), 'One edit log row');
+edit_expect([$mainId, NOW], [$log[0]['registration_id'], $log[0]['edited_at']], 'Edit log row keys');
+edit_expect(true, in_array(['passenger_id' => $p2, 'field' => 'withdrawn', 'before' => false, 'after' => true],
+    json_decode($log[0]['changes'], true), true), 'Edit log has the withdrawal');
+edit_expect(true, str_contains($log[0]['changes'], '"field":"withdrawn","before":false,"after":true'), 'Edit log JSON shape');
+
+// Reativar com o ônibus 1 cheio (45 de outra reserva + 1 desta) → capacity; nada muda.
+$pdo->exec("INSERT INTO bus_registrations (id, primary_name, passenger_count, children_count, status, bus_number)
+    VALUES ('$fillerId', 'Enche Ônibus', 45, 0, 'confirmed', 1)");
+$before = $snapshot();
+edit_expect_error('O Ônibus 1 não tem vagas suficientes (1 livres; são necessárias 2).',
+    fn () => $apply($dbRequest([$p2 => ['withdrawn' => false]])), 'capacity');
+edit_expect($before, $snapshot(), 'Capacity conflict leaves the database untouched');
+$pdo->exec("DELETE FROM bus_registrations WHERE id = '$fillerId'");
+
+// Ônibus travado: aumento de assento bloqueia; edição sem mudar assentos passa.
+bus_fleet_save_locked_buses($pdo, [1]);
+edit_expect_error('O Ônibus 1 está bloqueado para alterações.',
+    fn () => $apply($dbRequest([$p2 => ['withdrawn' => false]])), 'locked');
+$apply($dbRequest([$p3 => ['full_name' => 'Criança Três Silva']]));
+edit_expect('Criança Três Silva', $passengerRow($p3)['full_name'], 'Seat-neutral edit allowed on locked bus');
+bus_fleet_save_locked_buses($pdo, []);
+
+// Reativação com vaga.
+$result = $apply($dbRequest([$p2 => ['withdrawn' => false]]));
+edit_expect([null, null], [$passengerRow($p2)['withdrawn_at'], $passengerRow($p2)['withdrawal_reason']], 'Passenger reactivated');
+edit_expect('2', (string) $mainRow()['passenger_count'], 'Reactivation restores the count');
+
+// CPF ativo em outra reserva bloqueia; CPF de desistente de outra reserva não.
+edit_expect_error('Este CPF já está na reserva #BBBBBBBB.',
+    fn () => $apply($dbRequest([$p2 => ['cpf' => '390.533.447-05']])), 'cpf_in_use');
+$apply($dbRequest([$p2 => ['cpf' => '10000791989']]));
+edit_expect('10000791989', $passengerRow($p2)['cpf'], 'CPF of a withdrawn passenger elsewhere is allowed');
+// Troca de CPF entre dois passageiros da mesma reserva não esbarra no UNIQUE.
+$apply($dbRequest([$p1 => ['cpf' => '10000791989'], $p2 => ['cpf' => '52998224725']]));
+edit_expect(['10000791989', '52998224725', '10000791989'],
+    [$passengerRow($p1)['cpf'], $passengerRow($p2)['cpf'], $mainRow()['primary_cpf']], 'CPF swap inside the reservation');
+
+// Modal aberto antes do último salvamento → stale.
+$old = $dbRequest([$p3 => ['full_name' => 'Criança Três Souza']]);
+$old['expected_updated_at'] = '2026-10-16 18:00:00';
+edit_expect_error('A reserva mudou desde que você abriu.', fn () => $apply($old), 'stale');
+
+// Reserva inteira desiste e depois volta para o ônibus guardado.
+$all = static fn (bool $withdrawn): array => [
+    $p1 => ['withdrawn' => $withdrawn], $p2 => ['withdrawn' => $withdrawn], $p3 => ['withdrawn' => $withdrawn],
+];
+$result = $apply($dbRequest($all(true)));
+$row = $mainRow();
+edit_expect([NOW, '1', 'assigned', null, '2', '1'],
+    [$row['withdrawn_at'], (string) $row['withdrawn_bus_number'], $row['withdrawn_fleet_status'], $row['bus_number'],
+        (string) $row['passenger_count'], (string) $row['children_count']], 'Full withdrawal stored');
+edit_expect([true, 0], [$result['plan']['fully_withdrawn'], $result['plan']['seats_after']], 'Full withdrawal plan');
+edit_expect(0, bus_fleet_bus_occupancy($pdo, 1), 'Fully withdrawn registration frees the bus');
+
+$pdo->exec("UPDATE bus_registrations SET status = 'refunded' WHERE id = '$mainId'");
+edit_expect_error('Só reservas confirmadas podem voltar para um ônibus.', fn () => $apply($dbRequest($all(false))));
+$pdo->exec("UPDATE bus_registrations SET status = 'confirmed' WHERE id = '$mainId'");
+
+$result = $apply($dbRequest($all(false)));
+$row = $mainRow();
+edit_expect(['1', 'assigned', null, null, null],
+    [(string) $row['bus_number'], $row['fleet_assignment_status'], $row['withdrawn_at'], $row['withdrawn_bus_number'], $row['withdrawn_fleet_status']],
+    'Reactivated registration returns to its stored bus');
+edit_expect(true, $result['plan']['reactivated_registration'], 'Reactivation flagged');
+edit_expect(2, bus_fleet_bus_occupancy($pdo, 1), 'Reactivated registration occupies its seats again');
+edit_expect(7, (int) $pdo->query('SELECT COUNT(*) FROM bus_registration_edits')->fetchColumn(), 'One log row per successful save');
+echo "PASS: registration edit apply\n";
