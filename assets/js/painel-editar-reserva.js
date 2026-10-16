@@ -365,6 +365,10 @@
       var icone = criar('span', 'editar-passageiro__icone');
       var texto = criar('span', 'editar-passageiro__texto');
       var nome = criar('span', 'editar-passageiro__nome');
+      // Os controles do painel repetem rótulos ("Nome *", "Desistiu") em
+      // cada passageiro; a descrição diz de quem é cada um.
+      var descricaoId = painelId + '-resumo-nome';
+      nome.id = descricaoId;
       var papel = criar('span', 'sr-only');
       var meta = criar('span', 'editar-passageiro__meta');
       texto.append(nome, papel, meta);
@@ -499,6 +503,9 @@
         painel.appendChild(criar('p', 'editar-nota',
           'Desistência registrada. Só reserva com pagamento aprovado pode mudar a desistência.'));
       }
+
+      Array.prototype.slice.call(painel.querySelectorAll('input, select, textarea, [role="switch"]'))
+        .forEach(function (controle) { controle.setAttribute('aria-describedby', descricaoId); });
 
       li.append(resumo, painel);
       p.el = {
@@ -911,8 +918,13 @@
     });
     dialog.addEventListener('close', function () {
       // Fechado sem passar por pedirFechar (o Chrome fecha direto num segundo
-      // Esc seguido, sem `cancel`): com alterações, reabre e pergunta.
-      if (!estado || estado.salvando) return;
+      // Esc seguido, sem `cancel`). Salvando: reabre para a resposta (um erro,
+      // por exemplo) aparecer. Com alterações: reabre e pergunta.
+      if (!estado) return;
+      if (estado.salvando) {
+        mostrarModal(dialog);
+        return;
+      }
       if (temAlteracoes()) {
         mostrarModal(dialog);
         pedirFechar();

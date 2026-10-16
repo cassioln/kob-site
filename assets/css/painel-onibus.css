@@ -4135,6 +4135,7 @@
 .bus-dialog--editar {
   width: min(calc(100% - 32px), 680px);
   max-width: 680px;
+  max-height: calc(100dvh - 40px);
 }
 
 /* `.vip-formulario__campo` (grid) e `.etiqueta` (inline-block) venceriam o
@@ -4155,6 +4156,8 @@
 
 .bus-dialog--editar form {
   max-height: calc(100vh - 96px);
+  /* dvh acompanha o teclado do iOS: o rodapé com Salvar fica acima dele. */
+  max-height: calc(100dvh - 96px);
 }
 
 .editar-corpo {
@@ -4475,6 +4478,7 @@
 @media (max-width: 560px) {
   .bus-dialog--editar form {
     max-height: calc(100vh - 72px);
+    max-height: calc(100dvh - 72px);
   }
 
   .editar-grupo {

@@ -1058,9 +1058,13 @@
           item.draggable = !estaBloqueado;
           item.dataset.reserva = r.id;
 
+          // Arraste que começou num botão do card (lápis): o navegador entrega o
+          // dragstart ao próprio card, que é o elemento arrastável.
+          var arrasteVetado = false;
           item.addEventListener('dragstart', function (ev) {
-            if (estaBloqueado) {
+            if (estaBloqueado || arrasteVetado) {
               ev.preventDefault();
+              arrasteVetado = false;
               return;
             }
             ev.dataTransfer.setData('text/plain', r.id);
@@ -1164,8 +1168,23 @@
           itemTop.appendChild(tituloGrupoWrap);
           if (podeEditar(r)) {
             var editarCard = botaoEditar('grupo-item__editar', r);
-            // Sem isto o mousedown inicia o arraste do card em vez do clique.
-            editarCard.addEventListener('mousedown', function (ev) { ev.stopPropagation(); });
+            // O card é arrastável e o arraste nativo começa mesmo de um filho:
+            // o lápis não arrasta e veta o arraste do card que nascer nele.
+            editarCard.draggable = false;
+            editarCard.addEventListener('mousedown', function (ev) {
+              ev.stopPropagation();
+              arrasteVetado = true;
+              // Clique simples (sem arraste): o veto não pode sobrar para o
+              // próximo arraste feito pelo corpo do card.
+              document.addEventListener('mouseup', function soltar() {
+                document.removeEventListener('mouseup', soltar, true);
+                arrasteVetado = false;
+              }, true);
+            });
+            editarCard.addEventListener('dragstart', function (ev) {
+              ev.preventDefault();
+              ev.stopPropagation();
+            });
             editarCard.addEventListener('click', function (ev) {
               ev.preventDefault();
               ev.stopPropagation();

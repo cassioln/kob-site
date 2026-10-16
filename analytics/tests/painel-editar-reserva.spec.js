@@ -294,6 +294,121 @@ test('card da frota tem lápis que não inicia arraste e VIP legado não tem @sm
   expect(erros).toEqual([]);
 });
 
+test('arrastar a partir do lápis do card não move o card', async ({ page }) => {
+  await page.goto('/painel-onibus.html');
+  await page.getByRole('tab', { name: 'Planejamento de Frota' }).click();
+  const card = page.locator('.grupo-item').filter({ hasText: 'AAAA0001' });
+  const lapis = card.locator('.grupo-item__editar');
+  await expect(lapis).toHaveAttribute('draggable', 'false');
+
+  // Registra todo dragstart que chega ao card (inclusive com o card como alvo)
+  // e se ele ganhou .dragging em algum momento.
+  await card.evaluate(elemento => {
+    window.__arraste = { dragstart: 0, cancelados: 0, dragging: false };
+    elemento.addEventListener('dragstart', ev => {
+      window.__arraste.dragstart += 1;
+      // Depois dos outros handlers: o card só pode ver um arraste já cancelado.
+      setTimeout(() => { if (ev.defaultPrevented) window.__arraste.cancelados += 1; }, 0);
+    });
+    new MutationObserver(() => {
+      if (elemento.classList.contains('dragging')) window.__arraste.dragging = true;
+    }).observe(elemento, { attributes: true, attributeFilter: ['class'] });
+  });
+
+  await lapis.scrollIntoViewIfNeeded();
+  const caixa = await lapis.boundingBox();
+  const x = caixa.x + caixa.width / 2;
+  const y = caixa.y + caixa.height / 2;
+  await page.mouse.move(x, y);
+  await page.mouse.down();
+  await page.mouse.move(x + 4, y + 4);
+  await page.mouse.move(x + 8, y + 8);
+  await page.mouse.up();
+
+  const arraste = await page.evaluate(() => window.__arraste);
+  expect(arraste.dragging).toBe(false);
+  // Nenhum arraste vivo chega ao card: ou o navegador nem começa, ou ele já
+  // chega cancelado.
+  expect(arraste.dragstart).toBe(arraste.cancelados);
+  await expect(card).not.toHaveClass(/dragging/);
+});
+
+test('grupo: remover o nome e depois escolher um nome livre', async ({ page }) => {
+  await servirReservas(page, [reservaA, reservaB]);
+  const pedidos = await capturarSalvamento(page);
+
+  let dialog = await abrirEdicao(page, 'AAAA0001');
+  await dialog.locator('#editar-grupo').selectOption({ label: 'Sem nome de grupo' });
+  await dialog.getByRole('button', { name: 'Salvar alterações' }).click();
+  await expect(dialog).toBeHidden();
+  expect(pedidos).toHaveLength(1);
+  expect(pedidos[0].corpo).toHaveProperty('group_name', null);
+
+  await page.getByRole('button', { name: 'Editar reserva #AAAA0001' }).click();
+  dialog = page.locator('#painel-editar-dialog');
+  await expect(dialog).toBeVisible();
+  await expect(dialog.locator('#editar-grupo option')).toHaveCount(4);
+  await dialog.locator('#editar-grupo').selectOption('Grupo Gama');
+  await dialog.getByRole('button', { name: 'Salvar alterações' }).click();
+  await expect(dialog).toBeHidden();
+  expect(pedidos).toHaveLength(2);
+  expect(pedidos[1].corpo.group_name).toBe('Grupo Gama');
+});
+
+test('grupo: falha ao carregar nomes livres mantém só o atual e avisa', async ({ page }) => {
+  await page.route('**/api/bus-group-names', route => route.fulfill({ status: 500, json: { error: 'Falhou.' } }));
+  await servirReservas(page, [reservaA, reservaB]);
+  const dialog = await abrirEdicao(page, 'AAAA0001');
+  const aviso = dialog.locator('#editar-grupo-aviso');
+  await expect(aviso).toBeVisible();
+  await expect(aviso).toContainText('Não foi possível carregar os nomes livres');
+  await expect(dialog.locator('#editar-grupo')).toHaveAttribute('aria-describedby', 'editar-grupo-aviso');
+  await expect(dialog.locator('#editar-grupo option')).toHaveText(['Sem nome de grupo', 'Grupo Alfa (atual)']);
+});
+
+test('Esc duplo durante o salvamento não esconde o erro do servidor', async ({ page }) => {
+  await servirReservas(page, [reservaA, reservaB]);
+  let liberar;
+  const segurado = new Promise(resolve => { liberar = resolve; });
+  await page.route('**/api/bus-registration-update', async route => {
+    await segurado;
+    await route.fulfill({ status: 409, json: { error: ERRO_CAPACIDADE, code: 'capacity' } });
+  });
+  const dialog = await abrirEdicao(page, 'AAAA0001');
+  await item(dialog, 'Ana Souza').locator('.editar-passageiro__resumo').click();
+  await item(dialog, 'Ana Souza').getByLabel('Nome *').fill('Ana Souza Lima');
+  const salvar = dialog.getByRole('button', { name: /Salvar alterações|Salvando/ });
+  await salvar.click();
+  await expect(salvar).toHaveAttribute('aria-busy', 'true');
+
+  await page.keyboard.press('Escape');
+  await page.keyboard.press('Escape');
+  liberar();
+
+  await expect(dialog.locator('#editar-erro')).toHaveText(ERRO_CAPACIDADE);
+  await expect(dialog).toBeVisible();
+  expect(await dialog.evaluate(d => d.open)).toBe(true);
+  await expect(salvar).toHaveText('Salvar alterações');
+});
+
+test('campos e switch de cada passageiro são descritos pelo nome dele', async ({ page }) => {
+  await servirReservas(page, [reservaA, reservaB]);
+  const dialog = await abrirEdicao(page, 'AAAA0001');
+  for (const [id, nome] of [['11', 'Ana Souza'], ['12', 'Bruno Lima']]) {
+    const nomeResumo = dialog.locator('#editar-p-' + id + '-resumo-nome');
+    await expect(nomeResumo).toHaveText(nome);
+    const painel = dialog.locator('#editar-p-' + id);
+    const controles = painel.locator('input, select, textarea, [role="switch"]');
+    await expect(controles).toHaveCount(7);
+    for (const controle of await controles.all()) {
+      await expect(controle).toHaveAttribute('aria-describedby', 'editar-p-' + id + '-resumo-nome');
+    }
+  }
+  await item(dialog, 'Bruno Lima').locator('.editar-passageiro__resumo').click();
+  await expect(item(dialog, 'Bruno Lima').getByRole('switch', { name: 'Desistiu' }))
+    .toHaveAccessibleDescription('Bruno Lima');
+});
+
 test('abre, expande um passageiro por vez e edita dados @smoke', async ({ page }) => {
   const chamadas = await servirReservas(page, [reservaA, reservaB]);
   const pedidos = await capturarSalvamento(page);
