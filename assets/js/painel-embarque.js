@@ -3,6 +3,8 @@
   var API = '/api/bus-boarding';
   var CHECK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>';
   var UNCHECKED = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="4"/></svg>';
+  var SPINNER = '<svg class="embarque-person__status-icon embarque-person__spinner" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M21 12a9 9 0 0 0-9-9"/></svg>';
+  var NO_SIGNAL = '<svg class="embarque-person__status-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h.01M8.5 16.43a5 5 0 0 1 7 0M5 12.86a10 10 0 0 1 5.17-2.69M19 12.86a10 10 0 0 0-2-1.52M2 8.82a15 15 0 0 1 4.18-2.64M22 8.82a15 15 0 0 0-11.29-3.76M2 2l20 20"/></svg>';
 
   window.KobBoarding = function (root) {
     var opener = document.getElementById('embarque-open');
@@ -15,7 +17,8 @@
     var pending = new Set(), controllers = new Set();
     var loading = false, ready = false, stale = false, lastSync = null, noticeKey = '';
     var autoOpened = false, closeTimer = null, exporter = null, busPicker = null, offlineAccess = null;
-    var queueState = { pending: [], sending: '', durable: false, online: false }, localPending = new Set(), deferredFocus = null;
+    var queueState = { pending: [], confirmed: [], sending: '', durable: false, online: false, waiting: 0 }, localPending = new Set(), deferredFocus = null;
+    var alerted = new Set(), noticesHtml = '', settled = false;
     var compactBuses = window.matchMedia('(max-width: 374px)');
     var meeple = document.querySelector('.bus-dialog__badge-icone--vip svg').innerHTML;
     var $ = function (id) { return root.querySelector('#embarque-' + id); };
@@ -48,10 +51,23 @@
     function groupIcon(kind) {
       return '<svg class="embarque-group__meeple embarque-group__meeple--' + kind + '" viewBox="0 0 512 512" aria-hidden="true">' + meeple + '</svg>';
     }
+    // Região viva: limpa e escreve no quadro seguinte para repetir um anúncio idêntico.
+    var announceFrame = 0;
+    function announce(text) {
+      cancelAnimationFrame(announceFrame);
+      $('announcement').textContent = '';
+      announceFrame = requestAnimationFrame(function () { $('announcement').textContent = text; });
+    }
     function setNotice(key) {
       noticeKey = key;
-      $('error').hidden = !key;
-      $('error-text').textContent = key ? t(key) : '';
+      renderNotices();
+    }
+    // Um só estado de rede alimenta a cor da nuvem, o topo do menu e o texto de cada linha.
+    function network() {
+      if (!navigator.onLine) return 'offline';
+      if (!stale) return 'online';
+      // Até a primeira leitura terminar não dá para dizer que a conexão está instável.
+      return settled ? 'unstable' : 'connecting';
     }
     function syncStatus() {
       if (exporter) exporter.update(!ready || stale || !navigator.onLine || pending.size > 0 || people.length === 0);
@@ -60,32 +76,87 @@
       $('sync').dataset.state = (!navigator.onLine || stale) ? 'warning' : 'ok';
       $('update').disabled = loading || !navigator.onLine;
       $('update').setAttribute('aria-busy', String(loading));
-      var conflicts = queueState.pending.filter(function (op) { return op.conflict; }).length;
-      var message = queueState.authError ? t('expired') : queueState.storageError ? t('storageError') :
-        conflicts ? t('conflictCount', { count: conflicts }) : pending.size ? t('queuedCount', { count: pending.size }) :
-        !navigator.onLine && ready ? t('offlineReady') : stale && ready ? t('connectionWaiting') : '';
-      $('connection').hidden = !message;
-      $('connection-text').textContent = message;
-      $('reauth').hidden = !queueState.authError;
       var searchText = t(queueState.online ? 'search' : 'searchOffline');
       $('search').placeholder = searchText;
       root.querySelector('label[for="embarque-search"]').textContent = searchText;
       if (offlineAccess) offlineAccess.update(queueState);
+      renderNotices();
     }
-    function renderConflicts() {
+    function conflictNotice(op) {
+      var person = queueState.confirmed.find(function (p) { return p.id === op.passenger_id; });
+      var help = !person ? t('conflictRemoved') : op.conflict === 'bus' ? t('conflictBus', { number: person.bus_number }) : t('conflictHelp');
+      // Sem rede o botão fica desabilitado de verdade. Durante a leitura de 8s só fica
+      // aria-disabled, para o foco não pular para a nuvem quando a lista é redesenhada.
+      var disabled = !queueState.online ? ' disabled' : loading ? ' aria-disabled="true"' : '';
+      return { id: 'conflict:' + op.id, action: true, tone: 'warning', text: help, html: '<li class="embarque-notice-item" data-tone="warning" data-notice="conflict">' +
+        '<span class="embarque-notice-item__eyebrow">' + esc(t('conflictNotice')) + '</span>' +
+        '<strong>' + esc(op.name) + ' · ' + esc(t(op.leg)) + '</strong><p>' + esc(help) + '</p>' +
+        '<p>' + esc(t('localChoice', { state: t(op.present ? 'present' : 'missing') })) +
+        (person ? ' · ' + esc(t('serverChoice', { state: t(person[op.leg].present ? 'present' : 'missing') })) : '') + '</p>' +
+        '<div class="embarque-conflict__actions"><button type="button" class="botao botao--secundario" data-resolve="server" data-operation="' + esc(op.id) + '"' +
+        disabled + '>' + esc(t(person ? 'keepServer' : 'discardRemoved')) + '</button>' +
+        (person ? '<button type="button" class="botao botao--primario" data-resolve="local" data-operation="' + esc(op.id) + '"' +
+        disabled + '>' + esc(t('keepLocal')) + '</button>' : '') + '</div></li>' };
+    }
+    function simpleNotice(id, tone, text, action, button, help) {
+      return { id: id, action: action, text: text, html: '<li class="embarque-notice-item" data-tone="' + tone + '" data-notice="' + id + '"><p>' + esc(text) + '</p>' +
+        (help ? '<p class="embarque-notice-item__help">' + esc(help) + '</p>' : '') +
+        (button ? '<button id="embarque-' + button + '" type="button" class="botao botao--secundario" data-notice-action="' + button + '">' + esc(t(button)) + '</button>' : '') + '</li>' };
+    }
+    // Dono único da central de avisos da nuvem: badge, ponto, rótulo, lista e pulso.
+    function renderNotices() {
+      var state = network(), list = [];
       var conflicts = queueState.pending.filter(function (op) { return op.conflict; });
-      $('conflicts').hidden = !conflicts.length;
-      $('conflicts-list').innerHTML = conflicts.map(function (op) {
-        var person = queueState.confirmed.find(function (p) { return p.id === op.passenger_id; });
-        var help = !person ? t('conflictRemoved') : op.conflict === 'bus' ? t('conflictBus', { number: person.bus_number }) : t('conflictHelp');
-        return '<article class="embarque-conflict"><h4>' + esc(op.name) + ' · ' + esc(t(op.leg)) + '</h4><p>' + esc(help) + '</p>' +
-          '<p>' + esc(t('localChoice', { state: t(op.present ? 'present' : 'missing') })) +
-          (person ? ' · ' + esc(t('serverChoice', { state: t(person[op.leg].present ? 'present' : 'missing') })) : '') + '</p>' +
-          '<div class="embarque-conflict__actions"><button type="button" class="botao botao--secundario" data-resolve="server" data-operation="' + esc(op.id) + '"' +
-          (!queueState.online || loading ? ' disabled' : '') + '>' + esc(t(person ? 'keepServer' : 'discardRemoved')) + '</button>' +
-          (person ? '<button type="button" class="botao botao--primario" data-resolve="local" data-operation="' + esc(op.id) + '"' +
-          (!queueState.online || loading ? ' disabled' : '') + '>' + esc(t('keepLocal')) + '</button>' : '') + '</div></article>';
-      }).join('');
+      var queued = pending.size - conflicts.length;
+      if (queueState.authError || noticeKey === 'expired') list.push(simpleNotice('expired', 'error', t('expired'), true, 'reauth'));
+      if (queueState.storageError || noticeKey === 'storageError') list.push(simpleNotice('storageError', 'error', t('storageError'), true));
+      if (noticeKey === 'firstConnection') list.push(simpleNotice('firstConnection', 'error', t('firstConnection'), true, 'retry'));
+      conflicts.forEach(function (op) { list.push(conflictNotice(op)); });
+      if (queued > 0) list.push(simpleNotice('queued', 'warning', t('queuedNotice', { count: queued }), false, '', t('queuedHelp')));
+      if (queueState.waiting) list.push(simpleNotice('waiting', 'info', t('waiting', { count: queueState.waiting }), false, 'fleet'));
+      var toggle = $('offline-toggle'), notices = $('notices');
+      var statusText = state === 'offline' ? t('offlineShort') : state === 'unstable' ? t('connectionUnstable') :
+        state === 'connecting' ? t('connectionChecking') : lastSync ? t('connectionOnline', { time: time(lastSync) }) : t('connectionOnlineShort');
+      $('network').textContent = statusText;
+      $('network').dataset.network = state;
+      var help = ready && state === 'offline' ? t('networkOfflineHelp') : ready && state === 'unstable' ? t('networkUnstableHelp') : '';
+      $('network-help').textContent = help;
+      $('network-help').hidden = !help;
+      var html = list.map(function (item) { return item.html; }).join('');
+      if (html !== noticesHtml) {
+        // Polling redesenha a lista; o foco volta ao botão equivalente.
+        var active = document.activeElement, focusKey = notices.contains(active) ? active.dataset.operation ? active.dataset.resolve + ':' + active.dataset.operation : active.id : '';
+        noticesHtml = html; notices.innerHTML = html;
+        if (focusKey) {
+          var target = Array.prototype.find.call(notices.querySelectorAll('button'), function (button) {
+            return (button.dataset.operation ? button.dataset.resolve + ':' + button.dataset.operation : button.id) === focusKey;
+          });
+          (target && !target.disabled ? target : toggle).focus({ preventScroll: true });
+        }
+      }
+      notices.hidden = !list.length;
+      var badge = pending.size > 99 ? '99+' : String(pending.size);
+      $('offline-badge').hidden = !pending.size;
+      $('offline-badge').textContent = pending.size ? badge : '';
+      $('offline-dot').hidden = !!pending.size || !list.length;
+      toggle.dataset.network = state;
+      toggle.dataset.notices = String(list.length);
+      var others = list.filter(function (item) { return item.id !== 'queued'; }).length;
+      var label = [t('offlineAccess'), statusText.split(' · ')[0]];
+      // Mesmo número do badge (conflitos incluídos).
+      if (pending.size) label.push(t('pendingCount', { count: pending.size }));
+      if (others) label.push(t('noticeCount', { count: others }));
+      toggle.setAttribute('aria-label', label.join(' · '));
+      toggle.title = label.join(' · ');
+      // Avisos que exigem ação pulsam a nuvem uma vez e são anunciados, sem abrir o menu.
+      // A classe fica até o menu ser aberto (a animação roda uma só vez).
+      var fresh = list.filter(function (item) { return item.action && !alerted.has(item.id); });
+      alerted = new Set(list.filter(function (item) { return item.action; }).map(function (item) { return item.id; }));
+      if (!alerted.size) toggle.classList.remove('is-alerting');
+      if (fresh.length) {
+        toggle.classList.remove('is-alerting'); void toggle.offsetWidth; toggle.classList.add('is-alerting');
+        announce(fresh.map(function (item) { return item.text; }).join(' '));
+      }
     }
     function translate() {
       root.lang = locale[lang];
@@ -100,7 +171,7 @@
       opener.lang = locale[lang];
       opener.setAttribute('aria-label', t('open'));
       document.getElementById('embarque-launch-text').textContent = t('tab');
-      if (noticeKey) setNotice(noticeKey);
+      noticesHtml = '';
       syncStatus();
     }
     function renderBuses() {
@@ -148,25 +219,30 @@
       var disabled = !active || saving || !!(queued && queued.conflict) || queueState.authError || !queueState.durable;
       return '<button type="button" class="embarque-check' + (active ? '' : ' is-inactive') + (queued ? ' is-queued' : '') +
         '" data-check-leg="' + checkLeg + '" ' + (active ? 'data-check' : 'data-inactive-check') + '="' + esc(person.id) +
-        '" aria-pressed="' + present + '" aria-label="' + esc(t(present ? 'undoLabel' : 'saveLabel', { name: person.name, leg: t(checkLeg) }) + (queued ? ' · ' + t('queuePending') : '')) +
+        '" aria-pressed="' + present + '" aria-label="' + esc(t(present ? 'undoLabel' : 'saveLabel', { name: person.name, leg: t(checkLeg) }) + (queued ? ' · ' + t(queued.conflict ? 'conflictNotice' : queueText()) : '')) +
         '" aria-busy="' + saving + '"' + (disabled ? ' disabled' : '') + '>' + (present ? CHECK : UNCHECKED) +
         '<span>' + esc(t(checkLeg)) + '</span></button>';
     }
+    // Fila parada (sem rede ou envio falhando) aguarda conexão; fila andando sincroniza.
+    function queueText() { return /^(online|connecting)$/.test(network()) ? 'queueSyncing' : 'queueOffline'; }
     function passengerRow(person) {
       var present = onBoard(person), saving = queueState.sending === person.id + ':' + leg;
-      var queued = queueState.pending.some(function (op) { return op.passenger_id === person.id && op.leg === leg; });
+      var queued = queueState.pending.find(function (op) { return op.passenger_id === person.id && op.leg === leg; });
       var badges = [];
       if (person.vip || solo(person)) badges.push(t('group', { code: person.code }));
       if (person.lap_child) badges.push(t('lapChild'));
       else if (person.minor) badges.push(t('minor'));
       var subtitle = badges.join(' · ');
       var state = person[leg];
-      var detail = queued ? t(saving ? 'queueSending' : 'queuePending') : present && state.checked_at ? t('checkedAt', { time: time(state.checked_at) }) : t('pending');
+      // Conflito não anda sozinho: a linha aponta para o aviso da nuvem em vez de girar.
+      var detail = queued && queued.conflict ? esc(t('conflictNotice')) :
+        queued ? (queueText() === 'queueSyncing' ? SPINNER : NO_SIGNAL) + esc(t(queueText())) :
+        esc(present && state.checked_at ? t('checkedAt', { time: time(state.checked_at) }) : t('pending'));
       // Names are text only; the passenger's database ID is the stable identity.
       return '<li class="embarque-person' + (present ? ' is-present' : '') + (queued ? ' is-queued' : '') + '" data-person="' + esc(person.id) + '" data-readonly="' + (saving || queueState.authError || !queueState.durable) + '">' +
         '<div class="embarque-person__info"><strong>' + (person.lap_child ? '<svg viewBox="0 0 512 512" width="14" height="14" class="meeple-svg meeple-svg--child embarque-person__child" focusable="false" aria-hidden="true">' + meeple + '</svg>' : '') + esc(person.name) + '</strong>' +
         (subtitle ? '<span class="embarque-person__meta">' + esc(subtitle) + '</span>' : '') +
-        '<span class="embarque-person__detail">' + esc(detail) + '</span></div>' +
+        '<span class="embarque-person__detail">' + detail + '</span></div>' +
         '<div class="embarque-person__checks">' + passengerCheck(person, 'outbound') + passengerCheck(person, 'return') + '</div></li>';
     }
     function renderList() {
@@ -225,7 +301,7 @@
     function render() {
       var active = document.activeElement;
       var focusId = active && active.dataset.check;
-      renderBuses(); renderSummary(); renderList(); renderConflicts(); syncStatus();
+      renderBuses(); renderSummary(); renderList(); syncStatus();
       // Polling should not take keyboard focus away from the working row.
       if (focusId) {
         var button = $('list').querySelector('[data-check="' + focusId + '"]');
@@ -264,6 +340,8 @@
         }
         return data;
       } finally {
+        // A primeira leitura da lista (com ou sem sucesso) define se a rede está instável.
+        if (method === 'GET' && !options) settled = true;
         clearTimeout(timeout);
         controllers.delete(controller);
       }
@@ -276,16 +354,13 @@
         stale = !state.online; lastSync = state.savedAt || null;
         pending = new Set(state.pending.map(function (op) { return op.passenger_id + ':' + op.leg; }));
         $('loading').hidden = ready || !loading;
-        $('waiting').hidden = !state.waiting;
-        $('waiting-text').textContent = t('waiting', { count: state.waiting });
-        $('waiting').dataset.count = state.waiting;
         if (!ready && !loading) setNotice(state.authError ? 'expired' : 'firstConnection');
         else if (ready) setNotice('');
         if (wasLoading && !loading && state.online && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) $('update').classList.add('is-updated');
         render();
       },
       saved: function (op) {
-        $('announcement').textContent = t(op.present ? 'saved' : 'removed', { name: op.name, leg: t(op.leg) });
+        announce(t(op.present ? 'saved' : 'removed', { name: op.name, leg: t(op.leg) }));
       }
     });
     function sync(force) {
@@ -312,10 +387,19 @@
         target.focus({ preventScroll: true });
       }
     }
-    $('conflicts-list').addEventListener('click', function (event) {
-      var button = event.target.closest('[data-resolve]');
-      if (!button || button.disabled) return;
-      coordinator.resolve(button.dataset.operation, button.dataset.resolve === 'local').catch(function () { setNotice('storageError'); });
+    $('offline-toggle').addEventListener('click', function () { $('offline-toggle').classList.remove('is-alerting'); });
+    $('notices').addEventListener('click', function (event) {
+      var button = event.target.closest('button');
+      if (!button || button.disabled || button.getAttribute('aria-disabled') === 'true') return;
+      if (button.dataset.resolve) {
+        coordinator.resolve(button.dataset.operation, button.dataset.resolve === 'local').catch(function () { setNotice('storageError'); });
+      } else if (button.dataset.noticeAction === 'retry') sync(true);
+      else if (button.dataset.noticeAction === 'reauth') { offlineAccess.close(); window.dispatchEvent(new Event('kob:boarding-reauth')); }
+      else if (button.dataset.noticeAction === 'fleet') {
+        offlineAccess.close(); closeDrawer(false, true);
+        var fleetTab = document.querySelector('[data-aba="frota"]');
+        fleetTab.click(); fleetTab.focus();
+      }
     });
     $('list').addEventListener('click', function (event) {
       var control = event.target.closest('.embarque-check');
@@ -365,8 +449,6 @@
     });
     $('update').addEventListener('click', function () { sync(true); });
     $('update').querySelector('svg').addEventListener('animationend', function () { $('update').classList.remove('is-updated'); });
-    $('retry').addEventListener('click', function () { sync(true); });
-    $('reauth').addEventListener('click', function () { window.dispatchEvent(new Event('kob:boarding-reauth')); });
     function finishClose(restore) {
       clearTimeout(closeTimer); closeTimer = null;
       root.classList.remove('is-open');
@@ -416,14 +498,9 @@
       var rect = root.getBoundingClientRect();
       if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) closeDrawer(true);
     });
-    $('fleet').addEventListener('click', function () {
-      closeDrawer(false, true);
-      var fleetTab = document.querySelector('[data-aba="frota"]');
-      fleetTab.click(); fleetTab.focus();
-    });
     window.addEventListener('online', function () { sync(true); });
     window.addEventListener('offline', function () {
-      stale = true; coordinator.refresh(); render(); $('announcement').textContent = t(ready ? 'offlineReady' : 'firstConnection');
+      stale = true; coordinator.refresh(); render(); announce(t(ready ? 'offlineReady' : 'firstConnection'));
     });
     window.addEventListener('focus', function () { coordinator.reload().then(function () { sync(false); }); });
     document.addEventListener('visibilitychange', function () { if (!document.hidden) sync(false); });
@@ -436,7 +513,7 @@
         type: action === 'excel' ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' : 'application/pdf'
       }); }
     });
-    offlineAccess = window.KobBoardingOffline(root, { t: t, lang: lang, refresh: function () { return sync(true); } });
+    offlineAccess = window.KobBoardingOffline(root, { t: t, lang: lang });
     translate();
     return {
       // autoOpen só no atalho da chamada (?chamada=1) ou sem rede, quando a
@@ -459,11 +536,12 @@
         controllers.forEach(function (controller) { controller.abort(); }); controllers.clear();
         await coordinator.stop(clear !== false);
         people = []; pending.clear(); localPending.clear(); deferredFocus = null; ready = false; stale = false; lastSync = null;
-        queueState = { pending: [], confirmed: [], sending: '', durable: false, online: false };
+        queueState = { pending: [], confirmed: [], sending: '', durable: false, online: false, waiting: 0 };
+        alerted.clear(); settled = false; $('offline-toggle').classList.remove('is-alerting');
         exporter.clear();
         $('list').replaceChildren();
-        $('waiting').hidden = true; $('empty').hidden = true; $('loading').hidden = false;
-        $('announcement').textContent = ''; setNotice(''); renderSummary(); syncStatus();
+        $('empty').hidden = true; $('loading').hidden = false;
+        cancelAnimationFrame(announceFrame); $('announcement').textContent = ''; setNotice(''); renderSummary(); syncStatus();
       }
     };
   };

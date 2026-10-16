@@ -51,11 +51,19 @@ O **Kriativos On Board (kob-site)** é a plataforma web oficial do **Kriativos O
    existente e controle de revisão entre dispositivos; a atualização automática ocorre
    a cada oito segundos com a chamada aberta. A lista mínima e a fila de marcações
    ficam no IndexedDB, separadas por hash do acesso, sem CPF ou dados financeiros.
-   Cada check é persistido no dispositivo antes do envio e aparece como pendente
-   até o banco confirmar. Contadores incluem a seleção local com aviso visível.
+   Cada check é persistido no dispositivo antes do envio; a linha troca
+   "Aguardando embarque" por "Sincronizando" (com rede) ou "Aguardando conexão"
+   (sem rede) até o banco confirmar e mostrar "Confirmado às…". Contadores
+   incluem a seleção local. Todos os avisos (pendências, conflitos, acesso
+   expirado, erro de armazenamento ou de primeira conexão, pessoas sem ônibus)
+   ficam no menu do ícone de nuvem, que funciona como central de notificações:
+   verde online, amarelo com conexão instável, vermelho com traço sem conexão,
+   número com as marcações aguardando envio e um ponto para os demais avisos.
+   Avisos que exigem ação fazem a nuvem pulsar uma vez e são anunciados ao leitor
+   de tela, sem abrir o menu sozinho.
    A fila sobrevive a recarga/fechamento e reenvia com conexão e chamada aberta.
-   Conflitos exigem escolha explícita; sair com pendências pede confirmação.
-   Sem armazenamento disponível, novas marcações ficam bloqueadas com aviso.
+   Conflitos exigem escolha explícita no menu da nuvem; sair com pendências pede
+   confirmação. Sem armazenamento disponível, novas marcações ficam bloqueadas com aviso.
    Trocar o trecho durante uma gravação mantém a resposta vinculada ao trecho
    original; os anúncios acessíveis identificam pessoa e trecho em pt/en/es.
    A área de chamada oferece português, inglês e espanhol, selecionados por
@@ -65,16 +73,22 @@ O **Kriativos On Board (kob-site)** é a plataforma web oficial do **Kriativos O
    na [especificação de exportação](./docs/superpowers/specs/2026-10-16-embarque-exportar-design.md)
    e na [especificação offline](./docs/superpowers/specs/2026-10-16-embarque-offline-design.md).
 
-   **Usar no celular/tablet sem sinal:** com internet, abrir a chamada e conferir
-   o ícone de nuvem no cabeçalho (com ✓ quando está **Pronto neste dispositivo**).
-   O app instalável **Check Busão KOB** (ícone com a frente do ônibus) abre
-   `painel-onibus.html?chamada=1`, sem carregar Reservas/Frota. Para instalar,
-   use **Instalar** no menu da nuvem (Android/Chrome) ou adicione à tela inicial
-   pelo menu do navegador (no iPhone/iPad, Compartilhar → Adicionar à Tela de
-   Início). No iPhone/iPad, abrir o atalho ainda com
-   internet, entrar novamente e aguardar a preparação dentro dele. O navegador
-   pode separar os dados do Safari e do app. Não limpar os dados do site antes
-   de enviar a fila. Armazenamento persistente é solicitado, sem garantia contra
+   **Usar no celular/tablet sem sinal:** com internet, abrir a chamada; ela se
+   prepara sozinha para uso offline (sem botão). Conferir o ✓ no ícone de nuvem
+   do cabeçalho, que indica **Pronto neste dispositivo**.
+   O app instalável **Busão KOB - Lista de Embarque** (nome curto "Busão KOB",
+   ícone com a frente do ônibus) abre `painel-onibus.html?chamada=1`, sem
+   carregar Reservas/Frota. Para instalar, use **Instalar** no menu da nuvem
+   (Android/Chrome) ou adicione à tela inicial pelo menu do navegador (no
+   iPhone/iPad, Compartilhar → Adicionar à Tela de Início). No Android, instale
+   pelo **Chrome**. No Samsung Internet a instalação pode ser bloqueada pelo
+   Google Play Protect ("App de risco bloqueado"); pelo Chrome o mesmo app
+   instala sem esse aviso. Quem instalou uma versão anterior precisa remover o
+   atalho e instalar de novo para ver o nome e o ícone novos. No iPhone/iPad,
+   abra o atalho com internet e entre; a chamada se prepara sozinha. Confira o ✓
+   na nuvem. O navegador pode separar os dados do Safari e do app. Não limpar os
+   dados do site antes de enviar a fila. Depois do primeiro preparo, o
+   armazenamento persistente é solicitado automaticamente, sem garantia contra
    remoção pelo sistema/usuário. Primeiro uso e exportações precisam de conexão.
    A sincronização não depende de execução em segundo plano com o app fechado.
 

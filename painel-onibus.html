@@ -8,14 +8,14 @@
   <meta name="robots" content="noindex, nofollow, noarchive">
   <title>Painel de gestão · Kriativos On Board 2026</title>
   <link rel="icon" href="assets/images/brand/favicon-32.png">
-  <link id="embarque-manifest" rel="manifest" href="embarque.webmanifest">
+  <link id="embarque-manifest" rel="manifest" href="embarque.webmanifest?v=20261016-busao-kob-v11">
   <link rel="apple-touch-icon" href="assets/images/brand/check-busao-apple-touch-icon.png">
   <meta name="theme-color" content="#041d3a">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="Check Busão KOB">
-  <meta name="application-name" content="Check Busão KOB">
+  <meta name="apple-mobile-web-app-title" content="Busão KOB">
+  <meta name="application-name" content="Busão KOB - Lista de Embarque">
     <link rel="stylesheet" href="assets/css/painel-onibus.css?v=20261016-check-busao-v8">
-  <link rel="stylesheet" href="assets/css/painel-embarque.css?v=20261016-check-busao-v8">
+  <link rel="stylesheet" href="assets/css/painel-embarque.css?v=20261016-busao-kob-v11">
 </head>
 
 <body class="painel">
@@ -252,16 +252,22 @@
           </div>
           <div class="embarque-header__actions">
             <div id="embarque-offline" class="embarque-offline">
-              <button id="embarque-offline-toggle" class="embarque-icon-button embarque-offline__toggle" type="button" aria-expanded="false" aria-controls="embarque-offline-menu" aria-label="Acesso offline" title="Acesso offline" data-boarding-label="offlineAccess" data-ready="false">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18h10.5a4.5 4.5 0 0 0 .5-8.97A6 6 0 0 0 6.34 10.1 4 4 0 0 0 7 18Z"/><path class="embarque-offline__mark-ready" d="m9.5 13.5 2 2 3.5-3.5"/><path class="embarque-offline__mark-pending" d="M12 11.5v2.5m0 2.5h.01"/></svg>
+              <button id="embarque-offline-toggle" class="embarque-icon-button embarque-offline__toggle" type="button" aria-expanded="false" aria-controls="embarque-offline-menu" aria-label="Acesso offline" title="Acesso offline" data-ready="false" data-network="connecting">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18h10.5a4.5 4.5 0 0 0 .5-8.97A6 6 0 0 0 6.34 10.1 4 4 0 0 0 7 18Z"/><path class="embarque-offline__mark-ready" d="m9.5 13.5 2 2 3.5-3.5"/><path class="embarque-offline__mark-pending" d="M12 11.5v2.5m0 2.5h.01"/><path class="embarque-offline__slash-gap" d="m3.5 3.5 17 17"/><path class="embarque-offline__slash" d="m3.5 3.5 17 17"/></svg>
+                <span id="embarque-offline-badge" class="embarque-offline__badge" aria-hidden="true" hidden></span>
+                <span id="embarque-offline-dot" class="embarque-offline__dot" aria-hidden="true" hidden></span>
               </button>
-              <div id="embarque-offline-menu" class="embarque-offline__menu" role="group" aria-labelledby="embarque-offline-state" hidden>
+              <div id="embarque-offline-menu" class="embarque-offline__menu" role="group" aria-label="Acesso offline" data-boarding-label="offlineAccess" hidden>
+                <p id="embarque-network" class="embarque-offline__network"></p>
+                <p id="embarque-network-help" hidden></p>
+                <div class="embarque-offline__readiness">
                 <p id="embarque-offline-state"></p>
                 <p id="embarque-offline-help"></p>
                 <div class="embarque-offline__actions">
-                  <button id="embarque-prepare" type="button" class="botao botao--secundario" data-boarding-text="prepareOffline">Preparar</button>
                   <button id="embarque-install" type="button" class="botao botao--secundario" data-boarding-text="installApp" hidden>Instalar</button>
                 </div>
+                </div>
+                <ul id="embarque-notices" class="embarque-notices" aria-label="Avisos" data-boarding-label="notices" hidden></ul>
               </div>
             </div>
             <button id="embarque-update" class="embarque-icon-button" type="button" aria-label="Atualizar" title="Atualizar" data-boarding-label="update">
@@ -303,17 +309,9 @@
               <span class="embarque-progress__return" id="embarque-progress-return-label"></span>
             </div>
           </div>
-          <div id="embarque-connection" class="embarque-connection" role="status" aria-live="polite" hidden>
-            <p id="embarque-connection-text"></p>
-            <button id="embarque-reauth" type="button" class="botao botao--secundario" data-boarding-text="reauth" hidden>Entrar novamente</button>
-          </div>
         </section>
 
         <div id="embarque-scroll" class="embarque-scroll">
-        <section id="embarque-conflicts" class="embarque-conflicts" aria-labelledby="embarque-conflicts-title" hidden>
-          <h3 id="embarque-conflicts-title" data-boarding-text="conflictsTitle">Marcações para conferir</h3>
-          <div id="embarque-conflicts-list"></div>
-        </section>
         <div id="embarque-filters" class="embarque-tabs" role="tablist" aria-label="Filtrar presença" data-boarding-label="filters">
           <button id="embarque-presence-all" class="embarque-tab" type="button" role="tab" data-presence="all" aria-selected="true" aria-controls="embarque-results" tabindex="0" data-boarding-text="all">Todos</button>
           <button id="embarque-presence-missing" class="embarque-tab" type="button" role="tab" data-presence="missing" aria-selected="false" aria-controls="embarque-results" tabindex="-1" data-boarding-text="missingFilter">Faltantes</button>
@@ -337,14 +335,6 @@
           <label class="visualmente-oculto" for="embarque-export-text" data-boarding-text="exportText">Texto da chamada para exportar</label>
           <textarea id="embarque-export-text" class="embarque-export__text" rows="8" readonly></textarea>
           <button id="embarque-export-dismiss" class="botao botao--secundario" type="button" data-boarding-text="exportDismiss">Fechar texto</button>
-        </div>
-        <div id="embarque-error" class="embarque-notice embarque-notice--error" role="alert" hidden>
-          <p id="embarque-error-text"></p>
-          <button id="embarque-retry" type="button" class="botao botao--secundario" data-boarding-text="retry">Tentar novamente</button>
-        </div>
-        <div id="embarque-waiting" class="embarque-notice" hidden>
-          <p id="embarque-waiting-text"></p>
-          <button id="embarque-fleet" type="button" class="link-botao" data-boarding-text="fleet">Abrir Frota</button>
         </div>
         <div id="embarque-loading" class="embarque-loading">
           <p data-boarding-text="loading">Carregando chamada…</p>
@@ -440,14 +430,14 @@
     </div>
   </dialog>
 
-  <script defer src="assets/js/painel-embarque-i18n.js?v=20261016-check-busao-v8"></script>
-  <script defer src="assets/js/painel-embarque-export.js?v=20261016-check-busao-v8"></script>
-  <script defer src="assets/js/painel-embarque-bus-picker.js?v=20261016-check-busao-v8"></script>
-  <script defer src="assets/js/painel-embarque-store.js?v=20261016-check-busao-v8"></script>
-  <script defer src="assets/js/painel-embarque-sync.js?v=20261016-check-busao-v8"></script>
-  <script defer src="assets/js/painel-embarque-offline.js?v=20261016-check-busao-v8"></script>
-  <script defer src="assets/js/painel-embarque.js?v=20261016-check-busao-v8"></script>
-  <script defer src="assets/js/painel-onibus.js?v=20261016-check-busao-v8"></script>
+  <script defer src="assets/js/painel-embarque-i18n.js?v=20261016-busao-kob-v11"></script>
+  <script defer src="assets/js/painel-embarque-export.js?v=20261016-busao-kob-v11"></script>
+  <script defer src="assets/js/painel-embarque-bus-picker.js?v=20261016-busao-kob-v11"></script>
+  <script defer src="assets/js/painel-embarque-store.js?v=20261016-busao-kob-v11"></script>
+  <script defer src="assets/js/painel-embarque-sync.js?v=20261016-busao-kob-v11"></script>
+  <script defer src="assets/js/painel-embarque-offline.js?v=20261016-busao-kob-v11"></script>
+  <script defer src="assets/js/painel-embarque.js?v=20261016-busao-kob-v11"></script>
+  <script defer src="assets/js/painel-onibus.js?v=20261016-busao-kob-v11"></script>
 </body>
 
 </html>
