@@ -13,15 +13,17 @@ O **Kriativos On Board (kob-site)** é a plataforma web oficial do **Kriativos O
 2. **Sistema de Ônibus Fretado ([`onibus.html`](./onibus.html)):** Fluxo multi-step de reserva de transporte rodoviário fretado (SP ⇄ Santos), cálculo automático de valores, checkout Pix via Mercado Pago e upload de comprovante.
 3. **Painel de Gestão Operacional ([`painel-onibus.html`](./painel-onibus.html)):** Dashboard administrativo autenticado para acompanhamento de reservas em tempo real, balanceamento de frota, alocação de passageiros por ônibus e exportação de manifestos em XLSX/PDF.
 
-   A **Lista de embarque** abre automaticamente como painel deslizante, com a
-   identidade do Checklist de Bordo. Pode ser recolhida e reaberta pelo botão
-   no topo, mantendo Reservas e Frota na tablist. Oferece chamadas independentes
+   A **Lista de embarque** abre como painel deslizante pelo botão **Lista de
+   embarque** no topo, com a identidade do Checklist de Bordo, mantendo Reservas
+   e Frota na tablist. No painel completo ela não abre sozinha; só o atalho
+   `?chamada=1` e o modo sem rede abrem direto na chamada. Oferece chamadas independentes
    de ida e volta, busca, filtros e contagens por ônibus/grupo. Cada pessoa tem
    dois checks com rótulos visíveis: Ida roxa e Volta verde, em botões de
    60 × 80 px com glyph de 40 px. O trecho ativo pode ser marcado pelo próprio
    check ou pela linha inteira; o outro fica desabilitado e esmaecido.
-   O cabeçalho fixo reúne atualizar e fechar em botões de ícone de 44 px, além
-   de Ida/Volta com setas e texto. O combobox de ônibus fica à direita do trecho:
+   O cabeçalho fixo reúne acesso offline (nuvem), atualizar e fechar em botões
+   de ícone de 44 px, além de Ida/Volta com setas e texto. Ida, Volta e o
+   combobox de ônibus dividem a linha em 25% / 25% / 50%. O combobox,
    fechado, mede 52 px com texto de 13 px; até 374 px, 48 px e 12 px.
    O menu aberto usa texto de 18 px e opções de pelo menos 56 px. Oferece
    setas, Home/End, Enter, Escape, Tab e busca por digitação. Em espanhol até
@@ -38,18 +40,18 @@ O **Kriativos On Board (kob-site)** é a plataforma web oficial do **Kriativos O
    Grupos mostram “Responsável: nome” no cabeçalho, antes da reserva; a indicação
    não aparece em cards individuais, VIPs ou solos. Crianças de colo têm o
    meeple rosa de 14 px ao lado do nome e mantêm o rótulo textual.
-   O rodapé fixo **Exportar**, com seta para cima, oferece **Copiar, E-mail,
-   Excel e PDF**. Todas as saídas incluem todos os ônibus e ambos os trechos,
+   O rodapé fixo **Exportar**, com seta para cima, fica recolhido; tocar nele
+   sobe **Copiar, E-mail, Excel e PDF** de baixo para cima. Todas as saídas incluem todos os ônibus e ambos os trechos,
    independentemente dos filtros. E-mail abre somente um rascunho, com `.eml`
    completo para listas grandes; clipboard indisponível oferece texto selecionável.
    Excel e PDF são arquivos reais gerados pela API com nova leitura do MySQL.
    Avisos de carregamento, sucesso e erro flutuam no centro do slider e não
    ampliam o rodapé. Nenhuma mensagem é enviada automaticamente.
    A presença é gravada no MySQL por `/api/bus-boarding`, com o token administrativo
-   existente e controle de revisão entre aparelhos; a atualização automática ocorre
+   existente e controle de revisão entre dispositivos; a atualização automática ocorre
    a cada oito segundos com a chamada aberta. A lista mínima e a fila de marcações
    ficam no IndexedDB, separadas por hash do acesso, sem CPF ou dados financeiros.
-   Cada check é persistido no aparelho antes do envio e aparece como pendente
+   Cada check é persistido no dispositivo antes do envio e aparece como pendente
    até o banco confirmar. Contadores incluem a seleção local com aviso visível.
    A fila sobrevive a recarga/fechamento e reenvia com conexão e chamada aberta.
    Conflitos exigem escolha explícita; sair com pendências pede confirmação.
@@ -64,9 +66,12 @@ O **Kriativos On Board (kob-site)** é a plataforma web oficial do **Kriativos O
    e na [especificação offline](./docs/superpowers/specs/2026-10-16-embarque-offline-design.md).
 
    **Usar no celular/tablet sem sinal:** com internet, abrir a chamada e conferir
-   **Acesso offline → Pronto neste aparelho**. O atalho “Abrir só a chamada”
-   usa `painel-onibus.html?chamada=1`, sem carregar Reservas/Frota. É possível
-   instalar/adicionar à tela inicial. No iPhone/iPad, abrir o atalho ainda com
+   o ícone de nuvem no cabeçalho (com ✓ quando está **Pronto neste dispositivo**).
+   O app instalável **Check Busão KOB** (ícone com a frente do ônibus) abre
+   `painel-onibus.html?chamada=1`, sem carregar Reservas/Frota. Para instalar,
+   use **Instalar** no menu da nuvem (Android/Chrome) ou adicione à tela inicial
+   pelo menu do navegador (no iPhone/iPad, Compartilhar → Adicionar à Tela de
+   Início). No iPhone/iPad, abrir o atalho ainda com
    internet, entrar novamente e aguardar a preparação dentro dele. O navegador
    pode separar os dados do Safari e do app. Não limpar os dados do site antes
    de enviar a fila. Armazenamento persistente é solicitado, sem garantia contra

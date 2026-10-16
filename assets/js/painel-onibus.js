@@ -2213,7 +2213,7 @@
   function carregar() {
     if (embarque && (boardingOnly || !navigator.onLine)) {
       mostrar(document.getElementById('estado-chamada'));
-      embarque.start(estado.token);
+      embarque.start(estado.token, true);
       return;
     }
     if (!estado.token) {
@@ -2266,7 +2266,7 @@
         }
         if (embarque && !(erro && erro.semAcesso)) {
           mostrar(document.getElementById('estado-chamada'));
-          embarque.start(estado.token);
+          embarque.start(estado.token, true);
           return;
         }
         el.erroDetalhe.textContent = 'Detalhe técnico: ' + erro.message;

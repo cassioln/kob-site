@@ -31,6 +31,9 @@ test('manifestos pt/en/es abrem somente chamada no mesmo app sem credenciais', (
     assert.equal(url.pathname, '/painel-onibus.html'); assert.equal(url.searchParams.get('chamada'), '1');
     assert.equal(url.searchParams.get('lang'), lang); assert.equal(manifest.lang, lang);
     assert.equal(manifest.display, 'standalone'); assert(!url.searchParams.has('token'));
+    assert.equal(manifest.name, 'Check Busão KOB'); assert.equal(manifest.short_name, 'Check Busão KOB');
+    assert(manifest.icons.some(icon => icon.purpose === 'maskable' && icon.sizes === '512x512'));
+    assert(manifest.icons.some(icon => icon.purpose === 'any' && icon.sizes === '192x192'));
     for (const icon of manifest.icons) assert(existsSync(new URL(icon.src.slice(1), root)));
   }
 });
