@@ -49,6 +49,7 @@ test('embarque abre como slider padrão e salva presença por passageiro e trech
   await ana.click();
   await expect(ana).toHaveAttribute('aria-pressed', 'true');
   await expect(page.locator('#embarque-present')).toHaveText('1');
+  await expect(page.locator('[data-person="1"]')).not.toHaveClass(/is-queued/);
   expect(api.writes[0].body).toEqual({ passenger_id: '1', leg: 'outbound', present: true, expected_revision: 0, bus_number: 1 });
   expect(api.writes[0].headers['x-admin-token']).toBe('dev-token');
   expect(api.writes[0].url).not.toContain('token=');
@@ -56,11 +57,13 @@ test('embarque abre como slider padrão e salva presença por passageiro e trech
   await expect(ana).toHaveAttribute('aria-pressed', 'false');
   await ana.click();
   await expect(ana).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('[data-person="1"]')).not.toHaveClass(/is-queued/);
   await page.reload();
   await expect(ana).toHaveAttribute('aria-pressed', 'true');
   await ana.click();
   await expect(ana).toHaveAttribute('aria-pressed', 'false');
   await expect(page.locator('#embarque-present')).toHaveText('0');
+  await expect(page.locator('[data-person="1"]')).not.toHaveClass(/is-queued/);
   expect(await page.evaluate(() => Object.keys(localStorage))).toEqual(['kob_admin_token']);
 });
 
