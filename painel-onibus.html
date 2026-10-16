@@ -9,7 +9,7 @@
   <title>Painel de gestão · Kriativos On Board 2026</title>
   <link rel="icon" href="assets/images/brand/favicon-32.png">
     <link rel="stylesheet" href="assets/css/painel-onibus.css?v=20260821-contact-validation-v29">
-  <link rel="stylesheet" href="assets/css/painel-embarque.css?v=20261016-embarque-header-v3">
+  <link rel="stylesheet" href="assets/css/painel-embarque.css?v=20261016-embarque-progress-both-v6">
 </head>
 
 <body class="painel">
@@ -253,6 +253,7 @@
               <button type="button" data-leg="outbound" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h16m-6-6 6 6-6 6"/></svg><span data-boarding-text="outbound">Ida</span></button>
               <button type="button" data-leg="return" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12H4m6-6-6 6 6 6"/></svg><span data-boarding-text="return">Volta</span></button>
             </div>
+            <select id="embarque-buses" class="embarque-buses-select" aria-label="Filtrar por ônibus" data-boarding-label="buses"></select>
             <p id="embarque-route" class="visualmente-oculto" data-boarding-text="route">A presença é conferida separadamente na ida e na volta.</p>
           </div>
           <img class="embarque-mascot" src="assets/images/manual/kriativa-checklist.png" alt="" width="480" height="720" decoding="async">
@@ -266,23 +267,29 @@
           </dl>
           <div class="embarque-progress">
             <p id="embarque-progress-text"></p>
-            <progress id="embarque-progress" value="0" max="1" aria-label="Progresso do embarque"></progress>
+            <div id="embarque-progress-track" class="embarque-progress__track is-return">
+              <progress id="embarque-progress-outbound" value="0" max="1" aria-label="Progresso da ida"></progress>
+              <progress id="embarque-progress" value="0" max="1" aria-label="Progresso do embarque"></progress>
+            </div>
+            <div id="embarque-progress-legend" class="embarque-progress__legend">
+              <span class="embarque-progress__outbound" id="embarque-progress-outbound-label"></span>
+              <span class="embarque-progress__return" id="embarque-progress-return-label"></span>
+            </div>
           </div>
         </section>
 
         <div id="embarque-scroll" class="embarque-scroll">
-        <div id="embarque-buses" class="embarque-buses" role="tablist" aria-label="Filtrar por ônibus" data-boarding-label="buses"></div>
+        <div id="embarque-filters" class="embarque-tabs" role="tablist" aria-label="Filtrar presença" data-boarding-label="filters">
+          <button id="embarque-presence-all" class="embarque-tab" type="button" role="tab" data-presence="all" aria-selected="true" aria-controls="embarque-results" tabindex="0" data-boarding-text="all">Todos</button>
+          <button id="embarque-presence-missing" class="embarque-tab" type="button" role="tab" data-presence="missing" aria-selected="false" aria-controls="embarque-results" tabindex="-1" data-boarding-text="missingFilter">Faltantes</button>
+          <button id="embarque-presence-present" class="embarque-tab" type="button" role="tab" data-presence="present" aria-selected="false" aria-controls="embarque-results" tabindex="-1" data-boarding-text="presentFilter">A bordo</button>
+        </div>
 
-        <div id="embarque-results" role="tabpanel" aria-labelledby="embarque-bus-all">
+        <div id="embarque-results" role="tabpanel" aria-labelledby="embarque-presence-all">
         <div class="embarque-toolbar">
           <div class="campo-busca">
             <label class="visualmente-oculto" for="embarque-search" data-boarding-text="search">Buscar nome, grupo, reserva ou CPF</label>
             <input id="embarque-search" type="search" autocomplete="off" spellcheck="false" placeholder="Buscar nome, grupo, reserva ou CPF">
-          </div>
-          <div class="embarque-segment" role="group" aria-label="Filtrar presença" data-boarding-label="filters">
-            <button type="button" data-presence="all" aria-pressed="true" data-boarding-text="all">Todos</button>
-            <button type="button" data-presence="missing" aria-pressed="false" data-boarding-text="missingFilter">Faltantes</button>
-            <button type="button" data-presence="present" aria-pressed="false" data-boarding-text="presentFilter">A bordo</button>
           </div>
         </div>
 
@@ -369,8 +376,8 @@
     </div>
   </dialog>
 
-  <script defer src="assets/js/painel-embarque-i18n.js?v=20261016-embarque-header-v3"></script>
-  <script defer src="assets/js/painel-embarque.js?v=20261016-embarque-header-v3"></script>
+  <script defer src="assets/js/painel-embarque-i18n.js?v=20261016-embarque-progress-both-v6"></script>
+  <script defer src="assets/js/painel-embarque.js?v=20261016-embarque-progress-both-v6"></script>
   <script defer src="assets/js/painel-onibus.js?v=20261015-embarque-sidebar-v40"></script>
 </body>
 

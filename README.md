@@ -18,9 +18,12 @@ O **Kriativos On Board (kob-site)** é a plataforma web oficial do **Kriativos O
    no topo, mantendo Reservas e Frota na tablist. Oferece chamadas independentes
    de ida e volta, presença individual, busca, filtros e contagens por ônibus/grupo.
    O cabeçalho fixo reúne atualizar e fechar em botões de ícone de 44 px, além
-   de Ida/Volta com setas e texto. Os ônibus usam tabs com sublinhado de seleção,
-   contagem e navegação por setas, Home e End; o resumo permanece visível durante
-   a rolagem da lista. Não há seletor de idioma nem link PDF dentro do slider.
+   de Ida/Volta com setas e texto. O select de ônibus fica à direita do trecho.
+   Todos, Faltantes e A bordo usam tabs com sublinhado de seleção e navegação
+   por setas, Home e End, acima da busca. O resumo permanece visível durante
+   a rolagem. A barra sempre mostra a ida como base roxa e sobrepõe o retorno
+   em verde, com legendas para ambos em pt/en/es; o resumo acompanha o trecho
+   ativo. Não há seletor de idioma nem link PDF no slider.
    VIPs de reservas diferentes ficam em um único bloco por ônibus, com o código
    da reserva preservado junto de cada pessoa.
    A presença é gravada no MySQL por `/api/bus-boarding`, com o token administrativo
@@ -28,6 +31,8 @@ O **Kriativos On Board (kob-site)** é a plataforma web oficial do **Kriativos O
    a cada oito segundos com o painel deslizante aberto. Sem conexão, a marcação fica desabilitada.
    A área de chamada oferece português, inglês e espanhol, selecionados por
    `?lang=pt`, `?lang=en` ou `?lang=es`, com a língua da página como padrão.
+   A composição, as nove capturas da revisão e os resultados de QA estão na
+   [especificação da lista de embarque](./docs/superpowers/specs/2026-10-15-lista-embarque-design.md).
 
    **Publicação:** enviar a página, os novos CSS/JS, `.htaccess`,
    `php/mysql/bus-boarding.php` e `php/lib/bus-boarding.php`. A tabela aditiva é criada de forma

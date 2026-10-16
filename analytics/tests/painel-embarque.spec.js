@@ -109,7 +109,7 @@ test('filtra ônibus, grupos, faltantes e nomes sem acentos', async ({ page, con
   await page.locator('[data-check="1"]').click();
   await page.locator('[data-presence="missing"]').click();
   await expect(page.locator('.embarque-person')).toHaveCount(2);
-  await page.locator('[data-bus="1"]').click();
+  await page.locator('#embarque-buses').selectOption('1');
   await expect(page.locator('.embarque-person')).toHaveCount(1);
   await expect(page.locator('#embarque-expected')).toHaveText('2');
   await expect(page.locator('#embarque-missing')).toHaveText('1');
@@ -205,15 +205,21 @@ for (const [lang, title, save] of [ ['pt', 'Chamada de embarque', 'Confirmar emb
     await expect(refresh).toHaveAttribute('title', refreshLabel);
     await expect(refresh.locator('svg')).toHaveCount(1);
     await expect(page.locator('.embarque-header [data-leg] svg')).toHaveCount(2);
+    await page.locator('[data-leg="return"]').click();
+    await expect(page.locator('#embarque-progress-outbound-label')).toHaveText({ pt: 'Ida: 0/3', en: 'Outbound: 0/3', es: 'Ida: 0/3' }[lang]);
+    await expect(page.locator('#embarque-progress-return-label')).toHaveText({ pt: 'Volta: 0/3', en: 'Return: 0/3', es: 'Vuelta: 0/3' }[lang]);
+    await page.locator('[data-leg="outbound"]').click();
     await expect(page.locator('.embarque-header [data-leg="outbound"]')).toContainText({ pt: 'Ida', en: 'Outbound', es: 'Ida' }[lang]);
     const positions = await page.locator('.embarque-header').evaluate(header => {
       const button = header.querySelector('#embarque-update').getBoundingClientRect();
       const close = header.querySelector('#embarque-close').getBoundingClientRect();
       const rect = header.getBoundingClientRect();
-      return { aligned: button.y === close.y, inside: button.right <= rect.right && button.left >= rect.left,
+      const bus = header.querySelector('#embarque-buses').getBoundingClientRect();
+      const legs = header.querySelector('.embarque-segment').getBoundingClientRect();
+      return { aligned: button.y === close.y, busRight: bus.left >= legs.right, inside: button.right <= rect.right && button.left >= rect.left,
         noOverflow: header.scrollWidth <= header.clientWidth };
     });
-    expect(positions).toEqual({ aligned: true, inside: true, noOverflow: true });
+    expect(positions).toEqual({ aligned: true, busRight: true, inside: true, noOverflow: true });
     await page.locator('#embarque-close').focus();
     await page.keyboard.press('Escape');
     await expect(page.locator('#embarque-sidebar')).not.toBeVisible();
@@ -286,41 +292,107 @@ test('slider mantém foco, fecha por backdrop e não reabre em atualização das
 });
 
 
-test('ônibus usam tabs com navegação por setas e controles fixos no cabeçalho @smoke', async ({ page, context }) => {
-  await mockPanel(context);
+test('presença usa tabs com setas e ônibus fica no select do cabeçalho @smoke', async ({ page, context }) => {
+  const data = fixture();
+  data.people[0].outbound = { present: true, revision: 1, checked_at: '2026-10-15T10:00:00Z' };
+  await mockPanel(context, data);
   await page.setViewportSize({ width: 320, height: 740 });
   await page.goto('/painel-onibus.html');
-  const tabs = page.locator('#embarque-buses');
+  const tabs = page.locator('#embarque-filters');
   await expect(tabs).toHaveAttribute('role', 'tablist');
-  const all = tabs.getByRole('tab', { name: /Todos os ônibus/ });
+  const all = tabs.getByRole('tab', { name: 'Todos', exact: true });
   await expect(all).toHaveAttribute('aria-selected', 'true');
   await expect(all).toHaveCSS('border-radius', '0px');
   await all.focus();
   await page.keyboard.press('ArrowRight');
-  const first = tabs.locator('[data-bus="1"]');
-  await expect(first).toBeFocused();
-  await expect(first).toHaveAttribute('aria-selected', 'true');
+  const missing = tabs.locator('[data-presence="missing"]');
+  await expect(missing).toBeFocused();
+  await expect(missing).toHaveAttribute('aria-selected', 'true');
   await expect(all).toHaveAttribute('tabindex', '-1');
-  await expect(page.locator('#embarque-results')).toHaveAttribute('aria-labelledby', 'embarque-bus-1');
-  await expect(page.locator('#embarque-expected')).toHaveText('2');
+  await expect(page.locator('#embarque-results')).toHaveAttribute('aria-labelledby', 'embarque-presence-missing');
+  await expect(page.locator('.embarque-person')).toHaveCount(2);
+  await expect(page.locator('#embarque-expected')).toHaveText('3');
   await page.keyboard.press('End');
-  await expect(tabs.locator('[data-bus="2"]')).toBeFocused();
-  await expect(page.locator('#embarque-expected')).toHaveText('1');
+  await expect(tabs.locator('[data-presence="present"]')).toBeFocused();
+  await expect(page.locator('.embarque-person')).toHaveCount(1);
   await page.keyboard.press('ArrowRight');
   await expect(all).toBeFocused();
   await page.keyboard.press('ArrowLeft');
-  await expect(tabs.locator('[data-bus="2"]')).toBeFocused();
+  await expect(tabs.locator('[data-presence="present"]')).toBeFocused();
   await page.keyboard.press('Home');
   await expect(all).toBeFocused();
+  const bus = page.locator('.embarque-header #embarque-buses');
+  await expect(bus).toHaveAttribute('aria-label', 'Filtrar por ônibus');
+  await bus.selectOption('2');
+  await expect(bus).toHaveValue('2');
+  await expect(page.locator('#embarque-expected')).toHaveText('1');
+  await expect(page.locator('.embarque-person')).toHaveCount(1);
   const refresh = page.locator('#embarque-update');
   // Measure fixed controls after the drawer's entrance has settled.
   await expect.poll(async () => (await page.locator('#embarque-sidebar').boundingBox()).y).toBeLessThan(.01);
-  const before = await refresh.boundingBox();
+  const before = await bus.boundingBox();
   await page.locator('#embarque-scroll').evaluate(el => { el.scrollTop = el.scrollHeight; });
-  const after = await refresh.boundingBox();
+  const after = await bus.boundingBox();
   expect(after.y).toBeCloseTo(before.y, 1);
   await expect(page.locator('.embarque-header [data-leg="return"]')).toBeInViewport();
   await refresh.click();
   await expect(refresh).toHaveAttribute('aria-busy', 'false');
   await expect(page.locator('#embarque-sync')).toContainText('Sincronizado');
+});
+
+test('barra compara ida e volta nos dois trechos, preservando ambos por ônibus @smoke', async ({ page, context }) => {
+  const data = fixture();
+  for (const person of data.people.filter(person => ['1', '3'].includes(person.id))) {
+    person.outbound = { present: true, checked_at: '2026-10-15T10:00:00Z', revision: 1 };
+  }
+  await mockPanel(context, data);
+  await page.goto('/painel-onibus.html');
+  const current = page.locator('#embarque-progress');
+  const outbound = page.locator('#embarque-progress-outbound');
+  await expect(current).toHaveJSProperty('value', 0);
+  await expect(current).toHaveJSProperty('max', 3);
+  await expect(outbound).toHaveJSProperty('value', 2);
+  await expect(outbound).toBeVisible();
+  await expect(page.locator('#embarque-progress-legend')).toBeVisible();
+  await expect(page.locator('#embarque-progress-text')).toHaveText('2 de 3 a bordo');
+  await page.locator('[data-leg="return"]').click();
+  await expect(current).toHaveJSProperty('value', 0);
+  await expect(outbound).toBeVisible();
+  await expect(outbound).toHaveJSProperty('value', 2);
+  await expect(outbound).toHaveAttribute('aria-label', 'Ida: 2 de 3 a bordo');
+  await expect(current).toHaveAttribute('aria-label', 'Volta: 0 de 3 a bordo');
+  await expect(page.locator('#embarque-progress-outbound-label')).toHaveText('Ida: 2/3');
+  await expect(page.locator('#embarque-progress-return-label')).toHaveText('Volta: 0/3');
+  await page.locator('[data-check="1"]').click();
+  await expect(current).toHaveJSProperty('value', 1);
+  await expect(outbound).toHaveJSProperty('value', 2);
+  await page.locator('#embarque-buses').selectOption('1');
+  await expect(current).toHaveJSProperty('value', 1);
+  await expect(outbound).toHaveJSProperty('value', 1);
+  await expect(outbound).toHaveJSProperty('max', 2);
+  await page.locator('[data-check="2"]').click();
+  await expect(current).toHaveJSProperty('value', 2);
+  await expect(outbound).toHaveJSProperty('value', 1);
+  await expect(page.locator('#embarque-progress-return-label')).toHaveText('Volta: 2/2');
+  const layers = await page.locator('#embarque-progress-track').evaluate(track => {
+    const base = track.querySelector('#embarque-progress-outbound');
+    const top = track.querySelector('#embarque-progress');
+    const a=base.getBoundingClientRect(), b=top.getBoundingClientRect();
+    return { sameWidth: a.width === b.width, overBase: b.y > a.y && b.bottom < a.bottom,
+      baseColor:getComputedStyle(base).getPropertyValue('--embarque-fill').trim(),
+      topColor:getComputedStyle(top).getPropertyValue('--embarque-fill').trim() };
+  });
+  expect(layers.sameWidth && layers.overBase).toBe(true);
+  expect(layers.baseColor).not.toBe(layers.topColor);
+  await page.locator('[data-leg="outbound"]').click();
+  await expect(current).toHaveJSProperty('value', 2);
+  await expect(outbound).toHaveJSProperty('value', 1);
+  await expect(outbound).toBeVisible();
+  await expect(page.locator('#embarque-progress-legend')).toBeVisible();
+  await expect(page.locator('#embarque-progress-text')).toHaveText('1 de 2 a bordo');
+  await page.reload();
+  await expect(current).toHaveJSProperty('value', 2);
+  await page.locator('[data-leg="return"]').click();
+  await expect(current).toHaveJSProperty('value', 2);
+  await expect(outbound).toHaveJSProperty('value', 2);
 });

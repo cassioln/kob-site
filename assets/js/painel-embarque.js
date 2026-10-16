@@ -70,23 +70,30 @@
     function renderBuses() {
       var numbers = Array.from(new Set(people.map(function (p) { return p.bus_number; }))).sort(function (a, b) { return a - b; });
       if (bus !== 'all' && numbers.indexOf(Number(bus)) === -1) bus = 'all';
-      var options = [{ value: 'all', name: t('allBuses'), list: people }].concat(numbers.map(function (number) {
-        return { value: String(number), name: t('bus', { number: number }), list: people.filter(function (p) { return p.bus_number === number; }) };
+      var options = [{ value: 'all', name: t('allBuses') }].concat(numbers.map(function (number) {
+        return { value: String(number), name: t('bus', { number: number }) };
       }));
       $('buses').innerHTML = options.map(function (item) {
-        return '<button type="button" role="tab" class="embarque-bus" id="embarque-bus-' + item.value + '" data-bus="' + item.value + '" aria-controls="embarque-results" aria-selected="' + (bus === item.value) + '" tabindex="' + (bus === item.value ? '0' : '-1') + '">' +
-          '<strong>' + esc(item.name) + '</strong><span>' + esc(progress(item.list)) + '</span></button>';
+        return '<option value="' + item.value + '">' + esc(item.name) + '</option>';
       }).join('');
-      $('results').setAttribute('aria-labelledby', 'embarque-bus-' + bus);
+      $('buses').value = bus;
+      $('buses').title = options.find(function (item) { return item.value === bus; }).name;
     }
     function renderSummary() {
       var list = selectedPeople(), present = count(list);
+      var outboundPresent = list.filter(function (person) { return Boolean(person.outbound && person.outbound.present); }).length;
+      var returnPresent = list.filter(function (person) { return Boolean(person.return && person.return.present); }).length;
       $('expected').textContent = list.length;
       $('present').textContent = present;
       $('missing').textContent = list.length - present;
       $('progress').max = list.length || 1;
-      $('progress').value = present;
-      $('progress').setAttribute('aria-label', progress(list));
+      $('progress').value = returnPresent;
+      $('progress').setAttribute('aria-label', t('return') + ': ' + t('progress', { present: returnPresent, total: list.length }));
+      $('progress-outbound').max = list.length || 1;
+      $('progress-outbound').value = outboundPresent;
+      $('progress-outbound').setAttribute('aria-label', t('outbound') + ': ' + t('progress', { present: outboundPresent, total: list.length }));
+      $('progress-outbound-label').textContent = t('outbound') + ': ' + outboundPresent + '/' + list.length;
+      $('progress-return-label').textContent = t('return') + ': ' + returnPresent + '/' + list.length;
       $('progress-text').textContent = list.length && present === list.length ? t('complete') : progress(list);
       document.getElementById('embarque-launch-count').textContent = count(people) + '/' + people.length;
     }
@@ -147,6 +154,12 @@
               '<ul class="embarque-people">' + group[1].map(passengerRow).join('') + '</ul></section>';
           }).join('') + '</section>';
       }).join('');
+      root.querySelectorAll('[data-presence]').forEach(function (button) {
+        var selected = button.dataset.presence === filter;
+        button.setAttribute('aria-selected', String(selected));
+        button.tabIndex = selected ? 0 : -1;
+      });
+      $('results').setAttribute('aria-labelledby', 'embarque-presence-' + filter);
       $('shown').textContent = t('shown', { count: visible.length });
       $('empty').hidden = !ready || visible.length > 0;
       $('empty-title').textContent = t(people.length ? 'noResults' : 'empty');
@@ -156,16 +169,12 @@
     function render() {
       var active = document.activeElement;
       var focusId = active && active.dataset.check;
-      var focusBus = active && active.dataset.bus;
       renderBuses(); renderSummary(); renderList(); syncStatus();
       // Polling should not take keyboard focus away from the working row.
       if (focusId) {
         var button = $('list').querySelector('[data-check="' + focusId + '"]');
         if (button) button.focus({ preventScroll: true });
         else $('shown').focus({ preventScroll: true });
-      } else if (focusBus) {
-        var busButton = $('buses').querySelector('[data-bus="' + focusBus + '"]');
-        if (busButton) busButton.focus({ preventScroll: true });
       }
     }
     async function request(method, body) {
@@ -263,19 +272,17 @@
       var button = event.target.closest('[data-check]');
       if (button) check(button.dataset.check);
     });
-    function selectBus(button) {
+    $('buses').addEventListener('change', function () { bus = $('buses').value; render(); });
+    function selectPresence(button) {
       if (!button) return;
-      bus = button.dataset.bus;
-      render();
-      var selected = $('buses').querySelector('[aria-selected="true"]');
-      selected.focus({ preventScroll: true });
-      selected.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'instant' });
+      filter = button.dataset.presence;
+      renderList(); button.focus({ preventScroll: true });
     }
-    $('buses').addEventListener('click', function (event) {
-      selectBus(event.target.closest('[data-bus]'));
+    $('filters').addEventListener('click', function (event) {
+      selectPresence(event.target.closest('[data-presence]'));
     });
-    $('buses').addEventListener('keydown', function (event) {
-      var tabs = Array.from($('buses').querySelectorAll('[role="tab"]'));
+    $('filters').addEventListener('keydown', function (event) {
+      var tabs = Array.from($('filters').querySelectorAll('[role="tab"]'));
       var index = tabs.indexOf(event.target);
       if (index === -1) return;
       if (event.key === 'ArrowRight') index = (index + 1) % tabs.length;
@@ -283,7 +290,7 @@
       else if (event.key === 'Home') index = 0;
       else if (event.key === 'End') index = tabs.length - 1;
       else return;
-      event.preventDefault(); selectBus(tabs[index]);
+      event.preventDefault(); selectPresence(tabs[index]);
     });
     root.querySelectorAll('[data-leg]').forEach(function (button) {
       button.addEventListener('click', function () {
@@ -292,17 +299,9 @@
         render();
       });
     });
-    root.querySelectorAll('[data-presence]').forEach(function (button) {
-      button.addEventListener('click', function () {
-        filter = button.dataset.presence;
-        root.querySelectorAll('[data-presence]').forEach(function (item) { item.setAttribute('aria-pressed', String(item === button)); });
-        render();
-      });
-    });
     $('search').addEventListener('input', function () { query = $('search').value; renderList(); });
     $('clear').addEventListener('click', function () {
       query = ''; bus = 'all'; filter = 'all'; $('search').value = '';
-      root.querySelectorAll('[data-presence]').forEach(function (button) { button.setAttribute('aria-pressed', String(button.dataset.presence === 'all')); });
       render(); $('search').focus();
     });
     $('update').addEventListener('click', function () { sync(true); });
