@@ -195,6 +195,7 @@ RewriteRule ^php/mercadopago-webhook\.php$    - [F,L]
   AddType video/mp4 .mp4
   AddType video/webm .webm
   AddType application/json .json
+  AddType application/manifest+json .webmanifest
 </IfModule>
 
 # ---- Cabecalhos de seguranca ----
@@ -203,6 +204,9 @@ RewriteRule ^php/mercadopago-webhook\.php$    - [F,L]
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
   Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
   Header always set X-Frame-Options "SAMEORIGIN"
+  <Files "embarque-sw.js">
+    Header always set Cache-Control "no-cache"
+  </Files>
 </IfModule>
 
 # ---- Cache de assets estaticos ----

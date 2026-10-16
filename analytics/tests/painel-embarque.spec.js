@@ -64,7 +64,7 @@ test('embarque abre como slider padrão e salva presença por passageiro e trech
   expect(await page.evaluate(() => Object.keys(localStorage))).toEqual(['kob_admin_token']);
 });
 
-test('confirma somente após o servidor e impede duplo toque @smoke', async ({ page, context }) => {
+test('identifica seleção pendente até confirmar no banco e impede duplo toque @smoke', async ({ page, context }) => {
   let release;
   const wait = new Promise(resolve => { release = resolve; });
   const api = await mockPanel(context, fixture(), { delay: () => wait });
@@ -74,11 +74,13 @@ test('confirma somente após o servidor e impede duplo toque @smoke', async ({ p
   await page.keyboard.press('Space');
   await expect(ana).toBeDisabled();
   await expect(ana).toHaveAttribute('aria-busy', 'true');
-  await expect(page.locator('[data-person="1"] .embarque-person__detail')).toHaveText('Salvando…');
-  await expect(ana).toHaveAttribute('aria-pressed', 'false');
-  await expect(page.locator('#embarque-present')).toHaveText('0');
+  await expect(page.locator('[data-person="1"] .embarque-person__detail')).toHaveText('Enviando ao banco…');
+  await expect(ana).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('#embarque-present')).toHaveText('1');
+  await expect(page.locator('[data-person="1"]')).toHaveClass(/is-queued/);
   release();
   await expect(ana).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('[data-person="1"]')).not.toHaveClass(/is-queued/);
   await expect(ana).toBeFocused();
   expect(api.writes).toHaveLength(1);
 });
@@ -122,7 +124,7 @@ test('filtra ônibus, grupos, faltantes e nomes sem acentos', async ({ page, con
   await expect(page.locator('.embarque-person')).toHaveCount(3);
 });
 
-test('duas sessões sincronizam e detectam revisão desatualizada', async ({ browser }) => {
+test('duas sessões convergem quando a intenção já está salva no banco', async ({ browser }) => {
   const first = await browser.newContext();
   const second = await browser.newContext();
   const manifest = fixture();
@@ -134,8 +136,8 @@ test('duas sessões sincronizam e detectam revisão desatualizada', async ({ bro
   await a.locator('[data-check="1"]').click();
   await expect(a.locator('[data-check="1"]')).toHaveAttribute('aria-pressed', 'true');
   await b.locator('[data-check="1"]').click();
-  await expect(b.locator('#embarque-error')).toContainText('Outra pessoa atualizou');
   await expect(b.locator('[data-check="1"]')).toHaveAttribute('aria-pressed', 'true');
+  await expect(b.locator('[data-person="1"]')).not.toHaveClass(/is-queued/);
   await a.locator('[data-check="2"]').click();
   await expect(a.locator('[data-check="2"]')).toHaveAttribute('aria-pressed', 'true');
   await b.locator('#embarque-update').click();
@@ -143,19 +145,20 @@ test('duas sessões sincronizam e detectam revisão desatualizada', async ({ bro
   await first.close(); await second.close();
 });
 
-test('erro de gravação e falta de conexão não geram presença falsa', async ({ page, context }) => {
+test('erro de gravação e falta de conexão mantêm marcação identificada como pendente', async ({ page, context }) => {
   await mockPanel(context, fixture(), { fail: true });
   await page.goto('/painel-onibus.html');
   await page.locator('[data-check="1"]').click();
-  await expect(page.locator('#embarque-error')).toContainText('Não foi possível confirmar a gravação');
-  await expect(page.locator('[data-check="1"]')).toHaveAttribute('aria-pressed', 'false');
-  await expect(page.locator('#embarque-present')).toHaveText('0');
-  await expect(page.locator('[data-check="1"]')).toBeDisabled();
-  await page.locator('#embarque-retry').click();
+  await expect(page.locator('#embarque-connection')).toContainText('pendente de envio');
+  await expect(page.locator('[data-check="1"]')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('[data-person="1"]')).toHaveClass(/is-queued/);
+  await expect(page.locator('[data-boarding-export="pdf"]')).toBeDisabled();
+  await expect(page.locator('#embarque-update')).toBeEnabled();
+  await page.locator('#embarque-update').click();
   await expect(page.locator('[data-check="1"]')).toBeEnabled();
   await context.setOffline(true);
   await expect(page.locator('#embarque-sync')).toContainText('Sem conexão');
-  await expect(page.locator('[data-check="1"]')).toBeDisabled();
+  await expect(page.locator('[data-check="1"]')).toBeEnabled();
   await context.setOffline(false);
   await expect(page.locator('[data-check="1"]')).toBeEnabled();
 });
@@ -245,9 +248,17 @@ for (const [lang, title, save] of [ ['pt', 'Chamada de embarque', 'Confirmar emb
     await page.keyboard.press('Enter');
     await expect(page.locator('#embarque-sidebar')).toBeVisible();
     await expect(page.locator('#embarque-close')).toBeFocused();
+    await expect.poll(async () => Math.abs((await page.locator('#embarque-sidebar').boundingBox()).y)).toBeLessThan(.5);
     const dimensions = await page.locator('[data-check="1"]').boundingBox();
     expect(dimensions.height).toBeGreaterThanOrEqual(48);
-    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    const overflow = await page.evaluate(() => ({
+      width: document.documentElement.scrollWidth, viewport: innerWidth,
+      elements: Array.from(document.querySelectorAll('body *')).filter(node => {
+        const rect = node.getBoundingClientRect(); return rect.width > 0 && rect.right > innerWidth + .5;
+      }).slice(0, 12).map(node => ({ tag: node.tagName, id: node.id, class: node.className.baseVal || node.className,
+        right: node.getBoundingClientRect().right, width: node.getBoundingClientRect().width }))
+    }));
+    expect(overflow.width, JSON.stringify(overflow)).toBeLessThanOrEqual(overflow.viewport);
   });
 }
 
@@ -660,6 +671,7 @@ test('exportação mostra loading central, confirma e permite fechar o aviso @sm
   await expect(feedback).toHaveAttribute('data-state', 'loading');
   await expect(feedback).toHaveAttribute('aria-busy', 'true');
   await expect(feedback.locator('.embarque-export-feedback__loading')).toHaveCSS('animation-name', 'embarque-spin');
+  await expect.poll(async () => Math.abs((await page.locator('#embarque-sidebar').boundingBox()).x)).toBeLessThan(.5);
   const card = await page.locator('.embarque-export-feedback__card').boundingBox();
   const panel = await page.locator('#embarque-sidebar').boundingBox();
   expect(card.x + card.width / 2).toBeCloseTo(panel.x + panel.width / 2, 0);
@@ -672,6 +684,30 @@ test('exportação mostra loading central, confirma e permite fechar o aviso @sm
   await expect(feedback).not.toBeVisible();
   await expect(pdf).toBeFocused();
 });
+
+for (const [lang, lead] of [['pt', 'Responsável: Ana de Souza'], ['en', 'Group lead: Ana de Souza'], ['es', 'Responsable: Ana de Souza']]) {
+  test(`responsável aparece só no cabeçalho de grupos em ${lang} @smoke`, async ({ page, context }) => {
+    const data = fixture();
+    data.people.push({ ...data.people[0], id: '4', registration_id: 'solo', code: 'SOLO0001', name: 'Solo Teste', contact: 'Solo Teste', group: null });
+    await mockPanel(context, data);
+    await page.goto('/painel-onibus.html?lang=' + lang);
+    const heading = page.locator('.embarque-group__header').filter({ hasText: 'Tripulação dos Dados' });
+    await expect(heading.locator('.embarque-group__primary')).toHaveText(lead);
+    await expect(heading).toContainText('GRUPOAAA');
+    expect(await heading.evaluate(node => node.querySelector('.embarque-group__primary').nextElementSibling.textContent)).toContain('GRUPOAAA');
+    await expect(page.locator('.embarque-person__meta')).not.toContainText([lead.split(':')[0]]);
+    await expect(page.locator('[data-vip-group] .embarque-group__primary, [data-solo-group] .embarque-group__primary')).toHaveCount(0);
+    const child = page.locator('[data-person="2"] strong .meeple-svg--child');
+    await expect(child).toHaveCount(1);
+    await expect(child).toHaveAttribute('aria-hidden', 'true');
+    await expect(child).toHaveCSS('color', 'rgb(236, 72, 153)');
+    await expect(child).toHaveAttribute('width', '14');
+    expect(await child.locator('path').getAttribute('d')).toBe(await page.locator('.bus-dialog__badge-icone--vip path').first().getAttribute('d'));
+    await expect(page.locator('[data-person="1"] .meeple-svg--child')).toHaveCount(0);
+    await page.locator('#embarque-search').fill('José');
+    await expect(heading.locator('.embarque-group__primary')).toHaveText(lead);
+  });
+}
 
 test('atualizar gira durante a leitura e ao concluir, respeitando movimento reduzido @smoke', async ({ page, context }) => {
   const api = await mockPanel(context);
@@ -687,13 +723,16 @@ test('atualizar gira durante a leitura e ao concluir, respeitando movimento redu
   delay = true; await refresh.click();
   await expect(refresh).toHaveAttribute('aria-busy', 'true');
   await expect(refresh.locator('svg')).toHaveCSS('animation-name', 'embarque-spin');
+  await expect.poll(() => typeof release).toBe('function');
   release();
   await expect(refresh).toHaveAttribute('aria-busy', 'false');
   await expect(refresh.locator('svg')).toHaveCSS('animation-name', 'none');
   await page.emulateMedia({ reducedMotion: 'reduce' });
+  release = null;
   await refresh.click();
   await expect(refresh).toHaveAttribute('aria-busy', 'true');
   await expect(refresh.locator('svg')).toHaveCSS('animation-name', 'none');
+  await expect.poll(() => typeof release).toBe('function');
   release();
   await expect(refresh).toHaveAttribute('aria-busy', 'false');
 });

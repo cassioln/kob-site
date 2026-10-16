@@ -10,11 +10,12 @@
     var requested = new URLSearchParams(window.location.search).get('lang') || document.documentElement.lang.slice(0, 2);
     var lang = messages[requested] ? requested : 'pt';
     var locale = { pt: 'pt-BR', en: 'en-US', es: 'es' };
-    var people = [], token = '', timer = null, generation = 0, epoch = 0;
+    var people = [], token = '', timer = null;
     var leg = 'outbound', bus = 'all', filter = 'all', query = '';
     var pending = new Set(), controllers = new Set();
     var loading = false, ready = false, stale = false, lastSync = null, noticeKey = '';
-    var autoOpened = false, closeTimer = null, exporter = null, busPicker = null;
+    var autoOpened = false, closeTimer = null, exporter = null, busPicker = null, offlineAccess = null;
+    var queueState = { pending: [], sending: '', durable: false, online: false }, localPending = new Set(), deferredFocus = null;
     var compactBuses = window.matchMedia('(max-width: 374px)');
     var meeple = document.querySelector('.bus-dialog__badge-icone--vip svg').innerHTML;
     var $ = function (id) { return root.querySelector('#embarque-' + id); };
@@ -54,11 +55,37 @@
     }
     function syncStatus() {
       if (exporter) exporter.update(!ready || stale || !navigator.onLine || pending.size > 0 || people.length === 0);
-      var key = !navigator.onLine ? 'offline' : stale ? 'stale' : loading ? 'syncing' : lastSync ? 'synced' : 'loading';
+      var key = queueState.authError ? 'expired' : !navigator.onLine ? 'offlineShort' : stale ? 'stale' : loading ? 'syncing' : lastSync ? 'synced' : 'loading';
       $('sync').textContent = t(key, { time: lastSync ? time(lastSync) : '' });
       $('sync').dataset.state = (!navigator.onLine || stale) ? 'warning' : 'ok';
-      $('update').disabled = loading;
+      $('update').disabled = loading || !navigator.onLine;
       $('update').setAttribute('aria-busy', String(loading));
+      var conflicts = queueState.pending.filter(function (op) { return op.conflict; }).length;
+      var message = queueState.authError ? t('expired') : queueState.storageError ? t('storageError') :
+        conflicts ? t('conflictCount', { count: conflicts }) : pending.size ? t('queuedCount', { count: pending.size }) :
+        !navigator.onLine && ready ? t('offlineReady') : stale && ready ? t('connectionWaiting') : '';
+      $('connection').hidden = !message;
+      $('connection-text').textContent = message;
+      $('reauth').hidden = !queueState.authError;
+      var searchText = t(queueState.online ? 'search' : 'searchOffline');
+      $('search').placeholder = searchText;
+      root.querySelector('label[for="embarque-search"]').textContent = searchText;
+      if (offlineAccess) offlineAccess.update(queueState);
+    }
+    function renderConflicts() {
+      var conflicts = queueState.pending.filter(function (op) { return op.conflict; });
+      $('conflicts').hidden = !conflicts.length;
+      $('conflicts-list').innerHTML = conflicts.map(function (op) {
+        var person = queueState.confirmed.find(function (p) { return p.id === op.passenger_id; });
+        var help = !person ? t('conflictRemoved') : op.conflict === 'bus' ? t('conflictBus', { number: person.bus_number }) : t('conflictHelp');
+        return '<article class="embarque-conflict"><h4>' + esc(op.name) + ' · ' + esc(t(op.leg)) + '</h4><p>' + esc(help) + '</p>' +
+          '<p>' + esc(t('localChoice', { state: t(op.present ? 'present' : 'missing') })) +
+          (person ? ' · ' + esc(t('serverChoice', { state: t(person[op.leg].present ? 'present' : 'missing') })) : '') + '</p>' +
+          '<div class="embarque-conflict__actions"><button type="button" class="botao botao--secundario" data-resolve="server" data-operation="' + esc(op.id) + '"' +
+          (!queueState.online || loading ? ' disabled' : '') + '>' + esc(t(person ? 'keepServer' : 'discardRemoved')) + '</button>' +
+          (person ? '<button type="button" class="botao botao--primario" data-resolve="local" data-operation="' + esc(op.id) + '"' +
+          (!queueState.online || loading ? ' disabled' : '') + '>' + esc(t('keepLocal')) + '</button>' : '') + '</div></article>';
+      }).join('');
     }
     function translate() {
       root.lang = locale[lang];
@@ -115,27 +142,29 @@
     }
     function passengerCheck(person, checkLeg) {
       var state = person[checkLeg], present = Boolean(state && state.present);
-      var active = checkLeg === leg, saving = pending.has(person.id + ':' + checkLeg);
-      var disabled = !active || saving || !navigator.onLine || stale;
-      return '<button type="button" class="embarque-check' + (active ? '' : ' is-inactive') +
+      var key = person.id + ':' + checkLeg;
+      var active = checkLeg === leg, saving = queueState.sending === key || localPending.has(key);
+      var queued = queueState.pending.find(function (op) { return op.passenger_id === person.id && op.leg === checkLeg; });
+      var disabled = !active || saving || !!(queued && queued.conflict) || queueState.authError || !queueState.durable;
+      return '<button type="button" class="embarque-check' + (active ? '' : ' is-inactive') + (queued ? ' is-queued' : '') +
         '" data-check-leg="' + checkLeg + '" ' + (active ? 'data-check' : 'data-inactive-check') + '="' + esc(person.id) +
-        '" aria-pressed="' + present + '" aria-label="' + esc(t(present ? 'undoLabel' : 'saveLabel', { name: person.name, leg: t(checkLeg) })) +
+        '" aria-pressed="' + present + '" aria-label="' + esc(t(present ? 'undoLabel' : 'saveLabel', { name: person.name, leg: t(checkLeg) }) + (queued ? ' · ' + t('queuePending') : '')) +
         '" aria-busy="' + saving + '"' + (disabled ? ' disabled' : '') + '>' + (present ? CHECK : UNCHECKED) +
         '<span>' + esc(t(checkLeg)) + '</span></button>';
     }
     function passengerRow(person) {
-      var present = onBoard(person), saving = pending.has(person.id + ':' + leg);
+      var present = onBoard(person), saving = queueState.sending === person.id + ':' + leg;
+      var queued = queueState.pending.some(function (op) { return op.passenger_id === person.id && op.leg === leg; });
       var badges = [];
       if (person.vip || solo(person)) badges.push(t('group', { code: person.code }));
-      if (person.primary) badges.push(t('primary'));
       if (person.lap_child) badges.push(t('lapChild'));
       else if (person.minor) badges.push(t('minor'));
       var subtitle = badges.join(' · ');
       var state = person[leg];
-      var detail = saving ? t('saving') : present && state.checked_at ? t('checkedAt', { time: time(state.checked_at) }) : t('pending');
+      var detail = queued ? t(saving ? 'queueSending' : 'queuePending') : present && state.checked_at ? t('checkedAt', { time: time(state.checked_at) }) : t('pending');
       // Names are text only; the passenger's database ID is the stable identity.
-      return '<li class="embarque-person' + (present ? ' is-present' : '') + '" data-person="' + esc(person.id) + '" data-readonly="' + (saving || !navigator.onLine || stale) + '">' +
-        '<div class="embarque-person__info"><strong>' + esc(person.name) + '</strong>' +
+      return '<li class="embarque-person' + (present ? ' is-present' : '') + (queued ? ' is-queued' : '') + '" data-person="' + esc(person.id) + '" data-readonly="' + (saving || queueState.authError || !queueState.durable) + '">' +
+        '<div class="embarque-person__info"><strong>' + (person.lap_child ? '<svg viewBox="0 0 512 512" width="14" height="14" class="meeple-svg meeple-svg--child embarque-person__child" focusable="false" aria-hidden="true">' + meeple + '</svg>' : '') + esc(person.name) + '</strong>' +
         (subtitle ? '<span class="embarque-person__meta">' + esc(subtitle) + '</span>' : '') +
         '<span class="embarque-person__detail">' + esc(detail) + '</span></div>' +
         '<div class="embarque-person__checks">' + passengerCheck(person, 'outbound') + passengerCheck(person, 'return') + '</div></li>';
@@ -168,11 +197,14 @@
             var first = group[1][0];
             var isVip = group[0] === 'vip';
             var isSolo = group[0] === 'solo';
+            var primary = people.find(function (p) { return p.registration_id === first.registration_id && p.primary; });
+            var responsible = !isVip && !isSolo ? primary && primary.name || first.contact : '';
             var allInGroup = scoped.filter(function (p) {
               return isVip ? p.vip && p.bus_number === number : isSolo ? solo(p) && p.bus_number === number : p.registration_id === group[0];
             });
             return '<section class="embarque-group"' + (isVip ? ' data-vip-group="' + number + '"' : isSolo ? ' data-solo-group="' + number + '"' : '') + '><header class="embarque-group__header"><div><h4>' +
-              groupIcon(isVip ? 'vip' : isSolo ? 'solo' : 'group') + esc(isVip ? t('vipGroup') : isSolo ? t('soloGroup') : first.group || first.contact) + '</h4><span>' +
+              groupIcon(isVip ? 'vip' : isSolo ? 'solo' : 'group') + esc(isVip ? t('vipGroup') : isSolo ? t('soloGroup') : first.group || first.contact) + '</h4>' +
+              (responsible ? '<span class="embarque-group__primary">' + esc(t('groupPrimary', { name: responsible })) + '</span>' : '') + '<span>' +
               esc(isVip ? t('vipHelp') : isSolo ? t('soloHelp') : t('group', { code: first.code })) +
               '</span></div><span class="embarque-group__count">' + esc(progress(allInGroup)) + '</span></header>' +
               '<ul class="embarque-people">' + group[1].map(passengerRow).join('') + '</ul></section>';
@@ -193,13 +225,23 @@
     function render() {
       var active = document.activeElement;
       var focusId = active && active.dataset.check;
-      renderBuses(); renderSummary(); renderList(); syncStatus();
+      renderBuses(); renderSummary(); renderList(); renderConflicts(); syncStatus();
       // Polling should not take keyboard focus away from the working row.
       if (focusId) {
         var button = $('list').querySelector('[data-check="' + focusId + '"]');
         if (button) button.focus({ preventScroll: true });
         else $('shown').focus({ preventScroll: true });
       }
+      restoreCheckFocus();
+    }
+    function restoreCheckFocus() {
+      if (!deferredFocus || loading || localPending.size || !root.open || deferredFocus.leg !== leg) return;
+      var focus = deferredFocus; deferredFocus = null;
+      if (document.activeElement !== document.body && document.activeElement !== root && document.activeElement !== $('shown')) return;
+      var buttons = $('list').querySelectorAll('[data-check]:not(:disabled)');
+      var target = $('list').querySelector('[data-check="' + focus.id + '"]:not(:disabled)') ||
+        buttons[Math.min(focus.index, buttons.length - 1)] || $('search');
+      target.focus({ preventScroll: true });
     }
     async function request(method, body, options) {
       var controller = new AbortController();
@@ -226,75 +268,55 @@
         controllers.delete(controller);
       }
     }
-    async function sync(force) {
-      if (!token || loading || pending.size || !root.open || (!force && document.hidden)) return;
-      var session = generation, before = epoch;
-      loading = true; syncStatus();
-      try {
-        var data = await request('GET');
-        if (session !== generation || before !== epoch) return;
-        var changed = !ready || stale || JSON.stringify(people) !== JSON.stringify(data.people);
-        people = data.people;
-        ready = true; stale = false; lastSync = Date.now();
-        if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) $('update').classList.add('is-updated');
-        $('loading').hidden = true;
-        $('waiting').hidden = !data.waiting;
-        $('waiting-text').textContent = t('waiting', { count: data.waiting });
-        $('waiting').dataset.count = data.waiting;
-        setNotice('');
-        if (changed) render();
-      } catch (error) {
-        if (session !== generation || before !== epoch) return;
-        stale = true;
-        $('loading').hidden = true;
-        setNotice(error.status === 404 ? 'expired' : 'stale');
+    var coordinator = window.KobBoardingSync({ request: request,
+      changed: function (state) {
+        if (!token) return;
+        var wasLoading = loading;
+        queueState = state; people = state.people; ready = state.ready; loading = state.busy;
+        stale = !state.online; lastSync = state.savedAt || null;
+        pending = new Set(state.pending.map(function (op) { return op.passenger_id + ':' + op.leg; }));
+        $('loading').hidden = ready || !loading;
+        $('waiting').hidden = !state.waiting;
+        $('waiting-text').textContent = t('waiting', { count: state.waiting });
+        $('waiting').dataset.count = state.waiting;
+        if (!ready && !loading) setNotice(state.authError ? 'expired' : 'firstConnection');
+        else if (ready) setNotice('');
+        if (wasLoading && !loading && state.online && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) $('update').classList.add('is-updated');
         render();
-      } finally {
-        if (session === generation) { loading = false; syncStatus(); }
+      },
+      saved: function (op) {
+        $('announcement').textContent = t(op.present ? 'saved' : 'removed', { name: op.name, leg: t(op.leg) });
       }
+    });
+    function sync(force) {
+      if (!token || !root.open || (!force && document.hidden)) return;
+      return coordinator.refresh();
     }
     async function check(id) {
       var person = people.find(function (p) { return p.id === id; });
-      if (!person || !token || !navigator.onLine || stale) return;
+      if (!person || !token) return;
       var savedLeg = leg, key = id + ':' + savedLeg;
-      if (pending.has(key)) return;
-      var session = generation;
+      if (localPending.has(key)) return;
+      localPending.add(key);
       var restoreFocus = document.activeElement && document.activeElement.dataset.check === id;
       var originIndex = Array.prototype.indexOf.call($('list').querySelectorAll('[data-check]'), document.activeElement);
-      var desired = !person[savedLeg].present;
-      var revision = person[savedLeg].revision;
-      pending.add(key); epoch++; setNotice(''); render();
-      try {
-        var data = await request('POST', {
-          passenger_id: id, leg: savedLeg, present: desired,
-          expected_revision: revision, bus_number: person.bus_number
-        });
-        if (session !== generation) return;
-        person[savedLeg] = data.checkin;
-        $('announcement').textContent = t(desired ? 'saved' : 'removed', { name: person.name, leg: t(savedLeg) });
-      } catch (error) {
-        if (session !== generation) return;
-        if (error.status === 409 && error.data.error === 'revision_conflict') {
-          person[savedLeg] = error.data.checkin;
-          setNotice('conflict');
-        } else {
-          // A timed-out response may already have committed: resync before retrying.
-          stale = true;
-          setNotice(error.status === 409 ? 'changed' : error.status === 404 ? 'expired' : 'saveError');
-        }
-      } finally {
-        if (session === generation) {
-          pending.delete(key); epoch++; render();
-          if (restoreFocus && savedLeg === leg && root.open &&
-              (document.activeElement === document.body || document.activeElement === root || document.activeElement === $('shown'))) {
-            var buttons = $('list').querySelectorAll('[data-check]');
-            var target = $('list').querySelector('[data-check="' + id + '"]') ||
-              buttons[Math.min(originIndex, buttons.length - 1)] || $('search');
-            target.focus({ preventScroll: true });
-          }
-        }
+      if (restoreFocus) deferredFocus = { id: id, leg: savedLeg, index: originIndex };
+      var success = await coordinator.toggle(id, savedLeg);
+      localPending.delete(key);
+      if (!success) setNotice('storageError');
+      render();
+      if (restoreFocus && savedLeg === leg && root.open &&
+          (document.activeElement === document.body || document.activeElement === root || document.activeElement === $('shown'))) {
+        var buttons = $('list').querySelectorAll('[data-check]');
+        var target = $('list').querySelector('[data-check="' + id + '"]') || buttons[Math.min(originIndex, buttons.length - 1)] || $('search');
+        target.focus({ preventScroll: true });
       }
     }
+    $('conflicts-list').addEventListener('click', function (event) {
+      var button = event.target.closest('[data-resolve]');
+      if (!button || button.disabled) return;
+      coordinator.resolve(button.dataset.operation, button.dataset.resolve === 'local').catch(function () { setNotice('storageError'); });
+    });
     $('list').addEventListener('click', function (event) {
       var control = event.target.closest('.embarque-check');
       if (control) {
@@ -344,6 +366,7 @@
     $('update').addEventListener('click', function () { sync(true); });
     $('update').querySelector('svg').addEventListener('animationend', function () { $('update').classList.remove('is-updated'); });
     $('retry').addEventListener('click', function () { sync(true); });
+    $('reauth').addEventListener('click', function () { window.dispatchEvent(new Event('kob:boarding-reauth')); });
     function finishClose(restore) {
       clearTimeout(closeTimer); closeTimer = null;
       root.classList.remove('is-open');
@@ -400,9 +423,9 @@
     });
     window.addEventListener('online', function () { sync(true); });
     window.addEventListener('offline', function () {
-      stale = true; render(); $('announcement').textContent = t('offline');
+      stale = true; coordinator.refresh(); render(); $('announcement').textContent = t(ready ? 'offlineReady' : 'firstConnection');
     });
-    window.addEventListener('focus', function () { sync(false); });
+    window.addEventListener('focus', function () { coordinator.reload().then(function () { sync(false); }); });
     document.addEventListener('visibilitychange', function () { if (!document.hidden) sync(false); });
     busPicker = window.KobBoardingBusPicker(root);
     exporter = window.KobBoardingExport.mount(root, {
@@ -413,22 +436,28 @@
         type: action === 'excel' ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' : 'application/pdf'
       }); }
     });
+    offlineAccess = window.KobBoardingOffline(root, { t: t, lang: lang, refresh: function () { return sync(true); } });
     translate();
     return {
-      start: function (adminToken) {
-        if (token !== adminToken) { this.stop(); token = adminToken; }
+      start: async function (adminToken) {
+        if (token !== adminToken || queueState.authError) {
+          await this.stop(false); token = adminToken; coordinator.start(token);
+        }
         if (!timer) timer = setInterval(function () { sync(false); }, 8000);
         opener.hidden = false;
         if (!autoOpened) { autoOpened = true; openDrawer(); }
         else sync(false);
       },
-      stop: function () {
+      canLogout: function () { return !pending.size || window.confirm(t('discardPending')); },
+      stop: async function (clear) {
         closeDrawer(false, true);
         opener.hidden = true; autoOpened = false;
-        token = ''; generation++; epoch++; loading = false;
+        token = ''; loading = false;
         clearInterval(timer); timer = null;
         controllers.forEach(function (controller) { controller.abort(); }); controllers.clear();
-        people = []; pending.clear(); ready = false; stale = false; lastSync = null;
+        await coordinator.stop(clear !== false);
+        people = []; pending.clear(); localPending.clear(); deferredFocus = null; ready = false; stale = false; lastSync = null;
+        queueState = { pending: [], confirmed: [], sending: '', durable: false, online: false };
         exporter.clear();
         $('list').replaceChildren();
         $('waiting').hidden = true; $('empty').hidden = true; $('loading').hidden = false;

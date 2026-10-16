@@ -35,6 +35,9 @@ O **Kriativos On Board (kob-site)** é a plataforma web oficial do **Kriativos O
    com código e checks individuais; reservas com várias pessoas mantêm seu grupo.
    A classificação usa a lista completa, sem transformar grupos em solo ao filtrar.
    Os títulos reutilizam o meeple do Planejamento: VIP laranja, solo azul e grupo roxo.
+   Grupos mostram “Responsável: nome” no cabeçalho, antes da reserva; a indicação
+   não aparece em cards individuais, VIPs ou solos. Crianças de colo têm o
+   meeple rosa de 14 px ao lado do nome e mantêm o rótulo textual.
    O rodapé fixo **Exportar**, com seta para cima, oferece **Copiar, E-mail,
    Excel e PDF**. Todas as saídas incluem todos os ônibus e ambos os trechos,
    independentemente dos filtros. E-mail abre somente um rascunho, com `.eml`
@@ -44,23 +47,45 @@ O **Kriativos On Board (kob-site)** é a plataforma web oficial do **Kriativos O
    ampliam o rodapé. Nenhuma mensagem é enviada automaticamente.
    A presença é gravada no MySQL por `/api/bus-boarding`, com o token administrativo
    existente e controle de revisão entre aparelhos; a atualização automática ocorre
-   a cada oito segundos com o painel deslizante aberto. Sem conexão, a marcação fica desabilitada.
+   a cada oito segundos com a chamada aberta. A lista mínima e a fila de marcações
+   ficam no IndexedDB, separadas por hash do acesso, sem CPF ou dados financeiros.
+   Cada check é persistido no aparelho antes do envio e aparece como pendente
+   até o banco confirmar. Contadores incluem a seleção local com aviso visível.
+   A fila sobrevive a recarga/fechamento e reenvia com conexão e chamada aberta.
+   Conflitos exigem escolha explícita; sair com pendências pede confirmação.
+   Sem armazenamento disponível, novas marcações ficam bloqueadas com aviso.
    Trocar o trecho durante uma gravação mantém a resposta vinculada ao trecho
    original; os anúncios acessíveis identificam pessoa e trecho em pt/en/es.
    A área de chamada oferece português, inglês e espanhol, selecionados por
    `?lang=pt`, `?lang=en` ou `?lang=es`, com a língua da página como padrão.
    A composição e os resultados de QA estão na
    [especificação da lista de embarque](./docs/superpowers/specs/2026-10-15-lista-embarque-design.md)
-   e na [especificação de exportação](./docs/superpowers/specs/2026-10-16-embarque-exportar-design.md).
+   na [especificação de exportação](./docs/superpowers/specs/2026-10-16-embarque-exportar-design.md)
+   e na [especificação offline](./docs/superpowers/specs/2026-10-16-embarque-offline-design.md).
 
-   **Publicação:** enviar a página, os novos CSS/JS, `.htaccess`,
+   **Usar no celular/tablet sem sinal:** com internet, abrir a chamada e conferir
+   **Acesso offline → Pronto neste aparelho**. O atalho “Abrir só a chamada”
+   usa `painel-onibus.html?chamada=1`, sem carregar Reservas/Frota. É possível
+   instalar/adicionar à tela inicial. No iPhone/iPad, abrir o atalho ainda com
+   internet, entrar novamente e aguardar a preparação dentro dele. O navegador
+   pode separar os dados do Safari e do app. Não limpar os dados do site antes
+   de enviar a fila. Armazenamento persistente é solicitado, sem garantia contra
+   remoção pelo sistema/usuário. Primeiro uso e exportações precisam de conexão.
+   A sincronização não depende de execução em segundo plano com o app fechado.
+
+   **Publicação:** enviar a página, os novos CSS/JS, `.htaccess`, `embarque-sw.js`,
+   os manifestos `embarque.webmanifest` em pt/en/es e o ícone SVG de embarque, além de
    `php/mysql/bus-boarding.php`, `php/lib/bus-boarding.php` e os geradores
    `php/lib/boarding-rollcall-{pdf,xlsx}.php`. A tabela aditiva é criada de forma
    idempotente no primeiro acesso autenticado. Se o usuário do banco não tiver
    permissão `CREATE`, um administrador deve aplicar
    `php/db/009_bus_boarding_checkins.sql` antes da publicação. `php/db` continua
    excluído do FTP; o bootstrap da API não depende desse diretório no servidor.
-   Nenhuma presença existente é reinicializada por deploy ou recarga.
+   Nenhuma presença existente é reinicializada por deploy ou recarga. O service
+   worker exige HTTPS em produção (localhost funciona para testes), armazena
+   somente assets explícitos e nunca respostas de API ou URLs com chave.
+   Ao atualizar o shell, manter a mesma versão nos assets HTML e em
+   `embarque-sw.js`; atualizações aguardam o encerramento das sessões abertas.
 
    **Teste de persistência:** `php php/tests/bus-boarding.test.php` valida os
    payloads. Para integrar com banco descartável, definir `KOB_BOARDING_TEST_DSN`
