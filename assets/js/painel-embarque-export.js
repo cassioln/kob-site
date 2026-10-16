@@ -57,6 +57,15 @@
     var fallback = root.querySelector('#embarque-export-fallback');
     var area = root.querySelector('#embarque-export-text');
     var controls = Array.from(footer.querySelectorAll('[data-boarding-export]'));
+    var toggle = root.querySelector('#embarque-export-toggle');
+    var panel = root.querySelector('#embarque-export-controls');
+    function setOpen(open) {
+      footer.classList.toggle('is-open', open);
+      toggle.setAttribute('aria-expanded', String(open));
+      // Recolhido, os botões ficam fora do Tab e do leitor de tela.
+      panel.inert = !open;
+    }
+    toggle.addEventListener('click', function () { setOpen(toggle.getAttribute('aria-expanded') !== 'true'); });
     var disabled = true, downloading = '', generation = 0, feedbackTimer = null, initiator = null;
     function hideFeedback() {
       clearTimeout(feedbackTimer); feedbackTimer = null;
@@ -144,9 +153,10 @@
       fallback.hidden = true; area.value = ''; controls[0].focus();
     });
     return {
+      open: function () { setOpen(true); },
       update: function (blocked) { disabled = blocked; update(); },
       clear: function () {
-        generation++; disabled = true; downloading = ''; update();
+        generation++; disabled = true; downloading = ''; update(); setOpen(false);
         hideFeedback(); status.textContent = ''; area.value = ''; fallback.hidden = true;
       }
     };

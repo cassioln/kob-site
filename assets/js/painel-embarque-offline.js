@@ -5,12 +5,15 @@
     var $ = function (id) { return root.querySelector('#embarque-' + id); };
     var manifest = document.getElementById('embarque-manifest');
     manifest.href = (options.lang === 'pt' ? '' : options.lang + '/') + 'embarque.webmanifest';
-    $('offline-link').href = 'painel-onibus.html?chamada=1&lang=' + options.lang;
     document.querySelectorAll('[data-boarding-entry]').forEach(function (node) { node.textContent = t(node.dataset.boardingEntry); });
+    var toggle = $('offline-toggle'), menu = $('offline-menu');
     function render() {
       var ready = prepared && state.ready && state.durable && !state.authError;
       $('offline-state').textContent = t(ready ? 'offlinePrepared' : preparing ? 'offlinePreparing' : 'offlineNotReady');
       $('offline-state').dataset.ready = String(ready);
+      toggle.dataset.ready = String(ready);
+      toggle.setAttribute('aria-busy', String(preparing));
+      toggle.title = t('offlineAccess') + ' · ' + $('offline-state').textContent;
       $('offline-help').textContent = t(failed ? 'offlineUnsupported' : ready ? 'offlineHelpReady' : 'offlineHelpNotReady', {
         time: state.savedAt ? new Intl.DateTimeFormat(root.lang || 'pt-BR', { dateStyle: 'short', timeStyle: 'short', timeZone: 'America/Sao_Paulo' }).format(new Date(state.savedAt)) : ''
       });
@@ -38,6 +41,19 @@
       } catch (_) { failed = true; }
       finally { preparing = false; render(); }
     }
+    function setMenu(open, focusToggle) {
+      menu.hidden = !open;
+      toggle.setAttribute('aria-expanded', String(open));
+      if (!open && focusToggle) toggle.focus();
+    }
+    toggle.addEventListener('click', function () { setMenu(menu.hidden); });
+    $('offline').addEventListener('keydown', function (event) {
+      // Esc fecha só o menu; sem isso o dialog inteiro da chamada fecharia junto.
+      if (event.key === 'Escape' && !menu.hidden) { event.preventDefault(); event.stopPropagation(); setMenu(false, true); }
+    });
+    document.addEventListener('pointerdown', function (event) {
+      if (!menu.hidden && !$('offline').contains(event.target)) setMenu(false);
+    });
     $('prepare').addEventListener('click', function () { prepare(true); });
     window.addEventListener('beforeinstallprompt', function (event) { event.preventDefault(); installPrompt = event; render(); });
     $('install').addEventListener('click', async function () {

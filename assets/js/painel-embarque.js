@@ -403,7 +403,7 @@
       if (event.key !== 'Tab') return;
       // Keep the keyboard loop stable even during the slide's entry motion.
       var controls = Array.from(root.querySelectorAll('button:not(:disabled), a[href]:not([aria-disabled="true"]), input:not(:disabled), select:not(:disabled):not([aria-hidden="true"]), textarea:not(:disabled)'))
-        .filter(function (node) { return !node.closest('[hidden]') && node.getClientRects().length > 0; });
+        .filter(function (node) { return !node.closest('[hidden], [inert]:not(dialog)') && node.getClientRects().length > 0; });
       var first = controls[0], last = controls[controls.length - 1];
       if (event.shiftKey && document.activeElement === first) {
         event.preventDefault(); last.focus();
@@ -439,13 +439,15 @@
     offlineAccess = window.KobBoardingOffline(root, { t: t, lang: lang, refresh: function () { return sync(true); } });
     translate();
     return {
-      start: async function (adminToken) {
+      // autoOpen só no atalho da chamada (?chamada=1) ou sem rede, quando a
+      // página não tem mais nada a mostrar; no painel completo abre pelo botão.
+      start: async function (adminToken, autoOpen) {
         if (token !== adminToken || queueState.authError) {
           await this.stop(false); token = adminToken; coordinator.start(token);
         }
         if (!timer) timer = setInterval(function () { sync(false); }, 8000);
         opener.hidden = false;
-        if (!autoOpened) { autoOpened = true; openDrawer(); }
+        if (autoOpen && !autoOpened) { autoOpened = true; openDrawer(); }
         else sync(false);
       },
       canLogout: function () { return !pending.size || window.confirm(t('discardPending')); },

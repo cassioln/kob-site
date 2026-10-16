@@ -88,15 +88,17 @@
 .embarque-icon-button:disabled { opacity: .5; cursor: wait; }
 .embarque .embarque-header :is(button, a):focus-visible { outline-color: #fff; }
 .embarque-trip { grid-column: 1 / -1; grid-row: 2; display: flex; align-items: center; gap: 8px; min-width: 0; }
-.embarque .embarque-trip .embarque-segment { flex-shrink: 0; gap: 4px; padding: 4px; background: #163b60; border-radius: 8px; }
-.embarque .embarque-trip button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding-inline: 12px; color: #c5dfef; }
+/* Ida 25% · Volta 25% · Ônibus 50%: o segmento ocupa metade e divide em colunas iguais. */
+.embarque .embarque-trip .embarque-segment { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); flex: 0 0 calc(50% - 4px); min-width: 0; gap: 4px; padding: 4px; background: #163b60; border-radius: 8px; }
+.embarque .embarque-trip button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-width: 0; padding-inline: 12px; color: #c5dfef; }
+.embarque .embarque-trip .embarque-segment button span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .embarque .embarque-trip button[aria-pressed="true"] { background: #fff; color: #041d3a; }
 .embarque .embarque-trip button:hover:not([aria-pressed="true"]) { background: #28567d; color: #fff; }
 .embarque-trip svg { width: 18px; height: 18px; }
 .embarque-buses-select { flex: 1; min-width: 0; min-height: 52px; padding: 8px; border: 1px solid #4f708c; border-radius: 8px; background: #163b60; color: #fff; color-scheme: dark; font: inherit; font-size: .8125rem; cursor: pointer; }
 .embarque-buses-select option { background: #fff; color: #16324c; font: inherit; }
 .embarque .embarque-buses-select:focus-visible { outline-color: #fff; }
-.embarque-bus-picker { position: relative; flex: 1; min-width: 0; height: 52px; z-index: 2; }
+.embarque-bus-picker { position: relative; flex: 0 0 calc(50% - 4px); min-width: 0; height: 52px; z-index: 2; }
 .embarque-bus-picker .embarque-buses-select { position: absolute; inset: 0; width: 100%; opacity: 0; pointer-events: none; }
 .embarque .embarque-trip .embarque-bus-picker__trigger { width: 100%; height: 100%; min-height: 0; justify-content: space-between; gap: 8px; padding: 8px; border: 1px solid #4f708c; border-radius: 8px; background: #163b60; color: #fff; font: inherit; font-size: .8125rem; font-weight: 400; }
 .embarque-bus-picker__trigger span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -197,11 +199,19 @@
 .embarque-empty h3 { margin: 0 0 8px; font-size: 1rem; }
 .embarque-empty p { margin: 0 0 16px; color: var(--p-tinta-media); font-size: .875rem; }
 .embarque-loading { margin-block: 24px; color: var(--p-tinta-media); }
-.embarque-export { flex-shrink: 0; padding: 12px 20px max(12px, env(safe-area-inset-bottom)); border-top: 1px solid var(--p-linha); background: #fff; }
-.embarque-export__heading { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 4px 12px; margin-bottom: 8px; color: var(--p-tinta-media); font-size: .75rem; }
-.embarque-export__heading p { display: inline-flex; align-items: center; gap: 6px; margin: 0; font-weight: 700; }
+.embarque-export { flex-shrink: 0; padding: 0 20px max(4px, env(safe-area-inset-bottom)); border-top: 1px solid var(--p-linha); background: #fff; }
+.embarque-export__heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; width: 100%; min-height: 48px; padding: 0; border: 0; background: transparent; color: var(--p-tinta-media); font: 700 .75rem/1.5 system-ui, sans-serif; text-align: start; cursor: pointer; }
+.embarque-export__heading:hover { color: var(--p-tinta); }
+.embarque-export__heading > span { display: inline-flex; align-items: center; gap: 6px; }
 .embarque-export svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
-.embarque-export__heading svg { width: 15px; height: 15px; }
+.embarque-export__heading > span svg { width: 15px; height: 15px; }
+.embarque-export__heading .embarque-export__chevron { width: 20px; height: 20px; stroke-width: 2; transition: transform 240ms cubic-bezier(.16, 1, .3, 1); }
+.embarque-export.is-open .embarque-export__chevron { transform: rotate(180deg); }
+/* Sobe de baixo para cima: a linha da grade cresce e os botões deslizam junto. */
+.embarque-export__drawer { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 280ms cubic-bezier(.16, 1, .3, 1); }
+.embarque-export.is-open .embarque-export__drawer { grid-template-rows: 1fr; }
+.embarque-export__drawer > .embarque-export__controls { min-height: 0; overflow: hidden; transform: translateY(12px); opacity: 0; transition: transform 280ms cubic-bezier(.16, 1, .3, 1), opacity 200ms ease, padding-bottom 280ms cubic-bezier(.16, 1, .3, 1); }
+.embarque-export.is-open .embarque-export__drawer > .embarque-export__controls { padding-bottom: 8px; transform: none; opacity: 1; }
 .embarque-export__controls { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
 .embarque-export__controls :is(button, a) { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-width: 0; min-height: 60px; padding: 8px 4px; border: 1px solid #c3d3e2; border-radius: 6px; background: #f1f5f9; color: var(--p-tinta); font: 600 .75rem/1.5 system-ui, sans-serif; text-decoration: none; cursor: pointer; transition: background-color 150ms ease, color 150ms ease; }
 .embarque-export__controls :is(button, a):hover:not([aria-disabled="true"]) { background: var(--p-acao); border-color: var(--p-acao); color: #fff; }
@@ -229,14 +239,21 @@
 .embarque-connection { margin-top: 12px; padding: 10px 12px; border-radius: 8px; background: #fff2d6; color: #694512; }
 .embarque-connection p { margin: 0; font-size: .875rem; line-height: 1.45; }
 .embarque-connection button { margin-top: 8px; min-height: 44px; }
-.embarque-offline { margin-bottom: 16px; border-bottom: 1px solid var(--p-linha); }
-.embarque-offline summary { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 12px; min-height: 44px; padding: 8px 0; font-size: .875rem; font-weight: 650; cursor: pointer; }
-.embarque-offline summary svg { width: 16px; height: 16px; flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.embarque-offline[open] summary svg { transform: rotate(90deg); }
-.embarque-offline summary span:last-child { margin-inline-start: auto; font-size: .875rem; font-weight: 400; color: var(--p-tinta-media); }
-.embarque-offline summary [data-ready="true"] { color: #066b53; }
-.embarque-offline__body { padding: 4px 0 16px; font-size: .875rem; }
-.embarque-offline__body p { margin: 0 0 12px; }
+.embarque-offline { position: relative; }
+.embarque-offline__toggle svg path:first-child { stroke-width: 1.8; }
+.embarque-offline__mark-ready, .embarque-offline__mark-pending { stroke-width: 2.2; }
+.embarque-offline__toggle[data-ready="true"] { color: #7fe0c4; }
+.embarque-offline__toggle[data-ready="true"] .embarque-offline__mark-pending,
+.embarque-offline__toggle:not([data-ready="true"]) .embarque-offline__mark-ready { display: none; }
+.embarque-offline__toggle[aria-busy="true"] svg { animation: embarque-pulse 1.2s ease-in-out infinite; }
+@keyframes embarque-pulse { 50% { opacity: .45; } }
+.embarque-offline__menu { position: absolute; top: calc(100% + 8px); right: 0; z-index: 6; width: max-content; min-width: 220px; max-width: min(280px, calc(100vw - 32px)); padding: 14px; border-radius: 10px; background: #fff; color: var(--p-tinta); box-shadow: 0 12px 32px rgba(4, 29, 58, .28); text-align: start; }
+.embarque-offline__menu p { margin: 0; font-size: .8125rem; line-height: 1.45; color: var(--p-tinta-media); }
+.embarque-offline__menu #embarque-offline-state { font-size: .875rem; font-weight: 700; color: var(--p-tinta); }
+.embarque-offline__menu #embarque-offline-state[data-ready="true"] { color: #066b53; }
+.embarque-offline__menu .embarque-offline__actions { margin-top: 12px; }
+.embarque-offline__menu .embarque-offline__actions .botao { flex: 1; }
+.embarque .embarque-header .embarque-offline__menu :is(button, a):focus-visible { outline-color: var(--p-acao); }
 .embarque-offline__actions, .embarque-conflict__actions { display: flex; flex-wrap: wrap; gap: 8px; }
 .embarque-offline__actions .botao, .embarque-conflict__actions .botao { min-height: 44px; white-space: normal; text-align: center; }
 .embarque-conflicts { margin-bottom: 20px; }
@@ -278,7 +295,8 @@
   .embarque-header h2 { font-size: 1.35rem; }
   .embarque-header__copy p { display: none; }
   .embarque-trip { gap: 4px; }
-  .embarque .embarque-trip .embarque-segment { gap: 2px; padding: 2px; }
+  .embarque .embarque-trip .embarque-segment { flex-basis: calc(50% - 2px); gap: 2px; padding: 2px; }
+  .embarque-bus-picker { flex-basis: calc(50% - 2px); }
   .embarque .embarque-trip button { gap: 2px; padding-inline: 4px; }
   .embarque-trip svg { width: 14px; height: 14px; }
   .embarque-buses-select { min-height: 48px; height: 48px; font-size: .75rem; }
