@@ -12,6 +12,26 @@ O **Kriativos On Board (kob-site)** é a plataforma web oficial do **Kriativos O
 1. **Landing Page Principal ([`index.html`](./index.html)):** Experiência imersiva que apresenta o evento, o navio, as atrações, criadores convidados, cronograma, galeria histórica e tabela de lotes de cabines com conversão para WhatsApp.
 2. **Sistema de Ônibus Fretado ([`onibus.html`](./onibus.html)):** Fluxo multi-step de reserva de transporte rodoviário fretado (SP ⇄ Santos), cálculo automático de valores, checkout Pix via Mercado Pago e upload de comprovante.
 3. **Painel de Gestão Operacional ([`painel-onibus.html`](./painel-onibus.html)):** Dashboard administrativo autenticado para acompanhamento de reservas em tempo real, balanceamento de frota, alocação de passageiros por ônibus e exportação de manifestos em XLSX/PDF.
+
+   A primeira aba é a **Lista de embarque**, com chamadas independentes de ida e
+   volta, presença individual, busca, filtros e contagens por ônibus/grupo.
+   A presença é gravada no MySQL por `/api/bus-boarding`, com o token administrativo
+   existente e controle de revisão entre aparelhos; a atualização automática ocorre
+   a cada oito segundos com a aba visível. Sem conexão, a marcação fica desabilitada.
+   A área de chamada oferece português, inglês e espanhol, também por `?lang=pt|en|es`.
+
+   **Publicação:** enviar a página, os novos CSS/JS, `.htaccess`,
+   `php/mysql/bus-boarding.php` e `php/lib/bus-boarding.php`. A tabela aditiva é criada de forma
+   idempotente no primeiro acesso autenticado. Se o usuário do banco não tiver
+   permissão `CREATE`, um administrador deve aplicar
+   `php/db/009_bus_boarding_checkins.sql` antes da publicação. `php/db` continua
+   excluído do FTP; o bootstrap da API não depende desse diretório no servidor.
+   Nenhuma presença existente é reinicializada por deploy ou recarga.
+
+   **Teste de persistência:** `php php/tests/bus-boarding.test.php` valida os
+   payloads. Para integrar com banco descartável, definir `KOB_BOARDING_TEST_DSN`
+   apontando para um banco chamado exatamente `kob_boarding_test`, com usuário
+   `root` e senha vazia. O teste recria tabelas exclusivamente nesse banco.
 4. **Páginas Legais & Compliance:** [`politica-de-privacidade.html`](./politica-de-privacidade.html), [`politica-de-cookies.html`](./politica-de-cookies.html), [`termos-de-transporte.html`](./termos-de-transporte.html).
 
 ---
