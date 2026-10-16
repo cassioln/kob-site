@@ -83,8 +83,9 @@
 .embarque-header__actions { grid-column: 3; grid-row: 1; display: flex; align-self: start; gap: 4px; }
 .embarque-icon-button { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: #c5dfef; cursor: pointer; }
 .embarque-icon-button:hover { background: #163b60; color: #fff; }
-.embarque-close { background: #163b60; color: #fff; }
-.embarque-close:hover { background: #28567d; }
+/* Atualizar e Fechar compartilham o fundo sólido; o offline fica só no ícone. */
+.embarque-close, #embarque-update { background: #163b60; color: #fff; }
+.embarque-close:hover, #embarque-update:hover { background: #28567d; color: #fff; }
 .embarque-icon-button:disabled { opacity: .5; cursor: wait; }
 .embarque .embarque-header :is(button, a):focus-visible { outline-color: #fff; }
 .embarque-trip { grid-column: 1 / -1; grid-row: 2; display: flex; align-items: center; gap: 8px; min-width: 0; }

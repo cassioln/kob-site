@@ -77,7 +77,7 @@ test('fila grava antes da rede, identifica pendência e preserva ida/volta @smok
 
 test('service worker abre nova navegação sem sinal e reenvia fila após recarregar @smoke', async ({ page, context }) => {
   const api = await mock(context); await ready(page);
-  await expect(page.locator('#embarque-offline-state')).toHaveText('Pronto neste aparelho', { timeout: 25000 });
+  await expect(page.locator('#embarque-offline-state')).toHaveText('Pronto neste dispositivo', { timeout: 25000 });
   await page.evaluate(() => navigator.serviceWorker.ready);
   await network(context, api, true);
   if (context.browser().browserType().name() !== 'webkit') await expect(page.locator('#embarque-sync')).toContainText('Sem conexão');
@@ -191,7 +191,7 @@ test('nova autenticação do mesmo acesso preserva e reenvia pendências @smoke'
   expect(api.posts).toHaveLength(1);
 });
 
-for (const [lang, pendingWord, readyWord] of [['pt', 'Pendente de envio', 'Pronto neste aparelho'], ['en', 'Pending upload', 'Ready on this device'], ['es', 'Pendiente de envío', 'Listo en este dispositivo']]) {
+for (const [lang, pendingWord, readyWord] of [['pt', 'Pendente de envio', 'Pronto neste dispositivo'], ['en', 'Pending upload', 'Ready on this device'], ['es', 'Pendiente de envío', 'Listo en este dispositivo']]) {
   test(`offline e instalação localizados em ${lang} @smoke`, async ({ page, context }) => {
     await mock(context); await page.setViewportSize({ width: 390, height: 844 }); await ready(page, lang);
     await expect(page.locator('#embarque-offline-state')).toHaveText(readyWord, { timeout: 25000 });
@@ -237,7 +237,7 @@ test('conflito de revisão só envia intenção local depois de escolha explíci
 
 test('fechar documento e abrir outro sem rede recupera lista e fila @smoke', async ({ page, context }) => {
   const api = await mock(context); await ready(page);
-  await expect(page.locator('#embarque-offline-state')).toHaveText('Pronto neste aparelho', { timeout: 25000 });
+  await expect(page.locator('#embarque-offline-state')).toHaveText('Pronto neste dispositivo', { timeout: 25000 });
   await network(context, api, true); await page.locator('[data-check="1"]').click(); await pending(page, 1);
   const next = await context.newPage(); await page.close();
   await next.goto('/painel-onibus.html?chamada=1');
@@ -249,7 +249,7 @@ test('fechar documento e abrir outro sem rede recupera lista e fila @smoke', asy
 
 test('cache de outro acesso não abre lista sem primeira preparação autorizada @smoke', async ({ page, context }) => {
   const api = await mock(context); await ready(page);
-  await expect(page.locator('#embarque-offline-state')).toHaveText('Pronto neste aparelho', { timeout: 25000 });
+  await expect(page.locator('#embarque-offline-state')).toHaveText('Pronto neste dispositivo', { timeout: 25000 });
   await page.evaluate(() => localStorage.setItem('kob_admin_token', 'another-key'));
   await network(context, api, true); await page.reload();
   await expect(page.locator('#embarque-error')).toContainText('primeira vez');

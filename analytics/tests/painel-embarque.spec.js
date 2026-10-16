@@ -345,6 +345,12 @@ test('slider mantém foco, fecha por backdrop e não reabre em atualização das
   await expect(page.locator('[data-check="3"]')).toBeVisible();
   await expect(page.locator('.embarque-header')).toHaveCSS('background-color', 'rgb(4, 29, 58)');
   await expect(page.locator('.embarque-mascot')).toHaveAttribute('src', 'assets/images/manual/kriativa-checklist.png');
+  for (const id of ['#embarque-update', '#embarque-close']) {
+    await expect(page.locator(id)).toHaveCSS('background-color', 'rgb(22, 59, 96)');
+    await expect(page.locator(id)).toHaveCSS('color', 'rgb(255, 255, 255)');
+    await page.locator(id).hover();
+    await expect(page.locator(id)).toHaveCSS('background-color', 'rgb(40, 86, 125)');
+  }
   await page.locator('#embarque-offline-toggle').focus();
   await page.keyboard.press('Shift+Tab');
   await expect(page.locator('#embarque-export-toggle')).toBeFocused();
