@@ -18,7 +18,10 @@ async function mockPanel(context, manifest = fixture(), options = {}) {
   await context.route('**/api/bus-admin-data*', route => route.fulfill({ json: { reservas: [], resumo: {}, frota: { capacidade: 46, minimo: 40, onibus: [] } } }));
   await context.route('**/api/bus-admin-reconcile*', route => route.fulfill({ json: { updated: 0 } }));
   await context.route('**/api/bus-boarding', async route => {
-    if (route.request().method() === 'GET') return route.fulfill({ json: manifest });
+    if (route.request().method() === 'GET') {
+      if (options.readDelay) await new Promise(resolve => setTimeout(resolve, options.readDelay));
+      return route.fulfill({ json: manifest });
+    }
     const body = route.request().postDataJSON();
     writes.push({ body, headers: route.request().headers(), url: route.request().url() });
     if (options.fail) return route.fulfill({ status: 503, json: { error: 'boarding_unavailable' } });
@@ -306,6 +309,7 @@ test('VIPs de reservas diferentes ficam juntos por ônibus e mantêm check indiv
   await page.locator('[data-check="4"]').click();
   await expect(page.locator('[data-vip-group="2"] .embarque-group__count')).toHaveText('1 de 2 a bordo');
   await expect(page.locator('[data-check="3"]')).toHaveAttribute('aria-pressed', 'false');
+  await expect.poll(() => api.writes.length).toBe(1);
   expect(api.writes[0].body.passenger_id).toBe('4');
   await page.locator('#embarque-search').fill('vip');
   await expect(page.locator('.embarque-person')).toHaveCount(3);
@@ -449,7 +453,7 @@ test('barra compara ida e volta nos dois trechos, preservando ambos por ônibus 
 
 
 test('linha aciona só o trecho ativo, com dois checks grandes e o outro esmaecido @smoke', async ({ page, context }) => {
-  const api = await mockPanel(context);
+  const api = await mockPanel(context, fixture(), { readDelay: 50 });
   await page.goto('/painel-onibus.html');
   const row = page.locator('[data-person="1"]');
   const outbound = row.locator('[data-check-leg="outbound"]');
@@ -457,15 +461,16 @@ test('linha aciona só o trecho ativo, com dois checks grandes e o outro esmaeci
   await expect(row.locator('.embarque-check')).toHaveCount(2);
   await expect(outbound).toBeEnabled();
   await expect(back).toBeDisabled();
-  const box = await outbound.boundingBox();
+  // The slider translation can introduce tiny float errors in boundingBox dimensions.
+  const box = await outbound.evaluate(node => ({ width: node.offsetWidth, height: node.offsetHeight }));
   expect(box.width).toBeGreaterThanOrEqual(60);
   expect(box.height).toBeGreaterThanOrEqual(80);
-  const icon = await outbound.locator('svg').boundingBox();
+  const icon = await outbound.locator('svg').evaluate(node => ({ width: node.clientWidth }));
   expect(icon.width).toBeGreaterThanOrEqual(40);
   await row.locator('strong').click();
   await expect(outbound).toHaveAttribute('aria-pressed', 'true');
   await expect(back).toHaveAttribute('aria-pressed', 'false');
-  expect(api.writes).toHaveLength(1);
+  await expect.poll(() => api.writes.length).toBe(1);
   expect(api.writes[0].body.leg).toBe('outbound');
   await page.locator('[data-leg="return"]').click();
   await expect(outbound).toBeDisabled();
@@ -478,12 +483,12 @@ test('linha aciona só o trecho ativo, com dois checks grandes e o outro esmaeci
   await row.locator('strong').click();
   await expect(back).toHaveAttribute('aria-pressed', 'true');
   await expect(outbound).toHaveAttribute('aria-pressed', 'true');
-  expect(api.writes).toHaveLength(2);
+  await expect.poll(() => api.writes.length).toBe(2);
   expect(api.writes[1].body.leg).toBe('return');
   await back.click();
   await expect(back).toHaveAttribute('aria-pressed', 'false');
   await expect(outbound).toHaveAttribute('aria-pressed', 'true');
-  expect(api.writes).toHaveLength(3);
+  await expect.poll(() => api.writes.length).toBe(3);
   await page.locator('[data-leg="outbound"]').click();
   await expect(outbound).toBeEnabled();
   await expect(back).toBeDisabled();
