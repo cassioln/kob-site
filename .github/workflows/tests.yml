@@ -24,6 +24,17 @@ jobs:
     if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     runs-on: ubuntu-latest
     timeout-minutes: 8
+    services:
+      boarding-mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+          MYSQL_DATABASE: kob_boarding_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 --silent"
+          --health-interval=5s --health-timeout=5s --health-retries=20
 
     steps:
       - name: Checkout do repositório
@@ -37,6 +48,21 @@ jobs:
 
       - name: Instalar dependências
         run: npm ci
+
+      - name: Preparar PHP para testar presença no MySQL
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.0'
+          extensions: pdo_mysql, zip
+          coverage: none
+
+      - name: Validar persistência e concorrência da chamada
+        env:
+          KOB_BOARDING_TEST_DSN: 'mysql:host=127.0.0.1;port=3306;dbname=kob_boarding_test;charset=utf8mb4'
+        run: |
+          php php/tests/bus-boarding.test.php
+          php php/tests/boarding-rollcall-pdf.test.php
+          php php/tests/boarding-rollcall-xlsx.test.php
 
       - name: Cache do Chromium do Playwright
         id: playwright-cache

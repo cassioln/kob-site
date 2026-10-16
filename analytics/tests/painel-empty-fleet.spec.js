@@ -1,5 +1,9 @@
 import { test, expect } from '@playwright/test';
 
+test.beforeEach(async ({ page }) => {
+  await page.route('**/api/bus-boarding', route => route.fulfill({ json: { people: [], waiting: 0 } }));
+});
+
 test('reconcilia pendências de pagamento em segundo plano ao abrir o painel', async ({ page }) => {
   let request;
   let adminRequests = 0;
@@ -37,6 +41,8 @@ test('reconcilia pendências de pagamento em segundo plano ao abrir o painel', a
   });
 
   await page.goto('/painel-onibus.html');
+  await page.locator('#embarque-close').click();
+  await page.getByRole('tab', { name: 'Reservas', exact: true }).click();
 
   await expect.poll(() => request && ({
     method: request.method(),
@@ -66,10 +72,12 @@ test('mantém a frota acessível quando não há reservas', async ({ page }) => 
   }));
 
   await page.goto('/painel-onibus.html');
+  await page.locator('#embarque-close').click();
+  await page.getByRole('tab', { name: 'Reservas', exact: true }).click();
 
   await expect(page.locator('#painel-dados')).toBeVisible();
   await expect(page.locator('#estado-vazio')).toBeVisible();
-  await page.getByRole('button', { name: 'Planejamento de Frota' }).click();
+  await page.getByRole('tab', { name: 'Planejamento de Frota' }).click();
   await expect(page.locator('#aba-frota')).toBeVisible();
   await expect(page.locator('.onibus-card--adicionar')).toBeVisible();
 });
@@ -148,9 +156,11 @@ test('permite retirar um VIP real para sem ônibus confirmado', async ({ page })
   });
 
   await page.goto('/painel-onibus.html');
+  await page.locator('#embarque-close').click();
+  await page.getByRole('tab', { name: 'Reservas', exact: true }).click();
 
   await expect(page.locator('#r-total')).toHaveText('2');
-  await page.getByRole('button', { name: 'Planejamento de Frota' }).click();
+  await page.getByRole('tab', { name: 'Planejamento de Frota' }).click();
 
   const menu = page.locator('.grupo-item--vip .grupo-item__mover');
   await menu.locator('summary').click();
@@ -204,7 +214,9 @@ test('normaliza dados do VIP e bloqueia WhatsApp inválido', async ({ page }) =>
   });
 
   await page.goto('/painel-onibus.html');
-  await page.getByRole('button', { name: 'Planejamento de Frota' }).click();
+  await page.locator('#embarque-close').click();
+  await page.getByRole('tab', { name: 'Reservas', exact: true }).click();
+  await page.getByRole('tab', { name: 'Planejamento de Frota' }).click();
   await page.getByRole('button', { name: 'Adicionar VIP' }).click();
 
   const name = page.locator('#vip-0-full_name');
@@ -351,6 +363,8 @@ test('cria atalho seguro de WhatsApp apenas para número válido', async ({ page
   }));
 
   await page.goto('/painel-onibus.html');
+  await page.locator('#embarque-close').click();
+  await page.getByRole('tab', { name: 'Reservas', exact: true }).click();
 
   const links = page.locator('.tabela__whatsapp-link');
   await expect(links).toHaveCount(2);
@@ -443,6 +457,8 @@ test('diferencia WhatsApp não informado de telefone não aplicável', async ({ 
   }));
 
   await page.goto('/painel-onibus.html');
+  await page.locator('#embarque-close').click();
+  await page.getByRole('tab', { name: 'Reservas', exact: true }).click();
 
   await expect(page.locator('.tabela__tel--vazio').filter({ hasText: 'Não informado' })).toHaveCount(1);
   await expect(page.locator('.tabela__tel--vazio').filter({ hasText: 'N/A' })).toHaveCount(1);
@@ -499,6 +515,8 @@ test('mantém WhatsApp antes de CPF e centraliza as células da tabela', async (
   }));
 
   await page.goto('/painel-onibus.html');
+  await page.locator('#embarque-close').click();
+  await page.getByRole('tab', { name: 'Reservas', exact: true }).click();
 
   expect(await page.locator('.tabela thead th').allTextContents()).toEqual([
     'Reserva', 'Passageiro', 'WhatsApp', 'CPF', 'Grupo', 'Ônibus', 'Status', 'Pago em'
@@ -594,6 +612,8 @@ test('mostra a emissão do QR Code abaixo da aprovação ou pendência do pagame
   }));
 
   await page.goto('/painel-onibus.html');
+  await page.locator('#embarque-close').click();
+  await page.getByRole('tab', { name: 'Reservas', exact: true }).click();
 
   const datas = page.locator('.tabela tbody td[data-rotulo="Pago em"]');
   await expect(datas.nth(0)).toContainText('21/08/2026 14:23');
@@ -627,6 +647,8 @@ test('mostra o total líquido com a taxa calculada por pagamento', async ({ page
   }));
 
   await page.goto('/painel-onibus.html');
+  await page.locator('#embarque-close').click();
+  await page.getByRole('tab', { name: 'Reservas', exact: true }).click();
 
   await expect(page.getByText('Total líquido', { exact: true })).toBeVisible();
   await expect(page.locator('#r-receita-liquida')).toHaveText('R$ 475,24');

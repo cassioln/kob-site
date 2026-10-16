@@ -16,6 +16,8 @@
   var API_VIP_CREATE = 'api/bus-vip-create';
   var API_VIP_DELETE = 'api/bus-vip-delete';
   var API_LOCK = 'api/bus-fleet-lock';
+  var boardingOnly = new URLSearchParams(location.search).get('chamada') === '1';
+  var embarque = window.KobBoarding ? window.KobBoarding(document.getElementById('embarque-sidebar')) : null;
   var MEEPLE_PATH_D = 'M256 54.99c-27 0-46.418 14.287-57.633 32.23-10.03 16.047-14.203 34.66-15.017 50.962-30.608 15.135-64.515 30.394-91.815 45.994-14.32 8.183-26.805 16.414-36.203 25.26C45.934 218.28 39 228.24 39 239.99c0 5 2.44 9.075 5.19 12.065 2.754 2.99 6.054 5.312 9.812 7.48 7.515 4.336 16.99 7.95 27.412 11.076 15.483 4.646 32.823 8.1 47.9 9.577-14.996 25.84-34.953 49.574-52.447 72.315C56.65 378.785 39 403.99 39 431.99c0 4-.044 7.123.31 10.26.355 3.137 1.256 7.053 4.41 10.156 3.155 3.104 7.017 3.938 10.163 4.28 3.146.345 6.315.304 10.38.304h111.542c8.097 0 14.026.492 20.125-3.43 6.1-3.92 8.324-9.275 12.67-17.275l.088-.16.08-.166s9.723-19.77 21.324-39.388c5.8-9.808 12.097-19.576 17.574-26.498 2.74-3.46 5.304-6.204 7.15-7.754.564-.472.82-.56 1.184-.76.363.2.62.288 1.184.76 1.846 1.55 4.41 4.294 7.15 7.754 5.477 6.922 11.774 16.69 17.574 26.498 11.6 19.618 21.324 39.387 21.324 39.387l.08.165.088.16c4.346 8 6.55 13.323 12.61 17.254 6.058 3.93 11.974 3.45 19.957 3.45H448c4 0 7.12.043 10.244-.304 3.123-.347 6.998-1.21 10.12-4.332 3.12-3.122 3.984-6.997 4.33-10.12.348-3.122.306-6.244.306-10.244 0-28-17.65-53.205-37.867-79.488-17.493-22.74-37.45-46.474-52.447-72.315 15.077-1.478 32.417-4.93 47.9-9.576 10.422-3.125 19.897-6.74 27.412-11.075 3.758-2.168 7.058-4.49 9.81-7.48 2.753-2.99 5.192-7.065 5.192-12.065 0-11.75-6.934-21.71-16.332-30.554-9.398-8.846-21.883-17.077-36.203-25.26-27.3-15.6-61.207-30.86-91.815-45.994-.814-16.3-4.988-34.915-15.017-50.96C302.418 69.276 283 54.99 256 54.99z';
 
   var isLocalhost = Boolean(
@@ -226,7 +228,7 @@
   }
 
   function mostrar(secao) {
-    [el.carregando, el.estadoLogin, el.erro, el.dados].forEach(function (s) {
+    [el.carregando, el.estadoLogin, el.erro, el.dados, document.getElementById('estado-chamada')].forEach(function (s) {
       if (s) s.hidden = s !== secao;
     });
     if (el.vazio) {
@@ -235,7 +237,7 @@
         : secao !== el.vazio;
     }
     if (el.botaoSair) {
-      el.botaoSair.hidden = (secao !== el.dados && secao !== el.vazio);
+      el.botaoSair.hidden = (secao !== el.dados && secao !== el.vazio && secao.id !== 'estado-chamada');
     }
   }
 
@@ -2206,6 +2208,11 @@
   }
 
   function carregar() {
+    if (embarque && (boardingOnly || !navigator.onLine)) {
+      mostrar(document.getElementById('estado-chamada'));
+      embarque.start(estado.token);
+      return;
+    }
     if (!estado.token) {
       mostrar(el.estadoLogin);
       return;
@@ -2240,17 +2247,24 @@
         renderizar();
         renderizarFrota();
         mostrar(el.dados);
+        if (embarque) embarque.start(estado.token);
         reconciliarPendencias();
       })
       .catch(function (erro) {
         if (erro && erro.semAcesso) {
           if (!isLocalhost) {
             estado.token = '';
+            if (embarque) embarque.stop(false);
             localStorage.removeItem('kob_admin_token');
             if (el.erroLogin) el.erroLogin.hidden = false;
             mostrar(el.estadoLogin);
             return;
           }
+        }
+        if (embarque && !(erro && erro.semAcesso)) {
+          mostrar(document.getElementById('estado-chamada'));
+          embarque.start(estado.token);
+          return;
         }
         el.erroDetalhe.textContent = 'Detalhe técnico: ' + erro.message;
         mostrar(el.erro);
@@ -2265,7 +2279,11 @@
   el.abas.forEach(function (botao) {
     botao.addEventListener('click', function () {
       var alvo = botao.dataset.aba;
-      el.abas.forEach(function (b) { b.classList.remove('ativo'); });
+      el.abas.forEach(function (b) {
+        b.classList.remove('ativo');
+        b.setAttribute('aria-selected', String(b === botao));
+        b.tabIndex = b === botao ? 0 : -1;
+      });
       botao.classList.add('ativo');
 
       el.conteudosAba.forEach(function (c) {
@@ -2277,6 +2295,16 @@
           c.classList.remove('ativa');
         }
       });
+    });
+    botao.addEventListener('keydown', function (event) {
+      var index = Array.prototype.indexOf.call(el.abas, botao);
+      var next = event.key === 'ArrowRight' ? (index + 1) % el.abas.length
+        : event.key === 'ArrowLeft' ? (index + el.abas.length - 1) % el.abas.length
+        : event.key === 'Home' ? 0 : event.key === 'End' ? el.abas.length - 1 : -1;
+      if (next < 0) return;
+      event.preventDefault();
+      el.abas[next].click();
+      el.abas[next].focus();
     });
   });
 
@@ -2399,7 +2427,29 @@
     if (tr) realcarGrupo(tr.dataset.grupo);
   });
 
+  if (boardingOnly) {
+    document.body.classList.add('painel--chamada');
+    var requestedBoardingLanguage = new URLSearchParams(location.search).get('lang') || 'pt';
+    var boardingMessages = window.KobBoardingMessages[requestedBoardingLanguage] || window.KobBoardingMessages.pt;
+    document.documentElement.lang = requestedBoardingLanguage;
+    document.title = boardingMessages.title + ' · Kriativos On Board';
+    document.querySelector('.painel__titulo-principal').textContent = boardingMessages.title;
+    document.querySelector('.painel__subtitulo').textContent = boardingMessages.entryHeaderHelp;
+    document.querySelector('#form-login h2').textContent = boardingMessages.loginTitle;
+    document.querySelector('#form-login .painel__estado-texto').textContent = boardingMessages.loginHelp;
+    document.querySelector('label[for="token-input"]').textContent = boardingMessages.loginKey;
+    el.tokenInput.placeholder = boardingMessages.loginKey;
+    document.querySelector('#form-login [type="submit"]').textContent = boardingMessages.loginAction;
+    el.erroLogin.textContent = boardingMessages.loginInvalid;
+    el.botaoSair.textContent = boardingMessages.signOut;
+  }
+
   // Lógica de Login
+  window.addEventListener('kob:boarding-reauth', function () {
+    if (embarque) embarque.stop(false);
+    mostrar(el.estadoLogin);
+    el.tokenInput.focus();
+  });
   if (el.loginForm) {
     el.loginForm.addEventListener('submit', function (ev) {
       ev.preventDefault();
@@ -2415,7 +2465,9 @@
 
   if (el.botaoSair) {
     el.botaoSair.addEventListener('click', function () {
+      if (embarque && !embarque.canLogout()) return;
       estado.token = '';
+      if (embarque) embarque.stop();
       localStorage.removeItem('kob_admin_token');
       if (el.tokenInput) el.tokenInput.value = '';
       mostrar(el.estadoLogin);

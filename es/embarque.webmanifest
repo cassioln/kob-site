@@ -1,0 +1,24 @@
+{
+  "id": "/painel-onibus.html?chamada=1",
+  "name": "Control de embarque · Kriativos On Board",
+  "short_name": "Control KOB",
+  "lang": "es",
+  "start_url": "/painel-onibus.html?chamada=1&lang=es",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#041d3a",
+  "icons": [
+    {
+      "src": "/assets/images/brand/embarque-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/images/brand/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}
