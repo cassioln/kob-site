@@ -13,12 +13,21 @@ O **Kriativos On Board (kob-site)** é a plataforma web oficial do **Kriativos O
 2. **Sistema de Ônibus Fretado ([`onibus.html`](./onibus.html)):** Fluxo multi-step de reserva de transporte rodoviário fretado (SP ⇄ Santos), cálculo automático de valores, checkout Pix via Mercado Pago e upload de comprovante.
 3. **Painel de Gestão Operacional ([`painel-onibus.html`](./painel-onibus.html)):** Dashboard administrativo autenticado para acompanhamento de reservas em tempo real, balanceamento de frota, alocação de passageiros por ônibus e exportação de manifestos em XLSX/PDF.
 
-   A primeira aba é a **Lista de embarque**, com chamadas independentes de ida e
-   volta, presença individual, busca, filtros e contagens por ônibus/grupo.
+   A **Lista de embarque** abre automaticamente como painel deslizante, com a
+   identidade do Checklist de Bordo. Pode ser recolhida e reaberta pelo botão
+   no topo, mantendo Reservas e Frota na tablist. Oferece chamadas independentes
+   de ida e volta, presença individual, busca, filtros e contagens por ônibus/grupo.
+   O cabeçalho fixo reúne atualizar e fechar em botões de ícone de 44 px, além
+   de Ida/Volta com setas e texto. Os ônibus usam tabs com sublinhado de seleção,
+   contagem e navegação por setas, Home e End; o resumo permanece visível durante
+   a rolagem da lista. Não há seletor de idioma nem link PDF dentro do slider.
+   VIPs de reservas diferentes ficam em um único bloco por ônibus, com o código
+   da reserva preservado junto de cada pessoa.
    A presença é gravada no MySQL por `/api/bus-boarding`, com o token administrativo
    existente e controle de revisão entre aparelhos; a atualização automática ocorre
-   a cada oito segundos com a aba visível. Sem conexão, a marcação fica desabilitada.
-   A área de chamada oferece português, inglês e espanhol, também por `?lang=pt|en|es`.
+   a cada oito segundos com o painel deslizante aberto. Sem conexão, a marcação fica desabilitada.
+   A área de chamada oferece português, inglês e espanhol, selecionados por
+   `?lang=pt`, `?lang=en` ou `?lang=es`, com a língua da página como padrão.
 
    **Publicação:** enviar a página, os novos CSS/JS, `.htaccess`,
    `php/mysql/bus-boarding.php` e `php/lib/bus-boarding.php`. A tabela aditiva é criada de forma

@@ -1,64 +1,23 @@
 # Lista de embarque interativa
 
-O painel abre na primeira aba, **Lista de embarque**. A administração confere
-passageiros em celular e tablet, mantendo as abas Reservas e Planejamento de Frota.
+A chamada abre automaticamente após autenticação em um painel deslizante com a identidade do Checklist de Bordo. O painel entra pela esquerda no desktop e sobe pela parte inferior até 1023 px. Pode ser recolhido por Escape, backdrop ou botão; o acionador no topo permite reabri-lo. A tablist contém somente Reservas e Planejamento de Frota. Atualizações de reservas não reabrem a chamada que o operador recolheu.
 
-A lista segue o PDF: somente reservas confirmadas com ônibus atribuído, incluindo
-VIPs e crianças de colo, agrupadas por ônibus e reserva. Pessoas sem ônibus
-confirmado aparecem em um aviso que encaminha para a Frota, sem permitir presença.
+A lista segue a elegibilidade do PDF: somente reservas confirmadas com ônibus atribuído, incluindo VIPs e crianças de colo. Reservas comuns são agrupadas por ônibus e reserva. Todos os VIPs de um mesmo ônibus ficam em um único bloco, mantendo os códigos de reserva por pessoa e sem unir os registros no banco. Confirmados sem ônibus aparecem em aviso com acesso à Frota.
 
-Há chamadas independentes de ida e volta, busca por pessoa/grupo/código/CPF,
-filtro de faltantes/presentes/todos, resumo global e progresso por ônibus e grupo.
-A marcação individual é um botão com estado acessível, texto e ícone. O estado
-confirmado e os contadores mudam somente depois da resposta do servidor.
+Ida e volta têm chamadas independentes. Busca e filtros de presença reduzem as linhas exibidas; contagens por grupo/ônibus continuam usando o total do trecho e ônibus selecionados. Cabeçalho e resumo ficam fora da rolagem interna para manter os faltantes visíveis. O cabeçalho reúne os ícones de atualizar e fechar em botões de 44 × 44 px, lado a lado, e o seletor Ida/Volta com setas e texto. Atualizar tem tooltip e fica desabilitado durante a sincronização. Não há seletor de idioma nem link PDF dentro da chamada. Os ônibus usam tabs com seleção por sublinhado e contagem por ônibus. Uma única tab participa da sequência de Tab; setas esquerda/direita e Home/End movem foco e seleção, com retorno circular nas setas. Cada tab referencia o painel de resultados, cujo rótulo acompanha a seleção. A faixa de tabs rola horizontalmente quando necessário.
 
-O MySQL armazena presença, horário UTC e revisão por passageiro e trecho em uma
-tabela própria com chave estrangeira. A API usa o token administrativo existente,
-valida elegibilidade e aplica controle de revisão para impedir sobrescritas
-silenciosas entre aparelhos. Não há presença persistida no localStorage.
+A identidade usa o cabeçalho azul-marinho #041d3a, título Gobold Extra2, mascote existente do Checklist, superfície #f8fafc, tinta #16324c, seleção #083965 e checkbox #71206c. O corpo mantém a fonte de sistema do painel. Os alvos de check têm 48 px, com estados textuais de salvamento e resultado. O dialog nativo protege o foco; a navegação circula entre os controles mesmo durante a entrada animada. Movimento reduzido é respeitado.
 
-A aba sincroniza a cada oito segundos enquanto visível, ao recuperar foco e ao
-voltar a conexão. Falhas preservam a última leitura, identificam dados
-desatualizados e oferecem nova tentativa; nunca anunciam uma gravação sem confirmação.
+Presença, horário UTC e revisão ficam no MySQL por passageiro e trecho. A API usa o token administrativo existente, valida elegibilidade e revisão e responde com o estado persistido. A marcação confirmada e os contadores mudam somente após resposta do servidor. Nenhuma presença é persistida no localStorage.
 
-O painel administrativo atual tem uma única página. A nova superfície usa um
-dicionário compartilhado pt-BR/en/es, selecionável no próprio embarque, mantendo
-idêntica estrutura, atributos acessíveis e regras nos três idiomas.
+A atualização acontece a cada oito segundos enquanto a chamada está aberta, ao recuperar foco e ao reconectar. Fechar/reabrir preserva filtros e dados; uma nova leitura sincroniza o estado. Falhas preservam a última leitura e bloqueiam marcações até nova sincronização. A tabela é criada por bootstrap aditivo, independente do diretório php/db excluído do FTP, com SQL 009 disponível para provisionamento manual.
 
-Validação: testes PHP de validação e concorrência/persistência, testes de navegador
-com duas sessões, erro de rede, recarga, filtros, teclado, idiomas e layouts de
-celular/tablet/desktop. A migração aditiva é idempotente e também aplicada pela
-API autenticada, conforme a prática atual do painel.
+A mesma estrutura e dicionário atendem pt-BR/en/es, incluindo títulos, códigos, estados, atributos acessíveis, controles de abertura/fechamento e tooltips dos ícones. O idioma acompanha `?lang=pt`, `?lang=en` ou `?lang=es`, com a língua da página como padrão. Nenhum conteúdo do manual foi alterado e nenhum raster novo de produção foi criado. A extensão mantém o sistema global de `docs/DESIGN.md`; seus detalhes locais ficam nesta especificação e no contrato `.impeccable/surfaces/painel-onibus-html.md`.
 
-## Registro da implementação concluída — 2026-10-15
+## Validação da revisão de 16/10/2026
 
-A implementação mantém o fluxo previsto. O resumo acompanha o trecho e o ônibus
-selecionados, ou todos os ônibus; busca e filtro de presença alteram somente as
-linhas exibidas. O resumo permanece fixo a 8px do topo durante a rolagem em
-desktop, tablet e celular. Após salvar, o foco retorna à ação da pessoa; quando
-o filtro a remove, segue para uma pessoa adjacente visível ou para a busca.
-
-A superfície reutiliza os tokens operacionais de `painel-onibus.css`: system-ui,
-fundo frio, superfícies brancas, tinta azul-marinho, roxo para seleção e foco,
-verde para presença, âmbar para faltantes e vermelho para erro. As ações
-individuais têm ao menos 48px de altura, ou 60px até 480px. Até 800px, cabeçalho
-e ferramentas se reorganizam; até 480px, os ônibus rolam horizontalmente, a
-interface fica mais compacta e nomes continuam junto de suas ações. A busca
-e os filtros voltam a empilhar abaixo de 375px. Não foram criados rasters de
-produção nem alterado o sistema visual geral; `docs/DESIGN.md` foi preservado.
-
-Arquivos da superfície: `painel-onibus.html`, `assets/css/painel-embarque.css`,
-`assets/js/painel-embarque.js` e `assets/js/painel-embarque-i18n.js`. A API
-autenticada cria a tabela de forma idempotente pelo bootstrap em
-`php/lib/bus-boarding.php`, sem depender do diretório `php/db` excluído do deploy;
-`009_bus_boarding_checkins.sql` permanece como migração manual equivalente.
-
-QA final: 22 testes do painel aprovados, validação PHP e integração com MariaDB
-10.11 isolado aprovadas; `npm run test:ci` aprovado com 140 testes do servidor,
-testes de temporização de avisos da live e 41 fluxos essenciais de navegador.
-As sete capturas finais em `.impeccable/review/` cobrem página inteira e viewport
-de desktop/tablet/celular e o tablet durante a rolagem. O revisor independente
-emitiu **ship no escopo das duas correções avaliadas**, ambas resolvidas: foco
-após salvar e resumo sticky em todas as larguras. O registro detalhado de tokens,
-comportamento e evidências fica em
-`.impeccable/surfaces/painel-onibus-html.md`.
+- Os 25 testes do painel passaram, incluindo tabs, teclado, localização e presença; as verificações de sintaxe JS e `git diff --check` também passaram.
+- Passaram 140 testes de servidor e 8 testes de timing. As duas falhas de Manual na suíte geral foram reproduzidas sem esta revisão no baseline `332cc77`.
+- A revisão visual independente terminou com `disposition: ship`. Foram inspecionadas as larguras 320, 390, 820 e 1440 px, os estados com lista rolada e as versões em inglês e espanhol, em `.impeccable/review/boarding-header/`.
+- O único achado visual, sobre os ícones em inglês a 320 px, foi encerrado como falso positivo após conferir as capturas completas e os recortes do cabeçalho; não exigiu alteração da interface.
+- Revisão entregue no PR 79; ainda não publicada em produção.

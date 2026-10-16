@@ -41,6 +41,7 @@ test('reconcilia pendências de pagamento em segundo plano ao abrir o painel', a
   });
 
   await page.goto('/painel-onibus.html');
+  await page.locator('#embarque-close').click();
   await page.getByRole('tab', { name: 'Reservas', exact: true }).click();
 
   await expect.poll(() => request && ({
@@ -71,6 +72,7 @@ test('mantém a frota acessível quando não há reservas', async ({ page }) => 
   }));
 
   await page.goto('/painel-onibus.html');
+  await page.locator('#embarque-close').click();
   await page.getByRole('tab', { name: 'Reservas', exact: true }).click();
 
   await expect(page.locator('#painel-dados')).toBeVisible();
@@ -154,6 +156,7 @@ test('permite retirar um VIP real para sem ônibus confirmado', async ({ page })
   });
 
   await page.goto('/painel-onibus.html');
+  await page.locator('#embarque-close').click();
   await page.getByRole('tab', { name: 'Reservas', exact: true }).click();
 
   await expect(page.locator('#r-total')).toHaveText('2');
@@ -211,6 +214,7 @@ test('normaliza dados do VIP e bloqueia WhatsApp inválido', async ({ page }) =>
   });
 
   await page.goto('/painel-onibus.html');
+  await page.locator('#embarque-close').click();
   await page.getByRole('tab', { name: 'Reservas', exact: true }).click();
   await page.getByRole('tab', { name: 'Planejamento de Frota' }).click();
   await page.getByRole('button', { name: 'Adicionar VIP' }).click();
@@ -359,6 +363,7 @@ test('cria atalho seguro de WhatsApp apenas para número válido', async ({ page
   }));
 
   await page.goto('/painel-onibus.html');
+  await page.locator('#embarque-close').click();
   await page.getByRole('tab', { name: 'Reservas', exact: true }).click();
 
   const links = page.locator('.tabela__whatsapp-link');
@@ -452,6 +457,7 @@ test('diferencia WhatsApp não informado de telefone não aplicável', async ({ 
   }));
 
   await page.goto('/painel-onibus.html');
+  await page.locator('#embarque-close').click();
   await page.getByRole('tab', { name: 'Reservas', exact: true }).click();
 
   await expect(page.locator('.tabela__tel--vazio').filter({ hasText: 'Não informado' })).toHaveCount(1);
@@ -509,6 +515,7 @@ test('mantém WhatsApp antes de CPF e centraliza as células da tabela', async (
   }));
 
   await page.goto('/painel-onibus.html');
+  await page.locator('#embarque-close').click();
   await page.getByRole('tab', { name: 'Reservas', exact: true }).click();
 
   expect(await page.locator('.tabela thead th').allTextContents()).toEqual([
@@ -605,6 +612,7 @@ test('mostra a emissão do QR Code abaixo da aprovação ou pendência do pagame
   }));
 
   await page.goto('/painel-onibus.html');
+  await page.locator('#embarque-close').click();
   await page.getByRole('tab', { name: 'Reservas', exact: true }).click();
 
   const datas = page.locator('.tabela tbody td[data-rotulo="Pago em"]');
@@ -639,6 +647,7 @@ test('mostra o total líquido com a taxa calculada por pagamento', async ({ page
   }));
 
   await page.goto('/painel-onibus.html');
+  await page.locator('#embarque-close').click();
   await page.getByRole('tab', { name: 'Reservas', exact: true }).click();
 
   await expect(page.getByText('Total líquido', { exact: true })).toBeVisible();

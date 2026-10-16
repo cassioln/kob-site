@@ -33,12 +33,14 @@ async function mockPanel(context, manifest = fixture(), options = {}) {
   return { manifest, writes };
 }
 
-test('embarque é a primeira aba e salva presença por passageiro e trecho @smoke', async ({ page, context }) => {
+test('embarque abre como slider padrão e salva presença por passageiro e trecho @smoke', async ({ page, context }) => {
   const api = await mockPanel(context);
   await page.goto('/painel-onibus.html');
-  await expect(page.getByRole('tab').first()).toHaveText('Lista de embarque');
-  await expect(page.getByRole('tab').first()).toHaveAttribute('aria-selected', 'true');
-  await expect(page.locator('#aba-reservas')).toBeHidden();
+  await expect(page.locator('#embarque-sidebar')).toBeVisible();
+  await expect(page.locator('#embarque-sidebar')).toHaveClass(/is-open/);
+  await expect(page.locator('.painel-abas [role="tab"]')).toHaveCount(2);
+  await expect(page.locator('[data-aba="embarque"]')).toHaveCount(0);
+  await expect(page.locator('[data-aba="reservas"]')).toHaveAttribute('aria-selected', 'true');
   await expect(page.locator('#embarque-expected')).toHaveText('3');
   await expect(page.locator('#embarque-missing')).toHaveText('3');
   await expect(page.locator('.embarque-group')).toHaveCount(2);
@@ -98,6 +100,7 @@ test('tablet mantém contadores visíveis durante a chamada @smoke', async ({ pa
   const summary = await page.locator('.embarque-overview').boundingBox();
   expect(summary.y).toBeGreaterThanOrEqual(0);
   expect(summary.y + summary.height).toBeLessThan(700);
+  expect(await page.locator('#embarque-scroll').evaluate(node => node.scrollTop)).toBeGreaterThan(0);
 });
 
 test('filtra ônibus, grupos, faltantes e nomes sem acentos', async ({ page, context }) => {
@@ -156,7 +159,7 @@ test('erro de gravação e falta de conexão não geram presença falsa', async 
   await expect(page.locator('[data-check="1"]')).toBeEnabled();
 });
 
-test('sincroniza automaticamente apenas com a aba ativa e limpa dados ao sair', async ({ page, context }) => {
+test('sincroniza automaticamente apenas com slider aberto e limpa dados ao sair', async ({ page, context }) => {
   const api = await mockPanel(context);
   await page.clock.install();
   await page.goto('/painel-onibus.html');
@@ -164,12 +167,15 @@ test('sincroniza automaticamente apenas com a aba ativa e limpa dados ao sair', 
   api.manifest.people[0].outbound = { present: true, revision: 1, checked_at: '2026-11-20T09:00:00Z' };
   await page.clock.fastForward(8100);
   await expect(page.locator('[data-check="1"]')).toHaveAttribute('aria-pressed', 'true');
-  await page.getByRole('tab', { name: 'Reservas', exact: true }).click();
+  await page.locator('#embarque-close').click();
+  await page.clock.fastForward(350);
   api.manifest.people[0].outbound = { present: false, revision: 2, checked_at: null };
   await page.clock.fastForward(8100);
   await expect(page.locator('[data-check="1"]')).toHaveAttribute('aria-pressed', 'true');
-  await page.getByRole('tab', { name: 'Lista de embarque', exact: true }).click();
+  await page.locator('#embarque-open').click();
   await expect(page.locator('[data-check="1"]')).toHaveAttribute('aria-pressed', 'false');
+  await page.locator('#embarque-close').click();
+  await page.clock.fastForward(350);
   await page.getByRole('button', { name: 'Sair', exact: true }).click();
   await expect(page.locator('#embarque-list')).toBeEmpty();
 });
@@ -190,14 +196,31 @@ for (const [lang, title, save] of [ ['pt', 'Chamada de embarque', 'Confirmar emb
     await mockPanel(context);
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto(`/painel-onibus.html?lang=${lang}`);
-    await expect(page.locator('#aba-embarque h2')).toHaveText(title);
+    await expect(page.locator('#embarque-sidebar h2')).toHaveText(title);
     await expect(page.locator('[data-check="1"]')).toHaveAttribute('aria-label', save);
-    await page.getByRole('tab').first().focus();
-    await page.keyboard.press('ArrowRight');
-    await expect(page.getByRole('tab', { name: 'Reservas', exact: true })).toBeFocused();
-    await page.keyboard.press('Home');
-    await expect(page.getByRole('tab').first()).toBeFocused();
-    await expect(page.locator('#aba-embarque')).toBeVisible();
+    await expect(page.locator('#embarque-language, #embarque-pdf')).toHaveCount(0);
+    const refresh = page.locator('#embarque-update');
+    const refreshLabel = { pt: 'Atualizar', en: 'Refresh', es: 'Actualizar' }[lang];
+    await expect(refresh).toHaveAttribute('aria-label', refreshLabel);
+    await expect(refresh).toHaveAttribute('title', refreshLabel);
+    await expect(refresh.locator('svg')).toHaveCount(1);
+    await expect(page.locator('.embarque-header [data-leg] svg')).toHaveCount(2);
+    await expect(page.locator('.embarque-header [data-leg="outbound"]')).toContainText({ pt: 'Ida', en: 'Outbound', es: 'Ida' }[lang]);
+    const positions = await page.locator('.embarque-header').evaluate(header => {
+      const button = header.querySelector('#embarque-update').getBoundingClientRect();
+      const close = header.querySelector('#embarque-close').getBoundingClientRect();
+      const rect = header.getBoundingClientRect();
+      return { aligned: button.y === close.y, inside: button.right <= rect.right && button.left >= rect.left,
+        noOverflow: header.scrollWidth <= header.clientWidth };
+    });
+    expect(positions).toEqual({ aligned: true, inside: true, noOverflow: true });
+    await page.locator('#embarque-close').focus();
+    await page.keyboard.press('Escape');
+    await expect(page.locator('#embarque-sidebar')).not.toBeVisible();
+    await expect(page.locator('#embarque-open')).toBeFocused();
+    await page.keyboard.press('Enter');
+    await expect(page.locator('#embarque-sidebar')).toBeVisible();
+    await expect(page.locator('#embarque-close')).toBeFocused();
     const dimensions = await page.locator('[data-check="1"]').boundingBox();
     expect(dimensions.height).toBeGreaterThanOrEqual(48);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
@@ -210,4 +233,94 @@ test('lista vazia orienta a alocação sem controles de presença', async ({ pag
   await expect(page.locator('#embarque-empty')).toContainText('Nenhum passageiro com ônibus confirmado');
   await expect(page.locator('[data-check]')).toHaveCount(0);
   await expect(page.locator('#embarque-expected')).toHaveText('0');
+});
+
+test('VIPs de reservas diferentes ficam juntos por ônibus e mantêm check individual @smoke', async ({ page, context }) => {
+  const data = fixture();
+  for (const [id, bus, vip] of [['4', 2, true], ['5', 1, true], ['6', 2, false]]) {
+    data.people.push({ id, registration_id: `reserva-${id}`, code: `CODIGO0${id}`, name: `Pessoa Teste ${id}`, group: null,
+      bus_number: bus, vip, outbound: emptyState(), return: emptyState() });
+  }
+  const api = await mockPanel(context, data);
+  await page.goto('/painel-onibus.html');
+  await expect(page.locator('[data-vip-group]')).toHaveCount(2);
+  await expect(page.locator('[data-vip-group="2"] .embarque-person')).toHaveCount(2);
+  await expect(page.locator('[data-vip-group="1"] .embarque-person')).toHaveCount(1);
+  await expect(page.locator('[data-vip-group="2"]')).toContainText('Reserva CODIGO04');
+  await page.locator('[data-check="4"]').click();
+  await expect(page.locator('[data-vip-group="2"] .embarque-group__count')).toHaveText('1 de 2 a bordo');
+  await expect(page.locator('[data-check="3"]')).toHaveAttribute('aria-pressed', 'false');
+  expect(api.writes[0].body.passenger_id).toBe('4');
+  await page.locator('#embarque-search').fill('vip');
+  await expect(page.locator('.embarque-person')).toHaveCount(3);
+  await page.locator('#embarque-search').fill('CODIGO04');
+  await expect(page.locator('.embarque-person')).toHaveCount(1);
+  await expect(page.locator('[data-vip-group="2"] .embarque-group__count')).toHaveText('1 de 2 a bordo');
+});
+
+test('slider mantém foco, fecha por backdrop e não reabre em atualização das reservas @smoke', async ({ page, context }) => {
+  await mockPanel(context);
+  await page.goto('/painel-onibus.html');
+  const drawer = page.locator('#embarque-sidebar');
+  await expect(drawer).toHaveClass(/is-open/);
+  await expect(page.locator('[data-check="3"]')).toBeVisible();
+  await expect(page.locator('.embarque-header')).toHaveCSS('background-color', 'rgb(4, 29, 58)');
+  await expect(page.locator('.embarque-mascot')).toHaveAttribute('src', 'assets/images/manual/kriativa-checklist.png');
+  await page.locator('#embarque-update').focus();
+  await page.keyboard.press('Shift+Tab');
+  await expect(page.locator('[data-check="3"]')).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(page.locator('#embarque-update')).toBeFocused();
+  await page.mouse.click(900, 400);
+  await expect(drawer).not.toBeVisible();
+  await expect(page.locator('#embarque-open')).toBeFocused();
+  await page.locator('#recarregar').click();
+  await expect(page.locator('#recarregar')).not.toHaveAttribute('aria-busy', 'true');
+  await expect(drawer).not.toBeVisible();
+  await page.locator('#embarque-open').click();
+  await expect(drawer).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(drawer).not.toBeVisible();
+  await expect(drawer).toHaveAttribute('aria-hidden', 'true');
+  await expect(drawer).toHaveAttribute('inert', '');
+});
+
+
+test('ônibus usam tabs com navegação por setas e controles fixos no cabeçalho @smoke', async ({ page, context }) => {
+  await mockPanel(context);
+  await page.setViewportSize({ width: 320, height: 740 });
+  await page.goto('/painel-onibus.html');
+  const tabs = page.locator('#embarque-buses');
+  await expect(tabs).toHaveAttribute('role', 'tablist');
+  const all = tabs.getByRole('tab', { name: /Todos os ônibus/ });
+  await expect(all).toHaveAttribute('aria-selected', 'true');
+  await expect(all).toHaveCSS('border-radius', '0px');
+  await all.focus();
+  await page.keyboard.press('ArrowRight');
+  const first = tabs.locator('[data-bus="1"]');
+  await expect(first).toBeFocused();
+  await expect(first).toHaveAttribute('aria-selected', 'true');
+  await expect(all).toHaveAttribute('tabindex', '-1');
+  await expect(page.locator('#embarque-results')).toHaveAttribute('aria-labelledby', 'embarque-bus-1');
+  await expect(page.locator('#embarque-expected')).toHaveText('2');
+  await page.keyboard.press('End');
+  await expect(tabs.locator('[data-bus="2"]')).toBeFocused();
+  await expect(page.locator('#embarque-expected')).toHaveText('1');
+  await page.keyboard.press('ArrowRight');
+  await expect(all).toBeFocused();
+  await page.keyboard.press('ArrowLeft');
+  await expect(tabs.locator('[data-bus="2"]')).toBeFocused();
+  await page.keyboard.press('Home');
+  await expect(all).toBeFocused();
+  const refresh = page.locator('#embarque-update');
+  // Measure fixed controls after the drawer's entrance has settled.
+  await expect.poll(async () => (await page.locator('#embarque-sidebar').boundingBox()).y).toBeLessThan(.01);
+  const before = await refresh.boundingBox();
+  await page.locator('#embarque-scroll').evaluate(el => { el.scrollTop = el.scrollHeight; });
+  const after = await refresh.boundingBox();
+  expect(after.y).toBeCloseTo(before.y, 1);
+  await expect(page.locator('.embarque-header [data-leg="return"]')).toBeInViewport();
+  await refresh.click();
+  await expect(refresh).toHaveAttribute('aria-busy', 'false');
+  await expect(page.locator('#embarque-sync')).toContainText('Sincronizado');
 });
