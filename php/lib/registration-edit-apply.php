@@ -81,10 +81,11 @@ function bus_registration_edit_apply(PDO $pdo, array $request, string $nowUtc): 
     bus_registration_edit_check_cpfs($pdo, $registrationId, $rowsById, $plan, $registration['withdrawn_at'] !== null);
     bus_registration_edit_check_capacity($pdo, $registration, $plan);
 
-    bus_registration_edit_write_passengers($pdo, $registrationId, $rowsById, $plan['passengers']);
-    bus_registration_edit_write_registration($pdo, $registrationId, $plan['registration']);
-
+    // Salvar sem mudanças não grava nada: subir updated_at faria qualquer outro
+    // modal aberto nesta reserva receber um "stale" falso.
     if ($plan['changes'] !== []) {
+        bus_registration_edit_write_passengers($pdo, $registrationId, $rowsById, $plan['passengers']);
+        bus_registration_edit_write_registration($pdo, $registrationId, $plan['registration']);
         $pdo->prepare('INSERT INTO bus_registration_edits (registration_id, edited_at, changes) VALUES (?, ?, ?)')
             ->execute([
                 $registrationId,
@@ -108,6 +109,17 @@ function bus_registration_edit_apply(PDO $pdo, array $request, string $nowUtc): 
         'updated_at' => (string) $updatedAt->fetchColumn(),
         'registration' => $registration,
     ];
+}
+
+/**
+ * Erro de concorrência que vale repetir a transação inteira: 1213 (deadlock) ou
+ * 1205 (lock wait timeout). A edição pode cruzar com um check-in do embarque,
+ * que trava passageiro e depois reserva (ordem inversa da edição).
+ */
+function bus_registration_edit_is_retryable(Throwable $e): bool
+{
+    if (!$e instanceof PDOException) return false;
+    return in_array((int) ($e->errorInfo[1] ?? 0), [1213, 1205], true);
 }
 
 /**
@@ -215,7 +227,8 @@ function bus_registration_edit_write_passengers(PDO $pdo, string $registrationId
 
 /**
  * Grava as colunas do plano e sempre `updated_at`: o schema não tem ON UPDATE,
- * e a regra de conflito (stale) depende de todo salvamento mudar esse valor.
+ * e a regra de conflito (stale) depende de todo salvamento com mudança alterar
+ * esse valor (salvamento sem mudança nem chega aqui).
  * DATETIME guarda segundos: dois salvamentos no mesmo segundo repetiriam o
  * valor, então o GREATEST garante que ele sempre avança.
  */

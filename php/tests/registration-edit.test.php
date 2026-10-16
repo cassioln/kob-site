@@ -452,6 +452,19 @@ edit_expect(true, str_contains($text, "VOLTARAM PARA A VIAGEM\r\n- Pessoa Um"), 
 edit_expect(true, str_contains($text, '1 lugar ocupado a mais no Ônibus 3'), 'Email lists seats taken');
 echo "PASS: registration edit email\n";
 
+// Repetição em deadlock / lock wait timeout.
+$pdoError = static function (int $driverCode): PDOException {
+    $e = new PDOException('simulado');
+    $e->errorInfo = ['40001', $driverCode, 'simulado'];
+    return $e;
+};
+edit_expect(true, bus_registration_edit_is_retryable($pdoError(1213)), 'Deadlock is retryable');
+edit_expect(true, bus_registration_edit_is_retryable($pdoError(1205)), 'Lock wait timeout is retryable');
+edit_expect(false, bus_registration_edit_is_retryable($pdoError(1062)), 'Duplicate key is not retryable');
+edit_expect(false, bus_registration_edit_is_retryable(new PDOException('sem errorInfo')), 'PDOException without errorInfo is not retryable');
+edit_expect(false, bus_registration_edit_is_retryable(new RuntimeException('x')), 'Other exceptions are not retryable');
+echo "PASS: registration edit retry\n";
+
 $dsn = getenv('KOB_BOARDING_TEST_DSN');
 if (!$dsn) {
     echo "SKIP: MySQL integration (set KOB_BOARDING_TEST_DSN for isolated kob_boarding_test database)\n";
@@ -707,4 +720,14 @@ edit_expect(['1', 'assigned', null, null, null],
 edit_expect(true, $result['plan']['reactivated_registration'], 'Reactivation flagged');
 edit_expect(2, bus_fleet_bus_occupancy($pdo, 1), 'Reactivated registration occupies its seats again');
 edit_expect(7, (int) $pdo->query('SELECT COUNT(*) FROM bus_registration_edits')->fetchColumn(), 'One log row per successful save');
+
+// Salvar sem mudanças: nada é gravado e updated_at fica igual (outro modal aberto não recebe stale).
+$before = $snapshot();
+$updatedBefore = (string) $mainRow()['updated_at'];
+$result = $apply($dbRequest());
+edit_expect([], $result['plan']['changes'], 'No-op save has no changes');
+edit_expect($updatedBefore, (string) $mainRow()['updated_at'], 'No-op save keeps updated_at');
+edit_expect($updatedBefore, $result['updated_at'], 'No-op save returns the current updated_at');
+edit_expect($before, $snapshot(), 'No-op save leaves the database untouched');
+edit_expect(7, (int) $pdo->query('SELECT COUNT(*) FROM bus_registration_edits')->fetchColumn(), 'No-op save writes no log row');
 echo "PASS: registration edit apply\n";

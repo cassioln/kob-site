@@ -44,13 +44,29 @@ try {
     bus_fleet_ensure_assignment_status($pdo);
     // Antes da transação: DDL faz commit implícito.
     bus_registration_edit_ensure_schema($pdo);
-    $pdo->beginTransaction();
-    $transactionOpen = true;
 
-    $result = bus_registration_edit_apply($pdo, $body, gmdate('Y-m-d H:i:s'));
+    // Uma segunda tentativa em deadlock/lock wait timeout (check-in do embarque
+    // concorrente). A segunda falha cai no 500 abaixo.
+    for ($attempt = 1; ; $attempt++) {
+        try {
+            $pdo->beginTransaction();
+            $transactionOpen = true;
 
-    $pdo->commit();
-    $transactionOpen = false;
+            $result = bus_registration_edit_apply($pdo, $body, gmdate('Y-m-d H:i:s'));
+
+            $pdo->commit();
+            $transactionOpen = false;
+            break;
+        } catch (PDOException $e) {
+            if ($attempt >= 2 || !bus_registration_edit_is_retryable($e)) {
+                throw $e;
+            }
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            $transactionOpen = false;
+        }
+    }
 } catch (RegistrationEditConflict $e) {
     if ($transactionOpen && $pdo instanceof PDO && $pdo->inTransaction()) {
         $pdo->rollBack();
