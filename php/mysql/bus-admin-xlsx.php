@@ -11,11 +11,18 @@ declare(strict_types=1);
  *
  * Somente leitura. Respeita o filtro e a busca que estavam na tela, para o
  * arquivo bater com o que a pessoa está vendo.
+ *
+ * Desistentes continuam na planilha (conferência e financeiro), com a coluna
+ * "Desistência" preenchida e a linha em cinza tachado. Na reserva inteira
+ * desistente o Status segue mostrando o pagamento; o filtro `desistente` lista
+ * só essas reservas, como o filtro "Desistentes" do painel.
  */
 
 require_once dirname(__DIR__) . '/lib/validation.php';
 require_once dirname(__DIR__) . '/lib/bus-fleet.php';
 require_once dirname(__DIR__) . '/lib/contact-display.php';
+require_once dirname(__DIR__) . '/lib/registration-edit-schema.php';
+require_once dirname(__DIR__) . '/lib/registration-withdrawal-display.php';
 require_once __DIR__ . '/lib/db.php';
 require_once dirname(__DIR__) . '/lib/receipt-pdf.php';
 require_once dirname(__DIR__) . '/lib/xlsx.php';
@@ -53,6 +60,7 @@ function bus_status_xlsx(string $status): array
 try {
     $pdo = bus_pdo();
     bus_fleet_ensure_assignment_status($pdo);
+    bus_registration_edit_ensure_schema($pdo);
     $filtro = (string) ($_GET['filtro'] ?? 'pago');
     $onibusFiltro = trim((string) ($_GET['onibus'] ?? 'todos'));
     $busca = mb_strtolower(trim((string) ($_GET['busca'] ?? '')), 'UTF-8');
@@ -60,7 +68,7 @@ try {
     $q = $pdo->query(
         'SELECT r.id, r.primary_name, r.email, r.whatsapp, r.status,
                 r.passenger_count, r.children_count, r.group_name, r.is_vip, r.amount_cents,
-                r.mercadopago_order_id, r.bus_number,
+                r.mercadopago_order_id, r.bus_number, r.withdrawn_at,
                 DATE_FORMAT(CONVERT_TZ(r.paid_at, "+00:00", "-03:00"), "%d/%m/%Y %H:%i") AS pago_em,
                 DATE_FORMAT(CONVERT_TZ(r.created_at, "+00:00", "-03:00"), "%d/%m/%Y %H:%i") AS criado_em
            FROM bus_registrations r
@@ -69,7 +77,9 @@ try {
     $reservas = $q->fetchAll(PDO::FETCH_ASSOC);
 
     $qp = $pdo->query(
-        'SELECT registration_id, `position`, full_name, cpf, whatsapp, email, is_primary, is_minor, is_child_lap
+        'SELECT registration_id, `position`, full_name, cpf, whatsapp, email, is_primary, is_minor, is_child_lap,
+                withdrawn_at, withdrawal_reason,
+                DATE_FORMAT(CONVERT_TZ(withdrawn_at, "+00:00", "-03:00"), "%d/%m/%Y %H:%i") AS desistiu_em
            FROM bus_passengers ORDER BY registration_id, `position`'
     );
     $porReserva = [];
@@ -91,6 +101,7 @@ try {
         ['titulo' => 'Qtd Pessoas', 'largura' => 13],
         ['titulo' => 'Valor pago', 'largura' => 13],
         ['titulo' => 'Status', 'largura' => 22],
+        ['titulo' => 'Desistência', 'largura' => 26],
         ['titulo' => 'Pago em', 'largura' => 17],
         ['titulo' => 'Transação', 'largura' => 34],
     ];
@@ -106,13 +117,18 @@ try {
             continue;
         }
         $isVip = (int) ($r['is_vip'] ?? 0) === 1;
+        $reservaDesistente = $r['withdrawn_at'] !== null;
         $st = $isVip
             ? ['chave' => 'vip', 'rotulo' => 'Reserva VIP', 'estilo' => 'status_vip']
             : bus_status_xlsx((string) $r['status']);
-        if ($filtro === 'vip' && !$isVip) {
-            continue;
-        }
-        if ($filtro !== 'todas' && $filtro !== 'vip' && $st['chave'] !== $filtro) {
+        // Mesmo critério do `status_chave` do painel: a desistência da reserva
+        // inteira sobrepõe o status de pagamento e o VIP (que já vem em $st).
+        $chaveFiltro = bus_admin_reserva_status(
+            ['chave' => $st['chave'], 'rotulo' => $st['rotulo'], 'tom' => ''],
+            false,
+            $reservaDesistente
+        )['chave'];
+        if ($filtro !== 'todas' && $chaveFiltro !== $filtro) {
             continue;
         }
 
@@ -129,24 +145,36 @@ try {
                 'is_primary' => 1,
                 'is_minor' => 0,
                 'is_child_lap' => 0,
+                'withdrawn_at' => null,
+                'withdrawal_reason' => null,
+                'desistiu_em' => null,
             ]];
         }
 
         $code = strtoupper(substr((string) $r['id'], 0, 8));
-        $grupo = $isVip ? '' : $r['passenger_count'] . ((int) $r['children_count'] > 0
-            ? ' + ' . $r['children_count'] . ' colo' : '');
+        // Contagens gravadas já são só de ativos; a reserva inteira desistente
+        // guarda as de antes (o banco exige >= 1), então aqui vira 0.
+        $grupo = $isVip ? '' : ($reservaDesistente ? '0' : $r['passenger_count'] . ((int) $r['children_count'] > 0
+            ? ' + ' . $r['children_count'] . ' colo' : ''));
         $valor = $isVip ? '' : 'R$ ' . number_format(((int) $r['amount_cents']) / 100, 2, ',', '.');
         $isFalha = !$isVip && ($st['chave'] ?? '') === 'falha';
 
         foreach ($passageiros as $i => $p) {
             $primeiro = $i === 0;
             $responsavel = (int) ($p['is_primary'] ?? 0) === 1;
+            $desistiu = ($p['withdrawn_at'] ?? null) !== null;
+            $textoDesistencia = bus_withdrawal_cell_text(
+                $desistiu,
+                $desistiu ? (string) ($p['desistiu_em'] ?? '') : null,
+                $p['withdrawal_reason'] ?? null
+            );
 
             if ($busca !== '') {
                 $alvo = mb_strtolower(implode(' ', [
                     $code, $p['full_name'], $p['cpf'] ?? '', $p['whatsapp'] ?? '',
                     $p['email'] ?? '', $r['primary_name'], $r['email'], $r['whatsapp'],
                     $r['group_name'] ?? '', $r['mercadopago_order_id'] ?? '', $st['rotulo'],
+                    $textoDesistencia,
                 ]), 'UTF-8');
                 if (mb_strpos($alvo, $busca) === false) {
                     continue;
@@ -174,7 +202,10 @@ try {
                 $emailPassageiro = bus_missing_contact_label($r['email'] ?? null, false);
             }
 
-            if ($isVip) {
+            if ($desistiu) {
+                // Esmaecida e tachada: a pessoa segue na planilha, mas não viaja.
+                $estiloLinha = 'desistente';
+            } elseif ($isVip) {
                 $estiloLinha = 'vip';
             } elseif ($isFalha) {
                 $estiloLinha = $responsavel ? 'falha_responsavel' : ($primeiro ? 'falha_grupo' : 'falha');
@@ -216,6 +247,7 @@ try {
                     $primeiro
                         ? ['v' => $st['rotulo'], 'estilo' => $st['estilo']]
                         : '',
+                    $textoDesistencia,
                     $primeiro && !$isVip ? (string) ($r['pago_em'] ?? '') : '',
                     $primeiro && !$isVip ? (string) ($r['mercadopago_order_id'] ?? '') : '',
                 ],
@@ -227,6 +259,7 @@ try {
         'pago' => 'pagamentos aprovados',
         'pendente' => 'aguardando pagamento',
         'falha' => 'cancelados e falhas',
+        'desistente' => 'desistentes',
         'vip' => 'reservas VIP',
         'todas' => 'todas as reservas',
     ][$filtro] ?? $filtro;

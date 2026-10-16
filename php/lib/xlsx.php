@@ -89,6 +89,8 @@ function xlsx_estilos_indices(): array
         'grupo_centralizado' => 19,
         'falha_grupo' => 20,
         'falha_grupo_centralizado' => 21,
+        'desistente' => 22,
+        'desistente_centralizado' => 23,
     ];
 }
 
@@ -111,6 +113,8 @@ function xlsx_styles(): string
         '<font><b/><sz val="11"/><color rgb="FF8A5A00"/><name val="Calibri"/></font>',
         '<font><b/><sz val="11"/><color rgb="FFA3232B"/><name val="Calibri"/></font>',
         '<font><b/><sz val="11"/><color rgb="FF0D2242"/><name val="Calibri"/></font>',
+        // 8 desistente — cinza tachado: a pessoa continua na planilha, mas não viaja.
+        '<font><strike/><sz val="11"/><color rgb="FF94A3B8"/><name val="Calibri"/></font>',
     ];
 
     $fills = [
@@ -188,6 +192,10 @@ function xlsx_styles(): string
         '<xf numFmtId="49" fontId="0" fillId="7" borderId="2" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment vertical="center"/></xf>',
         // 21 falha_grupo_centralizado — número na primeira linha não responsável em falha.
         '<xf numFmtId="49" fontId="0" fillId="7" borderId="2" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>',
+        // 22 desistente — passageiro (ou reserva inteira) que desistiu: fonte cinza tachada.
+        '<xf numFmtId="49" fontId="8" fillId="0" borderId="1" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment vertical="center"/></xf>',
+        // 23 desistente_centralizado — Nº do passageiro desistente.
+        '<xf numFmtId="49" fontId="8" fillId="0" borderId="1" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>',
     ];
 
     return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
@@ -301,6 +309,8 @@ function xlsx_build(array $planilha): string
                     $estiloCelula = 'vip_centralizado';
                 } elseif ($estiloLinha === 'grupo') {
                     $estiloCelula = 'grupo_centralizado';
+                } elseif ($estiloLinha === 'desistente') {
+                    $estiloCelula = 'desistente_centralizado';
                 } else {
                     $estiloCelula = 'centralizado';
                 }

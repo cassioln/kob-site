@@ -8,12 +8,20 @@ declare(strict_types=1);
  * Separado de `bus-manifest.php` (que entrega a lista de embarque para download)
  * porque o painel precisa dos dados em JSON já agrupados e com resumo.
  *
- * Somente leitura. Nenhum endpoint do painel altera reserva: mudar status de
- * pagamento pela interface abriria caminho para confirmar vaga sem lastro.
+ * Somente leitura (fora a fixação automática de ônibus do passo 3). Status de
+ * pagamento nunca muda pelo painel: abriria caminho para confirmar vaga sem
+ * lastro. A edição de dados e a desistência ficam em bus-registration-update.php.
+ *
+ * Desistência: passageiro com `withdrawn_at` continua na lista (marcado), mas
+ * sai dos cards da frota, das pessoas a bordo e do cruzamento de CPF. Reserva
+ * com `withdrawn_at` (todos desistiram) sai da frota e do resumo de pessoas; a
+ * receita continua contando, porque nenhum valor muda com a desistência.
  */
 
 require_once dirname(__DIR__) . '/lib/validation.php';
 require_once dirname(__DIR__) . '/lib/bus-fleet.php';
+require_once dirname(__DIR__) . '/lib/registration-edit-schema.php';
+require_once dirname(__DIR__) . '/lib/registration-withdrawal-display.php';
 require_once __DIR__ . '/lib/db.php';
 require_once dirname(__DIR__) . '/lib/receipt-pdf.php';
 
@@ -61,12 +69,13 @@ function bus_status_painel(string $status): array
 try {
     $pdo = bus_pdo();
     bus_fleet_ensure_assignment_status($pdo);
+    bus_registration_edit_ensure_schema($pdo);
 
     $q = $pdo->query(
         'SELECT r.id, r.primary_name, r.primary_cpf, r.email, r.whatsapp, r.status,
                 r.status_detail, r.passenger_count, r.children_count, r.group_name, r.is_vip, r.amount_cents,
                 r.mercadopago_order_id, r.confirmation_email_sent_at, r.created_at, r.paid_at, r.bus_number,
-                r.fleet_assignment_status,
+                r.fleet_assignment_status, r.updated_at, r.withdrawn_at,
                 DATE_FORMAT(CONVERT_TZ(r.created_at, "+00:00", "-03:00"), "%d/%m/%Y %H:%i") AS criado_em,
                 DATE_FORMAT(CONVERT_TZ(r.paid_at, "+00:00", "-03:00"), "%d/%m/%Y %H:%i") AS pago_em
            FROM bus_registrations r
@@ -75,12 +84,17 @@ try {
     $reservas = $q->fetchAll(PDO::FETCH_ASSOC);
 
     $qp = $pdo->query(
-        'SELECT registration_id, `position`, full_name, cpf, whatsapp, email, is_primary, is_minor, is_child_lap
+        'SELECT id, registration_id, `position`, full_name, cpf, whatsapp, email, is_primary, is_minor, is_child_lap,
+                withdrawn_at, withdrawal_reason,
+                DATE_FORMAT(CONVERT_TZ(withdrawn_at, "+00:00", "-03:00"), "%d/%m/%Y %H:%i") AS desistiu_em
            FROM bus_passengers ORDER BY registration_id, `position`'
     );
     $porReserva = [];
     foreach ($qp->fetchAll(PDO::FETCH_ASSOC) as $p) {
+        $whatsappDigitos = preg_replace('/\D/', '', (string) ($p['whatsapp'] ?? ''));
+        $motivo = trim((string) ($p['withdrawal_reason'] ?? ''));
         $porReserva[$p['registration_id']][] = [
+            'id' => (string) $p['id'],
             'posicao' => (int) $p['position'],
             'nome' => $p['full_name'],
             'cpf' => bus_format_cpf((string) $p['cpf']),
@@ -90,6 +104,11 @@ try {
             'responsavel' => (int) $p['is_primary'] === 1,
             'menor' => (int) ($p['is_minor'] ?? 0) === 1,
             'crianca_colo' => (int) ($p['is_child_lap'] ?? 0) === 1,
+            // Campos do modal de edição: contato cru e desistência.
+            'whatsapp_digitos' => $whatsappDigitos !== '' ? $whatsappDigitos : null,
+            'desistiu' => $p['withdrawn_at'] !== null,
+            'desistiu_em' => $p['withdrawn_at'] !== null ? $p['desistiu_em'] : null,
+            'motivo_desistencia' => $motivo !== '' ? $motivo : null,
         ];
     }
 
@@ -105,7 +124,9 @@ try {
     foreach ($reservas as $r) {
         foreach ($porReserva[$r['id']] ?? [] as $p) {
             $cpf = $p['cpf_digitos'];
-            if ($cpf === '') {
+            // Desistente não conta como "essa pessoa refez a reserva": a vaga
+            // dele não existe mais.
+            if ($cpf === '' || $p['desistiu']) {
                 continue;
             }
             $ondeAparece[$cpf][] = [
@@ -123,6 +144,7 @@ try {
         'reservas_vip' => 0,
         'reservas_pendentes' => 0,
         'reservas_falha' => 0,
+        'reservas_desistentes' => 0,
         'pagantes' => 0,
         'criancas_no_colo' => 0,
         'total_a_bordo' => 0,
@@ -199,6 +221,11 @@ try {
     // 2. Primeira passagem nas reservas para identificar fixos e separar sem fixo
     $reservasSemFixoIndices = [];
     foreach ($reservas as $idx => $r) {
+        // Reserva inteira desistente não ocupa ônibus nem entra na atribuição
+        // automática abaixo (ela fica com bus_number NULL e status 'assigned').
+        if ($r['withdrawn_at'] !== null) {
+            continue;
+        }
         $st = bus_status_painel((string) $r['status']);
         if ($st['chave'] === 'pago') {
             $fleetStatus = ($r['fleet_assignment_status'] ?? 'assigned') === 'waiting'
@@ -236,14 +263,7 @@ try {
                     'assentos' => $assentosGrupo,
                     'is_vip' => (bool) $r['is_vip'],
                     'pago_em' => $r['pago_em'] ?? $r['criado_em'] ?? null,
-                    'passageiros' => array_map(static fn ($p) => [
-                        'posicao' => (int) $p['posicao'],
-                        'nome' => $p['nome'],
-                        'responsavel' => (bool) $p['responsavel'],
-                        'menor' => (bool) $p['menor'],
-                        'crianca_colo' => (bool) $p['crianca_colo'],
-                        'faixa' => $p['crianca_colo'] ? '0 a 5 anos' : ($p['menor'] ? '6 a 17 anos' : '18 anos ou mais'),
-                    ], $porReserva[$r['id']] ?? []),
+                    'passageiros' => bus_admin_fleet_passengers($porReserva[$r['id']] ?? []),
                 ];
             }
         }
@@ -274,8 +294,12 @@ try {
             $bNum++;
         }
         
-        // Fixa no banco de dados
-        $pdo->prepare("UPDATE bus_registrations SET bus_number = ? WHERE id = ?")->execute([$bNum, $r['id']]);
+        // Fixa no banco de dados. A guarda impede gravar ônibus numa reserva que
+        // desistiu entre a leitura acima e este UPDATE (rowCount não serve de
+        // sinal: duas cargas simultâneas do painel gravam o mesmo número e a
+        // segunda vê 0 linhas alteradas).
+        $pdo->prepare("UPDATE bus_registrations SET bus_number = ? WHERE id = ? AND withdrawn_at IS NULL")
+            ->execute([$bNum, $r['id']]);
         $reservas[$idx]['bus_number'] = $bNum; // atualiza na memória
         
         if ($bNum > $maxBusNum) $maxBusNum = $bNum;
@@ -298,14 +322,7 @@ try {
             'assentos' => $assentosGrupo,
             'is_vip' => (bool) $r['is_vip'],
             'pago_em' => $r['pago_em'] ?? $r['criado_em'] ?? null,
-            'passageiros' => array_map(static fn ($p) => [
-                'posicao' => (int) $p['posicao'],
-                'nome' => $p['nome'],
-                'responsavel' => (bool) $p['responsavel'],
-                'menor' => (bool) $p['menor'],
-                'crianca_colo' => (bool) $p['crianca_colo'],
-                'faixa' => $p['crianca_colo'] ? '0 a 5 anos' : ($p['menor'] ? '6 a 17 anos' : '18 anos ou mais'),
-            ], $porReserva[$r['id']] ?? []),
+            'passageiros' => bus_admin_fleet_passengers($porReserva[$r['id']] ?? []),
         ];
     }
 
@@ -349,7 +366,13 @@ try {
     foreach ($reservas as $r) {
         $st = bus_status_painel((string) $r['status']);
         $passageiros = $porReserva[$r['id']] ?? [];
+        $desistente = $r['withdrawn_at'] !== null;
+        if ($desistente) {
+            $resumo['reservas_desistentes']++;
+        }
 
+        // Contadores de pagamento e receita não olham a desistência (os valores
+        // não mudam); só as pessoas a bordo deixam de contar.
         if ($st['chave'] === 'pago') {
             if (!empty($r['is_vip'])) {
                 // VIP confirmado não é pagamento aprovado: permanece visível
@@ -358,9 +381,13 @@ try {
             } else {
                 $resumo['reservas_pagas']++;
             }
-            $resumo['pagantes'] += (int) $r['passenger_count'];
-            $resumo['criancas_no_colo'] += (int) $r['children_count'];
-            $resumo['total_a_bordo'] += (int) $r['passenger_count'] + (int) $r['children_count'];
+            if (!$desistente) {
+                // Contagens da reserva já são só de ativos; a desistente guarda
+                // as de antes da desistência e por isso fica de fora.
+                $resumo['pagantes'] += (int) $r['passenger_count'];
+                $resumo['criancas_no_colo'] += (int) $r['children_count'];
+                $resumo['total_a_bordo'] += (int) $r['passenger_count'] + (int) $r['children_count'];
+            }
             if (empty($r['is_vip'])) {
                 $valorCentavos = (int) $r['amount_cents'];
                 $resumo['receita_centavos'] += $valorCentavos;
@@ -369,7 +396,7 @@ try {
                 $resumo['receita_liquida_centavos'] += $valorCentavos - $taxaCentavos;
             }
             foreach ($passageiros as $p) {
-                if ($p['whatsapp'] === null) {
+                if ($p['whatsapp'] === null && !$p['desistiu']) {
                     $resumo['sem_telefone']++;
                 }
             }
@@ -413,9 +440,7 @@ try {
             ];
         }
 
-        $statusReserva = !empty($r['is_vip'])
-            ? ['chave' => 'vip', 'rotulo' => 'Reserva VIP', 'tom' => 'vip']
-            : $st;
+        $statusReserva = bus_admin_reserva_status($st, !empty($r['is_vip']), $desistente);
 
         $lista[] = [
             'code' => strtoupper(substr((string) $r['id'], 0, 8)),
@@ -428,8 +453,10 @@ try {
             'contato_cpf' => bus_format_cpf((string) $r['primary_cpf']),
             'email' => $r['email'],
             'contato_whatsapp' => bus_format_phone((string) $r['whatsapp']),
-            'pagantes' => (int) $r['passenger_count'],
-            'criancas' => (int) $r['children_count'],
+            // Colunas = só ativos. A reserva inteira desistente guarda as contagens
+            // de antes (o banco exige >= 1); ativos ali são zero.
+            'pagantes' => $desistente ? 0 : (int) $r['passenger_count'],
+            'criancas' => $desistente ? 0 : (int) $r['children_count'],
             'grupo' => ($r['group_name'] ?? '') !== '' ? $r['group_name'] : null,
             'valor' => number_format(((int) $r['amount_cents']) / 100, 2, ',', '.'),
             'valor_centavos' => (int) $r['amount_cents'],
@@ -440,6 +467,9 @@ try {
             'bus_number' => $r['bus_number'] !== null ? (int) $r['bus_number'] : null,
             'fleet_assignment_status' => ($r['fleet_assignment_status'] ?? 'assigned') === 'waiting' ? 'waiting' : 'assigned',
             'is_vip' => (bool) $r['is_vip'],
+            'desistente' => $desistente,
+            // Valor cru (UTC, 'Y-m-d H:i:s'): o modal devolve em expected_updated_at.
+            'updated_at' => (string) $r['updated_at'],
             'passageiros' => $passageiros,
         ];
     }
@@ -453,6 +483,7 @@ try {
             ? 'waiting'
             : 'assigned';
         if (bus_status_painel((string) $r['status'])['chave'] !== 'pago'
+            || $r['withdrawn_at'] !== null
             || $fleetStatus !== 'waiting'
             || $r['bus_number'] !== null) {
             continue;
@@ -468,14 +499,7 @@ try {
             'total' => (int) $r['passenger_count'] + (int) $r['children_count'],
             'is_vip' => (bool) $r['is_vip'],
             'pago_em' => $r['pago_em'] ?? $r['criado_em'] ?? null,
-            'passageiros' => array_map(static fn ($p) => [
-                'posicao' => (int) $p['posicao'],
-                'nome' => $p['nome'],
-                'responsavel' => (bool) $p['responsavel'],
-                'menor' => (bool) $p['menor'],
-                'crianca_colo' => (bool) $p['crianca_colo'],
-                'faixa' => $p['crianca_colo'] ? '0 a 5 anos' : ($p['menor'] ? '6 a 17 anos' : '18 anos ou mais'),
-            ], $porReserva[$r['id']] ?? []),
+            'passageiros' => bus_admin_fleet_passengers($porReserva[$r['id']] ?? []),
             '_paid_at' => (string) ($r['paid_at'] ?? ''),
             '_created_at' => (string) ($r['created_at'] ?? ''),
         ];
