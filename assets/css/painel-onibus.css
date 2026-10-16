@@ -4035,3 +4035,92 @@
     margin-right: 0;
   }
 }
+
+/* ---- Edição de reserva: lápis na lista e no card da frota ---------------- */
+
+/* Código da reserva e lápis na mesma linha, acima da contagem de pessoas. */
+.tabela__codigo-linha {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Mesmas cores do código no card da frota: discreto, roxo ao passar o mouse. */
+.tabela__editar,
+.grupo-item__editar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--p-raio-p, 6px);
+  background: transparent;
+  color: var(--p-tinta-fraca);
+  cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.tabela__editar:hover,
+.tabela__editar:focus-visible,
+.grupo-item__editar:hover,
+.grupo-item__editar:focus-visible {
+  color: var(--p-acao);
+  background: var(--p-acao-fraca);
+}
+
+.tabela__editar:focus-visible,
+.grupo-item__editar:focus-visible {
+  outline: 2px solid var(--p-acao);
+  outline-offset: 1px;
+}
+
+.tabela__editar svg,
+.grupo-item__editar svg {
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+}
+
+/* Toque: área de clique de 44 px (WCAG 2.5.5) sem engordar o card. Os 6 px
+   extras de cada lado cabem no gap de 8 px do topo do card da frota, então não
+   roubam o clique do código ao lado. */
+@media (max-width: 860px), (pointer: coarse) {
+  .tabela__editar,
+  .grupo-item__editar {
+    position: relative;
+  }
+
+  .tabela__editar::before,
+  .grupo-item__editar::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+  }
+}
+
+/* Passageiro que desistiu continua na lista (conferência), mas esmaecido e
+   riscado; a etiqueta "Desistiu" e a data ficam legíveis, sem risco. */
+.tabela__linha--desistente .tabela__nome {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+.tabela__linha--desistente .tabela__faixa-passageiro {
+  opacity: 0.6;
+}
+
+.tabela__desistiu {
+  margin-top: 2px;
+  margin-left: 18px;
+  color: var(--p-tinta-fraca);
+  font-size: 0.75rem;
+  line-height: 1.3;
+}
+
+.tabela__desistiu .etiqueta {
+  font-size: 0.6875rem;
+  padding: 1px 6px;
+}
