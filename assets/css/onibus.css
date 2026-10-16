@@ -4165,6 +4165,7 @@
 
 /* Encerramento das vendas: a informação permanece visível sem JavaScript. */
 .bus-hero__scarcity--sold-out {
+  min-width: 0;
   justify-content: flex-start;
   gap: clamp(14px, 2vw, 24px);
   margin: 0;
@@ -4191,6 +4192,8 @@
   align-items: center;
   gap: 12px;
   min-height: 44px;
+  min-width: 0;
+  max-width: 100%;
   padding: 10px 14px;
   border: 1px solid rgba(255, 255, 255, .65);
   border-radius: 6px;
@@ -4203,6 +4206,7 @@
 .bus-checkout__grid[hidden], .bus-intro[hidden] { display: none !important; }
 .bus-checkout[data-sales-closed="true"] .bus-section-heading { max-width: 760px; margin-inline: auto; }
 @media (max-width: 760px) {
+  .bus-hero:has(.bus-hero__scarcity--sold-out) .bus-hero__inner { grid-template-columns: minmax(0, 1fr); }
   .bus-hero__scarcity--sold-out { flex-wrap: wrap; align-items: flex-start; }
   .bus-hero__sold-out-copy { flex-basis: calc(100% - 70px); }
   .bus-hero__sold-out-link { margin-left: auto; }
