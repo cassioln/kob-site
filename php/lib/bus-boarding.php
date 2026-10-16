@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/validation.php';
+require_once __DIR__ . '/registration-edit-schema.php';
 
 function bus_boarding_ensure_schema(PDO $pdo): void
 {
@@ -54,6 +55,7 @@ function bus_boarding_state(?array $row): array
 
 function bus_boarding_manifest(PDO $pdo): array
 {
+    bus_registration_edit_ensure_schema($pdo);
     $rows = $pdo->query('SELECT p.id AS passenger_id, p.full_name, p.cpf,
             p.is_primary, p.is_minor, p.is_child_lap, p.`position`,
             r.id AS registration_id, r.primary_name, r.group_name, r.bus_number, r.is_vip,
@@ -62,6 +64,7 @@ function bus_boarding_manifest(PDO $pdo): array
         JOIN bus_passengers p ON p.registration_id = r.id
         LEFT JOIN bus_boarding_checkins c ON c.passenger_id = p.id
         WHERE r.status = "confirmed" AND r.bus_number IS NOT NULL
+            AND r.withdrawn_at IS NULL AND p.withdrawn_at IS NULL
         ORDER BY r.bus_number, r.is_vip DESC, r.paid_at, r.created_at, r.id, p.`position`, c.leg')
         ->fetchAll(PDO::FETCH_ASSOC);
     $people = [];
@@ -91,7 +94,8 @@ function bus_boarding_manifest(PDO $pdo): array
     }
     $waiting = (int) $pdo->query('SELECT COUNT(*) FROM bus_passengers p
         JOIN bus_registrations r ON r.id = p.registration_id
-        WHERE r.status = "confirmed" AND r.bus_number IS NULL')->fetchColumn();
+        WHERE r.status = "confirmed" AND r.bus_number IS NULL
+            AND r.withdrawn_at IS NULL AND p.withdrawn_at IS NULL')->fetchColumn();
     return ['people' => array_values($people), 'waiting' => $waiting, 'generated_at' => gmdate('c')];
 }
 
@@ -99,13 +103,19 @@ function bus_boarding_manifest(PDO $pdo): array
 function bus_boarding_save(PDO $pdo, array $body): array
 {
     $body = bus_boarding_validate($body);
+    // Antes de abrir a transação: DDL faz commit implícito.
+    bus_registration_edit_ensure_schema($pdo);
     $pdo->beginTransaction();
     try {
-        $find = $pdo->prepare('SELECT r.id, r.status, r.bus_number FROM bus_registrations r
+        $find = $pdo->prepare('SELECT r.id, r.status, r.bus_number,
+                r.withdrawn_at AS registration_withdrawn_at, p.withdrawn_at AS passenger_withdrawn_at
+            FROM bus_registrations r
             JOIN bus_passengers p ON p.registration_id = r.id WHERE p.id = ? FOR UPDATE');
         $find->execute([$body['passenger_id']]);
         $registration = $find->fetch(PDO::FETCH_ASSOC);
         if (!$registration || $registration['status'] !== 'confirmed'
+            || $registration['registration_withdrawn_at'] !== null
+            || $registration['passenger_withdrawn_at'] !== null
             || (int) $registration['bus_number'] !== $body['bus_number']) {
             $pdo->rollBack();
             return ['status' => 409, 'error' => 'manifest_changed'];

@@ -22,6 +22,8 @@ try {
     $body = $method === 'POST' ? bus_boarding_validate(read_json_body()) : null;
     $pdo = bus_pdo();
     bus_boarding_ensure_schema($pdo);
+    // Antes da transação do POST: DDL faz commit implícito.
+    bus_registration_edit_ensure_schema($pdo);
     if ($method === 'GET') {
         $manifest = bus_boarding_manifest($pdo);
         $format = $_GET['format'] ?? '';

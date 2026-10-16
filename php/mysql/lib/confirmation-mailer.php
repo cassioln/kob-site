@@ -26,6 +26,7 @@ declare(strict_types=1);
  * não existe — foi exatamente o erro que derrubou a consulta de status.
  */
 require_once dirname(__DIR__, 2) . '/lib/validation.php';
+require_once dirname(__DIR__, 2) . '/lib/registration-edit-schema.php';
 require_once __DIR__ . '/db.php';
 require_once dirname(__DIR__, 2) . '/lib/smtp.php';
 require_once dirname(__DIR__, 2) . '/lib/receipt-pdf.php';
@@ -81,6 +82,7 @@ function bus_enviar_com_retry(
  */
 function bus_confirmation_payload(PDO $pdo, string $registrationId): array
 {
+    bus_registration_edit_ensure_schema($pdo);
     $q = $pdo->prepare(
         'SELECT id, status, email, primary_name, primary_cpf, whatsapp,
                 passenger_count, children_count, group_name, bus_number, fleet_assignment_status,
@@ -106,7 +108,7 @@ function bus_confirmation_payload(PDO $pdo, string $registrationId): array
         'SELECT `position`, full_name, cpf, whatsapp, email, is_primary,
                 confirmation_email_sent_at
            FROM bus_passengers
-          WHERE registration_id = :id ORDER BY `position`'
+          WHERE registration_id = :id AND withdrawn_at IS NULL ORDER BY `position`'
     );
     $qp->execute([':id' => $registrationId]);
     $linhas = $qp->fetchAll(PDO::FETCH_ASSOC);

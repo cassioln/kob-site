@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/registration-edit-schema.php';
+
 /**
  * Retorna quantos assentos uma reserva consome.
  * Criança de colo faz parte do grupo, mas permanece no colo de um pagante.
@@ -164,6 +166,11 @@ function bus_fleet_is_bus_locked(PDO $pdo, int $busNumber, bool $forUpdate = fal
  */
 function bus_fleet_bus_occupancy(PDO $pdo, int $busNumber, ?string $excludeId = null, bool $forUpdate = false): int
 {
+    // DDL faz commit implícito: dentro de transação (forUpdate) o endpoint já
+    // garantiu o schema antes de abrir o lock.
+    if (!$pdo->inTransaction()) {
+        bus_registration_edit_ensure_schema($pdo);
+    }
     $params = [$busNumber];
     $exclude = '';
     if ($excludeId !== null && $excludeId !== '') {
@@ -174,7 +181,7 @@ function bus_fleet_bus_occupancy(PDO $pdo, int $busNumber, ?string $excludeId = 
     $query = $pdo->prepare(
         'SELECT passenger_count, children_count
            FROM bus_registrations
-          WHERE status = "confirmed" AND bus_number = ?' . $exclude . $lock
+          WHERE status = "confirmed" AND withdrawn_at IS NULL AND bus_number = ?' . $exclude . $lock
     );
     $query->execute($params);
 
@@ -318,11 +325,14 @@ function bus_fleet_load_balance_snapshot(PDO $pdo, bool $forUpdate = false): arr
     if (!$forUpdate) {
         bus_fleet_ensure_assignment_status($pdo);
     }
+    if (!$pdo->inTransaction()) {
+        bus_registration_edit_ensure_schema($pdo);
+    }
     $lock = $forUpdate ? ' FOR UPDATE' : '';
     $query = $pdo->query(
         'SELECT id, bus_number, fleet_assignment_status, passenger_count, children_count, is_vip, paid_at, created_at
            FROM bus_registrations
-          WHERE status = "confirmed"
+          WHERE status = "confirmed" AND withdrawn_at IS NULL
           ORDER BY paid_at ASC, created_at ASC, id ASC' . $lock
     );
     $rows = $query->fetchAll(PDO::FETCH_ASSOC);
@@ -784,7 +794,10 @@ function bus_fleet_build_balance_plan(array $snapshot, int $capacity = 46, int $
 function bus_assign_fleet(PDO $pdo, string $registrationId): void
 {
     bus_fleet_ensure_assignment_status($pdo);
-    $find = $pdo->prepare('SELECT status, bus_number, fleet_assignment_status, passenger_count, children_count FROM bus_registrations WHERE id = :id');
+    if (!$pdo->inTransaction()) {
+        bus_registration_edit_ensure_schema($pdo);
+    }
+    $find = $pdo->prepare('SELECT status, bus_number, fleet_assignment_status, passenger_count, children_count, withdrawn_at FROM bus_registrations WHERE id = :id');
     $find->execute([':id' => $registrationId]);
     $reserva = $find->fetch(PDO::FETCH_ASSOC);
 
@@ -792,9 +805,10 @@ function bus_assign_fleet(PDO $pdo, string $registrationId): void
         !$reserva
         || $reserva['status'] !== 'confirmed'
         || $reserva['bus_number'] !== null
+        || $reserva['withdrawn_at'] !== null
         || ($reserva['fleet_assignment_status'] ?? 'assigned') === 'waiting'
     ) {
-        return; // Não está confirmada ou já tem ônibus
+        return; // Não está confirmada, já tem ônibus ou desistiu por inteiro
     }
 
     $tamanho = bus_fleet_seat_count((int) $reserva['passenger_count'], (int) $reserva['children_count']);

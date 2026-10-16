@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../lib/registration-edit-schema.php';
 require_once __DIR__ . '/../lib/registration-edit.php';
+require_once __DIR__ . '/../lib/bus-boarding.php';
+require_once __DIR__ . '/../lib/bus-fleet.php';
 
 function edit_expect($expected, $actual, string $message): void
 {
@@ -445,3 +447,47 @@ $pdo->exec("GRANT SELECT, INSERT, UPDATE ON kob_boarding_test.* TO 'kob_boarding
 $runtime = new PDO($dsn, 'kob_boarding_runtime', '', [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
 bus_registration_edit_ensure_schema($runtime);
 echo "PASS: edit schema\n";
+
+// ---------------------------------------------------------------------------
+// Leituras operacionais ignoram desistentes (frota, chamada, balanceamento).
+// ---------------------------------------------------------------------------
+bus_boarding_ensure_schema($pdo);
+$pdo->exec('CREATE TABLE IF NOT EXISTS bus_settings (
+    setting_key VARCHAR(64) PRIMARY KEY, setting_value TEXT NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4');
+// passenger_count/children_count já refletem só os ativos, como o endpoint gravaria.
+$pdo->exec("INSERT INTO bus_registrations
+    (id, primary_name, status, bus_number, passenger_count, children_count, paid_at, withdrawn_at, withdrawn_bus_number, withdrawn_fleet_status) VALUES
+    ('partial-registration', 'Contato Parcial', 'confirmed', 1, 1, 1, '2026-10-16 10:00:00', NULL, NULL, NULL),
+    ('withdrawn-registration', 'Contato Desistente', 'confirmed', NULL, 0, 0, '2026-10-16 11:00:00', '2026-10-16 18:00:00', 1, 'assigned')");
+$pdo->exec("INSERT INTO bus_passengers
+    (registration_id, `position`, full_name, cpf, is_primary, is_child_lap, withdrawn_at) VALUES
+    ('partial-registration', 1, 'Desistente Adulto', '11111111111', 0, 0, '2026-10-16 18:00:00'),
+    ('partial-registration', 2, 'Ativo Adulto', '22222222222', 1, 0, NULL),
+    ('partial-registration', 3, 'Ativo Colo', '33333333333', 0, 1, NULL),
+    ('withdrawn-registration', 1, 'Reserva Desistente', '44444444444', 1, 0, '2026-10-16 18:00:00')");
+$passengerId = static fn (string $name): string => (string) $pdo->query(
+    'SELECT id FROM bus_passengers WHERE full_name = ' . $pdo->quote($name)
+)->fetchColumn();
+
+edit_expect(1, bus_fleet_bus_occupancy($pdo, 1), 'Withdrawn passenger frees seat (counts already updated)');
+$manifest = bus_boarding_manifest($pdo);
+$people = array_column($manifest['people'], 'name');
+edit_expect(['Ativo Adulto', 'Ativo Colo'], $people, 'Roll call lists only active passengers');
+edit_expect(false, in_array('Desistente Adulto', $people, true), 'Withdrawn passenger leaves roll call');
+edit_expect(0, $manifest['waiting'], 'Fully withdrawn registration is not waiting');
+
+$checkin = static fn (string $name): array => [
+    'passenger_id' => $passengerId($name), 'leg' => 'outbound', 'present' => true,
+    'expected_revision' => 0, 'bus_number' => 1,
+];
+edit_expect('manifest_changed', bus_boarding_save($pdo, $checkin('Desistente Adulto'))['error'], 'Offline queue for withdrawn person is rejected');
+edit_expect('manifest_changed', bus_boarding_save($pdo, $checkin('Reserva Desistente'))['error'], 'Offline queue for fully withdrawn registration is rejected');
+edit_expect(200, bus_boarding_save($pdo, $checkin('Ativo Adulto'))['status'], 'Active passenger still checks in');
+
+bus_assign_fleet($pdo, 'withdrawn-registration');
+edit_expect(null, $pdo->query("SELECT bus_number FROM bus_registrations WHERE id='withdrawn-registration'")->fetchColumn(), 'Webhook replay does not re-seat a withdrawn registration');
+$groupIds = array_column(bus_fleet_load_balance_snapshot($pdo)['groups'], 'id');
+edit_expect(false, in_array('withdrawn-registration', $groupIds, true), 'Balance ignores withdrawn registration');
+edit_expect(true, in_array('partial-registration', $groupIds, true), 'Balance keeps the partially withdrawn registration');
+echo "PASS: withdrawn readers\n";
