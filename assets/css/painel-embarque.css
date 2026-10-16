@@ -95,6 +95,18 @@
 .embarque-buses-select { flex: 1; min-width: 0; min-height: 52px; padding: 8px; border: 1px solid #4f708c; border-radius: 8px; background: #163b60; color: #fff; color-scheme: dark; font: inherit; font-size: .8125rem; cursor: pointer; }
 .embarque-buses-select option { background: #fff; color: #16324c; font: inherit; }
 .embarque .embarque-buses-select:focus-visible { outline-color: #fff; }
+.embarque-bus-picker { position: relative; flex: 1; min-width: 0; height: 52px; z-index: 2; }
+.embarque-bus-picker .embarque-buses-select { position: absolute; inset: 0; width: 100%; opacity: 0; pointer-events: none; }
+.embarque .embarque-trip .embarque-bus-picker__trigger { width: 100%; height: 100%; min-height: 0; justify-content: space-between; gap: 8px; padding: 8px; border: 1px solid #4f708c; border-radius: 8px; background: #163b60; color: #fff; font: inherit; font-size: .8125rem; font-weight: 400; }
+.embarque-bus-picker__trigger span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.embarque-bus-picker__trigger svg { width: 16px; height: 16px; flex-shrink: 0; }
+.embarque .embarque-bus-picker__trigger:focus-visible { outline-color: #fff; }
+.embarque-bus-picker__menu { position: absolute; top: calc(100% + 8px); right: 0; z-index: 2; width: max(100%, 260px); max-width: calc(100vw - 40px); max-height: 240px; overflow-y: auto; margin: 0; padding: 8px; border: 1px solid #8da7bc; border-radius: 8px; background: #fff; color: var(--p-tinta); box-shadow: 0 8px 24px rgba(0, 0, 0, .2); list-style: none; }
+.embarque-bus-picker__menu li { display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 12px; border-radius: 4px; font-size: 1.125rem; line-height: 1.35; cursor: pointer; }
+.embarque-bus-picker__menu li:is(:hover, .is-active) { background: #e8eff6; }
+.embarque-bus-picker__menu li[aria-selected="true"] { font-weight: 650; }
+.embarque-bus-picker__menu svg { width: 20px; height: 20px; flex-shrink: 0; }
+.embarque-bus-picker__menu li:not([aria-selected="true"]) svg { visibility: hidden; }
 .embarque-mascot { grid-column: 2; grid-row: 1; justify-self: center; width: 40px; height: 60px; object-fit: contain; }
 .embarque-overview { flex-shrink: 0; padding: 12px 20px; background: #fff; border-bottom: 1px solid var(--p-linha); }
 .embarque-totals { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 0; }
@@ -144,7 +156,11 @@
 .embarque-bus-section__header > span { color: var(--p-tinta-media); font-size: .75rem; }
 .embarque-group { margin-bottom: 24px; }
 .embarque-group__header { display: flex; align-items: start; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
-.embarque-group__header h4 { margin: 0 0 3px; font-size: .9375rem; overflow-wrap: anywhere; }
+.embarque-group__header h4 { display: flex; align-items: center; gap: 8px; margin: 0 0 3px; font-size: .9375rem; overflow-wrap: anywhere; }
+.embarque-group__meeple { width: 20px; height: 20px; flex-shrink: 0; fill: currentColor; }
+.embarque-group__meeple--vip { color: #d97706; }
+.embarque-group__meeple--solo { color: #0077b6; }
+.embarque-group__meeple--group { color: #7b1fa2; }
 .embarque-group__header span { color: var(--p-tinta-media); font-size: .75rem; }
 .embarque-group__count { flex-shrink: 0; font-variant-numeric: tabular-nums; }
 .embarque-people { margin: 0; padding: 0; list-style: none; }
@@ -178,6 +194,35 @@
 .embarque-empty h3 { margin: 0 0 8px; font-size: 1rem; }
 .embarque-empty p { margin: 0 0 16px; color: var(--p-tinta-media); font-size: .875rem; }
 .embarque-loading { margin-block: 24px; color: var(--p-tinta-media); }
+.embarque-export { flex-shrink: 0; padding: 12px 20px max(12px, env(safe-area-inset-bottom)); border-top: 1px solid var(--p-linha); background: #fff; }
+.embarque-export__heading { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 4px 12px; margin-bottom: 8px; color: var(--p-tinta-media); font-size: .75rem; }
+.embarque-export__heading p { display: inline-flex; align-items: center; gap: 6px; margin: 0; font-weight: 700; }
+.embarque-export svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+.embarque-export__heading svg { width: 15px; height: 15px; }
+.embarque-export__controls { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+.embarque-export__controls :is(button, a) { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-width: 0; min-height: 60px; padding: 8px 4px; border: 1px solid #c3d3e2; border-radius: 6px; background: #f1f5f9; color: var(--p-tinta); font: 600 .75rem/1.5 system-ui, sans-serif; text-decoration: none; cursor: pointer; transition: background-color 150ms ease, color 150ms ease; }
+.embarque-export__controls :is(button, a):hover:not([aria-disabled="true"]) { background: var(--p-acao); border-color: var(--p-acao); color: #fff; }
+.embarque-export__controls [aria-disabled="true"] { opacity: .5; cursor: not-allowed; }
+.embarque-export__controls [aria-busy="true"] { opacity: 1; cursor: wait; }
+.embarque-export-feedback { position: absolute; inset: 0; z-index: 5; display: grid; place-items: center; padding: 20px; pointer-events: none; }
+.embarque-export-feedback__card { position: relative; display: grid; justify-items: center; gap: 12px; width: 100%; max-width: 320px; padding: 36px 24px 28px; border-radius: 12px; background: #fff; color: var(--p-tinta); box-shadow: 0 12px 48px rgba(0, 0, 0, .28); text-align: center; pointer-events: auto; }
+.embarque-export-feedback__card > svg { width: 40px; height: 40px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.embarque-export-feedback__close { position: absolute; top: 0; right: 0; display: grid; place-items: center; width: 44px; height: 44px; padding: 12px; border: 0; border-radius: 8px; color: var(--p-tinta-media); background: transparent; cursor: pointer; }
+.embarque-export-feedback__close svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; }
+.embarque-export-feedback__close:hover { background: #edf1f4; }
+.embarque-export-feedback__card .embarque-export-feedback__loading,
+.embarque-export-feedback__card .embarque-export-feedback__success,
+.embarque-export-feedback__card .embarque-export-feedback__error { display: none; }
+.embarque-export-feedback[data-state="loading"] .embarque-export-feedback__loading { display: block; color: var(--p-acao); animation: embarque-spin .8s linear infinite; }
+.embarque-export-feedback__loading circle { stroke: #ead9e9; }
+.embarque-export-feedback[data-state="success"] .embarque-export-feedback__success { display: block; color: #087e62; }
+.embarque-export-feedback[data-state="error"] .embarque-export-feedback__error { display: block; color: #ad2831; }
+.embarque-export__status { margin: 0; font-size: .9375rem; line-height: 1.5; }
+#embarque-update[aria-busy="true"] svg { animation: embarque-spin .8s linear infinite; }
+#embarque-update[aria-busy="false"].is-updated svg { animation: embarque-spin .65s cubic-bezier(.16, 1, .3, 1); }
+@keyframes embarque-spin { to { transform: rotate(360deg); } }
+.embarque-export__text { width: 100%; min-height: 160px; padding: 12px; border: 1px solid var(--p-linha-forte); border-radius: 6px; color: var(--p-tinta); background: #fff; font: inherit; font-size: .875rem; resize: vertical; }
+#embarque-sync { margin-inline-start: auto; text-align: right; }
 @media (max-width: 1023px) {
   .embarque { transform: translateY(100%); }
   .embarque.is-open { transform: translateY(0); }
@@ -194,8 +239,10 @@
   .painel .filtro { flex-wrap: wrap; }
   .embarque { width: calc(100vw - 8px); }
   .embarque-header { padding-inline: 16px; }
+  .embarque-export { padding-inline: 16px; }
   .embarque .embarque-trip button { gap: 6px; padding-inline: 8px; }
-  .embarque-buses-select { min-height: 64px; padding: 12px 8px; font-size: 1rem; line-height: 1.25; }
+  .embarque-buses-select { min-height: 52px; height: 52px; padding: 8px; font-size: .8125rem; }
+  .embarque-buses-select option { font-size: 1.125rem; }
   .embarque-scroll, .embarque-overview { padding-inline: 16px; }
 }
 @media (max-width: 374px) {
@@ -206,6 +253,9 @@
   .embarque .embarque-trip .embarque-segment { gap: 2px; padding: 2px; }
   .embarque .embarque-trip button { gap: 2px; padding-inline: 4px; }
   .embarque-trip svg { width: 14px; height: 14px; }
+  .embarque-buses-select { min-height: 48px; height: 48px; font-size: .75rem; }
+  .embarque-bus-picker { height: 48px; }
+  .embarque .embarque-trip .embarque-bus-picker__trigger { font-size: .75rem; }
 }
 @media (max-height: 620px) {
   .embarque-header { padding-block: 12px; }

@@ -9,7 +9,7 @@
   <title>Painel de gestão · Kriativos On Board 2026</title>
   <link rel="icon" href="assets/images/brand/favicon-32.png">
     <link rel="stylesheet" href="assets/css/painel-onibus.css?v=20260821-contact-validation-v29">
-  <link rel="stylesheet" href="assets/css/painel-embarque.css?v=20261016-embarque-touch-v8">
+  <link rel="stylesheet" href="assets/css/painel-embarque.css?v=20261016-embarque-export-v12">
 </head>
 
 <body class="painel">
@@ -253,7 +253,11 @@
               <button type="button" data-leg="outbound" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h16m-6-6 6 6-6 6"/></svg><span data-boarding-text="outbound">Ida</span></button>
               <button type="button" data-leg="return" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12H4m6-6-6 6 6 6"/></svg><span data-boarding-text="return">Volta</span></button>
             </div>
-            <select id="embarque-buses" class="embarque-buses-select" aria-label="Filtrar por ônibus" data-boarding-label="buses"></select>
+          <div class="embarque-bus-picker">
+            <select id="embarque-buses" class="embarque-buses-select" aria-label="Filtrar por ônibus" data-boarding-label="buses" aria-hidden="true" tabindex="-1"></select>
+            <button id="embarque-bus-trigger" class="embarque-bus-picker__trigger" type="button" role="combobox" aria-label="Filtrar por ônibus" data-boarding-label="buses" aria-expanded="false" aria-haspopup="listbox" aria-controls="embarque-bus-options"><span></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+            <ul id="embarque-bus-options" class="embarque-bus-picker__menu" role="listbox" aria-label="Filtrar por ônibus" data-boarding-label="buses" hidden></ul>
+          </div>
             <p id="embarque-route" class="visualmente-oculto" data-boarding-text="route">A presença é conferida separadamente na ida e na volta.</p>
           </div>
           <img class="embarque-mascot" src="assets/images/manual/kriativa-checklist.png" alt="" width="480" height="720" decoding="async">
@@ -297,6 +301,12 @@
           <p id="embarque-shown" tabindex="-1"></p>
           <p id="embarque-sync" aria-live="off"></p>
         </div>
+        <div id="embarque-export-fallback" class="embarque-notice" hidden>
+          <p id="embarque-export-help"></p>
+          <label class="visualmente-oculto" for="embarque-export-text" data-boarding-text="exportText">Texto da chamada para exportar</label>
+          <textarea id="embarque-export-text" class="embarque-export__text" rows="8" readonly></textarea>
+          <button id="embarque-export-dismiss" class="botao botao--secundario" type="button" data-boarding-text="exportDismiss">Fechar texto</button>
+        </div>
         <div id="embarque-error" class="embarque-notice embarque-notice--error" role="alert" hidden>
           <p id="embarque-error-text"></p>
           <button id="embarque-retry" type="button" class="botao botao--secundario" data-boarding-text="retry">Tentar novamente</button>
@@ -317,6 +327,27 @@
         </div>
         </div>
         <p id="embarque-announcement" class="visualmente-oculto" role="status" aria-live="polite"></p>
+        </div>
+        <footer id="embarque-export" class="embarque-export" aria-labelledby="embarque-export-title">
+          <div class="embarque-export__heading">
+            <p id="embarque-export-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3m-4 4 4-4 4 4M5 16v5h14v-5"/></svg><span data-boarding-text="export">Exportar</span></p>
+            <span data-boarding-text="exportScope">Todos os ônibus · Ida e Volta</span>
+          </div>
+          <div class="embarque-export__controls">
+            <button type="button" data-boarding-export="copy" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h4"/></svg><span data-boarding-text="exportCopy">Copiar</span></button>
+            <a href="mailto:" data-boarding-export="email" aria-disabled="true" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 6 9 7 9-7"/></svg><span data-boarding-text="exportEmail">E-mail</span></a>
+            <button type="button" data-boarding-export="excel" disabled aria-busy="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 9v12M15 9v12M3 15h18"/></svg><span>Excel</span></button>
+            <button type="button" data-boarding-export="pdf" disabled aria-busy="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H5v20h14V7Z M14 2v5h5M8 12h8M8 16h6"/></svg><span>PDF</span></button>
+          </div>
+        </footer>
+        <div id="embarque-export-feedback" class="embarque-export-feedback" role="status" aria-live="polite" aria-atomic="true" hidden>
+          <div class="embarque-export-feedback__card">
+            <button id="embarque-export-feedback-close" class="embarque-export-feedback__close" type="button" aria-label="Fechar aviso" data-boarding-label="exportClose"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6"/></svg></button>
+            <svg class="embarque-export-feedback__loading" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="15"/><path d="M20 5a15 15 0 0 1 15 15"/></svg>
+            <svg class="embarque-export-feedback__success" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="15"/><path d="m12 20 5 5 11-11"/></svg>
+            <svg class="embarque-export-feedback__error" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="15"/><path d="M20 12v10m0 5h.01"/></svg>
+            <p id="embarque-export-status" class="embarque-export__status"></p>
+          </div>
         </div>
   </dialog>
 
@@ -376,8 +407,10 @@
     </div>
   </dialog>
 
-  <script defer src="assets/js/painel-embarque-i18n.js?v=20261016-embarque-touch-v8"></script>
-  <script defer src="assets/js/painel-embarque.js?v=20261016-embarque-touch-v8"></script>
+  <script defer src="assets/js/painel-embarque-i18n.js?v=20261016-embarque-export-v12"></script>
+  <script defer src="assets/js/painel-embarque-export.js?v=20261016-embarque-export-v12"></script>
+  <script defer src="assets/js/painel-embarque-bus-picker.js?v=20261016-embarque-export-v12"></script>
+  <script defer src="assets/js/painel-embarque.js?v=20261016-embarque-export-v12"></script>
   <script defer src="assets/js/painel-onibus.js?v=20261015-embarque-sidebar-v40"></script>
 </body>
 

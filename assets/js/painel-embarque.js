@@ -14,8 +14,9 @@
     var leg = 'outbound', bus = 'all', filter = 'all', query = '';
     var pending = new Set(), controllers = new Set();
     var loading = false, ready = false, stale = false, lastSync = null, noticeKey = '';
-    var autoOpened = false, closeTimer = null;
+    var autoOpened = false, closeTimer = null, exporter = null, busPicker = null;
     var compactBuses = window.matchMedia('(max-width: 374px)');
+    var meeple = document.querySelector('.bus-dialog__badge-icone--vip svg').innerHTML;
     var $ = function (id) { return root.querySelector('#embarque-' + id); };
     var t = function (key, values) {
       if (values && values.count !== undefined && messages[lang][key + '_one']) {
@@ -40,12 +41,19 @@
     function selectedPeople() {
       return people.filter(function (p) { return bus === 'all' || String(p.bus_number) === bus; });
     }
+    function solo(person) {
+      return !person.vip && people.filter(function (p) { return p.registration_id === person.registration_id; }).length === 1;
+    }
+    function groupIcon(kind) {
+      return '<svg class="embarque-group__meeple embarque-group__meeple--' + kind + '" viewBox="0 0 512 512" aria-hidden="true">' + meeple + '</svg>';
+    }
     function setNotice(key) {
       noticeKey = key;
       $('error').hidden = !key;
       $('error-text').textContent = key ? t(key) : '';
     }
     function syncStatus() {
+      if (exporter) exporter.update(!ready || stale || !navigator.onLine || pending.size > 0 || people.length === 0);
       var key = !navigator.onLine ? 'offline' : stale ? 'stale' : loading ? 'syncing' : lastSync ? 'synced' : 'loading';
       $('sync').textContent = t(key, { time: lastSync ? time(lastSync) : '' });
       $('sync').dataset.state = (!navigator.onLine || stale) ? 'warning' : 'ok';
@@ -80,10 +88,12 @@
       updateBusLabel();
       $('buses').value = bus;
       $('buses').title = options.find(function (item) { return item.value === bus; }).name;
+      if (busPicker) busPicker.refresh();
     }
     function updateBusLabel() {
       var all = $('buses').querySelector('option[value="all"]');
       if (all) all.label = t(compactBuses.matches ? 'allBusesCompact' : 'allBuses');
+      if (busPicker) busPicker.refresh();
     }
     function renderSummary() {
       var list = selectedPeople(), present = count(list);
@@ -116,7 +126,7 @@
     function passengerRow(person) {
       var present = onBoard(person), saving = pending.has(person.id + ':' + leg);
       var badges = [];
-      if (person.vip) badges.push(t('group', { code: person.code }));
+      if (person.vip || solo(person)) badges.push(t('group', { code: person.code }));
       if (person.primary) badges.push(t('primary'));
       if (person.lap_child) badges.push(t('lapChild'));
       else if (person.minor) badges.push(t('minor'));
@@ -143,7 +153,7 @@
       visible.forEach(function (person) {
         if (!buses.has(person.bus_number)) buses.set(person.bus_number, new Map());
         var groups = buses.get(person.bus_number);
-        var groupKey = person.vip ? 'vip' : person.registration_id;
+        var groupKey = person.vip ? 'vip' : solo(person) ? 'solo' : person.registration_id;
         if (!groups.has(groupKey)) groups.set(groupKey, []);
         groups.get(groupKey).push(person);
       });
@@ -153,16 +163,17 @@
         return '<section class="embarque-bus-section"><header class="embarque-bus-section__header"><h3>' +
           esc(t('bus', { number: number })) + '</h3><span>' + esc(progress(allInBus)) + '</span></header>' +
           Array.from(groups).sort(function (a, b) {
-            return Number(b[0] === 'vip') - Number(a[0] === 'vip');
+            return (a[0] === 'vip' ? 0 : a[0] === 'solo' ? 1 : 2) - (b[0] === 'vip' ? 0 : b[0] === 'solo' ? 1 : 2);
           }).map(function (group) {
             var first = group[1][0];
             var isVip = group[0] === 'vip';
+            var isSolo = group[0] === 'solo';
             var allInGroup = scoped.filter(function (p) {
-              return isVip ? p.vip && p.bus_number === number : p.registration_id === group[0];
+              return isVip ? p.vip && p.bus_number === number : isSolo ? solo(p) && p.bus_number === number : p.registration_id === group[0];
             });
-            return '<section class="embarque-group"' + (isVip ? ' data-vip-group="' + number + '"' : '') + '><header class="embarque-group__header"><div><h4>' +
-              esc(isVip ? t('vipGroup') : first.group || (allInGroup.length === 1 ? first.name : first.contact)) + '</h4><span>' +
-              esc(isVip ? t('vipHelp') : t('group', { code: first.code })) +
+            return '<section class="embarque-group"' + (isVip ? ' data-vip-group="' + number + '"' : isSolo ? ' data-solo-group="' + number + '"' : '') + '><header class="embarque-group__header"><div><h4>' +
+              groupIcon(isVip ? 'vip' : isSolo ? 'solo' : 'group') + esc(isVip ? t('vipGroup') : isSolo ? t('soloGroup') : first.group || first.contact) + '</h4><span>' +
+              esc(isVip ? t('vipHelp') : isSolo ? t('soloHelp') : t('group', { code: first.code })) +
               '</span></div><span class="embarque-group__count">' + esc(progress(allInGroup)) + '</span></header>' +
               '<ul class="embarque-people">' + group[1].map(passengerRow).join('') + '</ul></section>';
           }).join('') + '</section>';
@@ -190,17 +201,19 @@
         else $('shown').focus({ preventScroll: true });
       }
     }
-    async function request(method, body) {
+    async function request(method, body, options) {
       var controller = new AbortController();
       controllers.add(controller);
       var timeout = setTimeout(function () { controller.abort(); }, 15000);
       try {
-        var response = await fetch(API, {
+        var response = await fetch(options && options.url || API, {
           method: method, cache: 'no-store', signal: controller.signal,
           headers: { 'X-Admin-Token': token, 'Content-Type': 'application/json' },
           body: body ? JSON.stringify(body) : undefined
         });
-        var data = await response.json();
+        var isFile = options && options.type && response.ok;
+        if (isFile && !(response.headers.get('content-type') || '').startsWith(options.type)) throw new Error('invalid_export');
+        var data = isFile ? await response.blob() : await response.json();
         if (!response.ok) {
           var error = new Error('boarding_request_failed');
           error.status = response.status;
@@ -223,6 +236,7 @@
         var changed = !ready || stale || JSON.stringify(people) !== JSON.stringify(data.people);
         people = data.people;
         ready = true; stale = false; lastSync = Date.now();
+        if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) $('update').classList.add('is-updated');
         $('loading').hidden = true;
         $('waiting').hidden = !data.waiting;
         $('waiting-text').textContent = t('waiting', { count: data.waiting });
@@ -328,6 +342,7 @@
       render(); $('search').focus();
     });
     $('update').addEventListener('click', function () { sync(true); });
+    $('update').querySelector('svg').addEventListener('animationend', function () { $('update').classList.remove('is-updated'); });
     $('retry').addEventListener('click', function () { sync(true); });
     function finishClose(restore) {
       clearTimeout(closeTimer); closeTimer = null;
@@ -364,7 +379,7 @@
     root.addEventListener('keydown', function (event) {
       if (event.key !== 'Tab') return;
       // Keep the keyboard loop stable even during the slide's entry motion.
-      var controls = Array.from(root.querySelectorAll('button:not(:disabled), a[href], input:not(:disabled), select:not(:disabled)'))
+      var controls = Array.from(root.querySelectorAll('button:not(:disabled), a[href]:not([aria-disabled="true"]), input:not(:disabled), select:not(:disabled):not([aria-hidden="true"]), textarea:not(:disabled)'))
         .filter(function (node) { return !node.closest('[hidden]') && node.getClientRects().length > 0; });
       var first = controls[0], last = controls[controls.length - 1];
       if (event.shiftKey && document.activeElement === first) {
@@ -389,6 +404,15 @@
     });
     window.addEventListener('focus', function () { sync(false); });
     document.addEventListener('visibilitychange', function () { if (!document.hidden) sync(false); });
+    busPicker = window.KobBoardingBusPicker(root);
+    exporter = window.KobBoardingExport.mount(root, {
+      t: t, locale: locale[lang],
+      snapshot: function () { return { people: people.slice(), generatedAt: lastSync }; },
+      file: function (action) { return request('GET', null, {
+        url: API + '?format=' + (action === 'excel' ? 'xlsx' : 'pdf') + '&lang=' + lang,
+        type: action === 'excel' ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' : 'application/pdf'
+      }); }
+    });
     translate();
     return {
       start: function (adminToken) {
@@ -405,6 +429,7 @@
         clearInterval(timer); timer = null;
         controllers.forEach(function (controller) { controller.abort(); }); controllers.clear();
         people = []; pending.clear(); ready = false; stale = false; lastSync = null;
+        exporter.clear();
         $('list').replaceChildren();
         $('waiting').hidden = true; $('empty').hidden = true; $('loading').hidden = false;
         $('announcement').textContent = ''; setNotice(''); renderSummary(); syncStatus();

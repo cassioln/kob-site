@@ -21,17 +21,27 @@ O **Kriativos On Board (kob-site)** é a plataforma web oficial do **Kriativos O
    60 × 80 px com glyph de 40 px. O trecho ativo pode ser marcado pelo próprio
    check ou pela linha inteira; o outro fica desabilitado e esmaecido.
    O cabeçalho fixo reúne atualizar e fechar em botões de ícone de 44 px, além
-   de Ida/Volta com setas e texto. O select de ônibus fica à direita do trecho:
-   até 560 px, usa texto de 16 px e altura mínima de 64 px; no desktop, mantém
-   13 px e 52 px. Até 374 px, o cabeçalho fica compacto; em espanhol, a opção
-   de todos os ônibus aparece como “Todos”, com nome acessível completo.
+   de Ida/Volta com setas e texto. O combobox de ônibus fica à direita do trecho:
+   fechado, mede 52 px com texto de 13 px; até 374 px, 48 px e 12 px.
+   O menu aberto usa texto de 18 px e opções de pelo menos 56 px. Oferece
+   setas, Home/End, Enter, Escape, Tab e busca por digitação. Em espanhol até
+   374 px, o campo fechado mostra “Todos”; a opção aberta mantém o nome completo.
    Todos, Faltantes e A bordo usam tabs com sublinhado de seleção e navegação
    por setas, Home e End, acima da busca. O resumo permanece visível durante
    a rolagem. A barra sempre mostra a ida como base roxa e sobrepõe o retorno
    em verde, com legendas para ambos em pt/en/es; o resumo acompanha o trecho
-   ativo. Não há seletor de idioma nem link PDF no slider.
-   VIPs de reservas diferentes ficam em um único bloco por ônibus, com o código
-   da reserva preservado junto de cada pessoa.
+   ativo. O idioma segue a página, sem seletor dentro do slider.
+   VIPs e reservas solo de um passageiro ficam em blocos próprios por ônibus,
+   com código e checks individuais; reservas com várias pessoas mantêm seu grupo.
+   A classificação usa a lista completa, sem transformar grupos em solo ao filtrar.
+   Os títulos reutilizam o meeple do Planejamento: VIP laranja, solo azul e grupo roxo.
+   O rodapé fixo **Exportar**, com seta para cima, oferece **Copiar, E-mail,
+   Excel e PDF**. Todas as saídas incluem todos os ônibus e ambos os trechos,
+   independentemente dos filtros. E-mail abre somente um rascunho, com `.eml`
+   completo para listas grandes; clipboard indisponível oferece texto selecionável.
+   Excel e PDF são arquivos reais gerados pela API com nova leitura do MySQL.
+   Avisos de carregamento, sucesso e erro flutuam no centro do slider e não
+   ampliam o rodapé. Nenhuma mensagem é enviada automaticamente.
    A presença é gravada no MySQL por `/api/bus-boarding`, com o token administrativo
    existente e controle de revisão entre aparelhos; a atualização automática ocorre
    a cada oito segundos com o painel deslizante aberto. Sem conexão, a marcação fica desabilitada.
@@ -39,11 +49,13 @@ O **Kriativos On Board (kob-site)** é a plataforma web oficial do **Kriativos O
    original; os anúncios acessíveis identificam pessoa e trecho em pt/en/es.
    A área de chamada oferece português, inglês e espanhol, selecionados por
    `?lang=pt`, `?lang=en` ou `?lang=es`, com a língua da página como padrão.
-   A composição, as onze capturas da revisão e os resultados de QA estão na
-   [especificação da lista de embarque](./docs/superpowers/specs/2026-10-15-lista-embarque-design.md).
+   A composição e os resultados de QA estão na
+   [especificação da lista de embarque](./docs/superpowers/specs/2026-10-15-lista-embarque-design.md)
+   e na [especificação de exportação](./docs/superpowers/specs/2026-10-16-embarque-exportar-design.md).
 
    **Publicação:** enviar a página, os novos CSS/JS, `.htaccess`,
-   `php/mysql/bus-boarding.php` e `php/lib/bus-boarding.php`. A tabela aditiva é criada de forma
+   `php/mysql/bus-boarding.php`, `php/lib/bus-boarding.php` e os geradores
+   `php/lib/boarding-rollcall-{pdf,xlsx}.php`. A tabela aditiva é criada de forma
    idempotente no primeiro acesso autenticado. Se o usuário do banco não tiver
    permissão `CREATE`, um administrador deve aplicar
    `php/db/009_bus_boarding_checkins.sql` antes da publicação. `php/db` continua

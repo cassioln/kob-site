@@ -53,13 +53,16 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.0'
-          extensions: pdo_mysql
+          extensions: pdo_mysql, zip
           coverage: none
 
       - name: Validar persistência e concorrência da chamada
         env:
           KOB_BOARDING_TEST_DSN: 'mysql:host=127.0.0.1;port=3306;dbname=kob_boarding_test;charset=utf8mb4'
-        run: php php/tests/bus-boarding.test.php
+        run: |
+          php php/tests/bus-boarding.test.php
+          php php/tests/boarding-rollcall-pdf.test.php
+          php php/tests/boarding-rollcall-xlsx.test.php
 
       - name: Cache do Chromium do Playwright
         id: playwright-cache

@@ -23,7 +23,24 @@ try {
     $pdo = bus_pdo();
     bus_boarding_ensure_schema($pdo);
     if ($method === 'GET') {
-        json_response(200, bus_boarding_manifest($pdo));
+        $manifest = bus_boarding_manifest($pdo);
+        $format = $_GET['format'] ?? '';
+        if (in_array($format, ['pdf', 'xlsx'], true)) {
+            $lang = $_GET['lang'] ?? 'pt';
+            if (!is_string($lang) || !in_array($lang, ['pt', 'en', 'es'], true)) {
+                json_response(400, ['error' => 'invalid_export']);
+                exit;
+            }
+            require_once dirname(__DIR__) . '/lib/boarding-rollcall-xlsx.php';
+            $file = $format === 'xlsx' ? bus_rollcall_xlsx($manifest, $lang) : bus_rollcall_pdf($manifest, $lang);
+            header('Cache-Control: no-store');
+            header('Content-Type: ' . ($format === 'xlsx' ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' : 'application/pdf'));
+            header('Content-Disposition: attachment; filename="chamada-embarque-kob2026.' . $format . '"');
+            header('Content-Length: ' . strlen($file));
+            echo $file;
+        } else {
+            json_response(200, $manifest);
+        }
     } else {
         $result = bus_boarding_save($pdo, $body);
         $status = $result['status'];
