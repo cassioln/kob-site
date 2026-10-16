@@ -21,6 +21,6 @@
 ## 3. Entrega
 
 - [x] Rodar testes do painel e servidor pertinentes, lint PHP se houver alteração, sintaxe e diff. Conferir capturas agrupadas em 320/390/820/1440 px e pt/en/es, corrigir problemas reais numa rodada e confirmar.
-- [x] Atualizar README/especificação/contrato com resultados e instruções operacionais. Entrega no PR 79 em rascunho, sem deploy. O workflow de testes será acionado manualmente no novo commit, pois rascunhos não o executam no evento de push.
+- [x] Atualizar README/especificação/contrato com resultados e instruções operacionais. Entrega no PR 79, sem deploy. Respeitar o estado de revisão escolhido pelo mantenedor; em Ready for review, o workflow roda automaticamente no push.
 
 Validação: 60 casos do painel/Frota em Chromium, 19 em WebKit, 150 do servidor e `npm run test:ci` integral (77 fluxos + oito casos de timing). Doze capturas sintéticas conferidas, sem overflow/erros JS, com anúncio acessível corrigido. Responsável no cabeçalho e meeple rosa de colo cobertos em pt/en/es.
