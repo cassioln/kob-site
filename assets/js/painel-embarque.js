@@ -2,7 +2,7 @@
   'use strict';
   var API = '/api/bus-boarding';
   var CHECK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>';
-  var UNCHECKED = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"/></svg>';
+  var UNCHECKED = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="4"/></svg>';
 
   window.KobBoarding = function (root) {
     var opener = document.getElementById('embarque-open');
@@ -15,6 +15,7 @@
     var pending = new Set(), controllers = new Set();
     var loading = false, ready = false, stale = false, lastSync = null, noticeKey = '';
     var autoOpened = false, closeTimer = null;
+    var compactBuses = window.matchMedia('(max-width: 374px)');
     var $ = function (id) { return root.querySelector('#embarque-' + id); };
     var t = function (key, values) {
       if (values && values.count !== undefined && messages[lang][key + '_one']) {
@@ -74,10 +75,15 @@
         return { value: String(number), name: t('bus', { number: number }) };
       }));
       $('buses').innerHTML = options.map(function (item) {
-        return '<option value="' + item.value + '">' + esc(item.name) + '</option>';
+        return '<option value="' + item.value + '" aria-label="' + esc(item.name) + '">' + esc(item.name) + '</option>';
       }).join('');
+      updateBusLabel();
       $('buses').value = bus;
       $('buses').title = options.find(function (item) { return item.value === bus; }).name;
+    }
+    function updateBusLabel() {
+      var all = $('buses').querySelector('option[value="all"]');
+      if (all) all.label = t(compactBuses.matches ? 'allBusesCompact' : 'allBuses');
     }
     function renderSummary() {
       var list = selectedPeople(), present = count(list);
@@ -97,6 +103,16 @@
       $('progress-text').textContent = list.length && present === list.length ? t('complete') : progress(list);
       document.getElementById('embarque-launch-count').textContent = count(people) + '/' + people.length;
     }
+    function passengerCheck(person, checkLeg) {
+      var state = person[checkLeg], present = Boolean(state && state.present);
+      var active = checkLeg === leg, saving = pending.has(person.id + ':' + checkLeg);
+      var disabled = !active || saving || !navigator.onLine || stale;
+      return '<button type="button" class="embarque-check' + (active ? '' : ' is-inactive') +
+        '" data-check-leg="' + checkLeg + '" ' + (active ? 'data-check' : 'data-inactive-check') + '="' + esc(person.id) +
+        '" aria-pressed="' + present + '" aria-label="' + esc(t(present ? 'undoLabel' : 'saveLabel', { name: person.name, leg: t(checkLeg) })) +
+        '" aria-busy="' + saving + '"' + (disabled ? ' disabled' : '') + '>' + (present ? CHECK : UNCHECKED) +
+        '<span>' + esc(t(checkLeg)) + '</span></button>';
+    }
     function passengerRow(person) {
       var present = onBoard(person), saving = pending.has(person.id + ':' + leg);
       var badges = [];
@@ -108,14 +124,11 @@
       var state = person[leg];
       var detail = saving ? t('saving') : present && state.checked_at ? t('checkedAt', { time: time(state.checked_at) }) : t('pending');
       // Names are text only; the passenger's database ID is the stable identity.
-      return '<li class="embarque-person' + (present ? ' is-present' : '') + '" data-person="' + esc(person.id) + '">' +
+      return '<li class="embarque-person' + (present ? ' is-present' : '') + '" data-person="' + esc(person.id) + '" data-readonly="' + (saving || !navigator.onLine || stale) + '">' +
         '<div class="embarque-person__info"><strong>' + esc(person.name) + '</strong>' +
         (subtitle ? '<span class="embarque-person__meta">' + esc(subtitle) + '</span>' : '') +
         '<span class="embarque-person__detail">' + esc(detail) + '</span></div>' +
-        '<button type="button" class="embarque-check" data-check="' + esc(person.id) + '" aria-pressed="' + present +
-        '" aria-label="' + esc(t(present ? 'undoLabel' : 'saveLabel', { name: person.name })) +
-        '" aria-busy="' + saving + '"' + (saving || !navigator.onLine || stale ? ' disabled' : '') + '>' + (present ? CHECK : UNCHECKED) +
-        '<span>' + esc(t(saving ? 'saving' : present ? 'undo' : 'save')) + '</span></button></li>';
+        '<div class="embarque-person__checks">' + passengerCheck(person, 'outbound') + passengerCheck(person, 'return') + '</div></li>';
     }
     function renderList() {
       var terms = normalize(query).trim().split(/\s+/).filter(Boolean);
@@ -244,7 +257,7 @@
         });
         if (session !== generation) return;
         person[savedLeg] = data.checkin;
-        $('announcement').textContent = t(desired ? 'saved' : 'removed', { name: person.name });
+        $('announcement').textContent = t(desired ? 'saved' : 'removed', { name: person.name, leg: t(savedLeg) });
       } catch (error) {
         if (session !== generation) return;
         if (error.status === 409 && error.data.error === 'revision_conflict') {
@@ -269,10 +282,20 @@
       }
     }
     $('list').addEventListener('click', function (event) {
-      var button = event.target.closest('[data-check]');
-      if (button) check(button.dataset.check);
+      var control = event.target.closest('.embarque-check');
+      if (control) {
+        if (!control.disabled && control.hasAttribute('data-check')) check(control.dataset.check);
+        return;
+      }
+      var row = event.target.closest('[data-person]');
+      if (!row || window.getSelection().toString()) return;
+      var active = row.querySelector('[data-check]');
+      if (!active || active.disabled) return;
+      active.focus({ preventScroll: true });
+      check(active.dataset.check);
     });
     $('buses').addEventListener('change', function () { bus = $('buses').value; render(); });
+    compactBuses.addEventListener('change', updateBusLabel);
     function selectPresence(button) {
       if (!button) return;
       filter = button.dataset.presence;

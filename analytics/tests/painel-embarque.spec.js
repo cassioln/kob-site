@@ -73,7 +73,8 @@ test('confirma somente após o servidor e impede duplo toque @smoke', async ({ p
   await ana.focus();
   await page.keyboard.press('Space');
   await expect(ana).toBeDisabled();
-  await expect(ana).toHaveText('Salvando…');
+  await expect(ana).toHaveAttribute('aria-busy', 'true');
+  await expect(page.locator('[data-person="1"] .embarque-person__detail')).toHaveText('Salvando…');
   await expect(ana).toHaveAttribute('aria-pressed', 'false');
   await expect(page.locator('#embarque-present')).toHaveText('0');
   release();
@@ -194,10 +195,10 @@ test('dicionários têm as mesmas chaves e parâmetros em pt/en/es', () => {
 for (const [lang, title, save] of [ ['pt', 'Chamada de embarque', 'Confirmar embarque de Ana de Souza'], ['en', 'Boarding roll call', 'Check in Ana de Souza'], ['es', 'Control de embarque', 'Confirmar embarque de Ana de Souza'] ]) {
   test(`chamada acessível em ${lang}, teclado e tela pequena @smoke`, async ({ page, context }) => {
     await mockPanel(context);
-    await page.setViewportSize({ width: 390, height: 844 });
+    await page.setViewportSize({ width: lang === 'pt' ? 390 : 320, height: 844 });
     await page.goto(`/painel-onibus.html?lang=${lang}`);
     await expect(page.locator('#embarque-sidebar h2')).toHaveText(title);
-    await expect(page.locator('[data-check="1"]')).toHaveAttribute('aria-label', save);
+    await expect(page.locator('[data-check="1"]')).toHaveAttribute('aria-label', save + ' · ' + { pt: 'Ida', en: 'Outbound', es: 'Ida' }[lang]);
     await expect(page.locator('#embarque-language, #embarque-pdf')).toHaveCount(0);
     const refresh = page.locator('#embarque-update');
     const refreshLabel = { pt: 'Atualizar', en: 'Refresh', es: 'Actualizar' }[lang];
@@ -205,6 +206,20 @@ for (const [lang, title, save] of [ ['pt', 'Chamada de embarque', 'Confirmar emb
     await expect(refresh).toHaveAttribute('title', refreshLabel);
     await expect(refresh.locator('svg')).toHaveCount(1);
     await expect(page.locator('.embarque-header [data-leg] svg')).toHaveCount(2);
+    const busSelect = page.locator('#embarque-buses');
+    await expect(busSelect).toHaveCSS('font-size', '16px');
+    expect(await busSelect.evaluate(el => el.offsetHeight)).toBeGreaterThanOrEqual(64);
+    if (lang === 'es') {
+      const allBuses = busSelect.locator('option[value="all"]');
+      await expect(allBuses).toHaveAttribute('label', 'Todos');
+      await expect(allBuses).toHaveAttribute('aria-label', 'Todos los autobuses');
+      await expect(busSelect).toHaveAttribute('title', 'Todos los autobuses');
+      await page.setViewportSize({ width: 390, height: 844 });
+      await expect(allBuses).toHaveAttribute('label', 'Todos los autobuses');
+      await page.setViewportSize({ width: 320, height: 844 });
+      await expect(allBuses).toHaveAttribute('label', 'Todos');
+      await expect(busSelect).toHaveValue('all');
+    }
     await page.locator('[data-leg="return"]').click();
     await expect(page.locator('#embarque-progress-outbound-label')).toHaveText({ pt: 'Ida: 0/3', en: 'Outbound: 0/3', es: 'Ida: 0/3' }[lang]);
     await expect(page.locator('#embarque-progress-return-label')).toHaveText({ pt: 'Volta: 0/3', en: 'Return: 0/3', es: 'Vuelta: 0/3' }[lang]);
@@ -395,4 +410,69 @@ test('barra compara ida e volta nos dois trechos, preservando ambos por ônibus 
   await page.locator('[data-leg="return"]').click();
   await expect(current).toHaveJSProperty('value', 2);
   await expect(outbound).toHaveJSProperty('value', 2);
+});
+
+
+test('linha aciona só o trecho ativo, com dois checks grandes e o outro esmaecido @smoke', async ({ page, context }) => {
+  const api = await mockPanel(context);
+  await page.goto('/painel-onibus.html');
+  const row = page.locator('[data-person="1"]');
+  const outbound = row.locator('[data-check-leg="outbound"]');
+  const back = row.locator('[data-check-leg="return"]');
+  await expect(row.locator('.embarque-check')).toHaveCount(2);
+  await expect(outbound).toBeEnabled();
+  await expect(back).toBeDisabled();
+  const box = await outbound.boundingBox();
+  expect(box.width).toBeGreaterThanOrEqual(60);
+  expect(box.height).toBeGreaterThanOrEqual(80);
+  const icon = await outbound.locator('svg').boundingBox();
+  expect(icon.width).toBeGreaterThanOrEqual(40);
+  await row.locator('strong').click();
+  await expect(outbound).toHaveAttribute('aria-pressed', 'true');
+  await expect(back).toHaveAttribute('aria-pressed', 'false');
+  expect(api.writes).toHaveLength(1);
+  expect(api.writes[0].body.leg).toBe('outbound');
+  await page.locator('[data-leg="return"]').click();
+  await expect(outbound).toBeDisabled();
+  await expect(back).toBeEnabled();
+  const opacities = await row.locator('.embarque-check').evaluateAll(nodes => nodes.map(node => Number(getComputedStyle(node).opacity)));
+  expect(opacities[0]).toBeLessThan(opacities[1]);
+  const inactive = await outbound.boundingBox();
+  await page.mouse.click(inactive.x + inactive.width / 2, inactive.y + inactive.height / 2);
+  expect(api.writes).toHaveLength(1);
+  await row.locator('strong').click();
+  await expect(back).toHaveAttribute('aria-pressed', 'true');
+  await expect(outbound).toHaveAttribute('aria-pressed', 'true');
+  expect(api.writes).toHaveLength(2);
+  expect(api.writes[1].body.leg).toBe('return');
+  await back.click();
+  await expect(back).toHaveAttribute('aria-pressed', 'false');
+  await expect(outbound).toHaveAttribute('aria-pressed', 'true');
+  expect(api.writes).toHaveLength(3);
+  await page.locator('[data-leg="outbound"]').click();
+  await expect(outbound).toBeEnabled();
+  await expect(back).toBeDisabled();
+  await expect(outbound).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.locator('#embarque-progress-outbound')).toHaveJSProperty('value', 1);
+  await expect(page.locator('#embarque-progress')).toHaveJSProperty('value', 0);
+});
+
+test('trocar trecho durante gravação mantém o resultado no check correto @smoke', async ({ page, context }) => {
+  let release;
+  const wait = new Promise(resolve => { release = resolve; });
+  const api = await mockPanel(context, fixture(), { delay: () => wait });
+  await page.goto('/painel-onibus.html');
+  await page.locator('[data-person="1"] strong').click();
+  await expect(page.locator('[data-person="1"] [data-check-leg="outbound"]')).toHaveAttribute('aria-busy', 'true');
+  await page.locator('[data-leg="return"]').click();
+  const back = page.locator('[data-person="1"] [data-check-leg="return"]');
+  await expect(back).toBeEnabled();
+  await back.focus();
+  release();
+  await expect(page.locator('[data-person="1"] [data-check-leg="outbound"]')).toHaveAttribute('aria-pressed', 'true');
+  await expect(back).toHaveAttribute('aria-pressed', 'false');
+  await expect(back).toBeFocused();
+  await expect(page.locator('#embarque-present')).toHaveText('0');
+  await expect(page.locator('#embarque-announcement')).toContainText('Ida');
+  expect(api.writes).toHaveLength(1);
 });

@@ -16,9 +16,15 @@ O **Kriativos On Board (kob-site)** é a plataforma web oficial do **Kriativos O
    A **Lista de embarque** abre automaticamente como painel deslizante, com a
    identidade do Checklist de Bordo. Pode ser recolhida e reaberta pelo botão
    no topo, mantendo Reservas e Frota na tablist. Oferece chamadas independentes
-   de ida e volta, presença individual, busca, filtros e contagens por ônibus/grupo.
+   de ida e volta, busca, filtros e contagens por ônibus/grupo. Cada pessoa tem
+   dois checks com rótulos visíveis: Ida roxa e Volta verde, em botões de
+   60 × 80 px com glyph de 40 px. O trecho ativo pode ser marcado pelo próprio
+   check ou pela linha inteira; o outro fica desabilitado e esmaecido.
    O cabeçalho fixo reúne atualizar e fechar em botões de ícone de 44 px, além
-   de Ida/Volta com setas e texto. O select de ônibus fica à direita do trecho.
+   de Ida/Volta com setas e texto. O select de ônibus fica à direita do trecho:
+   até 560 px, usa texto de 16 px e altura mínima de 64 px; no desktop, mantém
+   13 px e 52 px. Até 374 px, o cabeçalho fica compacto; em espanhol, a opção
+   de todos os ônibus aparece como “Todos”, com nome acessível completo.
    Todos, Faltantes e A bordo usam tabs com sublinhado de seleção e navegação
    por setas, Home e End, acima da busca. O resumo permanece visível durante
    a rolagem. A barra sempre mostra a ida como base roxa e sobrepõe o retorno
@@ -29,9 +35,11 @@ O **Kriativos On Board (kob-site)** é a plataforma web oficial do **Kriativos O
    A presença é gravada no MySQL por `/api/bus-boarding`, com o token administrativo
    existente e controle de revisão entre aparelhos; a atualização automática ocorre
    a cada oito segundos com o painel deslizante aberto. Sem conexão, a marcação fica desabilitada.
+   Trocar o trecho durante uma gravação mantém a resposta vinculada ao trecho
+   original; os anúncios acessíveis identificam pessoa e trecho em pt/en/es.
    A área de chamada oferece português, inglês e espanhol, selecionados por
    `?lang=pt`, `?lang=en` ou `?lang=es`, com a língua da página como padrão.
-   A composição, as nove capturas da revisão e os resultados de QA estão na
+   A composição, as onze capturas da revisão e os resultados de QA estão na
    [especificação da lista de embarque](./docs/superpowers/specs/2026-10-15-lista-embarque-design.md).
 
    **Publicação:** enviar a página, os novos CSS/JS, `.htaccess`,
