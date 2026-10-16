@@ -10638,6 +10638,7 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
   align-items: center;
   column-gap: clamp(32px, 4.5vw, 68px);
   row-gap: 18px;
+  min-width: 0;
   min-height: 0;
   padding: 0 0 clamp(28px, 3.4vw, 40px);
   color: var(--foam-white);
@@ -10713,6 +10714,7 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
 
 #hospedagem.preboard-route .route-shuttle__schedule-item {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
   gap: 8px;
   font-size: 0.91rem;
@@ -10884,11 +10886,14 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
 .route-shuttle__link {
   grid-area: cta;
   justify-self: start;
-  display: inline-flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  justify-content: center;
+  justify-items: start;
   gap: 10px;
   min-height: 48px;
+  min-width: 0;
+  max-width: 100%;
   padding: 12px 18px;
   border: 0;
   border-radius: 8px;
@@ -10896,8 +10901,13 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
   background: var(--kriativa-purple);
   font-size: 0.84rem;
   font-weight: 850;
-  white-space: nowrap;
+  text-align: left;
+  white-space: normal;
   transition: background var(--dur-state) var(--ease-quart), transform var(--dur-state) var(--ease-expo);
+}
+
+.route-shuttle__link .transport-sold-out {
+  grid-column: 1 / -1;
 }
 
 .route-shuttle__link svg {
@@ -11044,6 +11054,7 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
 
 .map-modal[open] {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   grid-template-rows: auto minmax(0, 1fr);
 }
 
@@ -11696,7 +11707,7 @@ html.js .hero:not([data-intro="done"]) .hero__scroll {
   }
 
   .route-shuttle {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     grid-template-areas:
       "visual"
       "copy"
