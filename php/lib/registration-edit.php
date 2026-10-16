@@ -48,6 +48,11 @@ const BUS_REGISTRATION_EDIT_REASON_MAX = 500;
 function bus_registration_edit_plan(array $current, array $request, array $groupNamesInUse, string $nowUtc): array
 {
     $registration = $current['registration'];
+    if ($current['passengers'] === []) {
+        // Reservas antigas sem linhas em bus_passengers: sem elas, o plano
+        // trataria a reserva como desistente e a tiraria do ônibus.
+        throw new ValidationError('Esta reserva não tem passageiros cadastrados e não pode ser editada aqui.');
+    }
     $rows = bus_registration_edit_index_rows($current['passengers']);
     $rawById = bus_registration_edit_match_request($rows, $request['passengers'] ?? null); // regra 1
 
@@ -58,11 +63,14 @@ function bus_registration_edit_plan(array $current, array $request, array $group
         );
     }
 
+    bus_registration_edit_check_stored_counts($registration, $rows);
+
     $after = [];
     $seenCpf = [];
-    $position = 0;
-    foreach (array_keys($rows) as $id) { // regra 3
-        $position++;
+    $index = 0;
+    foreach ($rows as $id => $row) { // regra 3
+        $index++;
+        $position = isset($row['position']) ? (int) $row['position'] : $index;
         $passenger = bus_registration_edit_normalize_fields($rawById[$id], $position);
         if (isset($seenCpf[$passenger['cpf']])) {
             throw new ValidationError('Não repita o CPF de um passageiro.');
@@ -95,7 +103,7 @@ function bus_registration_edit_plan(array $current, array $request, array $group
         : $currentPrimaryId;
 
     [$payersAfter, $lapsAfter] = bus_registration_edit_count_active($after);
-    $fullyWithdrawn = $payersAfter + $lapsAfter === 0;
+    $fullyWithdrawn = $after !== [] && $payersAfter + $lapsAfter === 0;
     $wasWithdrawn = ($registration['withdrawn_at'] ?? null) !== null;
 
     if ($fullyWithdrawn) { // regra 10: não pede responsável
@@ -233,13 +241,35 @@ function bus_registration_edit_fleet_columns(array $registration, bool $fullyWit
         $storedBus = $registration['withdrawn_bus_number'] ?? null;
         $columns += [
             'bus_number' => $storedBus === null ? null : (int) $storedBus,
-            'fleet_assignment_status' => $registration['withdrawn_fleet_status'] ?? 'assigned',
+            // Sem ônibus guardado, a reserva volta para a espera.
+            'fleet_assignment_status' => $storedBus === null
+                ? 'waiting'
+                : ($registration['withdrawn_fleet_status'] ?? 'assigned'),
             'withdrawn_at' => null,
             'withdrawn_bus_number' => null,
             'withdrawn_fleet_status' => null,
         ];
     }
     return $columns;
+}
+
+/**
+ * Sem desistência anterior, as contagens gravadas precisam bater com as linhas
+ * de passageiros; senão o salvamento reescreveria em silêncio dados legados
+ * inconsistentes.
+ */
+function bus_registration_edit_check_stored_counts(array $registration, array $rows): void
+{
+    $before = [];
+    foreach ($rows as $id => $row) {
+        if (($row['withdrawn_at'] ?? null) !== null) return;
+        $before[$id] = ['age_group' => bus_registration_edit_age_group($row), 'withdrawn' => false];
+    }
+    [$payers, $laps] = bus_registration_edit_count_active($before);
+    if ($payers !== (int) ($registration['passenger_count'] ?? 0) || $laps !== (int) ($registration['children_count'] ?? 0)) {
+        throw new ValidationError('Os passageiros desta reserva não conferem com a contagem gravada. '
+            . 'Fale com o suporte antes de editar.');
+    }
 }
 
 /** 'adult' | 'minor' | 'lap' a partir das flags gravadas. */
@@ -314,8 +344,12 @@ function bus_registration_edit_normalize_withdrawal(array $row, array $raw, bool
 function bus_registration_edit_group(mixed $currentGroup, mixed $requested, array $groupNamesInUse): ?string
 {
     $current = bus_registration_edit_nullable_string($currentGroup);
-    $name = is_string($requested) ? trim($requested) : null;
-    if ($name === null || $name === '') return null;
+    if ($requested === null) return null;
+    if (!is_string($requested)) {
+        throw new ValidationError('Escolha um nome de grupo disponível.');
+    }
+    $name = trim($requested);
+    if ($name === '') return null;
     if ($name === $current) return $name;
     if (!in_array($name, bus_catalogo_grupos(), true) || in_array($name, $groupNamesInUse, true)) {
         throw new ValidationError('Escolha um nome de grupo disponível.');

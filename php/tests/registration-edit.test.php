@@ -142,6 +142,25 @@ $dup = edit_request();
 $dup['passengers'][2]['id'] = '2';
 edit_expect_error('Os passageiros enviados não conferem', fn () => bus_registration_edit_plan(edit_fixture(), $dup, [], NOW));
 
+// Reserva legada sem linhas de passageiros não é editável (não vira desistente).
+$empty = edit_fixture();
+$empty['passengers'] = [];
+$emptyRequest = array_merge(edit_request(), ['passengers' => [], 'group_name' => 'Catan']);
+edit_expect_error('Esta reserva não tem passageiros cadastrados e não pode ser editada aqui.',
+    fn () => bus_registration_edit_plan($empty, $emptyRequest, [], NOW));
+// Contagem gravada divergente das linhas (sem desistência anterior) bloqueia.
+$drift = edit_fixture([], ['passenger_count' => '3']);
+edit_expect_error('Os passageiros desta reserva não conferem com a contagem gravada.',
+    fn () => bus_registration_edit_plan($drift, edit_request([], '1', $drift), [], NOW));
+$driftKids = edit_fixture([], ['children_count' => '0']);
+edit_expect_error('Os passageiros desta reserva não conferem com a contagem gravada.',
+    fn () => bus_registration_edit_plan($driftKids, edit_request([], '1', $driftKids), [], NOW));
+
+// Mensagens usam a posição gravada do passageiro.
+$positioned = edit_fixture(['2' => ['position' => '5']]);
+edit_expect_error('CPF inválido para o passageiro 5', fn () => bus_registration_edit_plan(
+    $positioned, edit_request(['2' => ['cpf' => '000']], '1', $positioned), [], NOW));
+
 // Regra 2: reserva mudou desde que o modal abriu → conflito 'stale'.
 $stale = edit_request();
 $stale['expected_updated_at'] = '2026-10-16 17:59:59';
@@ -281,6 +300,10 @@ edit_expect_error('Escolha um nome de grupo disponível.', fn () => bus_registra
     array_merge(edit_request(), ['group_name' => 'Wingspan']), ['Wingspan'], NOW));
 edit_expect_error('Escolha um nome de grupo disponível.', fn () => bus_registration_edit_plan(edit_fixture(),
     array_merge(edit_request(), ['group_name' => 'Banco Imobiliário']), [], NOW));
+foreach ([123, true, ['Azul']] as $badGroup) {
+    edit_expect_error('Escolha um nome de grupo disponível.', fn () => bus_registration_edit_plan(edit_fixture(),
+        array_merge(edit_request(), ['group_name' => $badGroup]), [], NOW));
+}
 
 // Regra 10: todos desistiram.
 $all = edit_request(['1' => ['withdrawn' => true], '2' => ['withdrawn' => true], '3' => ['withdrawn' => true]]);
@@ -323,8 +346,15 @@ $waiting = edit_fixture(
     ['bus_number' => null, 'withdrawn_at' => '2026-10-15 12:00:00', 'withdrawn_bus_number' => null, 'withdrawn_fleet_status' => null]
 );
 $plan = bus_registration_edit_plan($waiting, edit_request(['1' => ['withdrawn' => false]], '1', $waiting), [], NOW);
-edit_expect([null, 'assigned'], [$plan['registration']['bus_number'], $plan['registration']['fleet_assignment_status']],
-    'Missing stored status defaults to assigned');
+edit_expect([null, 'waiting'], [$plan['registration']['bus_number'], $plan['registration']['fleet_assignment_status']],
+    'No stored bus goes back to waiting');
+$noStatus = edit_fixture(
+    ['1' => ['withdrawn_at' => '2026-10-15 12:00:00'], '2' => ['withdrawn_at' => '2026-10-15 12:00:00'], '3' => ['withdrawn_at' => '2026-10-15 12:00:00']],
+    ['bus_number' => null, 'withdrawn_at' => '2026-10-15 12:00:00', 'withdrawn_bus_number' => '4', 'withdrawn_fleet_status' => null]
+);
+$plan = bus_registration_edit_plan($noStatus, edit_request(['1' => ['withdrawn' => false]], '1', $noStatus), [], NOW);
+edit_expect([4, 'assigned'], [$plan['registration']['bus_number'], $plan['registration']['fleet_assignment_status']],
+    'Stored bus without stored status defaults to assigned');
 edit_expect([1, 0], [$plan['registration']['passenger_count'], $plan['registration']['children_count']], 'Partial reactivation counts');
 
 // Regras 12 e 13: colo → adulto passa a ocupar assento.
@@ -345,6 +375,18 @@ $native = edit_fixture(['1' => ['id' => 1, 'is_primary' => 1]], ['bus_number' =>
 $nativeRequest = edit_request([], '1', edit_fixture());
 $plan = bus_registration_edit_plan($native, $nativeRequest, [], NOW);
 edit_expect('1', edit_passenger($plan, '1')['id'], 'Integer ids normalized to string');
+$nativeAll = edit_fixture(
+    ['1' => ['id' => 1, 'position' => 1, 'is_primary' => 1, 'is_minor' => 0, 'is_child_lap' => 0],
+        '2' => ['id' => 2, 'position' => 2, 'is_primary' => 0, 'is_minor' => 0, 'is_child_lap' => 0],
+        '3' => ['id' => 3, 'position' => 3, 'is_primary' => 0, 'is_minor' => 1, 'is_child_lap' => 1]],
+    ['bus_number' => 3, 'passenger_count' => 2, 'children_count' => 1, 'is_vip' => 0]
+);
+$plan = bus_registration_edit_plan($nativeAll, edit_request(['2' => ['withdrawn' => true]], '1', edit_fixture()), [], NOW);
+edit_expect([2, 1], [$plan['seats_before'], $plan['seats_after']], 'Native ints: seats');
+edit_expect([1, 1], [$plan['registration']['passenger_count'], $plan['registration']['children_count']], 'Native ints: counts');
+$plan = bus_registration_edit_plan($nativeAll, $all, [], NOW);
+edit_expect(3, $plan['registration']['withdrawn_bus_number'], 'Native ints: stored bus is int 3');
+edit_expect([2, 0], [$plan['seats_before'], $plan['seats_after']], 'Native ints: full withdrawal seats');
 
 echo "PASS: registration edit rules\n";
 
