@@ -108,7 +108,9 @@ try {
 
     $linhas = [];
     foreach ($reservas as $r) {
-        $semOnibus = $r['bus_number'] === null;
+        // Reserva inteira desistente também fica com bus_number NULL, mas não
+        // está aguardando lugar: não entra em "sem ônibus confirmado".
+        $semOnibus = $r['bus_number'] === null && $r['withdrawn_at'] === null;
         if ($onibusFiltro === 'sem-onibus' && !$semOnibus) {
             continue;
         }
@@ -202,20 +204,35 @@ try {
                 $emailPassageiro = bus_missing_contact_label($r['email'] ?? null, false);
             }
 
+            if ($isVip) {
+                $estiloBase = 'vip';
+            } elseif ($isFalha) {
+                $estiloBase = $responsavel ? 'falha_responsavel' : ($primeiro ? 'falha_grupo' : 'falha');
+            } elseif ($responsavel) {
+                $estiloBase = 'responsavel';
+            } elseif ($primeiro) {
+                $estiloBase = 'grupo';
+            } else {
+                $estiloBase = 'normal';
+            }
+            $estiloLinha = $estiloBase;
+            // Células da reserva (Qtd, Valor, Status, Pago em, Transação) com o
+            // estilo da reserva quando só o passageiro desistiu: o pagamento
+            // não mudou, então não aparece riscado.
+            $estiloReserva = null;
             if ($desistiu) {
                 // Esmaecida e tachada: a pessoa segue na planilha, mas não viaja.
-                $estiloLinha = 'desistente';
-            } elseif ($isVip) {
-                $estiloLinha = 'vip';
-            } elseif ($isFalha) {
-                $estiloLinha = $responsavel ? 'falha_responsavel' : ($primeiro ? 'falha_grupo' : 'falha');
-            } elseif ($responsavel) {
-                $estiloLinha = 'responsavel';
-            } elseif ($primeiro) {
-                $estiloLinha = 'grupo';
-            } else {
-                $estiloLinha = 'normal';
+                // A borda superior que separa os grupos continua.
+                $estiloLinha = in_array($estiloBase, ['grupo', 'falha_grupo'], true)
+                    ? 'desistente_grupo'
+                    : 'desistente';
+                if (!$reservaDesistente) {
+                    $estiloReserva = $estiloBase;
+                }
             }
+            $celulaReserva = static function (string $valor) use ($estiloReserva) {
+                return $estiloReserva === null ? $valor : ['v' => $valor, 'estilo' => $estiloReserva];
+            };
 
             // Reserva, Responsável e Grupo repetem em todas as linhas do grupo,
             // facilitando ordenação e conferência no Excel.
@@ -242,14 +259,14 @@ try {
                         'v' => $r['bus_number'] !== null ? 'Ônibus ' . $r['bus_number'] : ($isVip ? 'Sem ônibus confirmado' : '—'),
                         'estilo' => 'texto',
                     ],
-                    $primeiro ? $grupo : '',
-                    $primeiro ? $valor : '',
+                    $celulaReserva($primeiro ? $grupo : ''),
+                    $celulaReserva($primeiro ? $valor : ''),
                     $primeiro
                         ? ['v' => $st['rotulo'], 'estilo' => $st['estilo']]
-                        : '',
+                        : $celulaReserva(''),
                     $textoDesistencia,
-                    $primeiro && !$isVip ? (string) ($r['pago_em'] ?? '') : '',
-                    $primeiro && !$isVip ? (string) ($r['mercadopago_order_id'] ?? '') : '',
+                    $celulaReserva($primeiro && !$isVip ? (string) ($r['pago_em'] ?? '') : ''),
+                    $celulaReserva($primeiro && !$isVip ? (string) ($r['mercadopago_order_id'] ?? '') : ''),
                 ],
             ];
         }

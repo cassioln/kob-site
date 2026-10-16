@@ -91,6 +91,8 @@ function xlsx_estilos_indices(): array
         'falha_grupo_centralizado' => 21,
         'desistente' => 22,
         'desistente_centralizado' => 23,
+        'desistente_grupo' => 24,
+        'desistente_grupo_centralizado' => 25,
     ];
 }
 
@@ -196,6 +198,10 @@ function xlsx_styles(): string
         '<xf numFmtId="49" fontId="8" fillId="0" borderId="1" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment vertical="center"/></xf>',
         // 23 desistente_centralizado — Nº do passageiro desistente.
         '<xf numFmtId="49" fontId="8" fillId="0" borderId="1" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>',
+        // 24 desistente_grupo — desistente na primeira linha do grupo: mantém a borda que separa as reservas.
+        '<xf numFmtId="49" fontId="8" fillId="0" borderId="2" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment vertical="center"/></xf>',
+        // 25 desistente_grupo_centralizado — Nº do desistente na primeira linha do grupo.
+        '<xf numFmtId="49" fontId="8" fillId="0" borderId="2" xfId="0" applyFont="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>',
     ];
 
     return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
@@ -311,6 +317,8 @@ function xlsx_build(array $planilha): string
                     $estiloCelula = 'grupo_centralizado';
                 } elseif ($estiloLinha === 'desistente') {
                     $estiloCelula = 'desistente_centralizado';
+                } elseif ($estiloLinha === 'desistente_grupo') {
+                    $estiloCelula = 'desistente_grupo_centralizado';
                 } else {
                     $estiloCelula = 'centralizado';
                 }

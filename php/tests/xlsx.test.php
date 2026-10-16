@@ -42,6 +42,7 @@ $linhas = [
             '2',
             'R$ 240,00',
             ['v' => 'Pagamento aprovado', 'estilo' => 'status_ok'],
+            '',
             '20/08/2026 10:00',
             'ORD-001',
         ],
@@ -60,6 +61,7 @@ $linhas = [
             'p2@teste.com',
             'Passageiro 1',
             ['tipo' => 'texto', 'v' => 'Ônibus 1', 'estilo' => 'texto'],
+            '',
             '',
             '',
             '',
@@ -85,6 +87,7 @@ $linhas = [
             'R$ 240,00',
             ['v' => 'Pagamento cancelado', 'estilo' => 'status_falha'],
             '',
+            '',
             'ORD-002',
         ],
     ],
@@ -102,6 +105,7 @@ $linhas = [
             'p4@teste.com',
             'Passageiro Cancelado 1',
             ['tipo' => 'texto', 'v' => '—', 'estilo' => 'texto'],
+            '',
             '',
             '',
             '',
@@ -131,7 +135,39 @@ $linhas = [
             '',
         ],
     ],
+    // Linha 6: primeiro passageiro (não responsável) desistiu numa reserva
+    // ativa: células do passageiro tachadas com a borda de início de grupo;
+    // as da reserva (Qtd, Valor, Status, Pago em, Transação) sem risco.
+    [
+        'estilo' => 'desistente_grupo',
+        'celulas' => [
+            'RES00003',
+            'Grupo Gama',
+            ['tipo' => 'numero', 'v' => 1, 'estilo' => 'centralizado'],
+            'Passageiro Desistente Primeiro',
+            '666.666.666-66',
+            '18 anos ou mais',
+            '(11) 99999-6666',
+            'p6@teste.com',
+            'Responsável Gama',
+            ['tipo' => 'texto', 'v' => 'Ônibus 2', 'estilo' => 'texto'],
+            ['v' => '1', 'estilo' => 'grupo'],
+            ['v' => 'R$ 240,00', 'estilo' => 'grupo'],
+            ['v' => 'Pagamento aprovado', 'estilo' => 'status_ok'],
+            'Desistiu em 16/10/2026 15:00',
+            ['v' => '20/08/2026 10:00', 'estilo' => 'grupo'],
+            ['v' => 'ORD-003', 'estilo' => 'grupo'],
+        ],
+    ],
 ];
+
+foreach ($linhas as $n => $linha) {
+    if (count($linha['celulas']) !== count($colunas)) {
+        fwrite(STDERR, 'FAIL: linha ' . ($n + 1) . ' tem ' . count($linha['celulas'])
+            . ' células, esperado ' . count($colunas) . "\n");
+        exit(1);
+    }
+}
 
 $bytes = xlsx_build([
     'nome' => 'Passageiros',
@@ -175,7 +211,8 @@ $esperados = [
     'responsavel_centralizado', 'centralizado', 'falha', 'falha_responsavel',
     'falha_centralizado', 'falha_responsavel_centralizado', 'vip_centralizado',
     'grupo_centralizado', 'falha_grupo', 'falha_grupo_centralizado',
-    'desistente', 'desistente_centralizado'
+    'desistente', 'desistente_centralizado',
+    'desistente_grupo', 'desistente_grupo_centralizado'
 ];
 foreach ($esperados as $nome) {
     if (!isset($indices[$nome])) {
@@ -332,6 +369,37 @@ if ((string) $cellXfs[$indices['desistente_centralizado']]->alignment['horizonta
     fwrite(STDERR, "FAIL: 'desistente_centralizado' não é centralizado\n");
     exit(1);
 }
+// 9b. Desistente na primeira linha do grupo de uma reserva ativa.
+$row9 = $rows[8];
+$cells9 = [];
+foreach ($row9->c as $c) {
+    $cells9[(string)$c['r']] = ['s' => (int)$c['s'], 'v' => (string)($c->is->t ?? '')];
+}
+if ($cells9['A9']['s'] !== $indices['desistente_grupo'] || $cells9['D9']['s'] !== $indices['desistente_grupo']
+    || $cells9['C9']['s'] !== $indices['desistente_grupo_centralizado']) {
+    fwrite(STDERR, "FAIL: desistente na primeira linha não usa desistente_grupo (A9={$cells9['A9']['s']}, C9={$cells9['C9']['s']}, D9={$cells9['D9']['s']})\n");
+    exit(1);
+}
+foreach (['K9', 'L9', 'O9', 'P9'] as $ref) {
+    if ($cells9[$ref]['s'] !== $indices['grupo']) {
+        fwrite(STDERR, "FAIL: $ref (célula da reserva) tem estilo {$cells9[$ref]['s']}, esperado {$indices['grupo']} (sem risco)\n");
+        exit(1);
+    }
+}
+if ($cells9['M9']['s'] !== $indices['status_ok']) {
+    fwrite(STDERR, "FAIL: M9 (Status) tem estilo {$cells9['M9']['s']}, esperado {$indices['status_ok']}\n");
+    exit(1);
+}
+foreach (['desistente_grupo', 'desistente_grupo_centralizado'] as $nome) {
+    $xf = $cellXfs[$indices[$nome]];
+    $font = $fontsXml[(int) $xf['fontId']];
+    $borda = $styles->borders->border[(int) $xf['borderId']];
+    if (!isset($font->strike) || (string) $borda->top['style'] !== 'medium') {
+        fwrite(STDERR, "FAIL: estilo '$nome' não é tachado com borda superior média\n");
+        exit(1);
+    }
+}
+
 if ((int) $styles->cellXfs['count'] !== count($cellXfs)) {
     fwrite(STDERR, "FAIL: cellXfs count não confere com o número de xf\n");
     exit(1);

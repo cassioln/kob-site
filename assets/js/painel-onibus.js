@@ -432,7 +432,9 @@
     estado.reservas.forEach(function (reserva) {
       if (estado.filtro !== 'todas' && reserva.status_chave !== estado.filtro) return;
       if (estado.filtroOnibus !== 'todos') {
-        var semOnibus = reserva.bus_number === null || reserva.bus_number === undefined;
+        // Reserva inteira desistente também fica sem ônibus, mas não está
+        // aguardando lugar: não entra em "Sem ônibus confirmado".
+        var semOnibus = (reserva.bus_number === null || reserva.bus_number === undefined) && !reserva.desistente;
         if (estado.filtroOnibus === 'sem-onibus' ? !semOnibus : Number(reserva.bus_number) !== Number(estado.filtroOnibus)) return;
       }
 
