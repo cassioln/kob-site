@@ -6,6 +6,14 @@ require_once __DIR__ . '/validation.php';
 
 function bus_boarding_ensure_schema(PDO $pdo): void
 {
+    // A manually provisioned table must also work for a runtime user without
+    // CREATE permission. Avoid DDL and metadata locks on every polling request.
+    try {
+        $pdo->query('SELECT 1 FROM bus_boarding_checkins LIMIT 0');
+        return;
+    } catch (PDOException $e) {
+        if ($e->getCode() !== '42S02') throw $e;
+    }
     // php/db is deliberately excluded from FTP deployment. Keep the runtime
     // bootstrap here; 009_bus_boarding_checkins.sql is the manual migration.
     $pdo->exec("CREATE TABLE IF NOT EXISTS bus_boarding_checkins (

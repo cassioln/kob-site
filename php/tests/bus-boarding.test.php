@@ -53,8 +53,16 @@ $pdo->exec('CREATE TABLE bus_passengers (
     is_primary TINYINT DEFAULT 0, is_minor TINYINT DEFAULT 0, is_child_lap TINYINT DEFAULT 0, `position` SMALLINT,
     FOREIGN KEY (registration_id) REFERENCES bus_registrations(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
+bus_boarding_ensure_schema($pdo);
+boarding_expect(0, (int) $pdo->query('SELECT COUNT(*) FROM bus_boarding_checkins')->fetchColumn(), 'Runtime bootstrap creates an empty table');
+$pdo->exec('DROP TABLE bus_boarding_checkins');
 $pdo->exec(file_get_contents(__DIR__ . '/../db/009_bus_boarding_checkins.sql'));
 bus_boarding_ensure_schema($pdo);
+$pdo->exec("CREATE USER IF NOT EXISTS 'kob_boarding_runtime'@'%' IDENTIFIED BY ''");
+$pdo->exec("GRANT SELECT, INSERT, UPDATE ON kob_boarding_test.* TO 'kob_boarding_runtime'@'%'");
+$runtime = new PDO($dsn, 'kob_boarding_runtime', '', [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+bus_boarding_ensure_schema($runtime);
+echo "PASS: existing table works without CREATE permission\n";
 $pdo->exec("INSERT INTO bus_registrations (id, primary_name, group_name, bus_number, status) VALUES
     ('confirmed', 'Pessoa Teste', 'Grupo Teste', 1, 'confirmed'),
     ('pending', 'Pendente Teste', NULL, 1, 'payment_pending'),
