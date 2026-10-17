@@ -70,17 +70,18 @@
 .painel__acoes-topo { gap: 12px; }
 .embarque-header {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 40px auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: 8px 12px;
   align-items: center;
   flex-shrink: 0;
   padding: 16px 20px;
   background: #041d3a;
 }
-.embarque-header__copy { align-self: center; }
+.embarque-header__lead { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.embarque-header__copy { align-self: center; min-width: 0; }
 .embarque-header h2 { margin: 0; font: 400 1.55rem/1.25 "Gobold Extra2", system-ui, sans-serif; color: #fff; }
 .embarque-header p { margin: 8px 0 0; font-size: .8125rem; color: #c5dfef; }
-.embarque-header__actions { grid-column: 3; grid-row: 1; display: flex; align-self: start; gap: 4px; }
+.embarque-header__actions { grid-column: 2; grid-row: 1; display: flex; align-self: start; gap: 4px; }
 .embarque-icon-button { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: #c5dfef; cursor: pointer; }
 .embarque-icon-button:hover { background: #163b60; color: #fff; }
 /* Atualizar e Fechar compartilham o fundo sólido; o offline fica só no ícone. */
@@ -111,7 +112,7 @@
 .embarque-bus-picker__menu li[aria-selected="true"] { font-weight: 650; }
 .embarque-bus-picker__menu svg { width: 20px; height: 20px; flex-shrink: 0; }
 .embarque-bus-picker__menu li:not([aria-selected="true"]) svg { visibility: hidden; }
-.embarque-mascot { grid-column: 2; grid-row: 1; justify-self: center; width: 40px; height: 60px; object-fit: contain; }
+.embarque-mascot { flex: 0 0 auto; width: 64px; height: 64px; object-fit: contain; }
 .embarque-overview { flex-shrink: 0; padding: 12px 20px; background: #fff; border-bottom: 1px solid var(--p-linha); }
 .embarque-totals { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 0; }
 .embarque-totals > div + div { padding-inline-start: 12px; border-inline-start: 1px solid var(--p-linha); }
@@ -245,7 +246,7 @@
 /* Nuvem = central de avisos: cor pela rede, traço sem conexão, número de pendências. */
 .embarque-offline__toggle { position: relative; --embarque-cloud-gap: #041d3a; }
 .embarque-offline__toggle:hover { --embarque-cloud-gap: #163b60; }
-.embarque-offline__toggle svg { overflow: visible; }
+.embarque-offline__toggle svg { overflow: visible; width: 26px; height: 26px; }
 .embarque-offline__toggle svg path:first-child { stroke-width: 1.8; }
 .embarque-offline__mark-ready, .embarque-offline__mark-pending { stroke-width: 2.2; }
 .embarque-offline__toggle[data-network="online"] { color: #7fe0c4; }
@@ -323,6 +324,8 @@
 @media (max-width: 374px) {
   .embarque-header { gap: 8px; }
   .embarque-header h2 { font-size: 1.35rem; }
+  .embarque-mascot { width: 52px; height: 52px; }
+  .embarque-header__lead { gap: 8px; }
   .embarque-header__copy p { display: none; }
   .embarque-trip { gap: 4px; }
   .embarque .embarque-trip .embarque-segment { flex-basis: calc(50% - 2px); gap: 2px; padding: 2px; }
@@ -335,7 +338,7 @@
 }
 @media (max-height: 620px) {
   .embarque-header { padding-block: 12px; }
-  .embarque-mascot { width: 40px; height: 60px; }
+  .embarque-mascot { width: 52px; height: 52px; }
   .embarque-header h2 { font-size: 1.3rem; }
   .embarque-header p, .embarque-progress p { display: none; }
 }
