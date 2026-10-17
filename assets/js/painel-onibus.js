@@ -1223,6 +1223,8 @@
           var meepleAdultoSVG = '<svg viewBox="0 0 512 512" width="20" height="20" class="meeple-svg meeple-svg--adult" focusable="false" aria-hidden="true"><path fill="currentColor" d="' + meeplePathD + '"></path></svg>';
           var meepleCriancaSVG = '<svg viewBox="0 0 512 512" width="14" height="14" class="meeple-svg meeple-svg--child" focusable="false" aria-hidden="true"><path fill="currentColor" d="' + meeplePathD + '"></path></svg>';
 
+          var meepleDesistenteSVG = '<svg viewBox="0 0 512 512" width="20" height="20" class="meeple-svg meeple-svg--adult meeple-svg--desistente" focusable="false" aria-hidden="true"><path fill="currentColor" d="' + meeplePathD + '"></path></svg>';
+
           var meepleVipSVG = '<svg viewBox="0 0 512 512" width="20" height="20" class="meeple-svg meeple-svg--vip" focusable="false" aria-hidden="true"><path fill="currentColor" d="' + meeplePathD + '"></path></svg>';
 
           var meeplesContainer = document.createElement('div');
@@ -1233,10 +1235,13 @@
             meeplesContainer.title = '1 Lugar VIP da Organização';
             meeplesContainer.innerHTML = meepleVipSVG;
           } else {
-            var numPagantes = Number(r.pagantes || r.total || 1);
+            var numDesistentes = desistentesDoCard(r);
+            // Com desistência, `pagantes` já vem só com os ativos e pode ser 0
+            // (restou só criança de colo): não cai no padrão de 1 meeple.
+            var numPagantes = numDesistentes > 0 ? Number(r.pagantes || 0) : Number(r.pagantes || r.total || 1);
             var numColo = Number(r.criancas || 0);
 
-            if (numPagantes === 1 && numColo === 0) {
+            if (numPagantes === 1 && numColo === 0 && numDesistentes === 0) {
               meeplesContainer.classList.add('grupo-item__meeples--solo');
             }
 
@@ -1246,7 +1251,7 @@
             }
             meeplesContainer.title = textoDesc;
 
-            var totalIntegrantes = numPagantes + numColo;
+            var totalIntegrantes = numPagantes + numDesistentes + numColo;
             if (totalIntegrantes >= 7) {
               meeplesContainer.classList.add('grupo-item__meeples--compacta');
             } else if (totalIntegrantes >= 4) {
@@ -1259,6 +1264,14 @@
             }
             htmlMeeples += '</span>';
 
+            if (numDesistentes > 0) {
+              htmlMeeples += '<span class="grupo-item__meeples-grupo grupo-item__meeples-grupo--desistentes">';
+              for (var di = 0; di < numDesistentes; di++) {
+                htmlMeeples += meepleDesistenteSVG;
+              }
+              htmlMeeples += '</span>';
+            }
+
             if (numColo > 0) {
               htmlMeeples += '<span class="grupo-item__meeples-sep">+</span><span class="grupo-item__meeples-grupo grupo-item__meeples-grupo--criancas">';
               for (var ci = 0; ci < numColo; ci++) {
@@ -1269,8 +1282,13 @@
 
             htmlMeeples += '</span>';
 
-            var htmlCompacto = '<span class="grupo-item__meeples-compacto">'
-              + '<span class="grupo-item__meeples-grupo grupo-item__meeples-grupo--adultos"><strong class="grupo-item__meeples-contagem">' + numPagantes + '</strong>' + meepleAdultoSVG + '</span>';
+            var htmlCompacto = '<span class="grupo-item__meeples-compacto">';
+            if (numPagantes > 0 || numDesistentes === 0) {
+              htmlCompacto += '<span class="grupo-item__meeples-grupo grupo-item__meeples-grupo--adultos"><strong class="grupo-item__meeples-contagem">' + numPagantes + '</strong>' + meepleAdultoSVG + '</span>';
+            }
+            if (numDesistentes > 0) {
+              htmlCompacto += '<span class="grupo-item__meeples-grupo grupo-item__meeples-grupo--desistentes"><strong class="grupo-item__meeples-contagem grupo-item__meeples-contagem--desistentes">' + numDesistentes + '</strong>' + meepleDesistenteSVG + '</span>';
+            }
             if (numColo > 0) {
               htmlCompacto += '<span class="grupo-item__meeples-sep">+</span><span class="grupo-item__meeples-grupo grupo-item__meeples-grupo--criancas"><strong class="grupo-item__meeples-contagem">' + numColo + '</strong>' + meepleCriancaSVG + '</span>';
             }
@@ -1407,8 +1425,10 @@
 
             var listaPassageiros = Array.isArray(r.passageiros) ? r.passageiros : [];
             // Filtra passageiros além do responsável (posicao >= 2 ou índice >= 1)
+            // A lista do card traz também quem desistiu (vermelho e riscado).
             var demaisPassageiros = listaPassageiros.filter(function (pax, idx) {
               if (typeof pax === 'object' && pax !== null) {
+                if (pax.desistiu) return true;
                 return !pax.responsavel && (pax.posicao ? pax.posicao >= 2 : idx >= 1);
               }
               return idx >= 1;
@@ -1420,6 +1440,10 @@
               demaisPassageiros.forEach(function (pax, i) {
                 var numPos = (typeof pax === 'object' && pax && pax.posicao) ? pax.posicao : (i + 2);
                 var nomePax = typeof pax === 'string' ? pax : (pax.nome || 'Passageiro');
+                if (typeof pax === 'object' && pax && pax.desistiu) {
+                  htmlTooltip += '<li class="grupo-item__tooltip-item grupo-item__tooltip-item--desistiu">' + numPos + ' - <span class="grupo-item__tooltip-nome-desistiu">' + escapeHtml(nomePax) + '</span> | <span class="grupo-item__tooltip-faixa grupo-item__tooltip-faixa--desistiu">Desistência</span></li>';
+                  return;
+                }
                 var faixaPax = (typeof pax === 'object' && pax && pax.faixa) ? pax.faixa : (pax.crianca_colo ? '0 a 5 anos' : (pax.menor ? '6 a 17 anos' : '18 anos ou mais'));
                 htmlTooltip += '<li class="grupo-item__tooltip-item">' + numPos + ' - ' + escapeHtml(nomePax) + ' | <span class="grupo-item__tooltip-faixa">' + escapeHtml(faixaPax) + '</span></li>';
               });
@@ -1567,8 +1591,9 @@
     var bottomRow = document.createElement('div');
     bottomRow.className = 'frota-otimizacao__movimento-passageiros';
 
-    var listaPax = reserva && Array.isArray(reserva.passageiros) && reserva.passageiros.length > 0
-      ? reserva.passageiros
+    var paxAtivos = reserva && Array.isArray(reserva.passageiros) ? passageirosAtivos(reserva.passageiros) : [];
+    var listaPax = paxAtivos.length > 0
+      ? paxAtivos
       : [{ nome: nomeContato }];
 
     var nomesFormatados = listaPax.map(function (p) {
@@ -1817,8 +1842,9 @@
       var bottomRow = document.createElement('div');
       bottomRow.className = 'frota-sem-onibus__passageiros';
 
-      var listaPax = Array.isArray(item.passageiros) && item.passageiros.length > 0
-        ? item.passageiros
+      var paxAtivos = Array.isArray(item.passageiros) ? passageirosAtivos(item.passageiros) : [];
+      var listaPax = paxAtivos.length > 0
+        ? paxAtivos
         : [{ nome: nomeContato }];
 
       var nomesFormatados = listaPax.map(function (p) {
@@ -1832,6 +1858,18 @@
       linha.append(topRow, bottomRow);
       el.frotaSemOnibusLista.appendChild(linha);
     });
+  }
+
+  /** Passageiros que ainda viajam: o card da frota também traz os desistentes pagantes. */
+  function passageirosAtivos(lista) {
+    return lista.filter(function (p) { return !(p && typeof p === 'object' && p.desistiu); });
+  }
+
+  /** Quantos pagantes desistiram na reserva do card (campo do servidor, com contagem de reserva). */
+  function desistentesDoCard(r) {
+    if (Number.isFinite(Number(r.desistentes))) return Math.max(0, Number(r.desistentes));
+    var lista = Array.isArray(r.passageiros) ? r.passageiros : [];
+    return lista.filter(function (p) { return p && p.desistiu && !p.crianca_colo; }).length;
   }
 
   function removerReservaVip(reserva) {

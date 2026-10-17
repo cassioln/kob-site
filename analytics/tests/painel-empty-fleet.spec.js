@@ -700,3 +700,138 @@ test('abre o tooltip do card da frota ao passar o mouse no título do grupo', as
   await expect(tooltip).toContainText('Grupo: Terraforming Mars');
   await expect(tooltip).toContainText('Contato principal: Ana Souza');
 });
+
+function respostaFrotaComDesistencia(extra = {}) {
+  const resumo = {
+    total_a_bordo: 5, pagantes: 4, criancas_no_colo: 1, reservas_pagas: 3,
+    reservas_pendentes: 0, reservas_falha: 0, receita_centavos: 24000, sem_telefone: 0
+  };
+  const grupo = {
+    id: '00000001-1111-4111-8111-000000000001', code: '00000001', grupo: 'Terraforming Mars',
+    responsavel: 'Ana Souza', pagantes: 2, criancas: 1, total: 3, assentos: 2, desistentes: 1,
+    is_vip: false, pago_em: '10/10/2026 10:00',
+    passageiros: [
+      { posicao: 1, nome: 'Ana Souza', responsavel: true, menor: false, crianca_colo: false, faixa: '18 anos ou mais', desistiu: false },
+      { posicao: 2, nome: 'Bruno Desistente', responsavel: false, menor: false, crianca_colo: false, faixa: '18 anos ou mais', desistiu: true },
+      { posicao: 3, nome: 'Clara Souza', responsavel: false, menor: true, crianca_colo: false, faixa: '6 a 17 anos', desistiu: false },
+      { posicao: 4, nome: 'Duda Colo', responsavel: false, menor: true, crianca_colo: true, faixa: '0 a 5 anos', desistiu: false }
+    ]
+  };
+  const comum = (id, code, nome, isVip) => ({
+    id, code, grupo: null, responsavel: nome, pagantes: 1, criancas: 0, total: 1, assentos: 1, desistentes: 0,
+    is_vip: isVip, pago_em: '10/10/2026 10:00',
+    passageiros: [{ posicao: 1, nome, responsavel: true, menor: false, crianca_colo: false, faixa: '18 anos ou mais', desistiu: false }]
+  });
+  return {
+    reservas: [],
+    resumo,
+    frota: {
+      capacidade: 46,
+      minimo: 40,
+      sem_onibus_confirmado: [{
+        id: '00000009-9999-4999-8999-000000000009', code: '00000009', contato: 'Fabio Espera', grupo: null,
+        pagantes: 1, criancas: 0, total: 1, desistentes: 1, is_vip: false, pago_em: '10/10/2026 10:00',
+        passageiros: [
+          { posicao: 1, nome: 'Fabio Espera', responsavel: true, menor: false, crianca_colo: false, faixa: '18 anos ou mais', desistiu: false },
+          { posicao: 2, nome: 'Gil Desistente', responsavel: false, menor: false, crianca_colo: false, faixa: '18 anos ou mais', desistiu: true }
+        ]
+      }],
+      onibus: [{
+        numero: 1, ocupados: 5, assentos_ocupados: 5, vagas_livres: 41,
+        pagantes: 5, criancas: 1, total: 6, assentos: 5,
+        reservas: [
+          grupo,
+          comum('00000002-2222-4222-8222-000000000002', '00000002', 'Hugo Comum', false),
+          comum('00000003-3333-4333-8333-000000000003', '00000003', 'Iris Vip', true),
+          comum('00000004-4444-4444-8444-000000000004', '00000004', 'Joao Comum', false),
+          comum('00000005-5555-4555-8555-000000000005', '00000005', 'Kate Vip', true)
+        ]
+      }],
+      ...extra
+    }
+  };
+}
+
+async function abrirFrotaComDesistencia(page, viewport) {
+  if (viewport) await page.setViewportSize(viewport);
+  await page.route('**/api/bus-admin-data*', route => route.fulfill({
+    status: 200, contentType: 'application/json', body: JSON.stringify(respostaFrotaComDesistencia())
+  }));
+  await page.goto('/painel-onibus.html');
+  await expect(page.locator('#embarque-sidebar')).not.toBeVisible();
+  await page.getByRole('tab', { name: 'Reservas', exact: true }).click();
+  await page.getByRole('tab', { name: 'Planejamento de Frota' }).click();
+}
+
+test('pinta de vermelho um meeple por pagante desistente, depois dos roxos e antes do colo', async ({ page }) => {
+  await abrirFrotaComDesistencia(page);
+  const card = page.locator('.grupo-item[data-reserva="00000001-1111-4111-8111-000000000001"]');
+  const individual = card.locator('.grupo-item__meeples-individual');
+  await expect(individual.locator('.meeple-svg--adult:not(.meeple-svg--desistente)')).toHaveCount(2);
+  await expect(individual.locator('.meeple-svg--desistente')).toHaveCount(1);
+  await expect(individual.locator('.meeple-svg--child')).toHaveCount(1);
+  const classes = await individual.locator('svg').evaluateAll(svgs => svgs.map(s =>
+    s.classList.contains('meeple-svg--desistente') ? 'red' : s.classList.contains('meeple-svg--child') ? 'colo' : 'roxo'));
+  expect(classes).toEqual(['roxo', 'roxo', 'red', 'colo']);
+  const cor = await individual.locator('.meeple-svg--desistente').evaluate(el => getComputedStyle(el).color);
+  expect(cor).toBe('rgb(163, 35, 43)');
+  const roxo = await individual.locator('.meeple-svg--adult:not(.meeple-svg--desistente)').first().evaluate(el => getComputedStyle(el).color);
+  expect(roxo).toBe('rgb(123, 31, 162)');
+  // A descrição continua contando só os ativos.
+  await expect(card.locator('.grupo-item__meeples')).toHaveAttribute('title', '2 pagantes + 1 criança de colo');
+});
+
+test('mostra a contagem vermelha no layout compacto dos meeples', async ({ page }) => {
+  await abrirFrotaComDesistencia(page);
+  const dados = respostaFrotaComDesistencia();
+  dados.frota.onibus[0].reservas[0].pagantes = 6;
+  dados.frota.onibus[0].reservas[0].desistentes = 3;
+  await page.unroute('**/api/bus-admin-data*');
+  await page.route('**/api/bus-admin-data*', route => route.fulfill({
+    status: 200, contentType: 'application/json', body: JSON.stringify(dados)
+  }));
+  await page.reload();
+  await page.getByRole('tab', { name: 'Reservas', exact: true }).click();
+  await page.getByRole('tab', { name: 'Planejamento de Frota' }).click();
+  const meeples = page.locator('.grupo-item[data-reserva="00000001-1111-4111-8111-000000000001"] .grupo-item__meeples');
+  await expect(meeples).toHaveClass(/grupo-item__meeples--compacta/);
+  const compacto = meeples.locator('.grupo-item__meeples-compacto');
+  await expect(compacto).toBeVisible();
+  await expect(compacto.locator('.grupo-item__meeples-contagem')).toHaveText(['6', '3', '1']);
+  await expect(compacto.locator('.meeple-svg--desistente')).toHaveCount(1);
+  const cor = await compacto.locator('.grupo-item__meeples-contagem--desistentes').evaluate(el => getComputedStyle(el).color);
+  expect(cor).toBe('rgb(163, 35, 43)');
+});
+
+test('tooltip mostra o desistente em vermelho e riscado com "Desistência" no lugar da faixa', async ({ page }) => {
+  await abrirFrotaComDesistencia(page);
+  const id = '00000001-1111-4111-8111-000000000001';
+  await page.locator('.grupo-item[data-reserva="' + id + '"] .grupo-item__titulo').hover();
+  const tooltip = page.locator('#grupo-info-' + id);
+  await expect(tooltip).toBeVisible();
+  await expect(tooltip).toContainText('Contato principal: Ana Souza');
+  const itens = tooltip.locator('.grupo-item__tooltip-item');
+  await expect(itens).toHaveCount(3);
+  const desistente = itens.filter({ hasText: 'Bruno Desistente' });
+  await expect(desistente).toContainText('2 - Bruno Desistente | Desistência');
+  await expect(desistente).not.toContainText('18 anos ou mais');
+  const nome = desistente.locator('.grupo-item__tooltip-nome-desistiu');
+  expect(await nome.evaluate(el => getComputedStyle(el).textDecorationLine)).toBe('line-through');
+  const corNome = await nome.evaluate(el => getComputedStyle(el).color);
+  expect(corNome).toBe('rgb(248, 113, 113)');
+  const faixa = desistente.locator('.grupo-item__tooltip-faixa--desistiu');
+  await expect(faixa).toHaveText('Desistência');
+  expect(await faixa.evaluate(el => getComputedStyle(el).color)).toBe(corNome);
+  // Ativos mantêm a faixa; o nome ativo não é riscado.
+  await expect(itens.filter({ hasText: 'Clara Souza' })).toContainText('6 a 17 anos');
+  await expect(itens.filter({ hasText: 'Duda Colo' })).toContainText('0 a 5 anos');
+  expect(await itens.filter({ hasText: 'Clara Souza' }).evaluate(el => getComputedStyle(el).textDecorationLine)).toBe('none');
+});
+
+test('lista "Sem ônibus confirmado" não mostra o passageiro desistente', async ({ page }) => {
+  await abrirFrotaComDesistencia(page);
+  const lista = page.locator('#frota-sem-onibus .frota-sem-onibus__passageiros');
+  await expect(lista).toHaveCount(1);
+  await expect(lista).toContainText('Fabio Espera');
+  await expect(lista).not.toContainText('Gil Desistente');
+});

@@ -2187,6 +2187,17 @@
   user-select: none;
 }
 
+/* Meeple de pagante que desistiu (mesmo vermelho da etiqueta "Desistiu") */
+.meeple-svg--adult.meeple-svg--desistente,
+.grupo-item__meeples--solo .meeple-svg--adult.meeple-svg--desistente {
+  color: var(--p-falha);
+  filter: drop-shadow(0 1px 1px rgba(163, 35, 43, 0.3));
+}
+
+.grupo-item__meeples-contagem--desistentes {
+  color: var(--p-falha);
+}
+
 /* Meeple Criança de Colo (Menor) */
 .meeple-svg--child {
   color: #ec4899;
@@ -2457,6 +2468,16 @@
   color: #94a3b8;
   font-size: 10.5px;
   font-weight: 450;
+}
+
+/* Desistência: nome vermelho e riscado, faixa etária trocada por "Desistência" */
+.grupo-item__tooltip-nome-desistiu {
+  color: #f87171;
+  text-decoration: line-through;
+}
+
+.grupo-item__tooltip-faixa--desistiu {
+  color: #f87171;
 }
 
 .grupo-item__tooltip-pagamento {

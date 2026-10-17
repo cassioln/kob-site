@@ -431,11 +431,18 @@ $frota = bus_admin_fleet_passengers([
     ['posicao' => 1, 'nome' => 'Ana', 'responsavel' => true, 'menor' => false, 'crianca_colo' => false, 'desistiu' => false, 'cpf' => 'x'],
     ['posicao' => 2, 'nome' => 'Bruno', 'responsavel' => false, 'menor' => false, 'crianca_colo' => false, 'desistiu' => true],
     ['posicao' => 3, 'nome' => 'Caio', 'responsavel' => false, 'menor' => true, 'crianca_colo' => true, 'desistiu' => false],
+    ['posicao' => 4, 'nome' => 'Duda', 'responsavel' => false, 'menor' => true, 'crianca_colo' => false, 'desistiu' => true],
+    ['posicao' => 5, 'nome' => 'Eli', 'responsavel' => false, 'menor' => true, 'crianca_colo' => true, 'desistiu' => true],
 ]);
 $expect([
-    ['posicao' => 1, 'nome' => 'Ana', 'responsavel' => true, 'menor' => false, 'crianca_colo' => false, 'faixa' => '18 anos ou mais'],
-    ['posicao' => 3, 'nome' => 'Caio', 'responsavel' => false, 'menor' => true, 'crianca_colo' => true, 'faixa' => '0 a 5 anos'],
-], $frota, 'Frota sem desistentes e no formato do card');
+    ['posicao' => 1, 'nome' => 'Ana', 'responsavel' => true, 'menor' => false, 'crianca_colo' => false, 'faixa' => '18 anos ou mais', 'desistiu' => false],
+    ['posicao' => 2, 'nome' => 'Bruno', 'responsavel' => false, 'menor' => false, 'crianca_colo' => false, 'faixa' => '18 anos ou mais', 'desistiu' => true],
+    ['posicao' => 3, 'nome' => 'Caio', 'responsavel' => false, 'menor' => true, 'crianca_colo' => true, 'faixa' => '0 a 5 anos', 'desistiu' => false],
+    ['posicao' => 4, 'nome' => 'Duda', 'responsavel' => false, 'menor' => true, 'crianca_colo' => false, 'faixa' => '6 a 17 anos', 'desistiu' => true],
+], $frota, 'Frota mantém desistente pagante marcado e descarta criança de colo desistente');
+$expect(2, bus_admin_fleet_withdrawn_count($frota), 'Desistentes pagantes do card (adulto e menor 6 a 17)');
+$expect(0, bus_admin_fleet_withdrawn_count([]), 'Card sem passageiros não tem desistentes');
+$expect(0, bus_admin_fleet_withdrawn_count(array_slice($frota, 0, 1)), 'Card só com ativos não tem desistentes');
 if ($falhas) {
     fwrite(STDERR, 'FAIL: ' . implode("\nFAIL: ", $falhas) . "\n");
     exit(1);
