@@ -1,9 +1,9 @@
 /* Only the static boarding shell is cached. API traffic always reaches the network. */
 'use strict';
-var VERSION = '20261017-modal-vip-v18', CACHE = 'kob-boarding-shell-' + VERSION;
+var VERSION = '20261017-grupo-cabecalho-v19', CACHE = 'kob-boarding-shell-' + VERSION;
 // Os manifestos levam ?v= para o navegador/WebAPK buscar nome e ícone novos; a página pede a mesma URL.
 var FILES = ['/painel-onibus.html'].concat(['', 'en/', 'es/'].map(function (lang) { return '/' + lang + 'embarque.webmanifest?v=' + VERSION; }), [
-  '/assets/css/painel-onibus.css?v=20261017-modal-vip-v18', '/assets/css/painel-embarque.css?v=' + VERSION,
+  '/assets/css/painel-onibus.css?v=20261017-grupo-cabecalho-v19', '/assets/css/painel-embarque.css?v=' + VERSION,
   '/assets/fonts/gobold-extra2.woff2', '/assets/fonts/chantal-medium.woff2',
   '/assets/images/brand/favicon-32.png', '/assets/images/brand/check-busao-apple-touch-icon.png',
   '/assets/images/brand/check-busao-icon-192.png', '/assets/images/brand/check-busao-icon-512.png', '/assets/images/brand/check-busao-maskable-512.png',

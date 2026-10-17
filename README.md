@@ -14,7 +14,8 @@ O **Kriativos On Board (kob-site)** é a plataforma web oficial do **Kriativos O
 3. **Painel de Gestão Operacional ([`painel-onibus.html`](./painel-onibus.html)):** Dashboard administrativo autenticado para acompanhamento de reservas em tempo real, balanceamento de frota, alocação de passageiros por ônibus e exportação de manifestos em XLSX/PDF.
 
    **Editar reserva:** o lápis em cada reserva (lista e cards da Frota) abre um modal com
-   todos os passageiros. Dá para corrigir nome, CPF, contato, faixa etária e grupo, e marcar
+   todos os passageiros. Dá para corrigir nome, CPF, contato, faixa etária e grupo (o nome do grupo fica
+   no cabeçalho do modal, travado até clicar em **Alterar grupo**), e marcar
    **Desistiu** (com motivo opcional) em reservas confirmadas, exceto VIP: reserva VIP não
    tem desistência e o modal traz o botão vermelho **Remover reserva VIP** (com confirmação),
    que substituiu o botão "−" dos cards. Reserva de uma pessoa só (VIP ou solo) abre já

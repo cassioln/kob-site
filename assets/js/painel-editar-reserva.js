@@ -203,6 +203,8 @@
         grupoAtual: grupo,
         grupoSelecionado: grupo,
         abertoId: null,
+        gruposLivres: null,
+        gruposCarregando: false,
         salvando: false,
         inicial: '',
         opener: null,
@@ -300,16 +302,20 @@
       el.grupoCampo.hidden = !aplicavel;
       if (!aplicavel) return;
 
-      var campo = criar('div', 'vip-formulario__campo editar-grupo');
+      // A troca de grupo é rara: o seletor nasce travado, mostrando o nome atual,
+      // e só destrava (e só busca os nomes livres) quando se pede para alterar.
+      var campo = criar('div', 'editar-grupo');
       var rotulo = criar('label', null, 'Nome do grupo');
       rotulo.setAttribute('for', 'editar-grupo');
       var select = criar('select');
       select.id = 'editar-grupo';
+      select.disabled = true;
       var nenhum = criar('option', null, 'Sem nome de grupo');
       nenhum.value = '';
       select.appendChild(nenhum);
+      var atual = null;
       if (estado.grupoAtual) {
-        var atual = criar('option', null, estado.grupoAtual + ' (atual)');
+        atual = criar('option', null, estado.grupoAtual);
         atual.value = estado.grupoAtual;
         select.appendChild(atual);
       }
@@ -318,23 +324,81 @@
         estado.grupoSelecionado = select.value === '' ? null : select.value;
         aoMudar();
       });
+
+      var alterar = criar('button', 'editar-grupo__alterar', 'Alterar grupo');
+      alterar.type = 'button';
+      alterar.setAttribute('aria-controls', 'editar-grupo');
+      alterar.setAttribute('aria-expanded', 'false');
+      alterar.addEventListener('click', function () {
+        if (!estado) return;
+        if (select.disabled) ativarGrupo();
+        else travarGrupo();
+      });
+
       var aviso = criar('p', 'editar-grupo__aviso');
       aviso.id = 'editar-grupo-aviso';
       aviso.hidden = true;
-      campo.append(rotulo, select, aviso);
+      campo.append(rotulo, select, alterar, aviso);
       el.grupoCampo.appendChild(campo);
       el.grupoSelect = select;
+      el.grupoAtualOpcao = atual;
+      el.grupoAlterar = alterar;
       el.grupoAviso = aviso;
+    }
+
+    function ativarGrupo() {
+      el.grupoSelect.disabled = false;
+      if (el.grupoAtualOpcao) el.grupoAtualOpcao.textContent = estado.grupoAtual + ' (atual)';
+      el.grupoAlterar.textContent = 'Manter grupo';
+      el.grupoAlterar.setAttribute('aria-expanded', 'true');
+      aplicarGruposLivres();
+      el.grupoSelect.focus();
+      if (!estado.gruposLivres && !estado.gruposCarregando) carregarGrupos(aberturas);
+    }
+
+    // "Manter grupo": volta ao nome de antes e trava de novo, sem alteração.
+    function travarGrupo() {
+      var select = el.grupoSelect;
+      select.disabled = true;
+      select.value = estado.grupoAtual || '';
+      estado.grupoSelecionado = estado.grupoAtual;
+      if (el.grupoAtualOpcao) el.grupoAtualOpcao.textContent = estado.grupoAtual;
+      removerGruposLivres();
+      el.grupoAviso.hidden = true;
+      select.removeAttribute('aria-describedby');
+      el.grupoAlterar.textContent = 'Alterar grupo';
+      el.grupoAlterar.setAttribute('aria-expanded', 'false');
+      el.grupoAlterar.focus();
+      aoMudar();
+    }
+
+    function removerGruposLivres() {
+      Array.prototype.slice.call(el.grupoSelect.querySelectorAll('option[data-livre]'))
+        .forEach(function (opcao) { opcao.remove(); });
+    }
+
+    function aplicarGruposLivres() {
+      if (!estado.gruposLivres || el.grupoSelect.disabled) return;
+      removerGruposLivres();
+      estado.gruposLivres.forEach(function (nome) {
+        if (nome === estado.grupoAtual) return;
+        var opcao = criar('option', null, nome);
+        opcao.value = nome;
+        opcao.setAttribute('data-livre', '');
+        el.grupoSelect.appendChild(opcao);
+      });
     }
 
     function carregarGrupos(abertura) {
       if (!el.grupoSelect || el.grupoCampo.hidden) return;
       var select = el.grupoSelect;
+      estado.gruposCarregando = true;
       var falhou = function () {
         if (abertura !== aberturas || !estado) return;
+        estado.gruposCarregando = false;
         el.grupoAviso.textContent = 'Não foi possível carregar os nomes livres. '
           + 'Dá para manter o nome atual ou deixar sem nome.';
-        el.grupoAviso.hidden = false;
+        el.grupoAviso.hidden = select.disabled;
         select.setAttribute('aria-describedby', 'editar-grupo-aviso');
       };
       var token = typeof options.token === 'function' ? options.token() : '';
@@ -345,14 +409,9 @@
         })
         .then(function (dados) {
           if (abertura !== aberturas || !estado) return;
-          var livres = dados && Array.isArray(dados.livres) ? dados.livres : [];
-          livres.forEach(function (nome) {
-            nome = String(nome);
-            if (nome === estado.grupoAtual) return;
-            var opcao = criar('option', null, nome);
-            opcao.value = nome;
-            select.appendChild(opcao);
-          });
+          estado.gruposCarregando = false;
+          estado.gruposLivres = dados && Array.isArray(dados.livres) ? dados.livres.map(String) : [];
+          aplicarGruposLivres();
         })
         .catch(falhou);
     }
@@ -913,10 +972,11 @@
       if (extra && extra.opener) estado.opener = extra.opener;
       if (extra && extra.avisoConflito) estado.avisoConflito = extra.avisoConflito;
       el.grupoSelect = null;
+      el.grupoAtualOpcao = null;
+      el.grupoAlterar = null;
       el.grupoAviso = null;
       renderizar();
       estado.inicial = assinatura();
-      carregarGrupos(aberturas);
       mostrarModal(dialog);
       // Pessoa única já abre expandida: o foco vai direto para o Nome.
       if (estado.unico && estado.passageiros[0].el.inputNome) estado.passageiros[0].el.inputNome.focus();

@@ -4205,16 +4205,75 @@
   max-height: calc(100dvh - 96px);
 }
 
+/* O corpo rola (overflow-y:auto), o que também corta o que passa da caixa:
+   o respiro à volta deixa o anel de foco (2px + 1px de offset) inteiro. */
 .editar-corpo {
   display: grid;
   gap: 14px;
   min-height: 0;
   overflow-y: auto;
-  padding: 2px 4px 2px 1px;
+  padding: 3px 4px 3px 3px;
+}
+
+/* Cabeçalho do modal de edição: selo | título | nome do grupo, à direita. */
+.bus-dialog__header--editar {
+  flex-wrap: wrap;
+}
+
+.bus-dialog__header--editar > div:not(.bus-dialog__badge-icone):not(.editar-grupo-cabecalho) {
+  flex: 1 1 200px;
+  min-width: 0;
+}
+
+.editar-grupo-cabecalho {
+  flex: 0 0 auto;
+  margin-left: auto;
+  padding: 3px;
 }
 
 .editar-grupo {
-  max-width: 360px;
+  display: grid;
+  width: 200px;
+  max-width: 100%;
+  gap: 3px;
+  justify-items: start;
+}
+
+.editar-grupo label {
+  color: var(--p-tinta-media);
+  font-size: 0.6875rem;
+  font-weight: 650;
+}
+
+.editar-grupo select:disabled {
+  background: var(--p-superficie-2);
+  color: var(--p-tinta);
+  opacity: 1;
+  cursor: default;
+}
+
+/* Link discreto: parece texto, não botão. */
+.editar-grupo__alterar {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--p-acao);
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.3;
+  cursor: pointer;
+}
+
+.editar-grupo__alterar:hover {
+  color: var(--p-acao-escura);
+  text-decoration: underline;
+}
+
+.editar-grupo__alterar:focus-visible {
+  outline: 2px solid var(--p-acao);
+  outline-offset: 2px;
+  border-radius: 2px;
 }
 
 .editar-grupo__aviso,
@@ -4535,8 +4594,15 @@
     max-height: calc(100dvh - 72px);
   }
 
+  /* Celular: o nome do grupo desce para uma linha própria, sob o título. */
+  .editar-grupo-cabecalho {
+    flex: 1 1 100%;
+    margin-left: 0;
+    padding: 3px;
+  }
+
   .editar-grupo {
-    max-width: none;
+    width: 100%;
   }
 
   .editar-passageiro__painel {
