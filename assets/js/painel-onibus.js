@@ -1166,6 +1166,7 @@
           });
           tituloGrupoWrap.append(infoTrigger, tituloGrupo);
           itemTop.appendChild(tituloGrupoWrap);
+          var editarCardFlutuante = null;
           if (podeEditar(r)) {
             var editarCard = botaoEditar('grupo-item__editar', r);
             // O card é arrastável e o arraste nativo começa mesmo de um filho:
@@ -1190,7 +1191,9 @@
               ev.stopPropagation();
               abrirEdicao(r.id);
             });
-            itemTop.appendChild(editarCard);
+            // Flutua no canto do card (fora do fluxo do topo) e só aparece no
+            // card em foco; é anexado ao card depois do topo, abaixo.
+            editarCardFlutuante = editarCard;
           }
           itemTop.appendChild(codeTag);
           if (r.is_vip && !String(r.id || '').startsWith('vip_') && !estaBloqueado) {
@@ -1209,6 +1212,7 @@
             itemTop.appendChild(removerVip);
           }
           item.appendChild(itemTop);
+          if (editarCardFlutuante) item.appendChild(editarCardFlutuante);
 
           // Rodapé do card: Representação Visual por Meeples + Seletor Mover
           var itemBottom = document.createElement('div');
