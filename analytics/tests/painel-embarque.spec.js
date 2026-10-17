@@ -301,6 +301,12 @@ for (const [lang, title, save] of [ ['pt', 'Chamada de embarque', 'Confirmar emb
         noOverflow: header.scrollWidth <= header.clientWidth };
     });
     expect(positions).toEqual({ aligned: true, busRight: true, inside: true, noOverflow: true });
+    const lead = await page.evaluate(() => {
+      const m = document.querySelector('.embarque-mascot').getBoundingClientRect(), t = document.querySelector('#embarque-title').getBoundingClientRect();
+      return { left: m.right <= t.left + 1, height: m.height };
+    });
+    expect(lead.left).toBe(true);
+    expect(lead.height).toBeGreaterThanOrEqual(48);
     await page.locator('#embarque-close').focus();
     await page.keyboard.press('Escape');
     await expect(page.locator('#embarque-sidebar')).not.toBeVisible();
@@ -379,7 +385,12 @@ test('slider mantém foco, fecha por backdrop e não reabre em atualização das
   await expect(drawer).toHaveClass(/is-open/);
   await expect(page.locator('[data-check="3"]')).toBeVisible();
   await expect(page.locator('.embarque-header')).toHaveCSS('background-color', 'rgb(4, 29, 58)');
-  await expect(page.locator('.embarque-mascot')).toHaveAttribute('src', 'assets/images/manual/kriativa-checklist.png');
+  await expect(page.locator('.embarque-mascot')).toHaveAttribute('src', 'assets/images/manual/kriativa-chamada.webp');
+  const mascotBox = await page.locator('.embarque-mascot').boundingBox();
+  const titleBox = await page.locator('#embarque-title').boundingBox();
+  expect(mascotBox.x + mascotBox.width).toBeLessThanOrEqual(titleBox.x + 1);
+  expect(mascotBox.height).toBeGreaterThanOrEqual(60);
+  expect((await page.locator('#embarque-offline-toggle svg').boundingBox()).width).toBeGreaterThanOrEqual(24);
   for (const id of ['#embarque-update', '#embarque-close']) {
     await expect(page.locator(id)).toHaveCSS('background-color', 'rgb(22, 59, 96)');
     await expect(page.locator(id)).toHaveCSS('color', 'rgb(255, 255, 255)');
