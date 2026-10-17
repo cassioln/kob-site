@@ -307,9 +307,17 @@ edit_expect_error('CPF inválido para o passageiro 2', fn () => bus_registration
 $refunded = edit_fixture(['2' => ['withdrawn_at' => '2026-10-10 10:00:00']], ['status' => 'refunded', 'passenger_count' => '1']);
 $plan = bus_registration_edit_plan($refunded, edit_request(['2' => ['full_name' => 'Pessoa Dois Souza']], '1', $refunded), [], NOW);
 edit_expect('2026-10-10 10:00:00', edit_passenger($plan, '2')['withdrawn_at'], 'Existing withdrawal survives non-confirmed status');
+// Reserva VIP não tem desistência (uma pessoa só; a saída é "Remover reserva VIP").
 $vip = edit_fixture([], ['is_vip' => '1', 'status' => 'confirmed']);
-$plan = bus_registration_edit_plan($vip, edit_request(['2' => ['withdrawn' => true]], '1', $vip), [], NOW);
-edit_expect(NOW, edit_passenger($plan, '2')['withdrawn_at'], 'VIP reservation accepts withdrawal');
+edit_expect_error('Reserva VIP não tem desistência. Use "Remover reserva VIP".',
+    fn () => bus_registration_edit_plan($vip, edit_request(['2' => ['withdrawn' => true]], '1', $vip), [], NOW));
+// Editar o VIP sem marcar desistência segue funcionando.
+$plan = bus_registration_edit_plan($vip, edit_request(['1' => ['full_name' => 'Pessoa Um Vip']], '1', $vip), [], NOW);
+edit_expect('Pessoa Um Vip', edit_passenger($plan, '1')['full_name'], 'VIP edit without withdrawal still works');
+edit_expect(null, edit_passenger($plan, '2')['withdrawn_at'], 'VIP edit leaves passengers active');
+// Reserva comum continua aceitando desistência.
+$plan = bus_registration_edit_plan(edit_fixture(), edit_request(['2' => ['withdrawn' => true]]), [], NOW);
+edit_expect(NOW, edit_passenger($plan, '2')['withdrawn_at'], 'Non-VIP reservation still accepts withdrawal');
 
 // Regra 8: motivo, preservação da data e desmarcação.
 $plan = bus_registration_edit_plan(edit_fixture(), edit_request(['2' => ['withdrawn' => true, 'withdrawal_reason' => "  Ficou doente \n"]]), [], NOW);

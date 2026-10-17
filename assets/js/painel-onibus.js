@@ -161,7 +161,7 @@
     }
   }
 
-  function mostrarConfirmacaoModal(titulo, mensagem, rotuloConfirmar) {
+  function mostrarConfirmacaoModal(titulo, mensagem, rotuloConfirmar, perigo) {
     var dialog = el.alertaDialog || document.getElementById('painel-alerta-dialog');
     if (!dialog) return Promise.resolve(window.confirm((titulo ? titulo + ': ' : '') + mensagem));
 
@@ -186,6 +186,7 @@
         if (btnConfirmar) {
           btnConfirmar.hidden = true;
           btnConfirmar.onclick = null;
+          btnConfirmar.className = 'botao botao--primario';
         }
         if (btnFechar) {
           btnFechar.textContent = 'Entendido';
@@ -203,7 +204,7 @@
       }
       if (btnConfirmar) {
         btnConfirmar.hidden = false;
-        btnConfirmar.className = 'botao botao--primario';
+        btnConfirmar.className = perigo ? 'botao botao--perigo' : 'botao botao--primario';
         btnConfirmar.textContent = rotuloConfirmar || 'Confirmar';
         btnConfirmar.onclick = function () { encerrar(true); };
       }
@@ -1196,21 +1197,6 @@
             editarCardFlutuante = editarCard;
           }
           itemTop.appendChild(codeTag);
-          if (r.is_vip && !String(r.id || '').startsWith('vip_') && !estaBloqueado) {
-            var removerVip = document.createElement('button');
-            removerVip.type = 'button';
-            removerVip.className = 'grupo-item__vip-remover';
-            removerVip.setAttribute('aria-label', 'Remover reserva VIP de ' + (r.responsavel || 'VIP'));
-            removerVip.title = 'Remover reserva VIP';
-            removerVip.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path></svg>';
-            removerVip.addEventListener('mousedown', function (ev) { ev.stopPropagation(); });
-            removerVip.addEventListener('click', function (ev) {
-              ev.preventDefault();
-              ev.stopPropagation();
-              removerReservaVip(r);
-            });
-            itemTop.appendChild(removerVip);
-          }
           item.appendChild(itemTop);
           if (editarCardFlutuante) item.appendChild(editarCardFlutuante);
 
@@ -1825,17 +1811,6 @@
       });
       rightSide.appendChild(select);
 
-      if (item.is_vip && !String(item.id || '').startsWith('vip_')) {
-        var removerEspera = document.createElement('button');
-        removerEspera.type = 'button';
-        removerEspera.className = 'frota-sem-onibus__remover-vip';
-        removerEspera.setAttribute('aria-label', 'Remover reserva VIP de ' + (item.contato || 'VIP'));
-        removerEspera.title = 'Remover reserva VIP';
-        removerEspera.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path></svg>';
-        removerEspera.addEventListener('click', function () { removerReservaVip(item); });
-        rightSide.appendChild(removerEspera);
-      }
-
       topRow.append(infoLeft, rightSide);
 
       // --- Linha Inferior / Nomes dos Passageiros ---
@@ -1882,10 +1857,11 @@
 
   function removerReservaVip(reserva) {
     var nome = reserva && reserva.responsavel ? reserva.responsavel : 'esta pessoa';
-    mostrarConfirmacaoModal(
+    return mostrarConfirmacaoModal(
       'Remover reserva VIP?',
       'A reserva VIP de ' + nome + ' será removida da frota e da tabela de controle.',
-      'Remover VIP'
+      'Remover VIP',
+      true
     ).then(function (confirmado) {
       if (!confirmado || !estado.token) return;
       el.frotaContainer.style.opacity = '0.5';
@@ -2408,6 +2384,7 @@
     reserva: function (id) { return encontrarReserva(id); },
     frota: function () { return estado.frota; },
     confirmar: mostrarConfirmacaoModal,
+    removerVip: function (reserva) { return removerReservaVip(reserva); },
     aoSalvar: function () { return carregar(); },
     meeplePath: MEEPLE_PATH_D,
     formatos: {

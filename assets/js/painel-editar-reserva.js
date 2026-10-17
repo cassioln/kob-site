@@ -1,7 +1,8 @@
 /* Modal "Editar reserva" do painel de transporte (só PT-BR).
  *
  * Lista cada pessoa da reserva recolhida; um item aberto por vez mostra os
- * campos. O switch "Desistiu" marca a desistência sem apagar ninguém. Quando o
+ * campos. * O switch "Desistiu" marca a desistência sem apagar ninguém (reserva VIP não
+ * tem desistência: o modal oferece "Remover reserva VIP"). Quando o
  * responsável desiste e ainda há quem viaje, o modal pede um novo responsável
  * adulto. A validação aqui repete as regras e as mensagens do servidor
  * (php/lib/registration-edit.php) só para dar o retorno antes do POST; quem
@@ -137,6 +138,7 @@
       aviso: dialog.querySelector('#editar-aviso'),
       erro: dialog.querySelector('#editar-erro'),
       cancelar: dialog.querySelector('#editar-cancelar'),
+      removerVip: dialog.querySelector('#editar-remover-vip'),
       salvar: dialog.querySelector('#editar-salvar')
     };
 
@@ -185,10 +187,14 @@
       });
 
       var grupo = reserva.grupo ? String(reserva.grupo) : null;
+      var vip = Boolean(reserva.is_vip);
       return {
         reserva: reserva,
+        vip: vip,
+        // VIP real (não a linha provisória "vip_..." da fila) pode ser removido daqui.
+        podeRemoverVip: vip && !String(reserva.id || '').startsWith('vip_'),
         codigo: String(reserva.code || String(reserva.id).slice(0, 8).toUpperCase()),
-        podeDesistir: reserva.status === 'confirmed',
+        podeDesistir: reserva.status === 'confirmed' && !vip,
         passageiros: passageiros,
         responsavelId: responsavelId,
         novoResponsavelId: null,
@@ -514,7 +520,7 @@
         });
         bloco.append(interruptor, motivoWrapper);
         painel.appendChild(bloco);
-      } else if (p.desistiu) {
+      } else if (p.desistiu && !estado.vip) {
         painel.appendChild(criar('p', 'editar-nota',
           'Desistência registrada. Só reserva com pagamento aprovado pode mudar a desistência.'));
       }
@@ -868,6 +874,7 @@
       el.subtitulo.textContent = reserva.grupo ? reserva.grupo + (status ? ' · ' + status : '') : status;
       mostrarErro('');
       botaoSalvando(false);
+      el.removerVip.hidden = !estado.podeRemoverVip;
       renderizarGrupo();
       el.lista.replaceChildren();
       estado.passageiros.forEach(function (p) {
@@ -962,6 +969,14 @@
 
     el.form.addEventListener('submit', salvar);
     el.cancelar.addEventListener('click', pedirFechar);
+    // Remoção de reserva VIP: fecha este modal sem perguntar sobre alterações
+    // (a remoção descarta tudo) e entrega a reserva a quem tem a confirmação.
+    el.removerVip.addEventListener('click', function () {
+      if (!estado || estado.salvando || !estado.podeRemoverVip) return;
+      var reserva = estado.reserva;
+      fecharAgora();
+      if (typeof options.removerVip === 'function') options.removerVip(reserva);
+    });
     dialog.addEventListener('cancel', function (evento) {
       evento.preventDefault();
       pedirFechar();

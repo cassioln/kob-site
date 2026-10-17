@@ -826,3 +826,211 @@ test('teclado: Tab chega ao primeiro passageiro, Enter expande e o foco volta ao
   await expect(dialog).toBeHidden();
   await expect(lapis).toBeFocused();
 });
+
+// ---- VIP sem desistência, remoção pelo modal e reserva de uma pessoa só ----
+
+const reservaVip = {
+  ...reservaA,
+  id: 'ffff0006-6666-4666-8666-666666666666',
+  code: 'FFFF0006',
+  is_vip: true,
+  grupo: null,
+  contato: 'Gil Vieira',
+  email: '',
+  contato_whatsapp: '',
+  pagantes: 1,
+  bus_number: 1,
+  updated_at: '2026-10-16 17:00:00',
+  passageiros: [{
+    id: '61', posicao: 1, nome: 'Gil Vieira', cpf: '714.602.380-01', cpf_digitos: '71460238001',
+    whatsapp: null, whatsapp_digitos: null, email: null,
+    responsavel: true, menor: false, crianca_colo: false, desistiu: false, desistiu_em: null, motivo_desistencia: null
+  }]
+};
+
+// Reserva solo comum (confirmada, uma pessoa): mantém o switch Desistiu.
+const reservaSolo = {
+  ...reservaA,
+  id: 'abab0007-7777-4777-8777-777777777777',
+  code: 'ABAB0007',
+  grupo: null,
+  contato: 'Hugo Alves',
+  email: 'hugo@example.com',
+  contato_whatsapp: '(11) 97777-7777',
+  pagantes: 1,
+  updated_at: '2026-10-16 17:30:00',
+  passageiros: [{
+    id: '71', posicao: 1, nome: 'Hugo Alves', cpf: '529.982.247-25', cpf_digitos: '52998224725',
+    whatsapp: '(11) 97777-7777', whatsapp_digitos: '11977777777', email: 'hugo@example.com',
+    responsavel: true, menor: false, crianca_colo: false, desistiu: false, desistiu_em: null, motivo_desistencia: null
+  }]
+};
+
+async function capturarRemocaoVip(page, responder) {
+  const pedidos = [];
+  await page.route('**/api/bus-vip-delete*', route => {
+    pedidos.push(route.request().postDataJSON());
+    return route.fulfill(responder ? responder() : { json: { success: true } });
+  });
+  return pedidos;
+}
+
+test('VIP: modal sem switch, motivo nem novo responsável; payload segue withdrawn:false', async ({ page }) => {
+  await servirReservas(page, [reservaVip, reservaA]);
+  const pedidos = await capturarSalvamento(page);
+  const dialog = await abrirEdicao(page, 'FFFF0006');
+  await dialog.locator('.editar-passageiro__resumo').click();
+  await expect(dialog.getByRole('switch')).toHaveCount(0);
+  await expect(dialog.getByText('Desistiu', { exact: true })).toBeHidden();
+  await expect(dialog.getByLabel('Motivo (opcional)')).toHaveCount(0);
+  await expect(dialog.getByRole('group', { name: 'Novo responsável' })).toBeHidden();
+
+  await dialog.getByLabel('Nome *').fill('Gil Vieira Souza');
+  await dialog.getByRole('button', { name: 'Salvar alterações' }).click();
+  await expect(dialog).toBeHidden();
+  expect(pedidos[0].corpo.passengers).toEqual([{
+    id: '61', full_name: 'Gil Vieira Souza', cpf: '71460238001', whatsapp: null,
+    email: null, age_group: 'adult', withdrawn: false, withdrawal_reason: null
+  }]);
+});
+
+test('Remover reserva VIP fica à esquerda de Salvar e só existe para VIP real', async ({ page }) => {
+  await servirReservas(page, [reservaVip, reservaA, reservaB]);
+  for (const viewport of [{ width: 1280, height: 860 }, { width: 390, height: 844 }]) {
+    await page.setViewportSize(viewport);
+    let dialog = await abrirEdicao(page, 'FFFF0006');
+    const remover = dialog.getByRole('button', { name: 'Remover reserva VIP' });
+    const salvar = dialog.getByRole('button', { name: 'Salvar alterações' });
+    const cancelar = dialog.getByRole('button', { name: 'Cancelar' });
+    await expect(remover).toBeVisible();
+    await expect(remover).toHaveClass(/botao--perigo/);
+    const [r, sv, c] = await Promise.all([remover.boundingBox(), salvar.boundingBox(), cancelar.boundingBox()]);
+    if (viewport.width > 560) {
+      // Cancelar, Remover reserva VIP e Salvar, nessa ordem, na mesma linha.
+      expect(c.x + c.width).toBeLessThanOrEqual(r.x + 1);
+      expect(r.x + r.width).toBeLessThanOrEqual(sv.x + 1);
+      expect(Math.abs(r.y - sv.y)).toBeLessThan(4);
+    } else {
+      // Empilhados no celular: todos visíveis e inteiros na tela, na mesma ordem.
+      for (const caixa of [c, r, sv]) {
+        expect(caixa.x).toBeGreaterThanOrEqual(0);
+        expect(caixa.x + caixa.width).toBeLessThanOrEqual(viewport.width);
+      }
+      expect(c.y).toBeLessThan(r.y);
+      expect(r.y).toBeLessThan(sv.y);
+    }
+    await page.keyboard.press('Escape');
+    await expect(dialog).toBeHidden();
+  }
+  await page.setViewportSize({ width: 1280, height: 860 });
+  // Não-VIP (multi e solo desistente) e VIP provisório não oferecem o botão.
+  for (const codigo of ['AAAA0001', 'BBBB0002']) {
+    const dialog = await abrirEdicao(page, codigo);
+    await expect(dialog.locator('#editar-remover-vip')).toBeHidden();
+    await expect(dialog.getByRole('button', { name: 'Remover reserva VIP' })).toHaveCount(0);
+    await page.keyboard.press('Escape');
+    await expect(dialog).toBeHidden();
+  }
+});
+
+test('Remover reserva VIP: fecha o modal sem pedir descarte, confirma em vermelho e remove', async ({ page }) => {
+  const chamadas = await servirReservas(page, [reservaVip, reservaA]);
+  const pedidos = await capturarRemocaoVip(page);
+  const dialog = await abrirEdicao(page, 'FFFF0006');
+  const alerta = page.locator('#painel-alerta-dialog');
+
+  // Alteração pendente: a remoção não pergunta sobre descartar.
+  await dialog.locator('.editar-passageiro__resumo').click();
+  await dialog.getByLabel('Nome *').fill('Gil Vieira Souza');
+  await dialog.getByRole('button', { name: 'Remover reserva VIP' }).click();
+  await expect(dialog).toBeHidden();
+  await expect(alerta).toBeVisible();
+  await expect(alerta.locator('#painel-dialog-titulo')).toHaveText('Remover reserva VIP?');
+  const confirmar = alerta.locator('#painel-dialog-confirmar');
+  await expect(confirmar).toHaveText('Remover VIP');
+  await expect(confirmar).toHaveClass(/botao--perigo/);
+  const fundo = await confirmar.evaluate(el => getComputedStyle(el).backgroundColor);
+  const [vermelho, verde, azul] = fundo.match(/\d+/g).map(Number);
+  expect(vermelho).toBeGreaterThan(130);
+  expect(verde).toBeLessThan(60);
+  expect(azul).toBeLessThan(60);
+  await expect(confirmar).toHaveCSS('color', 'rgb(255, 255, 255)');
+
+  const antes = chamadas.dados;
+  await confirmar.click();
+  await expect(alerta).toBeHidden();
+  await expect.poll(() => pedidos.length).toBe(1);
+  expect(pedidos[0]).toEqual({ registration_id: reservaVip.id });
+  await expect.poll(() => chamadas.dados).toBeGreaterThan(antes);
+});
+
+test('Remover reserva VIP: cancelar a confirmação não faz mais nada', async ({ page }) => {
+  const chamadas = await servirReservas(page, [reservaVip, reservaA]);
+  const pedidos = await capturarRemocaoVip(page);
+  const dialog = await abrirEdicao(page, 'FFFF0006');
+  const alerta = page.locator('#painel-alerta-dialog');
+  await dialog.getByRole('button', { name: 'Remover reserva VIP' }).click();
+  await expect(alerta).toBeVisible();
+  const antes = chamadas.dados;
+  await alerta.getByRole('button', { name: 'Cancelar' }).click();
+  await expect(alerta).toBeHidden();
+  await expect(dialog).toBeHidden(); // não reabre
+  expect(pedidos).toHaveLength(0);
+  expect(chamadas.dados).toBe(antes);
+});
+
+test('confirmação sem perigo (descartar alterações) segue com o botão primário', async ({ page }) => {
+  await servirReservas(page, [reservaVip, reservaA]);
+  const dialog = await abrirEdicao(page, 'FFFF0006');
+  const alerta = page.locator('#painel-alerta-dialog');
+  // Antes: uma confirmação de perigo, depois cancelada, não pode deixar a classe vermelha.
+  await dialog.getByRole('button', { name: 'Remover reserva VIP' }).click();
+  await expect(alerta.locator('#painel-dialog-confirmar')).toHaveClass(/botao--perigo/);
+  await alerta.getByRole('button', { name: 'Cancelar' }).click();
+  await expect(alerta).toBeHidden();
+  await expect(alerta.locator('#painel-dialog-confirmar')).toHaveClass('botao botao--primario');
+
+  await page.getByRole('button', { name: 'Editar reserva #FFFF0006' }).click();
+  await dialog.locator('.editar-passageiro__resumo').click();
+  await dialog.getByLabel('Nome *').fill('Gil Vieira Souza');
+  await dialog.getByRole('button', { name: 'Cancelar' }).click();
+  await expect(alerta.locator('#painel-dialog-titulo')).toHaveText('Descartar alterações?');
+  const confirmar = alerta.locator('#painel-dialog-confirmar');
+  await expect(confirmar).toHaveText('Descartar e fechar');
+  await expect(confirmar).toHaveClass('botao botao--primario');
+  await expect(confirmar).not.toHaveClass(/botao--perigo/);
+});
+
+test('o botão "−" de remover VIP não existe mais na frota nem em "Sem ônibus confirmado"', async ({ page }) => {
+  const reservaVipSem = {
+    ...reservaVip, id: 'cdcd0008-8888-4888-8888-888888888888', code: 'CDCD0008',
+    contato: 'Iara Neves', bus_number: null, fleet_assignment_status: 'unassigned'
+  };
+  await page.route('**/api/bus-admin-data*', route => route.fulfill({
+    json: {
+      ...resposta,
+      reservas: [reservaA, reservaVip, reservaVipSem],
+      frota: {
+        ...resposta.frota,
+        sem_onibus_confirmado: [{
+          id: reservaVipSem.id, code: 'CDCD0008', contato: 'Iara Neves', is_vip: true, pagantes: 1, criancas: 0,
+          total: 1, assentos: 1, grupo: null, passageiros: [{ nome: 'Iara Neves' }]
+        }],
+        onibus: [{
+          ...resposta.frota.onibus[0],
+          reservas: [
+            ...resposta.frota.onibus[0].reservas,
+            { id: reservaVip.id, code: 'FFFF0006', grupo: null, responsavel: 'Gil Vieira', pagantes: 1, criancas: 0, total: 1, assentos: 1, is_vip: true }
+          ]
+        }]
+      }
+    }
+  }));
+  await page.goto('/painel-onibus.html');
+  await page.getByRole('tab', { name: 'Planejamento de Frota' }).click();
+  await expect(page.locator('.grupo-item').filter({ hasText: 'FFFF0006' })).toHaveCount(1);
+  await expect(page.locator('#frota-sem-onibus .frota-sem-onibus__item')).toHaveCount(1);
+  await expect(page.locator('.grupo-item__vip-remover')).toHaveCount(0);
+  await expect(page.locator('.frota-sem-onibus__remover-vip')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: /Remover reserva VIP de/ })).toHaveCount(0);
+});

@@ -79,8 +79,9 @@ function bus_registration_edit_plan(array $current, array $request, array $group
         $after[$id] = $passenger;
     }
     $canWithdraw = ($registration['status'] ?? '') === 'confirmed';
+    $isVip = (int) ($registration['is_vip'] ?? 0) === 1;
     foreach ($rows as $id => $row) { // regras 7 e 8
-        $after[$id] += bus_registration_edit_normalize_withdrawal($row, $rawById[$id], $canWithdraw, $nowUtc);
+        $after[$id] += bus_registration_edit_normalize_withdrawal($row, $rawById[$id], $canWithdraw, $nowUtc, $isVip);
     }
 
     // Regra 9. Chave ausente no pedido mantém o grupo atual; null remove.
@@ -324,10 +325,15 @@ function bus_registration_edit_normalize_fields(array $raw, int $position): arra
  * mesmo se o status de pagamento mudou depois (estorno): a regra 7 barra só
  * desistências novas.
  */
-function bus_registration_edit_normalize_withdrawal(array $row, array $raw, bool $canWithdraw, string $nowUtc): array
+function bus_registration_edit_normalize_withdrawal(array $row, array $raw, bool $canWithdraw, string $nowUtc, bool $isVip = false): array
 {
     $wasWithdrawn = ($row['withdrawn_at'] ?? null) !== null;
     $withdrawn = in_array($raw['withdrawn'] ?? false, [true, 1, '1', 'true'], true);
+    // Reserva VIP tem uma pessoa só: não há desistência, só a remoção da reserva.
+    // Uma desistência já gravada (dado antigo) segue como está.
+    if ($withdrawn && !$wasWithdrawn && $isVip) {
+        throw new ValidationError('Reserva VIP não tem desistência. Use "Remover reserva VIP".');
+    }
     if ($withdrawn && !$wasWithdrawn && !$canWithdraw) {
         throw new ValidationError('Só reservas confirmadas podem registrar desistência.');
     }

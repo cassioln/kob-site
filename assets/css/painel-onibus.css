@@ -457,6 +457,21 @@
   background: var(--p-acao-escura);
 }
 
+/* Ação destrutiva (Remover reserva VIP): o vermelho de falha do painel. */
+.botao--perigo {
+  background: var(--p-falha);
+  color: #ffffff;
+}
+
+.botao--perigo:hover {
+  background: #82171e;
+}
+
+.botao--perigo:focus-visible {
+  outline: 2px solid var(--p-falha);
+  outline-offset: 2px;
+}
+
 .botao--discreto {
   background: var(--p-superficie);
   border-color: var(--p-linha-forte);
@@ -3386,70 +3401,6 @@
   max-width: 200px;
   height: 34px;
   font-size: 12.5px;
-}
-
-.frota-sem-onibus__remover-vip,
-.grupo-item__vip-remover {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  border: 1px solid #e7c56d;
-  border-radius: 50%;
-  background: #fff8e7;
-  color: #9a6200;
-  cursor: pointer;
-  transition: background var(--p-transicao), color var(--p-transicao), transform var(--p-transicao);
-}
-
-.frota-sem-onibus__remover-vip:hover,
-.grupo-item__vip-remover:hover {
-  background: #ffe9a8;
-  color: #714700;
-  transform: translateY(-1px);
-}
-
-.frota-sem-onibus__remover-vip:focus-visible,
-.grupo-item__vip-remover:focus-visible {
-  outline: 2px solid #c87900;
-  outline-offset: 2px;
-}
-
-.frota-sem-onibus__remover-vip svg,
-.grupo-item__vip-remover svg {
-  width: 17px;
-  height: 17px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2.2;
-  stroke-linecap: round;
-}
-
-/* Remoção do VIP: ação destrutiva, compacta e visualmente distinta do
-   controle de alocação. O tooltip de informações continua disponível. */
-.grupo-item__vip-remover {
-  width: 25px;
-  height: 25px;
-  border-color: #ef4444;
-  background: #fff1f2;
-  color: #b42318;
-}
-
-.grupo-item__vip-remover:hover {
-  background: #ffe4e6;
-  color: #991b1b;
-}
-
-.grupo-item__vip-remover:focus-visible {
-  outline-color: #dc2626;
-}
-
-.grupo-item__vip-remover svg {
-  width: 14px;
-  height: 14px;
-  stroke-width: 3.4;
 }
 
 /* Linha de Passageiros */
