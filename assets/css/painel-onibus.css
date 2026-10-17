@@ -4045,9 +4045,9 @@
   gap: 4px;
 }
 
-/* Mesmas cores do código no card da frota: discreto, roxo ao passar o mouse. */
-.tabela__editar,
-.grupo-item__editar {
+/* Lápis da lista de reservas: mesmas cores do código no card da frota,
+   discreto e roxo ao passar o mouse. */
+.tabela__editar {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -4064,40 +4064,113 @@
 }
 
 .tabela__editar:hover,
-.tabela__editar:focus-visible,
-.grupo-item__editar:hover,
-.grupo-item__editar:focus-visible {
+.tabela__editar:focus-visible {
   color: var(--p-acao);
   background: var(--p-acao-fraca);
 }
 
-.tabela__editar:focus-visible,
-.grupo-item__editar:focus-visible {
+.tabela__editar:focus-visible {
   outline: 2px solid var(--p-acao);
   outline-offset: 1px;
 }
 
-.tabela__editar svg,
-.grupo-item__editar svg {
+.tabela__editar svg {
   width: 16px;
   height: 16px;
   pointer-events: none;
 }
 
-/* Toque: área de clique de 44 px (WCAG 2.5.5) sem engordar o card. Os 6 px
-   extras de cada lado cabem no gap de 8 px do topo do card da frota, então não
-   roubam o clique do código ao lado. */
-@media (max-width: 860px), (pointer: coarse) {
-  .tabela__editar,
+/* Lápis do card da frota: botão redondo flutuando no canto superior direito,
+   fora do fluxo do topo (o título e o código não perdem largura). Fica
+   escondido e só aparece no card em foco: mouse em cima, foco do teclado dentro
+   ou menu "Mover" aberto. Só opacidade (nada de display/visibility) para o
+   Tab continuar alcançando o botão e o :focus-within revelá-lo. */
+.grupo-item__editar {
+  position: absolute;
+  top: -14px;
+  right: -12px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 1px solid #d8e2ee;
+  border-radius: 50%;
+  background: #ffffff;
+  color: var(--p-tinta-fraca);
+  box-shadow: 0 2px 6px rgba(13, 34, 66, 0.14);
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.85);
+  transition: opacity 0.15s ease, transform 0.15s ease, color 0.15s ease,
+    border-color 0.15s ease, background 0.15s ease;
+}
+
+.grupo-item:hover .grupo-item__editar,
+.grupo-item:focus-within .grupo-item__editar,
+.grupo-item--menu-aberto .grupo-item__editar,
+.grupo-item__editar:hover,
+.grupo-item__editar:focus-visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: scale(1);
+}
+
+.grupo-item__editar:hover,
+.grupo-item__editar:focus-visible {
+  color: var(--p-acao);
+  border-color: var(--p-acao);
+  background: var(--p-acao-fraca);
+}
+
+.grupo-item__editar:focus-visible {
+  outline: 2px solid var(--p-acao);
+  outline-offset: 1px;
+}
+
+.grupo-item__editar svg {
+  width: 14px;
+  height: 14px;
+  pointer-events: none;
+}
+
+/* Sem mouse para revelar o lápis (toque): sempre visível, no mesmo canto. */
+@media (hover: none), (pointer: coarse) {
   .grupo-item__editar {
+    right: -8px;
+    opacity: 1;
+    pointer-events: auto;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grupo-item__editar {
+    transition: none;
+  }
+}
+
+/* Toque: área de clique de 44 x 44 px (WCAG 2.5.5) sem engordar o botão. O
+   acréscimo vai para cima e para os lados (espaço vazio acima do card), nunca
+   para baixo, então não rouba o clique do código nem do "Mover". */
+@media (max-width: 860px), (pointer: coarse) {
+  .tabela__editar {
     position: relative;
   }
 
-  .tabela__editar::before,
-  .grupo-item__editar::before {
+  .tabela__editar::before {
     content: '';
     position: absolute;
     inset: -6px;
+  }
+
+  .grupo-item__editar::before {
+    content: '';
+    position: absolute;
+    inset: -22px -11px 0;
   }
 }
 

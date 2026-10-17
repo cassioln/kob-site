@@ -270,8 +270,12 @@ test('card da frota tem lápis que não inicia arraste e VIP legado não tem @sm
 
   const card = page.locator('.grupo-item').filter({ hasText: 'AAAA0001' });
   const lapis = card.getByRole('button', { name: 'Editar reserva #AAAA0001' });
-  await expect(lapis).toBeVisible();
+  await expect(lapis).toHaveCount(1);
   await expect(page.locator('.grupo-item').filter({ hasText: 'VIP 1' }).locator('.grupo-item__editar')).toHaveCount(0);
+  // Só aparece com o card em foco (mouse sobre o card).
+  await card.scrollIntoViewIfNeeded();
+  await card.hover();
+  await expect(lapis).toHaveCSS('opacity', '1');
 
   // O mousedown do lápis não pode chegar ao card (é o card que arrasta).
   await card.evaluate(elemento => {
@@ -292,6 +296,100 @@ test('card da frota tem lápis que não inicia arraste e VIP legado não tem @sm
   await expect(dialog).toBeVisible();
   await expect(dialog.getByRole('heading', { name: 'Editar reserva #AAAA0001' })).toBeVisible();
   expect(erros).toEqual([]);
+});
+
+test('lápis do card flutua no canto e só aparece no card em foco', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 860 });
+  await page.goto('/painel-onibus.html');
+  await page.getByRole('tab', { name: 'Planejamento de Frota' }).click();
+
+  const card = page.locator('.grupo-item').filter({ hasText: 'AAAA0001' });
+  const lapis = card.locator('.grupo-item__editar');
+  await card.scrollIntoViewIfNeeded();
+
+  // (a) Em repouso (mouse longe do card) o lápis fica invisível, mas segue no DOM.
+  await page.mouse.move(2, 2);
+  await expect(lapis).toHaveCSS('opacity', '0');
+  await expect(lapis).toHaveCSS('pointer-events', 'none');
+
+  // (e) O lápis não ocupa o topo: ali ficam só o título e o código.
+  const filhosDoTopo = await card.locator('.grupo-item__top').evaluate(
+    topo => Array.from(topo.children).map(filho => filho.className)
+  );
+  expect(filhosDoTopo).toEqual(['grupo-item__titulo-wrap', expect.stringContaining('grupo-item__code')]);
+  expect(await lapis.evaluate(el => el.parentElement.classList.contains('grupo-item'))).toBe(true);
+
+  // (b) Com o mouse no card, o lápis aparece no quadrante superior direito.
+  await card.hover();
+  await expect(lapis).toHaveCSS('opacity', '1');
+  await expect(lapis).toBeVisible();
+  const cardBox = await card.boundingBox();
+  const box = await lapis.boundingBox();
+  expect(box.x + box.width).toBeGreaterThan(cardBox.x + cardBox.width * 0.75);
+  expect(box.y).toBeLessThan(cardBox.y + 20);
+  // Não encosta no código nem no botão Mover.
+  const codigoBox = await card.locator('.grupo-item__code').boundingBox();
+  const sobrepoe = (a, b) => a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.height > b.y;
+  expect(sobrepoe(box, codigoBox)).toBe(false);
+  const mover = card.locator('.grupo-item__mover-trigger');
+  if (await mover.count()) expect(sobrepoe(box, await mover.boundingBox())).toBe(false);
+
+  // Mover o mouse do card para o lápis mantém o lápis visível.
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await expect(lapis).toHaveCSS('opacity', '1');
+
+  // (c) Teclado: o Tab alcança o lápis (continua na ordem de tabulação) e o revela.
+  await page.mouse.move(2, 2);
+  await expect(lapis).toHaveCSS('opacity', '0');
+  await card.locator('.grupo-item__code').focus();
+  await page.keyboard.press('Tab');
+  await expect(lapis).toBeFocused();
+  await expect(lapis).toHaveCSS('opacity', '1');
+
+  // O card com lápis não perde largura no título em relação ao layout sem ele.
+  const larguraTitulo = await card.locator('.grupo-item__titulo-wrap').evaluate(el => el.getBoundingClientRect().width);
+  const semLapis = await page.evaluate(() => {
+    const original = document.querySelector('.grupo-item__editar');
+    const item = original.closest('.grupo-item');
+    original.remove();
+    return item.querySelector('.grupo-item__titulo-wrap').getBoundingClientRect().width;
+  });
+  expect(larguraTitulo).toBeCloseTo(semLapis, 1);
+});
+
+test('em tela de toque o lápis do card fica sempre visível', async ({ browser }) => {
+  const contexto = await browser.newContext({
+    viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, locale: 'pt-BR'
+  });
+  const page = await contexto.newPage();
+  await page.route('**/api/bus-boarding', route => route.fulfill({ json: { people: [], waiting: 0 } }));
+  await page.route('**/api/bus-group-names', route => route.fulfill({ json: { livres: [], em_uso: [] } }));
+  await page.route('**/api/bus-admin-reconcile*', route => route.fulfill({ json: { checked: 0, updated: 0 } }));
+  await page.route('**/api/bus-admin-data*', route => route.fulfill({ json: resposta }));
+  await page.goto('/painel-onibus.html');
+  await page.getByRole('tab', { name: 'Planejamento de Frota' }).click();
+
+  const card = page.locator('.grupo-item').filter({ hasText: 'AAAA0001' });
+  const lapis = card.locator('.grupo-item__editar');
+  await card.scrollIntoViewIfNeeded();
+  expect(await page.evaluate(() => matchMedia('(hover: none), (pointer: coarse)').matches)).toBe(true);
+  await expect(lapis).toHaveCSS('opacity', '1');
+  await expect(lapis).toBeVisible();
+
+  const cardBox = await card.boundingBox();
+  const box = await lapis.boundingBox();
+  expect(box.x + box.width).toBeGreaterThan(cardBox.x + cardBox.width * 0.75);
+  expect(box.y).toBeLessThan(cardBox.y + 20);
+
+  // Área de toque de 44 px, sem pegar o código ao lado.
+  const alvo = await lapis.evaluate(el => {
+    const antes = getComputedStyle(el, '::before');
+    return { largura: parseFloat(antes.width), altura: parseFloat(antes.height), embaixo: parseFloat(antes.bottom) };
+  });
+  expect(alvo.embaixo).toBeGreaterThanOrEqual(0);
+  expect(alvo.largura).toBeGreaterThanOrEqual(44);
+  expect(alvo.altura).toBeGreaterThanOrEqual(44);
+  await contexto.close();
 });
 
 test('arrastar a partir do lápis do card não move o card', async ({ page }) => {
