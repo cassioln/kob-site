@@ -25,6 +25,8 @@ try {
     $vips = vip_normalize_batch($body['vips'] ?? null);
     $pdo = bus_pdo();
     bus_fleet_ensure_assignment_status($pdo);
+    // Antes da transação: DDL faz commit implícito.
+    bus_registration_edit_ensure_schema($pdo);
 
     // Instalações antigas podem ainda não ter executado a migration 003.
     $pdo->exec("CREATE TABLE IF NOT EXISTS bus_settings (

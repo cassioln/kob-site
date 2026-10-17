@@ -386,6 +386,24 @@
     return svg;
   }
 
+  var LAPIS_SVG = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false" aria-hidden="true"><path d="M12 20h9"></path><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path></svg>';
+
+  // Lugares VIP legados (vip_1, vip_2...) não são reservas gravadas: não há o
+  // que editar neles.
+  function podeEditar(reserva) {
+    return Boolean(reserva && reserva.id) && !String(reserva.id).startsWith('vip_');
+  }
+
+  function botaoEditar(classe, reserva) {
+    var botao = document.createElement('button');
+    botao.type = 'button';
+    botao.className = classe;
+    botao.setAttribute('aria-label', 'Editar reserva #' + (reserva.code || String(reserva.id).slice(0, 8).toUpperCase()));
+    botao.title = 'Editar reserva';
+    botao.innerHTML = LAPIS_SVG;
+    return botao;
+  }
+
   function renderizarFiltroOnibus() {
     if (!el.filtroOnibus) return;
     var numeros = {};
@@ -432,7 +450,9 @@
     estado.reservas.forEach(function (reserva) {
       if (estado.filtro !== 'todas' && reserva.status_chave !== estado.filtro) return;
       if (estado.filtroOnibus !== 'todos') {
-        var semOnibus = reserva.bus_number === null || reserva.bus_number === undefined;
+        // Reserva inteira desistente também fica sem ônibus, mas não está
+        // aguardando lugar: não entra em "Sem ônibus confirmado".
+        var semOnibus = (reserva.bus_number === null || reserva.bus_number === undefined) && !reserva.desistente;
         if (estado.filtroOnibus === 'sem-onibus' ? !semOnibus : Number(reserva.bus_number) !== Number(estado.filtroOnibus)) return;
       }
 
@@ -481,6 +501,7 @@
       if (primeiro) grupoAtual++;
       var tr = document.createElement('tr');
       if (r.is_vip) tr.classList.add('tabela__linha--vip');
+      if (p.desistiu) tr.classList.add('tabela__linha--desistente');
       if (primeiro) tr.dataset.grupoInicio = 'true';
       tr.dataset.grupo = String(grupoAtual);
 
@@ -508,7 +529,15 @@
         var reservaSpan = document.createElement('span');
         reservaSpan.className = 'tabela__codigo';
         reservaSpan.textContent = '#' + r.code;
-        blocoReserva.appendChild(reservaSpan);
+        var linhaCodigo = document.createElement('div');
+        linhaCodigo.className = 'tabela__codigo-linha';
+        linhaCodigo.appendChild(reservaSpan);
+        if (podeEditar(r)) {
+          var editar = botaoEditar('tabela__editar', r);
+          editar.addEventListener('click', function () { abrirEdicao(r.id); });
+          linhaCodigo.appendChild(editar);
+        }
+        blocoReserva.appendChild(linhaCodigo);
 
         var totalPessoas = (r.pagantes || 0) + (r.criancas || 0);
         // Exibe a contagem de integrantes abaixo do codigo apenas se for maior que 1,
@@ -575,6 +604,14 @@
         }
         faixaDiv.textContent = textoFaixa;
         nomeWrap.appendChild(faixaDiv);
+      }
+
+      if (p.desistiu) {
+        var desistiuDiv = document.createElement('div');
+        desistiuDiv.className = 'tabela__desistiu';
+        desistiuDiv.appendChild(badge('Desistiu', 'falha'));
+        if (p.desistiu_em) desistiuDiv.appendChild(document.createTextNode(' ' + p.desistiu_em));
+        nomeWrap.appendChild(desistiuDiv);
       }
 
       if (p.nova_reserva) {
@@ -1021,9 +1058,13 @@
           item.draggable = !estaBloqueado;
           item.dataset.reserva = r.id;
 
+          // Arraste que começou num botão do card (lápis): o navegador entrega o
+          // dragstart ao próprio card, que é o elemento arrastável.
+          var arrasteVetado = false;
           item.addEventListener('dragstart', function (ev) {
-            if (estaBloqueado) {
+            if (estaBloqueado || arrasteVetado) {
               ev.preventDefault();
+              arrasteVetado = false;
               return;
             }
             ev.dataTransfer.setData('text/plain', r.id);
@@ -1124,7 +1165,34 @@
             }
           });
           tituloGrupoWrap.append(infoTrigger, tituloGrupo);
-          itemTop.append(tituloGrupoWrap, codeTag);
+          itemTop.appendChild(tituloGrupoWrap);
+          if (podeEditar(r)) {
+            var editarCard = botaoEditar('grupo-item__editar', r);
+            // O card é arrastável e o arraste nativo começa mesmo de um filho:
+            // o lápis não arrasta e veta o arraste do card que nascer nele.
+            editarCard.draggable = false;
+            editarCard.addEventListener('mousedown', function (ev) {
+              ev.stopPropagation();
+              arrasteVetado = true;
+              // Clique simples (sem arraste): o veto não pode sobrar para o
+              // próximo arraste feito pelo corpo do card.
+              document.addEventListener('mouseup', function soltar() {
+                document.removeEventListener('mouseup', soltar, true);
+                arrasteVetado = false;
+              }, true);
+            });
+            editarCard.addEventListener('dragstart', function (ev) {
+              ev.preventDefault();
+              ev.stopPropagation();
+            });
+            editarCard.addEventListener('click', function (ev) {
+              ev.preventDefault();
+              ev.stopPropagation();
+              abrirEdicao(r.id);
+            });
+            itemTop.appendChild(editarCard);
+          }
+          itemTop.appendChild(codeTag);
           if (r.is_vip && !String(r.id || '').startsWith('vip_') && !estaBloqueado) {
             var removerVip = document.createElement('button');
             removerVip.type = 'button';
@@ -2226,7 +2294,9 @@
 
     el.recarregar.setAttribute('aria-busy', 'true');
 
-    fetch(API + '?token=' + encodeURIComponent(estado.token), { cache: 'no-store' })
+    // Devolve a promessa: o modal de edição espera a recarga para reabrir a
+    // reserva com os dados atuais depois de um conflito (stale).
+    return fetch(API + '?token=' + encodeURIComponent(estado.token), { cache: 'no-store' })
       .then(function (resp) {
         if (resp.status === 404) {
           var e = new Error('token');
@@ -2252,6 +2322,7 @@
         mostrar(el.dados);
         if (embarque) embarque.start(estado.token);
         reconciliarPendencias();
+        return true;
       })
       .catch(function (erro) {
         if (erro && erro.semAcesso) {
@@ -2275,6 +2346,32 @@
       .finally(function () {
         el.recarregar.removeAttribute('aria-busy');
       });
+  }
+
+  // ---- edição de reserva ------------------------------------------------
+
+  // O modal mora em painel-editar-reserva.js. Sem ele (ou sem o <dialog>), o
+  // lápis simplesmente não faz nada e o resto do painel segue funcionando.
+  var editorDialog = document.getElementById('painel-editar-dialog');
+  var editor = (window.KobEditarReserva && editorDialog) ? window.KobEditarReserva(editorDialog, {
+    token: function () { return estado.token; },
+    reserva: function (id) { return encontrarReserva(id); },
+    frota: function () { return estado.frota; },
+    confirmar: mostrarConfirmacaoModal,
+    aoSalvar: function () { return carregar(); },
+    meeplePath: MEEPLE_PATH_D,
+    formatos: {
+      formatarCpf: formatarCpf,
+      formatarWhatsapp: formatarWhatsapp,
+      normalizarWhatsapp: normalizarWhatsapp,
+      normalizarEmail: normalizarEmail,
+      emailValido: emailValido,
+      normalizarNomeCompleto: normalizarNomeCompleto
+    }
+  }) : null;
+
+  function abrirEdicao(reservaId) {
+    if (editor) editor.abrir(reservaId);
   }
 
   // ---- eventos -----------------------------------------------------------

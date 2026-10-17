@@ -26,6 +26,7 @@ declare(strict_types=1);
  * não existe — foi exatamente o erro que derrubou a consulta de status.
  */
 require_once dirname(__DIR__, 2) . '/lib/validation.php';
+require_once dirname(__DIR__, 2) . '/lib/registration-edit-schema.php';
 require_once __DIR__ . '/db.php';
 require_once dirname(__DIR__, 2) . '/lib/smtp.php';
 require_once dirname(__DIR__, 2) . '/lib/receipt-pdf.php';
@@ -81,11 +82,12 @@ function bus_enviar_com_retry(
  */
 function bus_confirmation_payload(PDO $pdo, string $registrationId): array
 {
+    bus_registration_edit_ensure_schema($pdo);
     $q = $pdo->prepare(
         'SELECT id, status, email, primary_name, primary_cpf, whatsapp,
                 passenger_count, children_count, group_name, bus_number, fleet_assignment_status,
                 amount_cents, mercadopago_order_id, mercadopago_payment_id,
-                confirmation_email_sent_at, admin_email_sent_at,
+                confirmation_email_sent_at, admin_email_sent_at, withdrawn_at,
                 DATE_FORMAT(CONVERT_TZ(paid_at, "+00:00", "-03:00"), "%d/%m/%Y às %H:%i") AS pago_em
            FROM bus_registrations
           WHERE id = :id
@@ -101,12 +103,17 @@ function bus_confirmation_payload(PDO $pdo, string $registrationId): array
     if ($reg['status'] !== 'confirmed') {
         return ['ok' => false, 'motivo' => 'nao_confirmada'];
     }
+    // Reserva inteira desistente (painel): nenhum e-mail futuro, nem ao contato,
+    // nem aos passageiros, nem à organização.
+    if (($reg['withdrawn_at'] ?? null) !== null) {
+        return ['ok' => false, 'motivo' => 'desistente'];
+    }
 
     $qp = $pdo->prepare(
         'SELECT `position`, full_name, cpf, whatsapp, email, is_primary,
                 confirmation_email_sent_at
            FROM bus_passengers
-          WHERE registration_id = :id ORDER BY `position`'
+          WHERE registration_id = :id AND withdrawn_at IS NULL ORDER BY `position`'
     );
     $qp->execute([':id' => $registrationId]);
     $linhas = $qp->fetchAll(PDO::FETCH_ASSOC);

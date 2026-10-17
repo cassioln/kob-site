@@ -19,6 +19,7 @@ $colunas = [
     ['titulo' => 'Qtd Pessoas', 'largura' => 13],
     ['titulo' => 'Valor pago', 'largura' => 13],
     ['titulo' => 'Status', 'largura' => 22],
+    ['titulo' => 'Desistência', 'largura' => 26],
     ['titulo' => 'Pago em', 'largura' => 17],
     ['titulo' => 'Transação', 'largura' => 34],
 ];
@@ -41,6 +42,7 @@ $linhas = [
             '2',
             'R$ 240,00',
             ['v' => 'Pagamento aprovado', 'estilo' => 'status_ok'],
+            '',
             '20/08/2026 10:00',
             'ORD-001',
         ],
@@ -59,6 +61,7 @@ $linhas = [
             'p2@teste.com',
             'Passageiro 1',
             ['tipo' => 'texto', 'v' => 'Ônibus 1', 'estilo' => 'texto'],
+            '',
             '',
             '',
             '',
@@ -84,6 +87,7 @@ $linhas = [
             'R$ 240,00',
             ['v' => 'Pagamento cancelado', 'estilo' => 'status_falha'],
             '',
+            '',
             'ORD-002',
         ],
     ],
@@ -106,9 +110,65 @@ $linhas = [
             '',
             '',
             '',
+            '',
+        ],
+    ],
+    // Linha 5: Passageiro desistente (cinza tachado, Nº centralizado, coluna Desistência)
+    [
+        'estilo' => 'desistente',
+        'celulas' => [
+            'RES00001',
+            'Grupo Alpha',
+            ['tipo' => 'numero', 'v' => 3, 'estilo' => 'centralizado'],
+            'Passageiro Desistente',
+            '555.555.555-55',
+            '18 anos ou mais',
+            '(11) 99999-5555',
+            'p5@teste.com',
+            'Passageiro 1',
+            ['tipo' => 'texto', 'v' => 'Ônibus 1', 'estilo' => 'texto'],
+            '',
+            '',
+            '',
+            'Desistiu em 16/10/2026 15:00 · Mudou de planos',
+            '',
+            '',
+        ],
+    ],
+    // Linha 6: primeiro passageiro (não responsável) desistiu numa reserva
+    // ativa: células do passageiro tachadas com a borda de início de grupo;
+    // as da reserva (Responsável, Ônibus, Qtd, Valor, Status, Pago em,
+    // Transação) sem risco.
+    [
+        'estilo' => 'desistente_grupo',
+        'celulas' => [
+            'RES00003',
+            'Grupo Gama',
+            ['tipo' => 'numero', 'v' => 1, 'estilo' => 'centralizado'],
+            'Passageiro Desistente Primeiro',
+            '666.666.666-66',
+            '18 anos ou mais',
+            '(11) 99999-6666',
+            'p6@teste.com',
+            ['v' => 'Responsável Gama', 'estilo' => 'grupo'],
+            ['v' => 'Ônibus 2', 'estilo' => 'grupo'],
+            ['v' => '1', 'estilo' => 'grupo'],
+            ['v' => 'R$ 240,00', 'estilo' => 'grupo'],
+            ['v' => 'Pagamento aprovado', 'estilo' => 'status_ok'],
+            'Desistiu em 16/10/2026 15:00',
+            ['v' => '20/08/2026 10:00', 'estilo' => 'grupo'],
+            ['v' => 'ORD-003', 'estilo' => 'grupo'],
         ],
     ],
 ];
+
+foreach ($linhas as $n => $linha) {
+    if (count($linha['celulas']) !== count($colunas)) {
+        fwrite(STDERR, 'FAIL: linha ' . ($n + 1) . ' tem ' . count($linha['celulas'])
+            . ' células, esperado ' . count($colunas) . "\n");
+        exit(1);
+    }
+}
 
 $bytes = xlsx_build([
     'nome' => 'Passageiros',
@@ -151,7 +211,9 @@ $esperados = [
     'status_ok', 'status_espera', 'status_falha', 'vip', 'status_vip',
     'responsavel_centralizado', 'centralizado', 'falha', 'falha_responsavel',
     'falha_centralizado', 'falha_responsavel_centralizado', 'vip_centralizado',
-    'grupo_centralizado', 'falha_grupo', 'falha_grupo_centralizado'
+    'grupo_centralizado', 'falha_grupo', 'falha_grupo_centralizado',
+    'desistente', 'desistente_centralizado',
+    'desistente_grupo', 'desistente_grupo_centralizado'
 ];
 foreach ($esperados as $nome) {
     if (!isset($indices[$nome])) {
@@ -261,4 +323,123 @@ if ((int)$cellXfs[$indices['falha_responsavel']]['fillId'] !== $redFillIndex) {
     exit(1);
 }
 
+// 9. Passageiro desistente: estilo próprio (22) e Nº centralizado (23), fonte cinza tachada.
+if (($indices['desistente'] ?? null) !== 22 || ($indices['desistente_centralizado'] ?? null) !== 23) {
+    fwrite(STDERR, "FAIL: índices de desistente diferentes de 22/23\n");
+    exit(1);
+}
+if ($colTitulos[12] !== 'Status' || $colTitulos[13] !== 'Desistência') {
+    fwrite(STDERR, "FAIL: coluna Desistência não está logo depois de Status\n");
+    exit(1);
+}
+$row8 = $rows[7];
+$cells8 = [];
+foreach ($row8->c as $c) {
+    $cells8[(string)$c['r']] = ['s' => (int)$c['s'], 'v' => (string)($c->is->t ?? '')];
+}
+if ($cells8['A8']['s'] !== 22 || $cells8['D8']['s'] !== 22 || $cells8['J8']['s'] !== 22) {
+    fwrite(STDERR, "FAIL: linha desistente não usa s=22 (A8={$cells8['A8']['s']}, D8={$cells8['D8']['s']}, J8={$cells8['J8']['s']})\n");
+    exit(1);
+}
+if ($cells8['C8']['s'] !== 23) {
+    fwrite(STDERR, "FAIL: C8 (Nº desistente) tem estilo {$cells8['C8']['s']}, esperado 23\n");
+    exit(1);
+}
+if ($cells8['N8']['v'] !== 'Desistiu em 16/10/2026 15:00 · Mudou de planos') {
+    fwrite(STDERR, "FAIL: N8 (Desistência) = '{$cells8['N8']['v']}'\n");
+    exit(1);
+}
+if (strpos($sheetXml, '<c r="C8" s="23"') === false || strpos($sheetXml, '<c r="A8" s="22"') === false) {
+    fwrite(STDERR, "FAIL: sheet1.xml não tem A8 s=\"22\" e C8 s=\"23\"\n");
+    exit(1);
+}
+if (strpos($stylesXml, '<strike/>') === false) {
+    fwrite(STDERR, "FAIL: styles.xml não contém <strike/>\n");
+    exit(1);
+}
+$fontsXml = $styles->fonts->font;
+foreach (['desistente', 'desistente_centralizado'] as $nome) {
+    $xf = $cellXfs[$indices[$nome]];
+    $font = $fontsXml[(int) $xf['fontId']];
+    if (!isset($font->strike) || (string) $font->color['rgb'] !== 'FF94A3B8') {
+        fwrite(STDERR, "FAIL: estilo '$nome' não usa fonte cinza FF94A3B8 tachada\n");
+        exit(1);
+    }
+}
+if ((string) $cellXfs[$indices['desistente_centralizado']]->alignment['horizontal'] !== 'center') {
+    fwrite(STDERR, "FAIL: 'desistente_centralizado' não é centralizado\n");
+    exit(1);
+}
+// 9b. Desistente na primeira linha do grupo de uma reserva ativa.
+$row9 = $rows[8];
+$cells9 = [];
+foreach ($row9->c as $c) {
+    $cells9[(string)$c['r']] = ['s' => (int)$c['s'], 'v' => (string)($c->is->t ?? '')];
+}
+if ($cells9['A9']['s'] !== $indices['desistente_grupo'] || $cells9['D9']['s'] !== $indices['desistente_grupo']
+    || $cells9['C9']['s'] !== $indices['desistente_grupo_centralizado']) {
+    fwrite(STDERR, "FAIL: desistente na primeira linha não usa desistente_grupo (A9={$cells9['A9']['s']}, C9={$cells9['C9']['s']}, D9={$cells9['D9']['s']})\n");
+    exit(1);
+}
+foreach (['I9', 'J9', 'K9', 'L9', 'O9', 'P9'] as $ref) {
+    if ($cells9[$ref]['s'] !== $indices['grupo']) {
+        fwrite(STDERR, "FAIL: $ref (célula da reserva) tem estilo {$cells9[$ref]['s']}, esperado {$indices['grupo']} (sem risco)\n");
+        exit(1);
+    }
+}
+if ($cells9['M9']['s'] !== $indices['status_ok']) {
+    fwrite(STDERR, "FAIL: M9 (Status) tem estilo {$cells9['M9']['s']}, esperado {$indices['status_ok']}\n");
+    exit(1);
+}
+foreach (['desistente_grupo', 'desistente_grupo_centralizado'] as $nome) {
+    $xf = $cellXfs[$indices[$nome]];
+    $font = $fontsXml[(int) $xf['fontId']];
+    $borda = $styles->borders->border[(int) $xf['borderId']];
+    if (!isset($font->strike) || (string) $borda->top['style'] !== 'medium') {
+        fwrite(STDERR, "FAIL: estilo '$nome' não é tachado com borda superior média\n");
+        exit(1);
+    }
+}
+
+if ((int) $styles->cellXfs['count'] !== count($cellXfs)) {
+    fwrite(STDERR, "FAIL: cellXfs count não confere com o número de xf\n");
+    exit(1);
+}
+
+// 10. Regras de exibição da desistência (painel e Excel).
+require_once __DIR__ . '/../lib/registration-withdrawal-display.php';
+$falhas = [];
+$expect = static function ($esperado, $real, string $msg) use (&$falhas): void {
+    if ($esperado !== $real) {
+        $falhas[] = $msg . ': esperado ' . var_export($esperado, true) . ', recebido ' . var_export($real, true);
+    }
+};
+$expect('Desistiu em 16/10/2026 15:00 · Mudou de planos',
+    bus_withdrawal_cell_text(true, '16/10/2026 15:00', 'Mudou de planos'), 'Texto com motivo');
+$expect('Desistiu em 16/10/2026 15:00', bus_withdrawal_cell_text(true, '16/10/2026 15:00', null), 'Texto sem motivo');
+$expect('Desistiu em 16/10/2026 15:00', bus_withdrawal_cell_text(true, '16/10/2026 15:00', '   '), 'Motivo em branco');
+$expect('', bus_withdrawal_cell_text(false, null, null), 'Passageiro ativo');
+$pago = ['chave' => 'pago', 'rotulo' => 'Pagamento aprovado', 'tom' => 'ok'];
+$expect(['chave' => 'desistente', 'rotulo' => 'Desistente', 'tom' => 'falha'],
+    bus_admin_reserva_status($pago, false, true), 'Reserva desistente');
+$expect(['chave' => 'desistente', 'rotulo' => 'Desistente', 'tom' => 'falha'],
+    bus_admin_reserva_status($pago, true, true), 'VIP desistente');
+$expect(['chave' => 'vip', 'rotulo' => 'Reserva VIP', 'tom' => 'vip'],
+    bus_admin_reserva_status($pago, true, false), 'VIP ativo');
+$expect($pago, bus_admin_reserva_status($pago, false, false), 'Reserva ativa');
+$frota = bus_admin_fleet_passengers([
+    ['posicao' => 1, 'nome' => 'Ana', 'responsavel' => true, 'menor' => false, 'crianca_colo' => false, 'desistiu' => false, 'cpf' => 'x'],
+    ['posicao' => 2, 'nome' => 'Bruno', 'responsavel' => false, 'menor' => false, 'crianca_colo' => false, 'desistiu' => true],
+    ['posicao' => 3, 'nome' => 'Caio', 'responsavel' => false, 'menor' => true, 'crianca_colo' => true, 'desistiu' => false],
+]);
+$expect([
+    ['posicao' => 1, 'nome' => 'Ana', 'responsavel' => true, 'menor' => false, 'crianca_colo' => false, 'faixa' => '18 anos ou mais'],
+    ['posicao' => 3, 'nome' => 'Caio', 'responsavel' => false, 'menor' => true, 'crianca_colo' => true, 'faixa' => '0 a 5 anos'],
+], $frota, 'Frota sem desistentes e no formato do card');
+if ($falhas) {
+    fwrite(STDERR, 'FAIL: ' . implode("\nFAIL: ", $falhas) . "\n");
+    exit(1);
+}
+
 echo "PASS: XLSX generation tests passed successfully\n";
+

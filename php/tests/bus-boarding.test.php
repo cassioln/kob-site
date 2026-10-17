@@ -53,6 +53,8 @@ $pdo->exec('CREATE TABLE bus_passengers (
     is_primary TINYINT DEFAULT 0, is_minor TINYINT DEFAULT 0, is_child_lap TINYINT DEFAULT 0, `position` SMALLINT,
     FOREIGN KEY (registration_id) REFERENCES bus_registrations(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
+// As consultas do manifesto filtram withdrawn_at: o bootstrap de produção cria as colunas.
+bus_registration_edit_ensure_schema($pdo);
 bus_boarding_ensure_schema($pdo);
 boarding_expect(0, (int) $pdo->query('SELECT COUNT(*) FROM bus_boarding_checkins')->fetchColumn(), 'Runtime bootstrap creates an empty table');
 $pdo->exec('DROP TABLE bus_boarding_checkins');

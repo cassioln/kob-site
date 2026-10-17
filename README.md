@@ -13,6 +13,16 @@ O **Kriativos On Board (kob-site)** é a plataforma web oficial do **Kriativos O
 2. **Sistema de Ônibus Fretado ([`onibus.html`](./onibus.html)):** Fluxo multi-step de reserva de transporte rodoviário fretado (SP ⇄ Santos), cálculo automático de valores, checkout Pix via Mercado Pago e upload de comprovante.
 3. **Painel de Gestão Operacional ([`painel-onibus.html`](./painel-onibus.html)):** Dashboard administrativo autenticado para acompanhamento de reservas em tempo real, balanceamento de frota, alocação de passageiros por ônibus e exportação de manifestos em XLSX/PDF.
 
+   **Editar reserva:** o lápis em cada reserva (lista e cards da Frota) abre um modal com
+   todos os passageiros. Dá para corrigir nome, CPF, contato, faixa etária e grupo, e marcar
+   **Desistiu** (com motivo opcional) em reservas confirmadas. Quem desiste libera o assento
+   (criança de colo não ocupa) e sai da chamada de embarque, mas continua na lista e no
+   Excel. Se o responsável desiste, o modal pede um novo, adulto 18+. Valores e status de
+   pagamento não mudam. Cada salvamento fica em `bus_registration_edits` e, quando há
+   desistência ou troca de responsável, a organização recebe um e-mail. Migração:
+   [`php/db/010_registration_edit.sql`](./php/db/010_registration_edit.sql) (também criada
+   pelo próprio painel no primeiro acesso, se o usuário do banco tiver permissão).
+
    A **Lista de embarque** abre como painel deslizante pelo botão **Lista de
    embarque** no topo, com a identidade do Checklist de Bordo, mantendo Reservas
    e Frota na tablist. No painel completo ela não abre sozinha; só o atalho

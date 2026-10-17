@@ -37,6 +37,8 @@ try {
 
     $pdo = bus_pdo();
     bus_fleet_ensure_assignment_status($pdo);
+    // Antes da transação: DDL faz commit implícito.
+    bus_registration_edit_ensure_schema($pdo);
     $pdo->beginTransaction();
     $transacaoAberta = true;
     
@@ -95,7 +97,7 @@ try {
     }
 
     // Tratamento para Reservas Reais
-    $stmt = $pdo->prepare('SELECT status, passenger_count, children_count, bus_number, is_vip FROM bus_registrations WHERE id = ? FOR UPDATE');
+    $stmt = $pdo->prepare('SELECT status, passenger_count, children_count, bus_number, is_vip, withdrawn_at FROM bus_registrations WHERE id = ? FOR UPDATE');
     $stmt->execute([$registrationId]);
     $reserva = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -105,6 +107,10 @@ try {
     
     if ($reserva['status'] !== 'confirmed') {
         throw new ValidationError('Apenas reservas com pagamento confirmado podem ser alocadas.');
+    }
+
+    if ($reserva['withdrawn_at'] !== null) {
+        throw new ValidationError('Reservas com desistência total não podem ser alocadas.');
     }
 
     $origemBus = $reserva['bus_number'] !== null ? (int) $reserva['bus_number'] : null;

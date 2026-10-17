@@ -30,6 +30,8 @@ try {
 
     $pdo = bus_pdo();
     bus_fleet_ensure_assignment_status($pdo);
+    // Antes da transação de aplicação: DDL faz commit implícito.
+    bus_registration_edit_ensure_schema($pdo);
     if ($mode === 'preview') {
         $snapshot = bus_fleet_load_balance_snapshot($pdo);
         $plan = bus_fleet_build_balance_plan($snapshot);
@@ -61,12 +63,12 @@ try {
     $updateAssigned = $pdo->prepare(
         "UPDATE bus_registrations
             SET bus_number = ?, fleet_assignment_status = 'assigned', updated_at = UTC_TIMESTAMP()
-          WHERE id = ? AND status = 'confirmed'"
+          WHERE id = ? AND status = 'confirmed' AND withdrawn_at IS NULL"
     );
     $updateWaiting = $pdo->prepare(
         "UPDATE bus_registrations
             SET bus_number = NULL, fleet_assignment_status = 'waiting', updated_at = UTC_TIMESTAMP()
-          WHERE id = ? AND status = 'confirmed'"
+          WHERE id = ? AND status = 'confirmed' AND withdrawn_at IS NULL"
     );
     $guardVip = $pdo->prepare('SELECT is_vip FROM bus_registrations WHERE id = ? FOR UPDATE');
 

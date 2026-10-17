@@ -1,15 +1,16 @@
 /* Only the static boarding shell is cached. API traffic always reaches the network. */
 'use strict';
-var VERSION = '20261016-busao-kob-v12', CACHE = 'kob-boarding-shell-' + VERSION;
+var VERSION = '20261016-editar-reserva-v15', CACHE = 'kob-boarding-shell-' + VERSION;
 // Os manifestos levam ?v= para o navegador/WebAPK buscar nome e ícone novos; a página pede a mesma URL.
 var FILES = ['/painel-onibus.html'].concat(['', 'en/', 'es/'].map(function (lang) { return '/' + lang + 'embarque.webmanifest?v=' + VERSION; }), [
-  '/assets/css/painel-onibus.css?v=20261016-check-busao-v8', '/assets/css/painel-embarque.css?v=' + VERSION,
+  '/assets/css/painel-onibus.css?v=20261016-editar-reserva-v15', '/assets/css/painel-embarque.css?v=' + VERSION,
   '/assets/fonts/gobold-extra2.woff2', '/assets/fonts/chantal-medium.woff2',
   '/assets/images/brand/favicon-32.png', '/assets/images/brand/check-busao-apple-touch-icon.png',
   '/assets/images/brand/check-busao-icon-192.png', '/assets/images/brand/check-busao-icon-512.png', '/assets/images/brand/check-busao-maskable-512.png',
   '/assets/images/brand/kriativos-on-board-logo.webp', '/assets/images/manual/kriativa-chamada.webp'])
   .concat(['i18n', 'export', 'bus-picker', 'store', 'sync', 'offline'].map(function (name) { return '/assets/js/painel-embarque-' + name + '.js?v=' + VERSION; }))
-  .concat(['/assets/js/painel-embarque.js?v=' + VERSION, '/assets/js/painel-onibus.js?v=' + VERSION]);
+  .concat(['/assets/js/painel-embarque.js?v=' + VERSION, '/assets/js/painel-editar-reserva.js?v=' + VERSION,
+    '/assets/js/painel-onibus.js?v=' + VERSION]);
 self.addEventListener('install', function (event) {
   event.waitUntil(caches.open(CACHE).then(function (cache) {
     return cache.addAll(FILES.map(function (file) { return new Request(file, { cache: 'reload', credentials: 'omit' }); }));

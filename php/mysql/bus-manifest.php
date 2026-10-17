@@ -34,6 +34,7 @@ header('Cache-Control: no-store');
 try {
     $pdo = bus_pdo();
     bus_fleet_ensure_assignment_status($pdo);
+    bus_registration_edit_ensure_schema($pdo);
 
     // Só reservas pagas: uma lista de embarque com pendentes levaria a
     // organização a contar passageiro que talvez não apareça.
@@ -47,6 +48,7 @@ try {
            FROM bus_registrations r
            JOIN bus_passengers p ON p.registration_id = r.id
           WHERE r.status = "confirmed" AND r.bus_number IS NOT NULL
+            AND r.withdrawn_at IS NULL AND p.withdrawn_at IS NULL
           ORDER BY r.bus_number, r.is_vip DESC, r.paid_at, r.created_at, r.id, p.`position`'
     );
     $linhas = $q->fetchAll(PDO::FETCH_ASSOC);
