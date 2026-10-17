@@ -329,8 +329,9 @@ test('lápis do card flutua no canto e só aparece no card em foco', async ({ pa
   expect(box.y).toBeLessThan(cardBox.y + 20);
   // Não encosta no código nem no botão Mover.
   const codigoBox = await card.locator('.grupo-item__code').boundingBox();
-  const sobrepoe = (a, b) => a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.height > b.y;
-  expect(sobrepoe(box, codigoBox)).toBe(false);
+  // O lápis é redondo: o encontro dos retângulos nos cantos (até 4 px) não toca o código.
+  const sobrepoe = (a, b, folga = 0) => a.x + folga < b.x + b.width && a.x + a.width - folga > b.x && a.y + folga < b.y + b.height && a.y + a.height - folga > b.y;
+  expect(sobrepoe(box, codigoBox, 4)).toBe(false);
   const mover = card.locator('.grupo-item__mover-trigger');
   if (await mover.count()) expect(sobrepoe(box, await mover.boundingBox())).toBe(false);
 
@@ -952,6 +953,7 @@ test('Remover reserva VIP: fecha o modal sem pedir descarte, confirma em vermelh
   await expect(dialog).toBeHidden();
   await expect(alerta).toBeVisible();
   await expect(alerta.locator('#painel-dialog-titulo')).toHaveText('Remover reserva VIP?');
+  await expect(alerta.locator('#painel-dialog-mensagem')).toContainText('Gil Vieira');
   const confirmar = alerta.locator('#painel-dialog-confirmar');
   await expect(confirmar).toHaveText('Remover VIP');
   await expect(confirmar).toHaveClass(/botao--perigo/);
@@ -983,6 +985,20 @@ test('Remover reserva VIP: cancelar a confirmação não faz mais nada', async (
   await expect(dialog).toBeHidden(); // não reabre
   expect(pedidos).toHaveLength(0);
   expect(chamadas.dados).toBe(antes);
+});
+
+test('Remover reserva VIP em ônibus bloqueado avisa antes de confirmar e não chama a API', async ({ page }) => {
+  await page.route('**/api/bus-admin-data*', route => route.fulfill({
+    json: { ...resposta, reservas: [reservaVip, reservaA], frota: { ...resposta.frota, onibus: resposta.frota.onibus.map(o => ({ ...o, bloqueado: true })) } }
+  }));
+  const pedidos = await capturarRemocaoVip(page);
+  const dialog = await abrirEdicao(page, 'FFFF0006');
+  const alerta = page.locator('#painel-alerta-dialog');
+  await dialog.getByRole('button', { name: 'Remover reserva VIP' }).click();
+  await expect(alerta).toBeVisible();
+  await expect(alerta.locator('#painel-dialog-titulo')).toHaveText('Ônibus Bloqueado');
+  await expect(alerta.locator('#painel-dialog-confirmar')).toHaveAttribute('hidden', '');
+  expect(pedidos).toHaveLength(0);
 });
 
 test('confirmação sem perigo (descartar alterações) segue com o botão primário', async ({ page }) => {

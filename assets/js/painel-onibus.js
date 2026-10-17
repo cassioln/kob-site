@@ -1856,7 +1856,15 @@
   }
 
   function removerReservaVip(reserva) {
-    var nome = reserva && reserva.responsavel ? reserva.responsavel : 'esta pessoa';
+    // A reserva vem da lista (campo "contato"); a da frota usa "responsavel".
+    var nome = (reserva && (reserva.responsavel || reserva.contato)) || 'esta pessoa';
+    var onibusDaReserva = reserva && reserva.bus_number != null
+      ? ((estado.frota && estado.frota.onibus) || []).find(function (o) { return Number(o.numero) === Number(reserva.bus_number); })
+      : null;
+    if (onibusDaReserva && onibusDaReserva.bloqueado) {
+      mostrarAlertaModal('Ônibus Bloqueado', 'O Ônibus ' + onibusDaReserva.numero + ' está bloqueado para alterações. Desbloqueie o cadeado para remover esta reserva VIP.', 'aviso');
+      return Promise.resolve();
+    }
     return mostrarConfirmacaoModal(
       'Remover reserva VIP?',
       'A reserva VIP de ' + nome + ' será removida da frota e da tabela de controle.',

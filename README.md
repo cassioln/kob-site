@@ -21,7 +21,9 @@ O **Kriativos On Board (kob-site)** é a plataforma web oficial do **Kriativos O
    que substituiu o botão "−" dos cards. Reserva de uma pessoa só (VIP ou solo) abre já
    expandida, sem recolher. Quem desiste libera o assento
    (criança de colo não ocupa) e sai da chamada de embarque, mas continua na lista e no
-   Excel. Se o responsável desiste, o modal pede um novo, adulto 18+. Valores e status de
+   Excel. Nos cards da Frota, pagante que desistiu vira meeple vermelho (depois dos roxos) e,
+   no tooltip, aparece com o nome vermelho e tachado e "Desistência" no lugar da faixa etária;
+   reservas VIP aparecem primeiro. Remover VIP em ônibus bloqueado avisa antes de confirmar. Se o responsável desiste, o modal pede um novo, adulto 18+. Valores e status de
    pagamento não mudam. Cada salvamento fica em `bus_registration_edits` e, quando há
    desistência ou troca de responsável, a organização recebe um e-mail. Migração:
    [`php/db/010_registration_edit.sql`](./php/db/010_registration_edit.sql) (também criada

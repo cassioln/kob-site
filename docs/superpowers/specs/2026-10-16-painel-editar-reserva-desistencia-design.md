@@ -40,8 +40,11 @@ embarque. A reserva continua existindo, com histórico.
      "Desistiu");
    - Excel: passageiro continua na planilha, com indicação de desistência, data
      e motivo;
-   - painel de frota: passageiro deixa de contar; se não for criança de colo, o
-     assento dele é liberado no ônibus;
+   - painel de frota: passageiro deixa de contar e o assento dele é liberado no
+     ônibus (criança de colo não ocupa assento). No card, quem pagava e desistiu
+     continua visível: meeple vermelho depois dos roxos, e no tooltip o nome
+     fica vermelho e tachado com "Desistência" no lugar da faixa etária. Colo
+     que desiste simplesmente some;
    - chamada de embarque: passageiro sai da lista (online, PDF e XLSX da
      chamada);
    - e-mail para a organização resumindo a mudança.
@@ -192,8 +195,10 @@ embarque. A reserva continua existindo, com histórico.
   `motivo_desistencia` em cada passageiro; reserva com `withdrawn_at` recebe
   `status_chave = 'desistente'`, rótulo "Desistente" (sobrepõe o status de
   pagamento na lista, que continua no Excel); fica fora da frota e do resumo
-  de pessoas a bordo (receita não muda); lista `passageiros` da frota exclui
-  desistentes.
+  de pessoas a bordo (receita não muda); a lista `passageiros` da frota traz
+  os pagantes desistentes com `desistiu: true` (só para o meeple vermelho e o
+  tooltip; `pagantes`, `criancas` e `assentos` seguem contando só ativos) e
+  omite criança de colo desistente. O card também recebe `desistentes`.
   Cuidado com o índice "onde mais esse CPF aparece": ignorar desistentes.
 - `bus-boarding.php` (lib): `AND p.withdrawn_at IS NULL` na lista e na contagem
   de espera; `bus_boarding_set` responde `manifest_changed` para desistente
