@@ -1,7 +1,8 @@
 /* Modal "Editar reserva" do painel de transporte (só PT-BR).
  *
  * Lista cada pessoa da reserva recolhida; um item aberto por vez mostra os
- * campos. * O switch "Desistiu" marca a desistência sem apagar ninguém (reserva VIP não
+ * campos. Reserva de uma pessoa só (VIP ou solo) abre já expandida, sem recolher.
+ * O switch "Desistiu" marca a desistência sem apagar ninguém (reserva VIP não
  * tem desistência: o modal oferece "Remover reserva VIP"). Quando o
  * responsável desiste e ainda há quem viaje, o modal pede um novo responsável
  * adulto. A validação aqui repete as regras e as mensagens do servidor
@@ -193,6 +194,7 @@
         vip: vip,
         // VIP real (não a linha provisória "vip_..." da fila) pode ser removido daqui.
         podeRemoverVip: vip && !String(reserva.id || '').startsWith('vip_'),
+        unico: passageiros.length === 1,
         codigo: String(reserva.code || String(reserva.id).slice(0, 8).toUpperCase()),
         podeDesistir: reserva.status === 'confirmed' && !vip,
         passageiros: passageiros,
@@ -379,10 +381,16 @@
       var li = criar('li', 'editar-passageiro');
       var painelId = 'editar-p-' + p.id;
 
-      var resumo = criar('button', 'editar-passageiro__resumo');
-      resumo.type = 'button';
-      resumo.setAttribute('aria-expanded', 'false');
-      resumo.setAttribute('aria-controls', painelId);
+      // Reserva de uma pessoa só: o cabeçalho é só informação (nada a recolher),
+      // então não é botão nem anuncia aria-expanded.
+      var fixo = estado.unico;
+      var resumo = criar(fixo ? 'div' : 'button',
+        'editar-passageiro__resumo' + (fixo ? ' editar-passageiro--fixo' : ''));
+      if (!fixo) {
+        resumo.type = 'button';
+        resumo.setAttribute('aria-expanded', 'false');
+        resumo.setAttribute('aria-controls', painelId);
+      }
       var icone = criar('span', 'editar-passageiro__icone');
       var texto = criar('span', 'editar-passageiro__texto');
       var nome = criar('span', 'editar-passageiro__nome');
@@ -394,14 +402,17 @@
       var meta = criar('span', 'editar-passageiro__meta');
       texto.append(nome, papel, meta);
       var etiqueta = criar('span', 'etiqueta etiqueta--falha editar-passageiro__etiqueta', 'Desistiu');
-      resumo.append(icone, texto, etiqueta, svgChevron());
-      resumo.addEventListener('click', function () {
-        abrirPainel(estado.abertoId === p.id ? null : p.id);
-      });
+      resumo.append(icone, texto, etiqueta);
+      if (!fixo) {
+        resumo.appendChild(svgChevron());
+        resumo.addEventListener('click', function () {
+          abrirPainel(estado.abertoId === p.id ? null : p.id);
+        });
+      }
 
       var painel = criar('div', 'editar-passageiro__painel');
       painel.id = painelId;
-      painel.hidden = true;
+      painel.hidden = !fixo;
       var grid = criar('div', 'vip-formulario__grid');
 
       var cNome = campoTexto(p, 'nome', 'Nome *', 'text', 'vip-formulario__campo--nome');
@@ -536,6 +547,10 @@
         labelWhatsapp: cWhatsapp.label, labelEmail: cEmail.label,
         faixa: faixaSelect, interruptor: interruptor
       };
+      if (fixo) {
+        estado.abertoId = p.id;
+        li.classList.add('editar-passageiro--aberto');
+      }
       atualizarResumo(p);
       return li;
     }
@@ -585,6 +600,8 @@
     }
 
     function abrirPainel(id) {
+      // Pessoa única: o painel não recolhe.
+      if (estado.unico) return;
       estado.abertoId = id;
       estado.passageiros.forEach(function (p) {
         var aberto = p.id === id;
@@ -901,6 +918,8 @@
       estado.inicial = assinatura();
       carregarGrupos(aberturas);
       mostrarModal(dialog);
+      // Pessoa única já abre expandida: o foco vai direto para o Nome.
+      if (estado.unico && estado.passageiros[0].el.inputNome) estado.passageiros[0].el.inputNome.focus();
     }
 
     // Foco volta ao lápis que abriu o modal. Depois de salvar, a lista é

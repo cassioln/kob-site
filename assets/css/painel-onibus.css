@@ -4325,6 +4325,15 @@
   transition: transform var(--p-transicao);
 }
 
+/* Reserva de uma pessoa só: cabeçalho informativo, sem seta nem clique. */
+.editar-passageiro__resumo.editar-passageiro--fixo {
+  cursor: default;
+}
+
+.editar-passageiro__resumo.editar-passageiro--fixo:hover {
+  background: transparent;
+}
+
 .editar-passageiro__resumo[aria-expanded="true"] .editar-passageiro__seta {
   transform: rotate(180deg);
 }
