@@ -87,7 +87,7 @@ function bus_confirmation_payload(PDO $pdo, string $registrationId): array
         'SELECT id, status, email, primary_name, primary_cpf, whatsapp,
                 passenger_count, children_count, group_name, bus_number, fleet_assignment_status,
                 amount_cents, mercadopago_order_id, mercadopago_payment_id,
-                confirmation_email_sent_at, admin_email_sent_at,
+                confirmation_email_sent_at, admin_email_sent_at, withdrawn_at,
                 DATE_FORMAT(CONVERT_TZ(paid_at, "+00:00", "-03:00"), "%d/%m/%Y às %H:%i") AS pago_em
            FROM bus_registrations
           WHERE id = :id
@@ -102,6 +102,11 @@ function bus_confirmation_payload(PDO $pdo, string $registrationId): array
     // Só confirmada: enviar antes do pagamento seria prometer vaga sem lastro.
     if ($reg['status'] !== 'confirmed') {
         return ['ok' => false, 'motivo' => 'nao_confirmada'];
+    }
+    // Reserva inteira desistente (painel): nenhum e-mail futuro, nem ao contato,
+    // nem aos passageiros, nem à organização.
+    if (($reg['withdrawn_at'] ?? null) !== null) {
+        return ['ok' => false, 'motivo' => 'desistente'];
     }
 
     $qp = $pdo->prepare(

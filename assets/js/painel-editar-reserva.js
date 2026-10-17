@@ -35,7 +35,8 @@
     cpfRepetido: 'Não repita o CPF de um passageiro.',
     semPassageiros: 'Esta reserva não tem passageiros cadastrados e não pode ser editada aqui.',
     falhaSalvar: 'Não foi possível salvar a reserva.',
-    falhaRede: 'Não foi possível salvar a reserva. Verifique a conexão e tente de novo.'
+    falhaRede: 'Não foi possível salvar a reserva. Verifique a conexão e tente de novo.',
+    reservaAtualizada: 'A reserva foi atualizada por outra pessoa. Confira e salve de novo.'
   };
 
   var CHEVRON_PONTOS = '6 9 12 15 18 9';
@@ -192,7 +193,8 @@
         abertoId: null,
         salvando: false,
         inicial: '',
-        opener: null
+        opener: null,
+        avisoConflito: null
       };
     }
 
@@ -263,6 +265,7 @@
       }).map(function (p) {
         return nomeExibicao(p) + ' passa a ocupar um assento sem pagamento correspondente.';
       });
+      if (estado.avisoConflito) frases.unshift(estado.avisoConflito);
       el.aviso.textContent = frases.join(' ');
       el.aviso.hidden = frases.length === 0;
     }
@@ -794,6 +797,7 @@
           if (!resp.ok || !dados || !dados.success) {
             var falha = new Error((dados && dados.error) || MSG.falhaSalvar);
             falha.doServidor = true;
+            falha.conflito = resp.status === 409 && dados ? dados.code : null;
             throw falha;
           }
           return dados;
@@ -806,8 +810,39 @@
       }).catch(function (err) {
         if (estado !== abertura) return;
         abertura.salvando = false;
+        if (err && err.conflito === 'stale') {
+          reabrirAtualizada(abertura, err.message);
+          return;
+        }
         botaoSalvando(false);
         mostrarErro(err && err.doServidor ? err.message : MSG.falhaRede);
+      });
+    }
+
+    // Outra pessoa salvou a reserva depois que o modal abriu. A cópia da lista
+    // está velha (o painel não faz polling), então reabrir com ela repetiria o
+    // conflito: recarrega os dados do painel e reabre a mesma reserva já com o
+    // updated_at novo. As alterações desta abertura se perdem; o aviso pede
+    // para conferir e salvar de novo. Se a recarga falhar, o painel mostra a
+    // própria tela de erro e o modal não volta.
+    function reabrirAtualizada(abertura, mensagem) {
+      var recarga = typeof options.aoSalvar === 'function' ? options.aoSalvar() : null;
+      if (!recarga || typeof recarga.then !== 'function') {
+        botaoSalvando(false);
+        mostrarErro(mensagem);
+        return;
+      }
+      var reservaId = String(abertura.reserva.id);
+      var rotulo = 'Editar reserva #' + abertura.codigo;
+      fecharAgora();
+      recarga.then(function (recarregou) {
+        if (recarregou !== true || dialog.open || estado) return;
+        // A lista foi redesenhada: o lápis que abriu o modal é outro elemento.
+        var lapis = Array.prototype.filter.call(
+          document.querySelectorAll('.tabela__editar, .grupo-item__editar'),
+          function (b) { return b.getAttribute('aria-label') === rotulo && b.getClientRects().length; }
+        )[0] || null;
+        abrir(reservaId, { avisoConflito: MSG.reservaAtualizada, opener: lapis });
       });
     }
 
@@ -830,7 +865,7 @@
       if (estado.passageiros.length === 0) mostrarErro(MSG.semPassageiros);
     }
 
-    function abrir(reservaId) {
+    function abrir(reservaId, extra) {
       if (dialog.open) return;
       var reserva = typeof options.reserva === 'function' ? options.reserva(reservaId) : null;
       if (!reserva) return;
@@ -838,6 +873,8 @@
       estado = novoEstado(reserva);
       var ativo = document.activeElement;
       estado.opener = ativo && ativo !== document.body && typeof ativo.focus === 'function' ? ativo : null;
+      if (extra && extra.opener) estado.opener = extra.opener;
+      if (extra && extra.avisoConflito) estado.avisoConflito = extra.avisoConflito;
       el.grupoSelect = null;
       el.grupoAviso = null;
       renderizar();
@@ -920,7 +957,9 @@
       // Fechado sem passar por pedirFechar (o Chrome fecha direto num segundo
       // Esc seguido, sem `cancel`). Salvando: reabre para a resposta (um erro,
       // por exemplo) aparecer. Com alterações: reabre e pergunta.
-      if (!estado) return;
+      // O evento chega numa tarefa depois do close(): se o modal já foi
+      // reaberto (conflito stale), este `close` é da abertura anterior.
+      if (!estado || dialog.open) return;
       if (estado.salvando) {
         mostrarModal(dialog);
         return;

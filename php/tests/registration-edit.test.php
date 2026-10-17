@@ -8,6 +8,7 @@ require_once __DIR__ . '/../lib/bus-boarding.php';
 require_once __DIR__ . '/../lib/bus-fleet.php';
 require_once __DIR__ . '/../lib/registration-edit-apply.php';
 require_once __DIR__ . '/../lib/registration-edit-email.php';
+require_once __DIR__ . '/../mysql/lib/confirmation-mailer.php';
 
 function edit_expect($expected, $actual, string $message): void
 {
@@ -392,6 +393,16 @@ $plan = bus_registration_edit_plan($nativeAll, $all, [], NOW);
 edit_expect(3, $plan['registration']['withdrawn_bus_number'], 'Native ints: stored bus is int 3');
 edit_expect([2, 0], [$plan['seats_before'], $plan['seats_after']], 'Native ints: full withdrawal seats');
 
+// Nome gravado fora do formato atual (cadastro antigo): salvar sem mexer não
+// registra mudança falsa; mudar de verdade registra o valor gravado como antes.
+$legacyName = edit_fixture(['2' => ['full_name' => 'pessoa  DOIS']]);
+$plan = bus_registration_edit_plan($legacyName, edit_request(['2' => ['full_name' => 'Pessoa Dois']], '1', $legacyName), [], NOW);
+edit_expect([], $plan['changes'], 'Legacy unnormalized name is not a change');
+edit_expect('Pessoa Dois', edit_passenger($plan, '2')['full_name'], 'Legacy name is saved normalized');
+$plan = bus_registration_edit_plan($legacyName, edit_request(['2' => ['full_name' => 'Pessoa Dois Silva']], '1', $legacyName), [], NOW);
+edit_expect([['passenger_id' => '2', 'field' => 'full_name', 'before' => 'pessoa  DOIS', 'after' => 'Pessoa Dois Silva']],
+    edit_changes($plan, 'full_name'), 'Real rename logs the stored name as before');
+
 echo "PASS: registration edit rules\n";
 
 // ---------------------------------------------------------------------------
@@ -491,6 +502,8 @@ $pdo->exec("CREATE TABLE bus_registrations (
     amount_cents INT NOT NULL DEFAULT 0, status VARCHAR(32),
     bus_number INT NULL,
     fleet_assignment_status ENUM('assigned', 'waiting') NOT NULL DEFAULT 'assigned',
+    mercadopago_order_id VARCHAR(191) NULL, mercadopago_payment_id VARCHAR(191) NULL,
+    confirmation_email_sent_at DATETIME NULL, admin_email_sent_at DATETIME NULL,
     paid_at DATETIME NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -501,8 +514,36 @@ $pdo->exec('CREATE TABLE bus_passengers (
     full_name VARCHAR(255), cpf VARCHAR(14), whatsapp VARCHAR(11) NULL, email VARCHAR(255) NULL,
     is_primary TINYINT(1) NOT NULL DEFAULT 0, is_minor TINYINT(1) NOT NULL DEFAULT 0,
     is_child_lap TINYINT(1) NOT NULL DEFAULT 0,
+    confirmation_email_sent_at DATETIME NULL,
     FOREIGN KEY (registration_id) REFERENCES bus_registrations(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci');
+// Trigger bus_registrations_bu da 001 (Seção B), corpo idêntico, numa query só
+// sem DELIMITER: prova que as contagens gravadas pela edição passam por ele.
+$pdo->exec("CREATE TRIGGER bus_registrations_bu
+BEFORE UPDATE ON bus_registrations
+FOR EACH ROW
+BEGIN
+  IF NEW.passenger_count < 1 OR NEW.passenger_count > 100 THEN
+    SIGNAL SQLSTATE '45000'
+      SET MESSAGE_TEXT = 'bus_registrations: passenger_count deve estar entre 1 e 100';
+  END IF;
+
+  IF NEW.children_count < 0 OR NEW.children_count > NEW.passenger_count THEN
+    SIGNAL SQLSTATE '45000'
+      SET MESSAGE_TEXT = 'bus_registrations: children_count nao pode passar de passenger_count (cada crianca vai no colo de um pagante)';
+  END IF;
+
+  IF NEW.amount_cents < 0 THEN
+    SIGNAL SQLSTATE '45000'
+      SET MESSAGE_TEXT = 'bus_registrations: amount_cents nao pode ser negativo';
+  END IF;
+
+  IF NEW.status NOT IN ('payment_pending','paid_awaiting_proof','confirmed',
+                        'payment_failed','cancelled','refunded') THEN
+    SIGNAL SQLSTATE '45000'
+      SET MESSAGE_TEXT = 'bus_registrations: status invalido';
+  END IF;
+END");
 
 bus_registration_edit_ensure_schema($pdo);
 bus_registration_edit_ensure_schema($pdo); // idempotente
@@ -532,7 +573,14 @@ $pdo->exec('CREATE TABLE IF NOT EXISTS bus_settings (
 $pdo->exec("INSERT INTO bus_registrations
     (id, primary_name, status, bus_number, passenger_count, children_count, paid_at, withdrawn_at, withdrawn_bus_number, withdrawn_fleet_status) VALUES
     ('partial-registration', 'Contato Parcial', 'confirmed', 1, 1, 1, '2026-10-16 10:00:00', NULL, NULL, NULL),
-    ('withdrawn-registration', 'Contato Desistente', 'confirmed', NULL, 0, 0, '2026-10-16 11:00:00', '2026-10-16 18:00:00', 1, 'assigned')");
+    ('withdrawn-registration', 'Contato Desistente', 'confirmed', NULL, 1, 0, '2026-10-16 11:00:00', '2026-10-16 18:00:00', 1, 'assigned')");
+// O trigger da 001 está ativo: contagem zero é recusada.
+try {
+    $pdo->exec("UPDATE bus_registrations SET passenger_count = 0 WHERE id = 'withdrawn-registration'");
+    throw new RuntimeException('Trigger should reject passenger_count = 0');
+} catch (PDOException $e) {
+    edit_expect('45000', $e->getCode(), 'Trigger rejects passenger_count = 0');
+}
 $pdo->exec("INSERT INTO bus_passengers
     (registration_id, `position`, full_name, cpf, is_primary, is_child_lap, withdrawn_at) VALUES
     ('partial-registration', 1, 'Desistente Adulto', '11111111111', 0, 0, '2026-10-16 18:00:00'),
@@ -707,6 +755,9 @@ edit_expect([NOW, '1', 'assigned', null, '2', '1'],
         (string) $row['passenger_count'], (string) $row['children_count']], 'Full withdrawal stored');
 edit_expect([true, 0], [$result['plan']['fully_withdrawn'], $result['plan']['seats_after']], 'Full withdrawal plan');
 edit_expect(0, bus_fleet_bus_occupancy($pdo, 1), 'Fully withdrawn registration frees the bus');
+// Nenhum e-mail de confirmação futuro (contato, passageiros, organização).
+edit_expect(['ok' => false, 'motivo' => 'desistente'], bus_confirmation_payload($pdo, $mainId),
+    'Fully withdrawn registration gets no confirmation e-mail');
 
 $pdo->exec("UPDATE bus_registrations SET status = 'refunded' WHERE id = '$mainId'");
 edit_expect_error('Só reservas confirmadas podem voltar para um ônibus.', fn () => $apply($dbRequest($all(false))));
@@ -719,6 +770,8 @@ edit_expect(['1', 'assigned', null, null, null],
     'Reactivated registration returns to its stored bus');
 edit_expect(true, $result['plan']['reactivated_registration'], 'Reactivation flagged');
 edit_expect(2, bus_fleet_bus_occupancy($pdo, 1), 'Reactivated registration occupies its seats again');
+$payload = bus_confirmation_payload($pdo, $mainId);
+edit_expect([true, 3], [$payload['ok'], count($payload['passageiros'])], 'Reactivated registration gets confirmation e-mails again');
 edit_expect(7, (int) $pdo->query('SELECT COUNT(*) FROM bus_registration_edits')->fetchColumn(), 'One log row per successful save');
 
 // Salvar sem mudanças: nada é gravado e updated_at fica igual (outro modal aberto não recebe stale).
@@ -730,4 +783,29 @@ edit_expect($updatedBefore, (string) $mainRow()['updated_at'], 'No-op save keeps
 edit_expect($updatedBefore, $result['updated_at'], 'No-op save returns the current updated_at');
 edit_expect($before, $snapshot(), 'No-op save leaves the database untouched');
 edit_expect(7, (int) $pdo->query('SELECT COUNT(*) FROM bus_registration_edits')->fetchColumn(), 'No-op save writes no log row');
+
+// CPF provisório da troca cabe em VARCHAR(14) até o maior BIGINT (unsigned).
+edit_expect(13, (int) $pdo->query("SELECT LENGTH(CONV('18446744073709551615', 10, 36))")->fetchColumn(), 'Max BIGINT is 13 chars in base 36');
+// Ids enormes (fim do teste: depois deles o AUTO_INCREMENT não tem para onde ir).
+$bigId = 'eeeeeeee-0000-4000-8000-000000000005';
+$pdo->exec("INSERT INTO bus_registrations (id, primary_name, passenger_count, children_count, status, bus_number)
+    VALUES ('$bigId', 'Id Grande', 2, 0, 'confirmed', 2)");
+$pdo->exec("INSERT INTO bus_passengers (id, registration_id, `position`, full_name, cpf, is_primary) VALUES
+    (9223372036854775806, '$bigId', 1, 'Id Grande', '52998224725', 1),
+    (9223372036854775807, '$bigId', 2, 'Id Maior', '11144477735', 0)");
+$bigRows = [];
+foreach ($pdo->query("SELECT * FROM bus_passengers WHERE registration_id = '$bigId'")->fetchAll(PDO::FETCH_ASSOC) as $r) {
+    $bigRows[(string) $r['id']] = $r;
+}
+$swap = static fn (string $id, string $cpf): array => [
+    'id' => $id, 'full_name' => $bigRows[$id]['full_name'], 'cpf' => $cpf, 'whatsapp' => null, 'email' => null,
+    'is_primary' => (int) $bigRows[$id]['is_primary'], 'is_minor' => 0, 'is_child_lap' => 0,
+    'withdrawn_at' => null, 'withdrawal_reason' => null,
+];
+bus_registration_edit_write_passengers($pdo, $bigId, $bigRows, [
+    $swap('9223372036854775806', '11144477735'), $swap('9223372036854775807', '52998224725'),
+]);
+edit_expect(['11144477735', '52998224725'],
+    $pdo->query("SELECT cpf FROM bus_passengers WHERE registration_id = '$bigId' ORDER BY id")->fetchAll(PDO::FETCH_COLUMN),
+    'CPF swap works with 19-digit passenger ids');
 echo "PASS: registration edit apply\n";

@@ -197,11 +197,14 @@ function bus_registration_edit_check_capacity(PDO $pdo, array $registration, arr
 /**
  * Regrava todos os passageiros. CPFs trocados entre passageiros da mesma
  * reserva colidiriam no UNIQUE (registration_id, cpf) no meio da troca, então
- * quem muda de CPF passa antes por um valor provisório ('#' + id).
+ * quem muda de CPF passa antes por um valor provisório: '#' + id em base 36.
+ * A coluna é VARCHAR(14): o maior BIGINT (unsigned, 20 dígitos) tem 13
+ * caracteres em base 36, então o provisório cabe sempre (o id em decimal só
+ * caberia até 13 dígitos). O '#' impede colidir com CPF real (só dígitos).
  */
 function bus_registration_edit_write_passengers(PDO $pdo, string $registrationId, array $rowsById, array $passengers): void
 {
-    $placeholder = $pdo->prepare("UPDATE bus_passengers SET cpf = CONCAT('#', id) WHERE id = ? AND registration_id = ?");
+    $placeholder = $pdo->prepare("UPDATE bus_passengers SET cpf = CONCAT('#', LOWER(CONV(id, 10, 36))) WHERE id = ? AND registration_id = ?");
     foreach ($passengers as $passenger) {
         if ($passenger['cpf'] !== (string) $rowsById[$passenger['id']]['cpf']) {
             $placeholder->execute([$passenger['id'], $registrationId]);

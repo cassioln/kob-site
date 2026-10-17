@@ -573,6 +573,50 @@ test('erro do servidor mantém o modal', async ({ page }) => {
   expect(pedidos[0].corpo.passengers[1]).toMatchObject({ id: '12', withdrawn: false, withdrawal_reason: null });
 });
 
+test('reserva salva por outra pessoa: recarrega e reabre com o updated_at novo', async ({ page }) => {
+  // Outro admin salvou a reserva A depois que esta aba carregou a lista.
+  const atualizada = {
+    ...reservaA,
+    updated_at: '2026-10-16 20:00:00',
+    passageiros: [{ ...reservaA.passageiros[0], nome: 'Ana Souza Prado' }, reservaA.passageiros[1]]
+  };
+  let carregamentos = 0;
+  await page.route('**/api/bus-admin-data*', route => {
+    carregamentos += 1;
+    return route.fulfill({ json: { ...resposta, reservas: [carregamentos === 1 ? reservaA : atualizada, reservaB] } });
+  });
+  const pedidos = await capturarSalvamento(page, n => (n === 1
+    ? { status: 409, json: { error: 'A reserva mudou desde que você abriu. Feche e abra de novo para ver os dados atuais.', code: 'stale' } }
+    : { status: 200, json: { success: true, registration_id: reservaA.id, updated_at: '2026-10-16 21:00:00' } }));
+  const dialog = await abrirEdicao(page, 'AAAA0001');
+
+  const ana = item(dialog, 'Ana Souza');
+  await ana.locator('.editar-passageiro__resumo').click();
+  await ana.getByLabel('WhatsApp').fill('21988887777');
+  await dialog.getByRole('button', { name: 'Salvar alterações' }).click();
+
+  await expect.poll(() => carregamentos).toBe(2);
+  const aviso = dialog.locator('#editar-aviso');
+  await expect(dialog).toBeVisible();
+  await expect(aviso).toHaveText('A reserva foi atualizada por outra pessoa. Confira e salve de novo.');
+  await expect(dialog.locator('#editar-erro')).toBeHidden();
+  // Reaberto com os dados novos: o nome que o outro admin salvou, sem a edição perdida.
+  await expect(dialog.locator('#editar-p-11-resumo-nome')).toHaveText('Ana Souza Prado');
+  expect(pedidos[0].corpo.expected_updated_at).toBe('2026-10-16 18:00:00');
+
+  const anaNova = item(dialog, 'Ana Souza Prado');
+  await anaNova.locator('.editar-passageiro__resumo').click();
+  await expect(anaNova.getByLabel('WhatsApp')).toHaveValue('(11) 99999-1111');
+  await anaNova.getByLabel('WhatsApp').fill('21988887777');
+  await dialog.getByRole('button', { name: 'Salvar alterações' }).click();
+
+  await expect(dialog).toBeHidden();
+  expect(pedidos).toHaveLength(2);
+  expect(pedidos[1].corpo.expected_updated_at).toBe('2026-10-16 20:00:00');
+  expect(pedidos[1].corpo.passengers[0]).toMatchObject({ id: '11', full_name: 'Ana Souza Prado', whatsapp: '21988887777' });
+  await expect.poll(() => carregamentos).toBe(3);
+});
+
 test('fechar com alterações pede confirmação', async ({ page }) => {
   await servirReservas(page, [reservaA, reservaB]);
   const dialog = await abrirEdicao(page, 'AAAA0001');

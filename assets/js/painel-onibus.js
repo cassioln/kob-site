@@ -2294,7 +2294,9 @@
 
     el.recarregar.setAttribute('aria-busy', 'true');
 
-    fetch(API + '?token=' + encodeURIComponent(estado.token), { cache: 'no-store' })
+    // Devolve a promessa: o modal de edição espera a recarga para reabrir a
+    // reserva com os dados atuais depois de um conflito (stale).
+    return fetch(API + '?token=' + encodeURIComponent(estado.token), { cache: 'no-store' })
       .then(function (resp) {
         if (resp.status === 404) {
           var e = new Error('token');
@@ -2320,6 +2322,7 @@
         mostrar(el.dados);
         if (embarque) embarque.start(estado.token);
         reconciliarPendencias();
+        return true;
       })
       .catch(function (erro) {
         if (erro && erro.semAcesso) {
@@ -2355,7 +2358,7 @@
     reserva: function (id) { return encontrarReserva(id); },
     frota: function () { return estado.frota; },
     confirmar: mostrarConfirmacaoModal,
-    aoSalvar: function () { carregar(); },
+    aoSalvar: function () { return carregar(); },
     meeplePath: MEEPLE_PATH_D,
     formatos: {
       formatarCpf: formatarCpf,

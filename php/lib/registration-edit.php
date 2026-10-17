@@ -403,13 +403,27 @@ function bus_registration_edit_diff(array $rows, array $after): array
             'withdrawn' => ($row['withdrawn_at'] ?? null) !== null,
             'withdrawal_reason' => bus_registration_edit_nullable_string($row['withdrawal_reason'] ?? null),
         ];
+        // Nome gravado fora do formato atual (cadastro antigo) não conta como
+        // mudança: compara já normalizado; o log guarda o valor gravado.
+        $compare = $before;
+        $compare['full_name'] = bus_registration_edit_normalized_name($before['full_name']);
         foreach ($before as $field => $value) {
-            if ($value !== $after[$id][$field]) {
+            if ($compare[$field] !== $after[$id][$field]) {
                 $changes[] = ['passenger_id' => (string) $id, 'field' => $field, 'before' => $value, 'after' => $after[$id][$field]];
             }
         }
     }
     return $changes;
+}
+
+/** Nome gravado no formato de normalize_person_name; inválido fica como está. */
+function bus_registration_edit_normalized_name(string $stored): string
+{
+    try {
+        return normalize_person_name($stored, 'Nome', 1, PHP_INT_MAX);
+    } catch (ValidationError) {
+        return $stored;
+    }
 }
 
 function bus_registration_edit_nullable_string(mixed $value): ?string
