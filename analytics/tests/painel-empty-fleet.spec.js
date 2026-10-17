@@ -828,6 +828,15 @@ test('tooltip mostra o desistente em vermelho e riscado com "Desistência" no lu
   expect(await itens.filter({ hasText: 'Clara Souza' }).evaluate(el => getComputedStyle(el).textDecorationLine)).toBe('none');
 });
 
+test('reservas VIP vêm primeiro no card do ônibus e o espaço livre fica por último', async ({ page }) => {
+  await abrirFrotaComDesistencia(page);
+  const ordem = await page.locator('.onibus-planta__assentos-grid > *').evaluateAll(nos => nos.map(n =>
+    n.dataset.reserva ? (n.dataset.reserva.slice(0, 8) + (n.classList.contains('grupo-item--vip') ? ':vip' : '')) : n.className));
+  expect(ordem).toEqual([
+    '00000003:vip', '00000005:vip', '00000001', '00000002', '00000004', 'onibus-vagas-livres-slot'
+  ]);
+});
+
 test('lista "Sem ônibus confirmado" não mostra o passageiro desistente', async ({ page }) => {
   await abrirFrotaComDesistencia(page);
   const lista = page.locator('#frota-sem-onibus .frota-sem-onibus__passageiros');

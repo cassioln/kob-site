@@ -1052,7 +1052,7 @@
       assentosGrid.className = 'onibus-planta__assentos-grid';
 
       if (info.reservas && info.reservas.length) {
-        info.reservas.forEach(function (r) {
+        vipPrimeiro(info.reservas).forEach(function (r) {
           var item = document.createElement('div');
           item.className = 'grupo-item' + (r.is_vip ? ' grupo-item--vip' : '') + (estaBloqueado ? ' grupo-item--bloqueado' : '');
           item.draggable = !estaBloqueado;
@@ -1753,7 +1753,7 @@
     if (!espera.length) return;
     var capacidade = Number(estado.frota.capacidade || 46);
 
-    espera.forEach(function (item) {
+    vipPrimeiro(espera).forEach(function (item) {
       var linha = document.createElement('div');
       linha.className = 'frota-sem-onibus__item';
 
@@ -1870,6 +1870,14 @@
     if (Number.isFinite(Number(r.desistentes))) return Math.max(0, Number(r.desistentes));
     var lista = Array.isArray(r.passageiros) ? r.passageiros : [];
     return lista.filter(function (p) { return p && p.desistiu && !p.crianca_colo; }).length;
+  }
+
+  /** Cópia com as reservas VIP primeiro; dentro de cada grupo mantém a ordem original. */
+  function vipPrimeiro(lista) {
+    var vips = [];
+    var demais = [];
+    lista.forEach(function (r) { (r && r.is_vip ? vips : demais).push(r); });
+    return vips.concat(demais);
   }
 
   function removerReservaVip(reserva) {
