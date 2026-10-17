@@ -252,6 +252,7 @@ try {
                 $porOnibus[$bNum]['criancas'] += $childCount;
                 $porOnibus[$bNum]['total'] += $grupoTotal;
                 $porOnibus[$bNum]['assentos'] += $assentosGrupo;
+                $passageirosFrota = bus_admin_fleet_passengers($porReserva[$r['id']] ?? []);
                 $porOnibus[$bNum]['reservas'][] = [
                     'id' => $r['id'],
                     'code' => strtoupper(substr((string) $r['id'], 0, 8)),
@@ -263,7 +264,8 @@ try {
                     'assentos' => $assentosGrupo,
                     'is_vip' => (bool) $r['is_vip'],
                     'pago_em' => $r['pago_em'] ?? $r['criado_em'] ?? null,
-                    'passageiros' => bus_admin_fleet_passengers($porReserva[$r['id']] ?? []),
+                    'desistentes' => bus_admin_fleet_withdrawn_count($passageirosFrota),
+                    'passageiros' => $passageirosFrota,
                 ];
             }
         }
@@ -311,6 +313,7 @@ try {
         $porOnibus[$bNum]['criancas'] += $childCount;
         $porOnibus[$bNum]['total'] += $grupoTotal;
         $porOnibus[$bNum]['assentos'] += $assentosGrupo;
+        $passageirosFrota = bus_admin_fleet_passengers($porReserva[$r['id']] ?? []);
         $porOnibus[$bNum]['reservas'][] = [
             'id' => $r['id'],
             'code' => strtoupper(substr((string) $r['id'], 0, 8)),
@@ -322,7 +325,8 @@ try {
             'assentos' => $assentosGrupo,
             'is_vip' => (bool) $r['is_vip'],
             'pago_em' => $r['pago_em'] ?? $r['criado_em'] ?? null,
-            'passageiros' => bus_admin_fleet_passengers($porReserva[$r['id']] ?? []),
+            'desistentes' => bus_admin_fleet_withdrawn_count($passageirosFrota),
+            'passageiros' => $passageirosFrota,
         ];
     }
 
@@ -489,6 +493,7 @@ try {
             continue;
         }
 
+        $passageirosFrota = bus_admin_fleet_passengers($porReserva[$r['id']] ?? []);
         $semOnibusConfirmado[] = [
             'id' => $r['id'],
             'code' => strtoupper(substr((string) $r['id'], 0, 8)),
@@ -499,7 +504,8 @@ try {
             'total' => (int) $r['passenger_count'] + (int) $r['children_count'],
             'is_vip' => (bool) $r['is_vip'],
             'pago_em' => $r['pago_em'] ?? $r['criado_em'] ?? null,
-            'passageiros' => bus_admin_fleet_passengers($porReserva[$r['id']] ?? []),
+            'desistentes' => bus_admin_fleet_withdrawn_count($passageirosFrota),
+            'passageiros' => $passageirosFrota,
             '_paid_at' => (string) ($r['paid_at'] ?? ''),
             '_created_at' => (string) ($r['created_at'] ?? ''),
         ];

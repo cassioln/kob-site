@@ -1,7 +1,9 @@
 /* Modal "Editar reserva" do painel de transporte (só PT-BR).
  *
  * Lista cada pessoa da reserva recolhida; um item aberto por vez mostra os
- * campos. O switch "Desistiu" marca a desistência sem apagar ninguém. Quando o
+ * campos. Reserva de uma pessoa só (VIP ou solo) abre já expandida, sem recolher.
+ * O switch "Desistiu" marca a desistência sem apagar ninguém (reserva VIP não
+ * tem desistência: o modal oferece "Remover reserva VIP"). Quando o
  * responsável desiste e ainda há quem viaje, o modal pede um novo responsável
  * adulto. A validação aqui repete as regras e as mensagens do servidor
  * (php/lib/registration-edit.php) só para dar o retorno antes do POST; quem
@@ -137,6 +139,7 @@
       aviso: dialog.querySelector('#editar-aviso'),
       erro: dialog.querySelector('#editar-erro'),
       cancelar: dialog.querySelector('#editar-cancelar'),
+      removerVip: dialog.querySelector('#editar-remover-vip'),
       salvar: dialog.querySelector('#editar-salvar')
     };
 
@@ -185,16 +188,23 @@
       });
 
       var grupo = reserva.grupo ? String(reserva.grupo) : null;
+      var vip = Boolean(reserva.is_vip);
       return {
         reserva: reserva,
+        vip: vip,
+        // VIP real (não a linha provisória "vip_..." da fila) pode ser removido daqui.
+        podeRemoverVip: vip && !String(reserva.id || '').startsWith('vip_'),
+        unico: passageiros.length === 1,
         codigo: String(reserva.code || String(reserva.id).slice(0, 8).toUpperCase()),
-        podeDesistir: reserva.status === 'confirmed',
+        podeDesistir: reserva.status === 'confirmed' && !vip,
         passageiros: passageiros,
         responsavelId: responsavelId,
         novoResponsavelId: null,
         grupoAtual: grupo,
         grupoSelecionado: grupo,
         abertoId: null,
+        gruposLivres: null,
+        gruposCarregando: false,
         salvando: false,
         inicial: '',
         opener: null,
@@ -292,16 +302,20 @@
       el.grupoCampo.hidden = !aplicavel;
       if (!aplicavel) return;
 
-      var campo = criar('div', 'vip-formulario__campo editar-grupo');
+      // A troca de grupo é rara: o seletor nasce travado, mostrando o nome atual,
+      // e só destrava (e só busca os nomes livres) quando se pede para alterar.
+      var campo = criar('div', 'editar-grupo');
       var rotulo = criar('label', null, 'Nome do grupo');
       rotulo.setAttribute('for', 'editar-grupo');
       var select = criar('select');
       select.id = 'editar-grupo';
+      select.disabled = true;
       var nenhum = criar('option', null, 'Sem nome de grupo');
       nenhum.value = '';
       select.appendChild(nenhum);
+      var atual = null;
       if (estado.grupoAtual) {
-        var atual = criar('option', null, estado.grupoAtual + ' (atual)');
+        atual = criar('option', null, estado.grupoAtual);
         atual.value = estado.grupoAtual;
         select.appendChild(atual);
       }
@@ -310,23 +324,81 @@
         estado.grupoSelecionado = select.value === '' ? null : select.value;
         aoMudar();
       });
+
+      var alterar = criar('button', 'editar-grupo__alterar', 'Alterar grupo');
+      alterar.type = 'button';
+      alterar.setAttribute('aria-controls', 'editar-grupo');
+      alterar.setAttribute('aria-expanded', 'false');
+      alterar.addEventListener('click', function () {
+        if (!estado) return;
+        if (select.disabled) ativarGrupo();
+        else travarGrupo();
+      });
+
       var aviso = criar('p', 'editar-grupo__aviso');
       aviso.id = 'editar-grupo-aviso';
       aviso.hidden = true;
-      campo.append(rotulo, select, aviso);
+      campo.append(rotulo, select, alterar, aviso);
       el.grupoCampo.appendChild(campo);
       el.grupoSelect = select;
+      el.grupoAtualOpcao = atual;
+      el.grupoAlterar = alterar;
       el.grupoAviso = aviso;
+    }
+
+    function ativarGrupo() {
+      el.grupoSelect.disabled = false;
+      if (el.grupoAtualOpcao) el.grupoAtualOpcao.textContent = estado.grupoAtual + ' (atual)';
+      el.grupoAlterar.textContent = 'Manter grupo';
+      el.grupoAlterar.setAttribute('aria-expanded', 'true');
+      aplicarGruposLivres();
+      el.grupoSelect.focus();
+      if (!estado.gruposLivres && !estado.gruposCarregando) carregarGrupos(aberturas);
+    }
+
+    // "Manter grupo": volta ao nome de antes e trava de novo, sem alteração.
+    function travarGrupo() {
+      var select = el.grupoSelect;
+      select.disabled = true;
+      select.value = estado.grupoAtual || '';
+      estado.grupoSelecionado = estado.grupoAtual;
+      if (el.grupoAtualOpcao) el.grupoAtualOpcao.textContent = estado.grupoAtual;
+      removerGruposLivres();
+      el.grupoAviso.hidden = true;
+      select.removeAttribute('aria-describedby');
+      el.grupoAlterar.textContent = 'Alterar grupo';
+      el.grupoAlterar.setAttribute('aria-expanded', 'false');
+      el.grupoAlterar.focus();
+      aoMudar();
+    }
+
+    function removerGruposLivres() {
+      Array.prototype.slice.call(el.grupoSelect.querySelectorAll('option[data-livre]'))
+        .forEach(function (opcao) { opcao.remove(); });
+    }
+
+    function aplicarGruposLivres() {
+      if (!estado.gruposLivres || el.grupoSelect.disabled) return;
+      removerGruposLivres();
+      estado.gruposLivres.forEach(function (nome) {
+        if (nome === estado.grupoAtual) return;
+        var opcao = criar('option', null, nome);
+        opcao.value = nome;
+        opcao.setAttribute('data-livre', '');
+        el.grupoSelect.appendChild(opcao);
+      });
     }
 
     function carregarGrupos(abertura) {
       if (!el.grupoSelect || el.grupoCampo.hidden) return;
       var select = el.grupoSelect;
+      estado.gruposCarregando = true;
       var falhou = function () {
         if (abertura !== aberturas || !estado) return;
+        estado.gruposCarregando = false;
         el.grupoAviso.textContent = 'Não foi possível carregar os nomes livres. '
           + 'Dá para manter o nome atual ou deixar sem nome.';
-        el.grupoAviso.hidden = false;
+        el.grupoAviso.hidden = select.disabled;
         select.setAttribute('aria-describedby', 'editar-grupo-aviso');
       };
       var token = typeof options.token === 'function' ? options.token() : '';
@@ -337,14 +409,9 @@
         })
         .then(function (dados) {
           if (abertura !== aberturas || !estado) return;
-          var livres = dados && Array.isArray(dados.livres) ? dados.livres : [];
-          livres.forEach(function (nome) {
-            nome = String(nome);
-            if (nome === estado.grupoAtual) return;
-            var opcao = criar('option', null, nome);
-            opcao.value = nome;
-            select.appendChild(opcao);
-          });
+          estado.gruposCarregando = false;
+          estado.gruposLivres = dados && Array.isArray(dados.livres) ? dados.livres.map(String) : [];
+          aplicarGruposLivres();
         })
         .catch(falhou);
     }
@@ -373,10 +440,16 @@
       var li = criar('li', 'editar-passageiro');
       var painelId = 'editar-p-' + p.id;
 
-      var resumo = criar('button', 'editar-passageiro__resumo');
-      resumo.type = 'button';
-      resumo.setAttribute('aria-expanded', 'false');
-      resumo.setAttribute('aria-controls', painelId);
+      // Reserva de uma pessoa só: o cabeçalho é só informação (nada a recolher),
+      // então não é botão nem anuncia aria-expanded.
+      var fixo = estado.unico;
+      var resumo = criar(fixo ? 'div' : 'button',
+        'editar-passageiro__resumo' + (fixo ? ' editar-passageiro--fixo' : ''));
+      if (!fixo) {
+        resumo.type = 'button';
+        resumo.setAttribute('aria-expanded', 'false');
+        resumo.setAttribute('aria-controls', painelId);
+      }
       var icone = criar('span', 'editar-passageiro__icone');
       var texto = criar('span', 'editar-passageiro__texto');
       var nome = criar('span', 'editar-passageiro__nome');
@@ -388,14 +461,17 @@
       var meta = criar('span', 'editar-passageiro__meta');
       texto.append(nome, papel, meta);
       var etiqueta = criar('span', 'etiqueta etiqueta--falha editar-passageiro__etiqueta', 'Desistiu');
-      resumo.append(icone, texto, etiqueta, svgChevron());
-      resumo.addEventListener('click', function () {
-        abrirPainel(estado.abertoId === p.id ? null : p.id);
-      });
+      resumo.append(icone, texto, etiqueta);
+      if (!fixo) {
+        resumo.appendChild(svgChevron());
+        resumo.addEventListener('click', function () {
+          abrirPainel(estado.abertoId === p.id ? null : p.id);
+        });
+      }
 
       var painel = criar('div', 'editar-passageiro__painel');
       painel.id = painelId;
-      painel.hidden = true;
+      painel.hidden = !fixo;
       var grid = criar('div', 'vip-formulario__grid');
 
       var cNome = campoTexto(p, 'nome', 'Nome *', 'text', 'vip-formulario__campo--nome');
@@ -514,7 +590,7 @@
         });
         bloco.append(interruptor, motivoWrapper);
         painel.appendChild(bloco);
-      } else if (p.desistiu) {
+      } else if (p.desistiu && !estado.vip) {
         painel.appendChild(criar('p', 'editar-nota',
           'Desistência registrada. Só reserva com pagamento aprovado pode mudar a desistência.'));
       }
@@ -530,6 +606,10 @@
         labelWhatsapp: cWhatsapp.label, labelEmail: cEmail.label,
         faixa: faixaSelect, interruptor: interruptor
       };
+      if (fixo) {
+        estado.abertoId = p.id;
+        li.classList.add('editar-passageiro--aberto');
+      }
       atualizarResumo(p);
       return li;
     }
@@ -579,6 +659,8 @@
     }
 
     function abrirPainel(id) {
+      // Pessoa única: o painel não recolhe.
+      if (estado.unico) return;
       estado.abertoId = id;
       estado.passageiros.forEach(function (p) {
         var aberto = p.id === id;
@@ -868,6 +950,7 @@
       el.subtitulo.textContent = reserva.grupo ? reserva.grupo + (status ? ' · ' + status : '') : status;
       mostrarErro('');
       botaoSalvando(false);
+      el.removerVip.hidden = !estado.podeRemoverVip;
       renderizarGrupo();
       el.lista.replaceChildren();
       estado.passageiros.forEach(function (p) {
@@ -889,11 +972,14 @@
       if (extra && extra.opener) estado.opener = extra.opener;
       if (extra && extra.avisoConflito) estado.avisoConflito = extra.avisoConflito;
       el.grupoSelect = null;
+      el.grupoAtualOpcao = null;
+      el.grupoAlterar = null;
       el.grupoAviso = null;
       renderizar();
       estado.inicial = assinatura();
-      carregarGrupos(aberturas);
       mostrarModal(dialog);
+      // Pessoa única já abre expandida: o foco vai direto para o Nome.
+      if (estado.unico && estado.passageiros[0].el.inputNome) estado.passageiros[0].el.inputNome.focus();
     }
 
     // Foco volta ao lápis que abriu o modal. Depois de salvar, a lista é
@@ -962,6 +1048,14 @@
 
     el.form.addEventListener('submit', salvar);
     el.cancelar.addEventListener('click', pedirFechar);
+    // Remoção de reserva VIP: fecha este modal sem perguntar sobre alterações
+    // (a remoção descarta tudo) e entrega a reserva a quem tem a confirmação.
+    el.removerVip.addEventListener('click', function () {
+      if (!estado || estado.salvando || !estado.podeRemoverVip) return;
+      var reserva = estado.reserva;
+      fecharAgora();
+      if (typeof options.removerVip === 'function') options.removerVip(reserva);
+    });
     dialog.addEventListener('cancel', function (evento) {
       evento.preventDefault();
       pedirFechar();

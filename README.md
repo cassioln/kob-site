@@ -14,10 +14,16 @@ O **Kriativos On Board (kob-site)** é a plataforma web oficial do **Kriativos O
 3. **Painel de Gestão Operacional ([`painel-onibus.html`](./painel-onibus.html)):** Dashboard administrativo autenticado para acompanhamento de reservas em tempo real, balanceamento de frota, alocação de passageiros por ônibus e exportação de manifestos em XLSX/PDF.
 
    **Editar reserva:** o lápis em cada reserva (lista e cards da Frota) abre um modal com
-   todos os passageiros. Dá para corrigir nome, CPF, contato, faixa etária e grupo, e marcar
-   **Desistiu** (com motivo opcional) em reservas confirmadas. Quem desiste libera o assento
+   todos os passageiros. Dá para corrigir nome, CPF, contato, faixa etária e grupo (o nome do grupo fica
+   no cabeçalho do modal, travado até clicar em **Alterar grupo**), e marcar
+   **Desistiu** (com motivo opcional) em reservas confirmadas, exceto VIP: reserva VIP não
+   tem desistência e o modal traz o botão vermelho **Remover reserva VIP** (com confirmação),
+   que substituiu o botão "−" dos cards. Reserva de uma pessoa só (VIP ou solo) abre já
+   expandida, sem recolher. Quem desiste libera o assento
    (criança de colo não ocupa) e sai da chamada de embarque, mas continua na lista e no
-   Excel. Se o responsável desiste, o modal pede um novo, adulto 18+. Valores e status de
+   Excel. Nos cards da Frota, pagante que desistiu vira meeple vermelho (depois dos roxos) e,
+   no tooltip, aparece com o nome vermelho e tachado e "Desistência" no lugar da faixa etária;
+   reservas VIP aparecem primeiro. Remover VIP em ônibus bloqueado avisa antes de confirmar. Se o responsável desiste, o modal pede um novo, adulto 18+. Valores e status de
    pagamento não mudam. Cada salvamento fica em `bus_registration_edits` e, quando há
    desistência ou troca de responsável, a organização recebe um e-mail. Migração:
    [`php/db/010_registration_edit.sql`](./php/db/010_registration_edit.sql) (também criada

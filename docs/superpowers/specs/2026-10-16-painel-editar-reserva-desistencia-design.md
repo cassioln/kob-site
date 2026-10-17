@@ -29,17 +29,22 @@ embarque. A reserva continua existindo, com histórico.
 3. O modal lista todas as pessoas da reserva, cada uma como um item recolhido
    (nome + resumo: faixa etária, CPF, marca de responsável, marca de
    desistência). Clicar no passageiro expande o item e mostra os campos
-   editáveis.
+   editáveis. Reserva de uma pessoa só (VIP ou solo) abre já expandida e sem
+   controle de recolher (ver "Reserva de uma pessoa só").
 4. Editáveis por passageiro: nome completo, CPF, WhatsApp, e-mail, faixa etária
    (18+, 6 a 17, 0 a 5 colo). Editável por reserva: nome do grupo.
-5. Toggle "Desistiu" em cada passageiro, com campo opcional de motivo.
+5. Toggle "Desistiu" em cada passageiro, com campo opcional de motivo. Reserva
+   VIP não tem desistência (ver "VIP: sem desistência").
 6. Ao salvar uma desistência:
    - lista de reservas: passageiro aparece marcado (riscado/esmaecido + etiqueta
      "Desistiu");
    - Excel: passageiro continua na planilha, com indicação de desistência, data
      e motivo;
-   - painel de frota: passageiro deixa de contar; se não for criança de colo, o
-     assento dele é liberado no ônibus;
+   - painel de frota: passageiro deixa de contar e o assento dele é liberado no
+     ônibus (criança de colo não ocupa assento). No card, quem pagava e desistiu
+     continua visível: meeple vermelho depois dos roxos, e no tooltip o nome
+     fica vermelho e tachado com "Desistência" no lugar da faixa etária. Colo
+     que desiste simplesmente some;
    - chamada de embarque: passageiro sai da lista (online, PDF e XLSX da
      chamada);
    - e-mail para a organização resumindo a mudança.
@@ -76,9 +81,12 @@ embarque. A reserva continua existindo, com histórico.
 | Colo sem adulto | Bloquear o salvamento se crianças de colo ativas > adultos (18+) ativos (menor de 6 a 17 não acompanha colo, como no checkout); a mensagem orienta marcar também a criança |
 | Novo responsável | Só adultos 18+ ativos; e-mail e WhatsApp dele viram o contato da reserva; se faltarem, o modal exige preencher antes de salvar |
 | Todos desistem | A reserva vira "Desistente": sai da frota e do embarque, fica na lista com esse status, não pede novo responsável |
-| Alcance do ícone | Lista de reservas e cards da frota. Todas as reservas. O toggle de desistência só aparece em reservas pagas e VIP (as que ocupam lugar) |
+| Alcance do ícone | Lista de reservas e cards da frota. Todas as reservas. O toggle de desistência só aparece em reservas pagas (confirmadas) que não sejam VIP |
+| VIP: sem desistência | Reserva VIP tem uma pessoa só e não tem desistência: o modal não mostra o switch "Desistiu", o motivo nem "Novo responsável", e o servidor recusa `withdrawn: true` num passageiro de reserva VIP ("Reserva VIP não tem desistência. Use "Remover reserva VIP"."). O payload segue com `withdrawn: false`. Desistência já gravada em dado antigo continua como está |
+| VIP: remoção pelo modal | Só o modal remove a reserva VIP. O rodapé tem o botão vermelho "Remover reserva VIP" (`#editar-remover-vip`, entre Cancelar e "Salvar alterações"), visível só para VIP real (`is_vip` e id que não começa com `vip_`). O clique fecha o modal sem perguntar sobre alterações e abre a confirmação (`#painel-alerta-dialog`) com o botão "Remover VIP" em vermelho; confirmar chama `api/bus-vip-delete`. Cancelar a confirmação não reabre o modal. O botão "−" saiu dos cards da frota e da lista "Sem ônibus confirmado" |
+| Reserva de uma pessoa só | VIP ou solo: o painel da pessoa abre expandido e o cabeçalho deixa de ser botão (sem seta, sem `aria-expanded`/`aria-controls`, sem clique), para o leitor de tela não anunciar um controle que não faz nada. O foco inicial vai para o campo Nome. Com mais de uma pessoa, segue a sanfona (um aberto por vez) |
 | E-mail | Avisar a organização (administrativo@) a cada salvamento com desistência, reativação ou troca de responsável |
-| Grupo | Seletor com os nomes livres do catálogo (`bus_catalogo_grupos`) + o atual |
+| Grupo | Seletor com os nomes livres do catálogo (`bus_catalogo_grupos`) + o atual. Fica no cabeçalho do modal, à direita do título (sob ele no celular), travado (`disabled`) com o nome atual; o link "Alterar grupo" destrava e foca o seletor e só então busca os nomes livres (`api/bus-group-names`). "Manter grupo" volta ao nome de antes e trava de novo. Sem alteração, `group_name` não vai no pedido |
 | Registro | Data/hora da desistência (automática, UTC) + motivo opcional; ambos no Excel |
 | Mockup | Dispensado; seguir a identidade do modal VIP |
 | Colo → pagante | Permitido com aviso no modal ("passa a ocupar um assento sem pagamento correspondente"); salva se houver lugar no ônibus; cobrança resolvida fora do painel. Vale também para reservas pendentes |
@@ -187,8 +195,10 @@ embarque. A reserva continua existindo, com histórico.
   `motivo_desistencia` em cada passageiro; reserva com `withdrawn_at` recebe
   `status_chave = 'desistente'`, rótulo "Desistente" (sobrepõe o status de
   pagamento na lista, que continua no Excel); fica fora da frota e do resumo
-  de pessoas a bordo (receita não muda); lista `passageiros` da frota exclui
-  desistentes.
+  de pessoas a bordo (receita não muda); a lista `passageiros` da frota traz
+  os pagantes desistentes com `desistiu: true` (só para o meeple vermelho e o
+  tooltip; `pagantes`, `criancas` e `assentos` seguem contando só ativos) e
+  omite criança de colo desistente. O card também recebe `desistentes`.
   Cuidado com o índice "onde mais esse CPF aparece": ignorar desistentes.
 - `bus-boarding.php` (lib): `AND p.withdrawn_at IS NULL` na lista e na contagem
   de espera; `bus_boarding_set` responde `manifest_changed` para desistente

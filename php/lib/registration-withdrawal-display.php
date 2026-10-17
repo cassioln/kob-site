@@ -53,28 +53,52 @@ function bus_withdrawal_cell_text(bool $desistiu, ?string $desistiuEm, ?string $
 }
 
 /**
- * Passageiros que aparecem nos cards da frota: só os ativos, no formato que o
- * front já usa. Recebe os passageiros já montados por bus-admin-data.php.
+ * Passageiros que aparecem nos cards da frota, no formato que o front já usa.
+ * Desistente pagante (adulto ou menor de 6 a 17 anos) continua na lista com
+ * `desistiu: true`, para o card pintar o meeple de vermelho e o tooltip
+ * mostrar "Desistência". Criança de colo que desistiu simplesmente some.
+ * Recebe os passageiros já montados por bus-admin-data.php.
  *
  * @param list<array> $passageiros
- * @return list<array{posicao: int, nome: string, responsavel: bool, menor: bool, crianca_colo: bool, faixa: string}>
+ * @return list<array{posicao: int, nome: string, responsavel: bool, menor: bool, crianca_colo: bool, faixa: string, desistiu: bool}>
  */
 function bus_admin_fleet_passengers(array $passageiros): array
 {
-    $ativos = [];
+    $lista = [];
     foreach ($passageiros as $p) {
-        if (!empty($p['desistiu'])) {
+        $desistiu = !empty($p['desistiu']);
+        if ($desistiu && !empty($p['crianca_colo'])) {
             continue;
         }
-        $ativos[] = [
+        $lista[] = [
             'posicao' => (int) $p['posicao'],
             'nome' => (string) $p['nome'],
             'responsavel' => (bool) $p['responsavel'],
             'menor' => (bool) $p['menor'],
             'crianca_colo' => (bool) $p['crianca_colo'],
             'faixa' => $p['crianca_colo'] ? '0 a 5 anos' : ($p['menor'] ? '6 a 17 anos' : '18 anos ou mais'),
+            'desistiu' => $desistiu,
         ];
     }
 
-    return $ativos;
+    return $lista;
+}
+
+/**
+ * Quantos passageiros pagantes (não são criança de colo) da lista já montada
+ * por bus_admin_fleet_passengers() desistiram: vira o campo `desistentes` do
+ * card da frota.
+ *
+ * @param list<array> $passageirosFrota
+ */
+function bus_admin_fleet_withdrawn_count(array $passageirosFrota): int
+{
+    $total = 0;
+    foreach ($passageirosFrota as $p) {
+        if (!empty($p['desistiu']) && empty($p['crianca_colo'])) {
+            $total++;
+        }
+    }
+
+    return $total;
 }

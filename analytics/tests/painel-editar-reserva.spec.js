@@ -329,8 +329,9 @@ test('lápis do card flutua no canto e só aparece no card em foco', async ({ pa
   expect(box.y).toBeLessThan(cardBox.y + 20);
   // Não encosta no código nem no botão Mover.
   const codigoBox = await card.locator('.grupo-item__code').boundingBox();
-  const sobrepoe = (a, b) => a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.height > b.y;
-  expect(sobrepoe(box, codigoBox)).toBe(false);
+  // O lápis é redondo: o encontro dos retângulos nos cantos (até 4 px) não toca o código.
+  const sobrepoe = (a, b, folga = 0) => a.x + folga < b.x + b.width && a.x + a.width - folga > b.x && a.y + folga < b.y + b.height && a.y + a.height - folga > b.y;
+  expect(sobrepoe(box, codigoBox, 4)).toBe(false);
   const mover = card.locator('.grupo-item__mover-trigger');
   if (await mover.count()) expect(sobrepoe(box, await mover.boundingBox())).toBe(false);
 
@@ -436,6 +437,7 @@ test('grupo: remover o nome e depois escolher um nome livre', async ({ page }) =
   const pedidos = await capturarSalvamento(page);
 
   let dialog = await abrirEdicao(page, 'AAAA0001');
+  await dialog.getByRole('button', { name: 'Alterar grupo' }).click();
   await dialog.locator('#editar-grupo').selectOption({ label: 'Sem nome de grupo' });
   await dialog.getByRole('button', { name: 'Salvar alterações' }).click();
   await expect(dialog).toBeHidden();
@@ -445,6 +447,7 @@ test('grupo: remover o nome e depois escolher um nome livre', async ({ page }) =
   await page.getByRole('button', { name: 'Editar reserva #AAAA0001' }).click();
   dialog = page.locator('#painel-editar-dialog');
   await expect(dialog).toBeVisible();
+  await dialog.getByRole('button', { name: 'Alterar grupo' }).click();
   await expect(dialog.locator('#editar-grupo option')).toHaveCount(4);
   await dialog.locator('#editar-grupo').selectOption('Grupo Gama');
   await dialog.getByRole('button', { name: 'Salvar alterações' }).click();
@@ -458,6 +461,8 @@ test('grupo: falha ao carregar nomes livres mantém só o atual e avisa', async 
   await servirReservas(page, [reservaA, reservaB]);
   const dialog = await abrirEdicao(page, 'AAAA0001');
   const aviso = dialog.locator('#editar-grupo-aviso');
+  await expect(aviso).toBeHidden();
+  await dialog.getByRole('button', { name: 'Alterar grupo' }).click();
   await expect(aviso).toBeVisible();
   await expect(aviso).toContainText('Não foi possível carregar os nomes livres');
   await expect(dialog.locator('#editar-grupo')).toHaveAttribute('aria-describedby', 'editar-grupo-aviso');
@@ -515,7 +520,11 @@ test('abre, expande um passageiro por vez e edita dados @smoke', async ({ page }
   await expect(dialog.getByRole('heading', { name: 'Editar reserva #AAAA0001' })).toBeVisible();
   await expect(dialog.locator('#painel-editar-subtitulo')).toHaveText('Grupo Alfa · Pagamento aprovado');
   await expect(dialog.locator('#editar-grupo')).toHaveValue('Grupo Alfa');
+  await expect(dialog.locator('#editar-grupo')).toBeDisabled();
+  await expect(dialog.locator('#editar-grupo option')).toHaveText(['Sem nome de grupo', 'Grupo Alfa']);
+  await dialog.getByRole('button', { name: 'Alterar grupo' }).click();
   await expect(dialog.locator('#editar-grupo option')).toHaveText(['Sem nome de grupo', 'Grupo Alfa (atual)', 'Grupo Beta', 'Grupo Gama']);
+  await dialog.getByRole('button', { name: 'Manter grupo' }).click();
 
   const ana = item(dialog, 'Ana Souza');
   const bruno = item(dialog, 'Bruno Lima');
@@ -687,7 +696,6 @@ test('VIP sem contato edita o nome sem precisar de WhatsApp e e-mail', async ({ 
   const pedidos = await capturarSalvamento(page);
   const dialog = await abrirEdicao(page, 'FFFF0006');
   const gil = item(dialog, 'Gil Vieira');
-  await gil.locator('.editar-passageiro__resumo').click();
   await expect(gil.getByLabel('WhatsApp', { exact: true })).not.toHaveAttribute('required', '');
   await expect(gil.getByLabel('E-mail', { exact: true })).not.toHaveAttribute('required', '');
   await gil.getByLabel('Nome *').fill('Gil Vieira Souza');
@@ -814,8 +822,9 @@ test('teclado: Tab chega ao primeiro passageiro, Enter expande e o foco volta ao
   const dialog = page.locator('#painel-editar-dialog');
   await expect(dialog).toBeVisible();
   const primeiro = dialog.locator('.editar-passageiro__resumo').first();
-  // O primeiro foco do modal é o seletor de grupo; um Tab leva ao primeiro passageiro.
-  await expect(dialog.locator('#editar-grupo')).toBeFocused();
+  // O primeiro foco do modal é o link "Alterar grupo" (o seletor nasce travado);
+  // um Tab leva ao primeiro passageiro.
+  await expect(dialog.getByRole('button', { name: 'Alterar grupo' })).toBeFocused();
   await page.keyboard.press('Tab');
   await expect(primeiro).toBeFocused();
   await page.keyboard.press('Enter');
@@ -825,4 +834,419 @@ test('teclado: Tab chega ao primeiro passageiro, Enter expande e o foco volta ao
   await page.keyboard.press('Escape');
   await expect(dialog).toBeHidden();
   await expect(lapis).toBeFocused();
+});
+
+// ---- VIP sem desistência, remoção pelo modal e reserva de uma pessoa só ----
+
+const reservaVip = {
+  ...reservaA,
+  id: 'ffff0006-6666-4666-8666-666666666666',
+  code: 'FFFF0006',
+  is_vip: true,
+  grupo: null,
+  contato: 'Gil Vieira',
+  email: '',
+  contato_whatsapp: '',
+  pagantes: 1,
+  bus_number: 1,
+  updated_at: '2026-10-16 17:00:00',
+  passageiros: [{
+    id: '61', posicao: 1, nome: 'Gil Vieira', cpf: '714.602.380-01', cpf_digitos: '71460238001',
+    whatsapp: null, whatsapp_digitos: null, email: null,
+    responsavel: true, menor: false, crianca_colo: false, desistiu: false, desistiu_em: null, motivo_desistencia: null
+  }]
+};
+
+// Reserva solo comum (confirmada, uma pessoa): mantém o switch Desistiu.
+const reservaSolo = {
+  ...reservaA,
+  id: 'abab0007-7777-4777-8777-777777777777',
+  code: 'ABAB0007',
+  grupo: null,
+  contato: 'Hugo Alves',
+  email: 'hugo@example.com',
+  contato_whatsapp: '(11) 97777-7777',
+  pagantes: 1,
+  updated_at: '2026-10-16 17:30:00',
+  passageiros: [{
+    id: '71', posicao: 1, nome: 'Hugo Alves', cpf: '529.982.247-25', cpf_digitos: '52998224725',
+    whatsapp: '(11) 97777-7777', whatsapp_digitos: '11977777777', email: 'hugo@example.com',
+    responsavel: true, menor: false, crianca_colo: false, desistiu: false, desistiu_em: null, motivo_desistencia: null
+  }]
+};
+
+async function capturarRemocaoVip(page, responder) {
+  const pedidos = [];
+  await page.route('**/api/bus-vip-delete*', route => {
+    pedidos.push(route.request().postDataJSON());
+    return route.fulfill(responder ? responder() : { json: { success: true } });
+  });
+  return pedidos;
+}
+
+test('VIP: modal sem switch, motivo nem novo responsável; payload segue withdrawn:false', async ({ page }) => {
+  await servirReservas(page, [reservaVip, reservaA]);
+  const pedidos = await capturarSalvamento(page);
+  const dialog = await abrirEdicao(page, 'FFFF0006');
+  await expect(dialog.getByRole('switch')).toHaveCount(0);
+  await expect(dialog.getByText('Desistiu', { exact: true })).toBeHidden();
+  await expect(dialog.getByLabel('Motivo (opcional)')).toHaveCount(0);
+  await expect(dialog.getByRole('group', { name: 'Novo responsável' })).toBeHidden();
+
+  await dialog.getByLabel('Nome *').fill('Gil Vieira Souza');
+  await dialog.getByRole('button', { name: 'Salvar alterações' }).click();
+  await expect(dialog).toBeHidden();
+  expect(pedidos[0].corpo.passengers).toEqual([{
+    id: '61', full_name: 'Gil Vieira Souza', cpf: '71460238001', whatsapp: null,
+    email: null, age_group: 'adult', withdrawn: false, withdrawal_reason: null
+  }]);
+});
+
+test('Remover reserva VIP fica à esquerda de Salvar e só existe para VIP real', async ({ page }) => {
+  await servirReservas(page, [reservaVip, reservaA, reservaB]);
+  for (const viewport of [{ width: 1280, height: 860 }, { width: 390, height: 844 }]) {
+    await page.setViewportSize(viewport);
+    let dialog = await abrirEdicao(page, 'FFFF0006');
+    const remover = dialog.getByRole('button', { name: 'Remover reserva VIP' });
+    const salvar = dialog.getByRole('button', { name: 'Salvar alterações' });
+    const cancelar = dialog.getByRole('button', { name: 'Cancelar' });
+    await expect(remover).toBeVisible();
+    await expect(remover).toHaveClass(/botao--perigo/);
+    const [r, sv, c] = await Promise.all([remover.boundingBox(), salvar.boundingBox(), cancelar.boundingBox()]);
+    if (viewport.width > 560) {
+      // Cancelar, Remover reserva VIP e Salvar, nessa ordem, na mesma linha.
+      expect(c.x + c.width).toBeLessThanOrEqual(r.x + 1);
+      expect(r.x + r.width).toBeLessThanOrEqual(sv.x + 1);
+      expect(Math.abs(r.y - sv.y)).toBeLessThan(4);
+    } else {
+      // Empilhados no celular: todos visíveis e inteiros na tela, na mesma ordem.
+      for (const caixa of [c, r, sv]) {
+        expect(caixa.x).toBeGreaterThanOrEqual(0);
+        expect(caixa.x + caixa.width).toBeLessThanOrEqual(viewport.width);
+      }
+      expect(c.y).toBeLessThan(r.y);
+      expect(r.y).toBeLessThan(sv.y);
+    }
+    await page.keyboard.press('Escape');
+    await expect(dialog).toBeHidden();
+  }
+  await page.setViewportSize({ width: 1280, height: 860 });
+  // Não-VIP (multi e solo desistente) e VIP provisório não oferecem o botão.
+  for (const codigo of ['AAAA0001', 'BBBB0002']) {
+    const dialog = await abrirEdicao(page, codigo);
+    await expect(dialog.locator('#editar-remover-vip')).toBeHidden();
+    await expect(dialog.getByRole('button', { name: 'Remover reserva VIP' })).toHaveCount(0);
+    await page.keyboard.press('Escape');
+    await expect(dialog).toBeHidden();
+  }
+});
+
+test('Remover reserva VIP: fecha o modal sem pedir descarte, confirma em vermelho e remove', async ({ page }) => {
+  const chamadas = await servirReservas(page, [reservaVip, reservaA]);
+  const pedidos = await capturarRemocaoVip(page);
+  const dialog = await abrirEdicao(page, 'FFFF0006');
+  const alerta = page.locator('#painel-alerta-dialog');
+
+  // Alteração pendente: a remoção não pergunta sobre descartar.
+  await dialog.getByLabel('Nome *').fill('Gil Vieira Souza');
+  await dialog.getByRole('button', { name: 'Remover reserva VIP' }).click();
+  await expect(dialog).toBeHidden();
+  await expect(alerta).toBeVisible();
+  await expect(alerta.locator('#painel-dialog-titulo')).toHaveText('Remover reserva VIP?');
+  await expect(alerta.locator('#painel-dialog-mensagem')).toContainText('Gil Vieira');
+  const confirmar = alerta.locator('#painel-dialog-confirmar');
+  await expect(confirmar).toHaveText('Remover VIP');
+  await expect(confirmar).toHaveClass(/botao--perigo/);
+  const fundo = await confirmar.evaluate(el => getComputedStyle(el).backgroundColor);
+  const [vermelho, verde, azul] = fundo.match(/\d+/g).map(Number);
+  expect(vermelho).toBeGreaterThan(130);
+  expect(verde).toBeLessThan(60);
+  expect(azul).toBeLessThan(60);
+  await expect(confirmar).toHaveCSS('color', 'rgb(255, 255, 255)');
+
+  const antes = chamadas.dados;
+  await confirmar.click();
+  await expect(alerta).toBeHidden();
+  await expect.poll(() => pedidos.length).toBe(1);
+  expect(pedidos[0]).toEqual({ registration_id: reservaVip.id });
+  await expect.poll(() => chamadas.dados).toBeGreaterThan(antes);
+});
+
+test('Remover reserva VIP: cancelar a confirmação não faz mais nada', async ({ page }) => {
+  const chamadas = await servirReservas(page, [reservaVip, reservaA]);
+  const pedidos = await capturarRemocaoVip(page);
+  const dialog = await abrirEdicao(page, 'FFFF0006');
+  const alerta = page.locator('#painel-alerta-dialog');
+  await dialog.getByRole('button', { name: 'Remover reserva VIP' }).click();
+  await expect(alerta).toBeVisible();
+  const antes = chamadas.dados;
+  await alerta.getByRole('button', { name: 'Cancelar' }).click();
+  await expect(alerta).toBeHidden();
+  await expect(dialog).toBeHidden(); // não reabre
+  expect(pedidos).toHaveLength(0);
+  expect(chamadas.dados).toBe(antes);
+});
+
+test('Remover reserva VIP em ônibus bloqueado avisa antes de confirmar e não chama a API', async ({ page }) => {
+  await page.route('**/api/bus-admin-data*', route => route.fulfill({
+    json: { ...resposta, reservas: [reservaVip, reservaA], frota: { ...resposta.frota, onibus: resposta.frota.onibus.map(o => ({ ...o, bloqueado: true })) } }
+  }));
+  const pedidos = await capturarRemocaoVip(page);
+  const dialog = await abrirEdicao(page, 'FFFF0006');
+  const alerta = page.locator('#painel-alerta-dialog');
+  await dialog.getByRole('button', { name: 'Remover reserva VIP' }).click();
+  await expect(alerta).toBeVisible();
+  await expect(alerta.locator('#painel-dialog-titulo')).toHaveText('Ônibus Bloqueado');
+  await expect(alerta.locator('#painel-dialog-confirmar')).toHaveAttribute('hidden', '');
+  expect(pedidos).toHaveLength(0);
+});
+
+test('confirmação sem perigo (descartar alterações) segue com o botão primário', async ({ page }) => {
+  await servirReservas(page, [reservaVip, reservaA]);
+  const dialog = await abrirEdicao(page, 'FFFF0006');
+  const alerta = page.locator('#painel-alerta-dialog');
+  // Antes: uma confirmação de perigo, depois cancelada, não pode deixar a classe vermelha.
+  await dialog.getByRole('button', { name: 'Remover reserva VIP' }).click();
+  await expect(alerta.locator('#painel-dialog-confirmar')).toHaveClass(/botao--perigo/);
+  await alerta.getByRole('button', { name: 'Cancelar' }).click();
+  await expect(alerta).toBeHidden();
+  await expect(alerta.locator('#painel-dialog-confirmar')).toHaveClass('botao botao--primario');
+
+  await page.getByRole('button', { name: 'Editar reserva #FFFF0006' }).click();
+  await dialog.getByLabel('Nome *').fill('Gil Vieira Souza');
+  await dialog.getByRole('button', { name: 'Cancelar' }).click();
+  await expect(alerta.locator('#painel-dialog-titulo')).toHaveText('Descartar alterações?');
+  const confirmar = alerta.locator('#painel-dialog-confirmar');
+  await expect(confirmar).toHaveText('Descartar e fechar');
+  await expect(confirmar).toHaveClass('botao botao--primario');
+  await expect(confirmar).not.toHaveClass(/botao--perigo/);
+});
+
+test('o botão "−" de remover VIP não existe mais na frota nem em "Sem ônibus confirmado"', async ({ page }) => {
+  const reservaVipSem = {
+    ...reservaVip, id: 'cdcd0008-8888-4888-8888-888888888888', code: 'CDCD0008',
+    contato: 'Iara Neves', bus_number: null, fleet_assignment_status: 'unassigned'
+  };
+  await page.route('**/api/bus-admin-data*', route => route.fulfill({
+    json: {
+      ...resposta,
+      reservas: [reservaA, reservaVip, reservaVipSem],
+      frota: {
+        ...resposta.frota,
+        sem_onibus_confirmado: [{
+          id: reservaVipSem.id, code: 'CDCD0008', contato: 'Iara Neves', is_vip: true, pagantes: 1, criancas: 0,
+          total: 1, assentos: 1, grupo: null, passageiros: [{ nome: 'Iara Neves' }]
+        }],
+        onibus: [{
+          ...resposta.frota.onibus[0],
+          reservas: [
+            ...resposta.frota.onibus[0].reservas,
+            { id: reservaVip.id, code: 'FFFF0006', grupo: null, responsavel: 'Gil Vieira', pagantes: 1, criancas: 0, total: 1, assentos: 1, is_vip: true }
+          ]
+        }]
+      }
+    }
+  }));
+  await page.goto('/painel-onibus.html');
+  await page.getByRole('tab', { name: 'Planejamento de Frota' }).click();
+  await expect(page.locator('.grupo-item').filter({ hasText: 'FFFF0006' })).toHaveCount(1);
+  await expect(page.locator('#frota-sem-onibus .frota-sem-onibus__item')).toHaveCount(1);
+  await expect(page.locator('.grupo-item__vip-remover')).toHaveCount(0);
+  await expect(page.locator('.frota-sem-onibus__remover-vip')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: /Remover reserva VIP de/ })).toHaveCount(0);
+});
+
+test('reserva de uma pessoa só (VIP e solo) abre expandida, sem controle de recolher e com foco no Nome', async ({ page }) => {
+  await servirReservas(page, [reservaVip, reservaSolo, reservaA]);
+  for (const [codigo, nome] of [['FFFF0006', 'Gil Vieira'], ['ABAB0007', 'Hugo Alves']]) {
+    const dialog = await abrirEdicao(page, codigo);
+    const pessoa = item(dialog, nome);
+    const resumo = pessoa.locator('.editar-passageiro__resumo');
+    await expect(pessoa).toHaveClass(/editar-passageiro--aberto/);
+    await expect(resumo).toHaveClass(/editar-passageiro--fixo/);
+    expect(await resumo.evaluate(el => el.tagName)).toBe('DIV');
+    await expect(resumo).not.toHaveAttribute('aria-expanded', /.*/);
+    await expect(resumo).not.toHaveAttribute('aria-controls', /.*/);
+    await expect(pessoa.locator('.editar-passageiro__seta')).toHaveCount(0);
+    await expect(dialog.locator('.editar-passageiro [aria-expanded]')).toHaveCount(0);
+    await expect(pessoa.getByLabel('Nome *')).toBeVisible();
+    await expect(pessoa.getByLabel('Nome *')).toBeFocused();
+    // Clicar no cabeçalho não recolhe.
+    await resumo.click();
+    await expect(pessoa.getByLabel('Nome *')).toBeVisible();
+    // O painel segue ligado ao nome do passageiro.
+    await expect(pessoa.getByLabel('Nome *')).toHaveAccessibleDescription(nome);
+    await page.keyboard.press('Escape');
+    await expect(dialog).toBeHidden();
+  }
+  // Solo comum e confirmada mantém a desistência.
+  const dialog = await abrirEdicao(page, 'ABAB0007');
+  await expect(dialog.getByRole('switch', { name: 'Desistiu' })).toBeVisible();
+});
+
+test('reserva solo: a validação que aponta o campo funciona com o painel fixo', async ({ page }) => {
+  await servirReservas(page, [reservaSolo, reservaA]);
+  const pedidos = await capturarSalvamento(page);
+  const dialog = await abrirEdicao(page, 'ABAB0007');
+  const nome = dialog.getByLabel('Nome *');
+  await nome.fill('Hugo');
+  await dialog.getByRole('button', { name: 'Salvar alterações' }).click();
+  await expect(dialog.locator('#editar-erro')).toHaveText('Informe o nome completo do passageiro 1.');
+  await expect(nome).toBeFocused();
+  await expect(nome).toBeVisible();
+  expect(pedidos).toHaveLength(0);
+});
+
+test('reserva com vários passageiros continua em sanfona, um aberto por vez', async ({ page }) => {
+  await servirReservas(page, [reservaD, reservaA]);
+  const dialog = await abrirEdicao(page, 'DDDD0004');
+  const resumos = dialog.locator('.editar-passageiro__resumo');
+  await expect(resumos).toHaveCount(4);
+  await expect(dialog.locator('.editar-passageiro--fixo')).toHaveCount(0);
+  await expect(dialog.locator('.editar-passageiro__seta')).toHaveCount(4);
+  await expect(dialog.locator('.editar-passageiro__resumo[aria-expanded="true"]')).toHaveCount(0);
+  await resumos.nth(0).click();
+  await expect(resumos.nth(0)).toHaveAttribute('aria-expanded', 'true');
+  await resumos.nth(1).click();
+  await expect(resumos.nth(0)).toHaveAttribute('aria-expanded', 'false');
+  await expect(resumos.nth(1)).toHaveAttribute('aria-expanded', 'true');
+  await resumos.nth(1).click();
+  await expect(resumos.nth(1)).toHaveAttribute('aria-expanded', 'false');
+});
+
+// ---- nome do grupo no cabeçalho, travado até pedir para alterar ----------
+
+async function contarBuscaGrupos(page, responder) {
+  const chamadas = { n: 0 };
+  await page.route('**/api/bus-group-names', route => {
+    chamadas.n += 1;
+    return route.fulfill(responder ? responder() : {
+      json: { livres: ['Grupo Beta', 'Grupo Gama'], em_uso: ['Grupo Alfa'] }
+    });
+  });
+  return chamadas;
+}
+
+test('grupo: seletor no cabeçalho, à direita do título no desktop e sob ele no celular, travado e sem busca ao abrir', async ({ page }) => {
+  await servirReservas(page, [reservaA, reservaB]);
+  const buscas = await contarBuscaGrupos(page);
+  for (const viewport of [{ width: 1280, height: 860 }, { width: 390, height: 844 }]) {
+    await page.setViewportSize(viewport);
+    const dialog = await abrirEdicao(page, 'AAAA0001');
+    const select = dialog.locator('.bus-dialog__header #editar-grupo');
+    await expect(select).toHaveCount(1);
+    await expect(dialog.locator('.editar-corpo #editar-grupo')).toHaveCount(0);
+    await expect(select).toBeDisabled();
+    await expect(select).toHaveValue('Grupo Alfa');
+    await expect(dialog.getByRole('button', { name: 'Alterar grupo' })).toHaveAttribute('aria-expanded', 'false');
+    await expect(dialog.getByRole('button', { name: 'Alterar grupo' })).toHaveAttribute('aria-controls', 'editar-grupo');
+    expect(buscas.n).toBe(0);
+
+    const titulo = await dialog.locator('#painel-editar-titulo').boundingBox();
+    const caixa = await select.boundingBox();
+    const caixaDialog = await dialog.boundingBox();
+    if (viewport.width > 560) {
+      expect(caixa.x).toBeGreaterThan(titulo.x + titulo.width);
+      expect(caixa.width).toBeLessThanOrEqual(220);
+    } else {
+      expect(caixa.y).toBeGreaterThan(titulo.y + titulo.height);
+    }
+    expect(caixa.x).toBeGreaterThanOrEqual(caixaDialog.x);
+    expect(caixa.x + caixa.width).toBeLessThanOrEqual(caixaDialog.x + caixaDialog.width);
+    expect(await dialog.evaluate(d => d.scrollWidth <= d.clientWidth)).toBe(true);
+    await page.keyboard.press('Escape');
+    await expect(dialog).toBeHidden();
+  }
+});
+
+test('grupo: "Alterar grupo" destrava, foca, busca uma vez; escolher um nome livre envia group_name', async ({ page }) => {
+  await servirReservas(page, [reservaA, reservaB]);
+  const buscas = await contarBuscaGrupos(page);
+  const pedidos = await capturarSalvamento(page);
+  const dialog = await abrirEdicao(page, 'AAAA0001');
+  const select = dialog.locator('#editar-grupo');
+
+  await dialog.getByRole('button', { name: 'Alterar grupo' }).click();
+  await expect(select).toBeEnabled();
+  await expect(select).toBeFocused();
+  await expect(dialog.getByRole('button', { name: 'Manter grupo' })).toHaveAttribute('aria-expanded', 'true');
+  await expect(select.locator('option')).toHaveText(['Sem nome de grupo', 'Grupo Alfa (atual)', 'Grupo Beta', 'Grupo Gama']);
+  expect(buscas.n).toBe(1);
+
+  // Travar e destravar de novo não repete a busca nem duplica as opções.
+  await dialog.getByRole('button', { name: 'Manter grupo' }).click();
+  await dialog.getByRole('button', { name: 'Alterar grupo' }).click();
+  await expect(select.locator('option')).toHaveCount(4);
+  expect(buscas.n).toBe(1);
+
+  await select.selectOption('Grupo Beta');
+  await dialog.getByRole('button', { name: 'Salvar alterações' }).click();
+  await expect(dialog).toBeHidden();
+  expect(pedidos[0].corpo.group_name).toBe('Grupo Beta');
+});
+
+test('grupo: "Manter grupo" restaura o valor, trava e o salvamento omite group_name', async ({ page }) => {
+  await servirReservas(page, [reservaA, reservaB]);
+  await contarBuscaGrupos(page);
+  const pedidos = await capturarSalvamento(page);
+  const dialog = await abrirEdicao(page, 'AAAA0001');
+  const select = dialog.locator('#editar-grupo');
+  const alterar = dialog.getByRole('button', { name: 'Alterar grupo' });
+
+  await alterar.click();
+  await expect(select.locator('option')).toHaveCount(4);
+  await select.selectOption('Grupo Gama');
+  await dialog.getByRole('button', { name: 'Manter grupo' }).click();
+  await expect(select).toBeDisabled();
+  await expect(select).toHaveValue('Grupo Alfa');
+  await expect(dialog.getByRole('button', { name: 'Alterar grupo' })).toBeFocused();
+
+  // Sem alteração pendente: fechar não pede descarte, e salvar não manda o grupo.
+  await dialog.getByRole('button', { name: 'Alterar grupo' }).click();
+  await dialog.getByRole('button', { name: 'Manter grupo' }).click();
+  await item(dialog, 'Ana Souza').locator('.editar-passageiro__resumo').click();
+  await item(dialog, 'Ana Souza').getByLabel('Nome *').fill('Ana Souza Lima');
+  await dialog.getByRole('button', { name: 'Salvar alterações' }).click();
+  await expect(dialog).toBeHidden();
+  expect('group_name' in pedidos[0].corpo).toBe(false);
+});
+
+test('grupo: mudar o grupo e fechar pede confirmação; manter o grupo desfaz o pendente', async ({ page }) => {
+  await servirReservas(page, [reservaA, reservaB]);
+  await contarBuscaGrupos(page);
+  const dialog = await abrirEdicao(page, 'AAAA0001');
+  const alerta = page.locator('#painel-alerta-dialog');
+  await dialog.getByRole('button', { name: 'Alterar grupo' }).click();
+  await dialog.locator('#editar-grupo').selectOption('Sem nome de grupo');
+  await dialog.getByRole('button', { name: 'Cancelar' }).click();
+  await expect(alerta.locator('#painel-dialog-titulo')).toHaveText('Descartar alterações?');
+  await alerta.getByRole('button', { name: 'Cancelar' }).click();
+  await expect(dialog).toBeVisible();
+  await dialog.getByRole('button', { name: 'Manter grupo' }).click();
+  await dialog.getByRole('button', { name: 'Cancelar' }).click();
+  await expect(dialog).toBeHidden();
+  await expect(alerta).toBeHidden();
+});
+
+test('grupo: busca com erro 500 avisa e oferece só o atual e "Sem nome de grupo"', async ({ page }) => {
+  await servirReservas(page, [reservaA, reservaB]);
+  const buscas = await contarBuscaGrupos(page, () => ({ status: 500, json: { error: 'Falhou.' } }));
+  const dialog = await abrirEdicao(page, 'AAAA0001');
+  await dialog.getByRole('button', { name: 'Alterar grupo' }).click();
+  const aviso = dialog.locator('#editar-grupo-aviso');
+  await expect(aviso).toBeVisible();
+  await expect(aviso).toContainText('Não foi possível carregar os nomes livres');
+  await expect(dialog.locator('#editar-grupo')).toBeEnabled();
+  await expect(dialog.locator('#editar-grupo')).toHaveAttribute('aria-describedby', 'editar-grupo-aviso');
+  await expect(dialog.locator('#editar-grupo option')).toHaveText(['Sem nome de grupo', 'Grupo Alfa (atual)']);
+  expect(buscas.n).toBe(1);
+});
+
+test('grupo: reserva solo sem nome de grupo mantém o campo escondido', async ({ page }) => {
+  await servirReservas(page, [{ ...reservaA, grupo: null, passageiros: [reservaA.passageiros[0]] }, reservaB]);
+  const buscas = await contarBuscaGrupos(page);
+  const dialog = await abrirEdicao(page, 'AAAA0001');
+  await expect(dialog.locator('#editar-grupo-campo')).toBeHidden();
+  await expect(dialog.getByRole('button', { name: 'Alterar grupo' })).toHaveCount(0);
+  expect(buscas.n).toBe(0);
 });
