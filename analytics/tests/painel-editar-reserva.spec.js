@@ -534,7 +534,7 @@ test('colo sem adulto bloqueia e colo→pagante avisa', async ({ page }) => {
   await eva.getByRole('switch', { name: 'Desistiu' }).click();
   await dialog.getByRole('button', { name: 'Salvar alterações' }).click();
   await expect(dialog.locator('#editar-erro')).toHaveText(
-    'Há mais crianças de colo do que adultos pagantes na viagem. Marque também a desistência da criança ou mantenha um adulto.'
+    'Há mais crianças de colo do que adultos (18+) na viagem. Marque também a desistência da criança ou mantenha um adulto.'
   );
   expect(pedidos).toHaveLength(0);
 
@@ -549,6 +549,59 @@ test('colo sem adulto bloqueia e colo→pagante avisa', async ({ page }) => {
   await expect(aviso).toContainText('Fábio Rocha passa a ocupar um assento sem pagamento correspondente');
   await fabio.getByLabel('Faixa etária').selectOption({ label: '0 a 5 anos (colo)' });
   await expect(aviso).toBeHidden();
+});
+
+test('menor de 6 a 17 não acompanha criança de colo', async ({ page }) => {
+  await servirReservas(page, [reservaD]);
+  const pedidos = await capturarSalvamento(page);
+  const dialog = await abrirEdicao(page, 'DDDD0004');
+  // Saem os dois adultos: ficam Caio (6 a 17) e Duda (colo).
+  for (const nome of ['Ana Prado', 'Bruno Prado']) {
+    await item(dialog, nome).locator('.editar-passageiro__resumo').click();
+    await item(dialog, nome).getByRole('switch', { name: 'Desistiu' }).click();
+  }
+  await dialog.getByRole('button', { name: 'Salvar alterações' }).click();
+  await expect(dialog.locator('#editar-erro')).toHaveText(
+    'Há mais crianças de colo do que adultos (18+) na viagem. Marque também a desistência da criança ou mantenha um adulto.'
+  );
+  expect(pedidos).toHaveLength(0);
+});
+
+test('VIP sem contato edita o nome sem precisar de WhatsApp e e-mail', async ({ page }) => {
+  const vip = {
+    ...reservaA,
+    id: 'ffff0006-6666-4666-8666-666666666666',
+    code: 'FFFF0006',
+    is_vip: true,
+    grupo: null,
+    contato: 'Gil Vieira',
+    email: '',
+    contato_whatsapp: '',
+    pagantes: 1,
+    updated_at: '2026-10-16 17:00:00',
+    passageiros: [{
+      id: '61', posicao: 1, nome: 'Gil Vieira', cpf: '714.602.380-01', cpf_digitos: '71460238001',
+      whatsapp: null, whatsapp_digitos: null, email: null,
+      responsavel: true, menor: false, crianca_colo: false, desistiu: false, desistiu_em: null, motivo_desistencia: null
+    }]
+  };
+  await servirReservas(page, [vip]);
+  const pedidos = await capturarSalvamento(page);
+  const dialog = await abrirEdicao(page, 'FFFF0006');
+  const gil = item(dialog, 'Gil Vieira');
+  await gil.locator('.editar-passageiro__resumo').click();
+  await expect(gil.getByLabel('WhatsApp', { exact: true })).not.toHaveAttribute('required', '');
+  await expect(gil.getByLabel('E-mail', { exact: true })).not.toHaveAttribute('required', '');
+  await gil.getByLabel('Nome *').fill('Gil Vieira Souza');
+  await dialog.getByRole('button', { name: 'Salvar alterações' }).click();
+
+  await expect(dialog).toBeHidden();
+  expect(pedidos).toHaveLength(1);
+  expect(pedidos[0].corpo.primary_passenger_id).toBe('61');
+  expect(pedidos[0].corpo.passengers).toEqual([{
+    id: '61', full_name: 'Gil Vieira Souza', cpf: '71460238001', whatsapp: null,
+    email: null, age_group: 'adult', withdrawn: false, withdrawal_reason: null
+  }]);
 });
 
 test('erro do servidor mantém o modal', async ({ page }) => {

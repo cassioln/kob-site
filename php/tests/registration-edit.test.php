@@ -190,7 +190,8 @@ edit_expect_error('E-mail do passageiro 2 inválido.', fn () => bus_registration
 edit_expect_error('Não repita o CPF de um passageiro.', fn () => bus_registration_edit_plan(edit_fixture(), edit_request(['2' => ['cpf' => '529.982.247-25']]), [], NOW));
 edit_expect_error('Faixa etária inválida', fn () => bus_registration_edit_plan(edit_fixture(), edit_request(['2' => ['age_group' => 'senior']]), [], NOW));
 
-// Regra 4: responsável adulto, ativo, com WhatsApp e e-mail.
+// Regra 4: responsável adulto e ativo; contato obrigatório ao trocar de
+// responsável ou se o campo já estava gravado.
 edit_expect_error('O responsável precisa ser um adulto (18+) que continua na viagem.',
     fn () => bus_registration_edit_plan(edit_fixture(), edit_request([], '3'), [], NOW));
 edit_expect_error('O responsável precisa ser um adulto (18+) que continua na viagem.',
@@ -203,6 +204,30 @@ edit_expect_error('Informe WhatsApp e e-mail do responsável.',
     fn () => bus_registration_edit_plan(edit_fixture(), edit_request(['2' => ['email' => '']], '2'), [], NOW));
 edit_expect_error('Informe WhatsApp e e-mail do responsável.',
     fn () => bus_registration_edit_plan(edit_fixture(), edit_request(['1' => ['whatsapp' => '']]), [], NOW));
+edit_expect_error('Informe WhatsApp e e-mail do responsável.',
+    fn () => bus_registration_edit_plan(edit_fixture(), edit_request(['1' => ['email' => '']]), [], NOW));
+// VIP sem contato gravado (passageiro e reserva com valor vazio): editar o nome salva sem inventar contato.
+$vip = edit_fixture(
+    ['1' => ['whatsapp' => null, 'email' => null], '2' => ['withdrawn_at' => '2026-10-15 12:00:00'],
+        '3' => ['withdrawn_at' => '2026-10-15 12:00:00']],
+    ['email' => '', 'whatsapp' => '', 'passenger_count' => '1', 'children_count' => '0', 'is_vip' => '1']
+);
+$plan = bus_registration_edit_plan($vip, edit_request(['1' => ['full_name' => 'Pessoa Um Vip']], '1', $vip), [], NOW);
+edit_expect([null, null], [edit_passenger($plan, '1')['whatsapp'], edit_passenger($plan, '1')['email']], 'VIP keeps no contact');
+edit_expect('Pessoa Um Vip', $plan['registration']['primary_name'], 'VIP name saved');
+edit_expect(false, array_key_exists('email', $plan['registration']) || array_key_exists('whatsapp', $plan['registration']),
+    'VIP without contact does not overwrite the registration contact columns');
+// Só um dos campos gravado: esse não pode ser apagado; o outro segue opcional.
+$halfVip = edit_fixture(['1' => ['email' => null]], ['email' => '']);
+bus_registration_edit_plan($halfVip, edit_request([], '1', $halfVip), [], NOW);
+edit_expect_error('Informe WhatsApp e e-mail do responsável.',
+    fn () => bus_registration_edit_plan($halfVip, edit_request(['1' => ['whatsapp' => '']], '1', $halfVip), [], NOW));
+// Novo responsável precisa de contato completo, mesmo vindo de um VIP sem contato.
+$vipPair = edit_fixture(['1' => ['whatsapp' => null, 'email' => null], '2' => ['email' => null]]);
+edit_expect_error('Informe WhatsApp e e-mail do responsável.',
+    fn () => bus_registration_edit_plan($vipPair, edit_request(['1' => ['withdrawn' => true]], '2', $vipPair), [], NOW));
+$plan = bus_registration_edit_plan($vipPair, edit_request(['1' => ['withdrawn' => true], '2' => ['email' => 'dois@example.com']], '2', $vipPair), [], NOW);
+edit_expect(['dois@example.com', '11976543210'], [$plan['registration']['email'], $plan['registration']['whatsapp']], 'New primary contact written');
 
 // Regra 5: responsável desistiu e não foi trocado.
 edit_expect_error('Escolha o novo responsável', fn () => bus_registration_edit_plan(edit_fixture(),
@@ -214,7 +239,26 @@ edit_expect_error('Há mais crianças de colo', fn () => bus_registration_edit_p
     edit_request(['1' => ['withdrawn' => true], '2' => ['withdrawn' => true]]), [], NOW));
 edit_expect_error('Há mais crianças de colo', fn () => bus_registration_edit_plan(edit_fixture(),
     edit_request(['1' => ['age_group' => 'lap'], '2' => ['age_group' => 'lap']], '2'), [], NOW));
-// Menor de 6 a 17 conta como pagante para o colo (regra do brief: adult+minor).
+// Colo só com adulto 18+ (como no checkout): menor de 6 a 17 não conta.
+$fourWithMinor = static function (array $extra = []): array {
+    $f = edit_fixture([], ['passenger_count' => '2', 'children_count' => '2']);
+    $f['passengers'][1]['is_minor'] = '1';
+    $f['passengers'][] = ['id' => '4', 'position' => '4', 'full_name' => 'Criança Quatro', 'cpf' => '39053344705',
+        'whatsapp' => null, 'email' => null, 'is_primary' => '0', 'is_minor' => '1', 'is_child_lap' => '1',
+        'withdrawn_at' => null, 'withdrawal_reason' => null];
+    foreach ($extra as $p) $f['passengers'][] = $p;
+    return $f;
+};
+$oneAdult = $fourWithMinor(); // 1 adulto + 1 menor + 2 colo
+edit_expect_error('Há mais crianças de colo do que adultos (18+) na viagem. Marque também a desistência da criança ou mantenha um adulto.',
+    fn () => bus_registration_edit_plan($oneAdult, edit_request([], '1', $oneAdult), [], NOW));
+$twoAdults = $fourWithMinor([['id' => '5', 'position' => '5', 'full_name' => 'Pessoa Cinco', 'cpf' => '10000000019',
+    'whatsapp' => null, 'email' => null, 'is_primary' => '0', 'is_minor' => '0', 'is_child_lap' => '0',
+    'withdrawn_at' => null, 'withdrawal_reason' => null]]);
+$twoAdults['registration']['passenger_count'] = '3';
+$plan = bus_registration_edit_plan($twoAdults, edit_request([], '1', $twoAdults), [], NOW); // 2 adultos + 1 menor + 2 colo
+edit_expect([[], 3], [$plan['changes'], $plan['seats_after']], 'Two adults carry two lap children; minor still takes a seat');
+// Menor de 6 a 17 com o colo coberto por adulto: troca de faixa permitida.
 $plan = bus_registration_edit_plan(edit_fixture(), edit_request(['2' => ['age_group' => 'minor']]), [], NOW);
 edit_expect([['passenger_id' => '2', 'field' => 'age_group', 'before' => 'adult', 'after' => 'minor']],
     $plan['changes'], 'Age group change logged');

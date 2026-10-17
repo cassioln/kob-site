@@ -30,7 +30,7 @@
     escolherResponsavel: 'Escolha o novo responsável da reserva.',
     contatoResponsavel: 'Informe WhatsApp e e-mail do responsável.',
     responsavelAdulto: 'O responsável precisa ser um adulto (18+) que continua na viagem.',
-    coloSemAdulto: 'Há mais crianças de colo do que adultos pagantes na viagem. '
+    coloSemAdulto: 'Há mais crianças de colo do que adultos (18+) na viagem. '
       + 'Marque também a desistência da criança ou mantenha um adulto.',
     cpfRepetido: 'Não repita o CPF de um passageiro.',
     semPassageiros: 'Esta reserva não tem passageiros cadastrados e não pode ser editada aqui.',
@@ -159,6 +159,10 @@
         var faixa = faixaDe(p);
         var whatsapp = p.whatsapp_digitos || digitos(p.whatsapp);
         var email = p.email || '';
+        // O que a linha do passageiro tem gravado, antes do preenchimento com o
+        // contato da reserva: o servidor só exige do responsável mantido o
+        // campo que já estava gravado.
+        var contatoGravado = { whatsapp: Boolean(whatsapp), email: Boolean(email) };
         // O contato do responsável também mora na reserva. Se a linha do
         // passageiro veio sem ele, usa o da reserva para não travar o salvamento.
         if (String(p.id) === responsavelId) {
@@ -168,7 +172,7 @@
         return {
           id: String(p.id),
           posicao: Number(p.posicao) || indice + 1,
-          original: { faixa: faixa, desistiu: Boolean(p.desistiu) },
+          original: { faixa: faixa, desistiu: Boolean(p.desistiu), contato: contatoGravado },
           nome: String(p.nome || ''),
           cpf: formatarCpf(p.cpf_digitos || p.cpf || ''),
           whatsapp: whatsapp ? formatarWhatsapp(whatsapp) : '',
@@ -227,6 +231,14 @@
 
     function contatoCompleto(p) {
       return Boolean(normalizarWhatsapp(p.whatsapp)) && emailValido(p.email);
+    }
+
+    // Mesma regra do servidor: contato do responsável é obrigatório quando ele
+    // muda; mantido, só o campo que já estava gravado (não dá para apagar). Um
+    // VIP que nunca teve contato salva sem inventar um.
+    function contatoObrigatorio(p, campo) {
+      if (!p || p.id !== responsavelEfetivoId()) return false;
+      return p.id !== estado.responsavelId || p.original.contato[campo];
     }
 
     // Retrato do que mudaria no banco, com o texto cru dos campos: digitar algo
@@ -552,13 +564,12 @@
       });
     }
 
-    // Contato obrigatório só para quem fica como responsável.
+    // Contato obrigatório só para quem fica como responsável (contatoObrigatorio).
     function marcarObrigatorios() {
-      var alvo = responsavelEfetivoId();
       estado.passageiros.forEach(function (p) {
-        var obrigatorio = p.id === alvo;
-        [[p.el.inputWhatsapp, p.el.labelWhatsapp, 'WhatsApp'], [p.el.inputEmail, p.el.labelEmail, 'E-mail']]
+        [[p.el.inputWhatsapp, p.el.labelWhatsapp, 'WhatsApp', 'whatsapp'], [p.el.inputEmail, p.el.labelEmail, 'E-mail', 'email']]
           .forEach(function (par) {
+            var obrigatorio = contatoObrigatorio(p, par[3]);
             par[0].required = obrigatorio;
             if (obrigatorio) par[0].setAttribute('aria-required', 'true');
             else par[0].removeAttribute('aria-required');
@@ -692,8 +703,10 @@
       var viajam = ativos();
       if (viajam.length === 0) return null; // reserva inteira desistente: sem responsável
 
+      // Colo só com adulto 18+ (como no checkout); menor de 6 a 17 não conta.
       var colo = viajam.filter(function (p) { return p.faixa === 'lap'; });
-      if (colo.length > viajam.length - colo.length) {
+      var adultos = viajam.filter(function (p) { return p.faixa === 'adult'; });
+      if (colo.length > adultos.length) {
         return { mensagem: MSG.coloSemAdulto, p: colo[0], campo: colo[0].el.interruptor || colo[0].el.faixa };
       }
 
@@ -711,10 +724,10 @@
       if (!responsavel || responsavel.desistiu || responsavel.faixa !== 'adult') {
         return { mensagem: MSG.responsavelAdulto, p: responsavel, campo: responsavel && responsavel.el.faixa };
       }
-      if (!normalizarWhatsapp(responsavel.whatsapp)) {
+      if (contatoObrigatorio(responsavel, 'whatsapp') && !normalizarWhatsapp(responsavel.whatsapp)) {
         return { mensagem: MSG.contatoResponsavel, p: responsavel, campo: responsavel.el.inputWhatsapp };
       }
-      if (!emailValido(responsavel.email)) {
+      if (contatoObrigatorio(responsavel, 'email') && !emailValido(responsavel.email)) {
         return { mensagem: MSG.contatoResponsavel, p: responsavel, campo: responsavel.el.inputEmail };
       }
       return null;

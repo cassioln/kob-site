@@ -62,7 +62,7 @@ embarque. A reserva continua existindo, com histórico.
 - Apagar o passageiro do banco ou perder o histórico.
 - Assento liberado na frota sem que o embarque reflita, ou vice-versa (as duas
   visões precisam ler a mesma regra).
-- Uma reserva ficar com mais crianças de colo do que adultos pagantes ativos.
+- Uma reserva ficar com mais crianças de colo do que adultos (18+) ativos.
 - Uma reserva ativa ficar sem responsável, ou com responsável menor de idade.
 - Edição que derrube reserva para um ônibus acima da capacidade sem aviso.
 
@@ -73,7 +73,7 @@ embarque. A reserva continua existindo, com histórico.
 | O que editar | Tudo: dados pessoais, faixa etária e nome do grupo |
 | Valores | Desistência só marca; não altera valores nem receita |
 | Reverter | Pode desfazer: desligar o toggle e salvar reativa a pessoa no mesmo ônibus do grupo; se não houver lugar, bloqueia e avisa |
-| Colo sem adulto | Bloquear o salvamento se crianças de colo ativas > adultos pagantes ativos; a mensagem orienta marcar também a criança |
+| Colo sem adulto | Bloquear o salvamento se crianças de colo ativas > adultos (18+) ativos (menor de 6 a 17 não acompanha colo, como no checkout); a mensagem orienta marcar também a criança |
 | Novo responsável | Só adultos 18+ ativos; e-mail e WhatsApp dele viram o contato da reserva; se faltarem, o modal exige preencher antes de salvar |
 | Todos desistem | A reserva vira "Desistente": sai da frota e do embarque, fica na lista com esse status, não pede novo responsável |
 | Alcance do ícone | Lista de reservas e cards da frota. Todas as reservas. O toggle de desistência só aparece em reservas pagas e VIP (as que ocupam lugar) |
@@ -153,8 +153,8 @@ embarque. A reserva continua existindo, com histórico.
 - Uma transação com `SELECT ... FOR UPDATE` na reserva. Validações reaproveitam
   `validation.php` (nome, CPF, WhatsApp, e-mail):
   - CPF não pode repetir dentro da reserva (constraint já existe).
-  - Responsável: exatamente um, ativo, adulto 18+, com e-mail e WhatsApp.
-  - Colo ativos ≤ adultos pagantes ativos (pagantes = adultos + 6 a 17).
+  - Responsável: exatamente um, ativo, adulto 18+. E-mail e WhatsApp são obrigatórios ao trocar o responsável; mantido o responsável, só o campo que já estava gravado (VIP sem contato salva sem inventar um).
+  - Colo ativos ≤ adultos (18+) ativos. Menores de 6 a 17 ocupam assento, mas não contam como acompanhante do colo.
   - Grupo: nome do catálogo, livre ou o atual; reserva individual ativa fica
     com NULL (decisão do builder se um grupo que encolhe para 1 pessoa perde o
     nome; recomendação: manter o nome, para não quebrar referência do grupo no

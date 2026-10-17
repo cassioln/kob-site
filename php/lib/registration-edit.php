@@ -109,11 +109,17 @@ function bus_registration_edit_plan(array $current, array $request, array $group
     if ($fullyWithdrawn) { // regra 10: não pede responsável
         $primaryId = $currentPrimaryId;
     } else {
-        if ($lapsAfter > $payersAfter) { // regra 6
-            throw new ValidationError('Há mais crianças de colo do que adultos pagantes na viagem. '
+        // Regra 6, igual ao checkout (validation.php): criança de colo só viaja
+        // com adulto 18+. Menor de 6 a 17 ocupa assento, mas não leva colo.
+        $adultsAfter = count(array_filter(
+            $after,
+            static fn (array $p): bool => !$p['withdrawn'] && $p['age_group'] === 'adult'
+        ));
+        if ($lapsAfter > $adultsAfter) {
+            throw new ValidationError('Há mais crianças de colo do que adultos (18+) na viagem. '
                 . 'Marque também a desistência da criança ou mantenha um adulto.');
         }
-        $primaryId = bus_registration_edit_check_primary($after, $requestedPrimaryId, $currentPrimaryId); // regras 5 e 4
+        $primaryId = bus_registration_edit_check_primary($after, $rows, $requestedPrimaryId, $currentPrimaryId); // regras 5 e 4
     }
 
     foreach ($after as $id => $passenger) {
@@ -126,6 +132,8 @@ function bus_registration_edit_plan(array $current, array $request, array $group
         $columns['primary_name'] = $primary['full_name'];
         $columns['primary_cpf'] = $primary['cpf'];
         // As colunas da reserva são NOT NULL: só sobrescreve contato preenchido.
+        // Responsável sem contato (VIP criado sem WhatsApp/e-mail) mantém o
+        // valor que a reserva já tem.
         if ($primary['email'] !== null) $columns['email'] = $primary['email'];
         if ($primary['whatsapp'] !== null) $columns['whatsapp'] = $primary['whatsapp'];
         if ($primaryId !== $currentPrimaryId) $columns['primary_birth_date'] = null;
@@ -357,8 +365,14 @@ function bus_registration_edit_group(mixed $currentGroup, mixed $requested, arra
     return $name;
 }
 
-/** Regras 5 e 4. Retorna o id do responsável. */
-function bus_registration_edit_check_primary(array $after, ?string $requestedId, ?string $currentId): string
+/**
+ * Regras 5 e 4. Retorna o id do responsável.
+ *
+ * Contato (WhatsApp e e-mail) é obrigatório quando o responsável muda. Mantido
+ * o responsável, cada campo só é obrigatório se já estava gravado na linha dele
+ * (não dá para apagar); quem nunca teve contato (VIP) salva sem inventar um.
+ */
+function bus_registration_edit_check_primary(array $after, array $rows, ?string $requestedId, ?string $currentId): string
 {
     if ($requestedId !== null && $requestedId === $currentId && ($after[$currentId]['withdrawn'] ?? false)) {
         throw new ValidationError('Escolha o novo responsável da reserva.');
@@ -367,8 +381,13 @@ function bus_registration_edit_check_primary(array $after, ?string $requestedId,
     if ($primary === null || $primary['withdrawn'] || $primary['age_group'] !== 'adult') {
         throw new ValidationError('O responsável precisa ser um adulto (18+) que continua na viagem.');
     }
-    if ($primary['whatsapp'] === null || $primary['email'] === null) {
-        throw new ValidationError('Informe WhatsApp e e-mail do responsável.');
+    $changed = $requestedId !== $currentId;
+    $stored = $changed ? [] : $rows[$currentId];
+    foreach (['whatsapp', 'email'] as $field) {
+        $required = $changed || bus_registration_edit_nullable_string($stored[$field] ?? null) !== null;
+        if ($required && $primary[$field] === null) {
+            throw new ValidationError('Informe WhatsApp e e-mail do responsável.');
+        }
     }
     return $requestedId;
 }
